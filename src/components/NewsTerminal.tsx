@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './NewsTerminal.css';
 
 interface NewsItem {
   rank: number;
@@ -18,7 +19,6 @@ const NewsTerminal: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
-  const [currentLine, setCurrentLine] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   // 获取新闻数据
@@ -80,7 +80,6 @@ const NewsTerminal: React.FC = () => {
     const interval = setInterval(() => {
       if (lineIndex < lines.length) {
         setDisplayedLines((prev) => [...prev, lines[lineIndex]]);
-        setCurrentLine(lineIndex);
         lineIndex++;
         
         // 自动滚动到底部
@@ -130,130 +129,6 @@ const NewsTerminal: React.FC = () => {
           </div>
         ))}
       </div>
-
-      <style jsx>{`
-        .news-terminal-container {
-          width: 100%;
-          max-width: 900px;
-          margin: 20px auto;
-          background: #0a0a0a;
-          border-radius: 8px;
-          box-shadow: 0 10px 40px rgba(0, 255, 0, 0.2);
-          overflow: hidden;
-          font-family: 'Courier New', 'Monaco', monospace;
-        }
-
-        .terminal-header {
-          background: #1a1a1a;
-          padding: 10px 15px;
-          display: flex;
-          align-items: center;
-          border-bottom: 1px solid #00ff00;
-        }
-
-        .terminal-buttons {
-          display: flex;
-          gap: 8px;
-          margin-right: 15px;
-        }
-
-        .terminal-buttons span {
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          display: inline-block;
-        }
-
-        .btn-close {
-          background: #ff5f56;
-        }
-
-        .btn-minimize {
-          background: #ffbd2e;
-        }
-
-        .btn-maximize {
-          background: #27c93f;
-        }
-
-        .terminal-title {
-          color: #00ff00;
-          font-size: 14px;
-          font-weight: bold;
-        }
-
-        .terminal-body {
-          background: #000;
-          color: #00ff00;
-          padding: 20px;
-          min-height: 400px;
-          max-height: 600px;
-          overflow-y: auto;
-          font-size: 14px;
-          line-height: 1.6;
-        }
-
-        .terminal-body::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .terminal-body::-webkit-scrollbar-track {
-          background: #0a0a0a;
-        }
-
-        .terminal-body::-webkit-scrollbar-thumb {
-          background: #00ff00;
-          border-radius: 4px;
-        }
-
-        .terminal-line {
-          margin-bottom: 4px;
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-
-        .terminal-loading,
-        .terminal-error {
-          color: #00ff00;
-        }
-
-        .terminal-error {
-          color: #ff5555;
-        }
-
-        .cursor-blink {
-          animation: blink 1s infinite;
-          color: #00ff00;
-          font-weight: bold;
-        }
-
-        @keyframes blink {
-          0%, 49% {
-            opacity: 1;
-          }
-          50%, 100% {
-            opacity: 0;
-          }
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-          .news-terminal-container {
-            margin: 10px;
-            border-radius: 4px;
-          }
-
-          .terminal-body {
-            padding: 15px;
-            font-size: 12px;
-            min-height: 300px;
-          }
-
-          .terminal-title {
-            font-size: 12px;
-          }
-        }
-      `}</style>
     </div>
   );
 };
