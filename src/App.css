@@ -188,6 +188,14 @@
   }
 }
 
+/* 新闻区域 */
+.news-section {
+  margin-top: 60px;
+  width: 100%;
+  max-width: 900px;
+  animation: fadeIn 1.5s ease-in;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .typewriter-text {
@@ -198,6 +206,11 @@
     font-size: 14px;
     padding: 12px 20px;
     min-width: 280px;
+  }
+  
+  .news-section {
+    margin-top: 40px;
+    padding: 0 10px;
   }
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import MatrixRain from './MatrixRain';
+import NewsTerminal from './components/NewsTerminal';
 
 const LINES = [
   '> Wake up, free node space...',
@@ -54,20 +55,26 @@ const App: React.FC = () => {
         </div>
         
         {showButtons && (
-          <div className="button-container">
-            <button className="matrix-button">
-              <span className="button-scanline"></span>
-              [ 📂 PROJECT: NEURO-CAT ]
-            </button>
-            <button className="matrix-button">
-              <span className="button-scanline"></span>
-              [ 🐍 PROJECT: INFO-HUNTER ]
-            </button>
-            <button className="matrix-button">
-              <span className="button-scanline"></span>
-              [ 🔗 CONNECT WALLET ]
-            </button>
-          </div>
+          <>
+            <div className="button-container">
+              <button className="matrix-button">
+                <span className="button-scanline"></span>
+                [ 📂 PROJECT: NEURO-CAT ]
+              </button>
+              <button className="matrix-button">
+                <span className="button-scanline"></span>
+                [ 🐍 PROJECT: INFO-HUNTER ]
+              </button>
+              <button className="matrix-button">
+                <span className="button-scanline"></span>
+                [ 🔗 CONNECT WALLET ]
+              </button>
+            </div>
+            
+            <div className="news-section">
+              <NewsTerminal />
+            </div>
+          </>
         )}
       </div>
     </div>
