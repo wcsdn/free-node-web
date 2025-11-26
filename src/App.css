@@ -4,13 +4,10 @@
   min-height: 100vh;
   background-color: #000000;
   color: #00FF00;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 40px 20px;
+  padding: 60px 20px;
 }
 
 /* CRT 扫描线效果 */
@@ -82,6 +79,7 @@
   border: 1px solid rgba(0, 255, 0, 0.1);
   width: 100%;
   max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* 打字机效果文本 */
