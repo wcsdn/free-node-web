@@ -151,21 +151,14 @@ const NewsTerminal: React.FC = () => {
           </div>
         )}
         
-        {!loading && !error && displayedLines.map((line, index) => {
-          const isClickable = newsUrls[index];
-          return (
-            <div 
-              key={index} 
-              className={`terminal-line ${isClickable ? 'clickable' : ''}`}
-              onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
-            >
-              {line}
-              {index === displayedLines.length - 1 && (
-                <span className="cursor-blink">▋</span>
-              )}
-            </div>
-          );
-        })}
+        {!loading && !error && displayedLines.map((line, index) => (
+          <div key={index} className="terminal-line">
+            {line}
+            {index === displayedLines.length - 1 && (
+              <span className="cursor-blink">▋</span>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
