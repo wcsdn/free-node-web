@@ -43,7 +43,7 @@ const NewsTerminal: React.FC = () => {
         setLoading(true);
         setError(null);
         
-        const response = await fetch('https://news.free-node.xyz/api/news', {
+        const response = await fetch('https://info-hunter-worker.unlocks.workers.dev/test', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
