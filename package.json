@@ -11,13 +11,15 @@
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11"
+    "@types/react-dom": "^18.0.11",
+    "wrangler": "^4.47.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && npx wrangler pages deploy build --project-name=free-node-web"
   },
   "eslintConfig": {
     "extends": [
@@ -37,4 +39,3 @@
     ]
   }
 }
-
