@@ -73,9 +73,10 @@
 }
 
 .terminal-line {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   white-space: pre-wrap;
   word-break: break-word;
+  text-align: left;
 }
 
 .terminal-loading,
