@@ -1,14 +1,16 @@
 .matrix-container {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #000000;
   color: #00FF00;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 40px 20px;
 }
 
 /* CRT 扫描线效果 */
@@ -78,6 +80,8 @@
   border-radius: 10px;
   box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
   border: 1px solid rgba(0, 255, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
 }
 
 /* 打字机效果文本 */
@@ -192,12 +196,35 @@
 .news-section {
   margin-top: 60px;
   width: 100%;
-  max-width: 900px;
+  max-width: 1400px;
   animation: fadeIn 1.5s ease-in;
+}
+
+/* 自定义滚动条 */
+.matrix-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.matrix-container::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.matrix-container::-webkit-scrollbar-thumb {
+  background: #00FF00;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.matrix-container::-webkit-scrollbar-thumb:hover {
+  background: #00cc00;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .matrix-container {
+    padding: 20px 10px;
+  }
+  
   .typewriter-text {
     font-size: 18px;
   }
@@ -210,7 +237,7 @@
   
   .news-section {
     margin-top: 40px;
-    padding: 0 10px;
+    padding: 0;
   }
 }
 

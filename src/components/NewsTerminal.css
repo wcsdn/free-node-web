@@ -1,6 +1,6 @@
 .news-terminal-container {
-  width: 100%;
-  max-width: 900px;
+  width: 95%;
+  max-width: 1400px;
   margin: 20px auto;
   background: #0a0a0a;
   border-radius: 8px;
@@ -52,11 +52,11 @@
   background: #000;
   color: #00ff00;
   padding: 20px;
-  min-height: 400px;
-  max-height: 600px;
+  min-height: 500px;
+  max-height: 800px;
   overflow-y: auto;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.8;
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -77,6 +77,19 @@
   white-space: pre-wrap;
   word-break: break-word;
   text-align: left;
+}
+
+.terminal-line.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 4px 0;
+}
+
+.terminal-line.clickable:hover {
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  transform: translateX(5px);
+  background: rgba(0, 255, 0, 0.05);
 }
 
 .terminal-loading,

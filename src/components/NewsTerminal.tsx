@@ -19,6 +19,7 @@ const NewsTerminal: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
+  const [newsUrls, setNewsUrls] = useState<{ [key: number]: string }>({});
   const terminalRef = useRef<HTMLDivElement>(null);
 
   // 备用模拟数据（使用 useMemo 避免重复创建）
@@ -80,9 +81,12 @@ const NewsTerminal: React.FC = () => {
       '> 连接成功',
       '',
       '🔥 HACKER NEWS 热榜 TOP 10',
+      '> 点击新闻标题可跳转查看详情',
       '',
     ];
 
+    const urls: { [key: number]: string } = {};
+    
     news.forEach((item) => {
       const title = item.titleCn || item.title;
       // 根据排名添加不同的热度表情（只显示前5名）
@@ -93,11 +97,15 @@ const NewsTerminal: React.FC = () => {
       else if (item.rank === 4) prefix = '⭐ ';
       else if (item.rank === 5) prefix = '✨ ';
       
+      const lineIndex = lines.length;
       lines.push(`${prefix}${item.rank}. ${title}`);
+      urls[lineIndex] = item.url;
     });
 
     lines.push('');
     lines.push('> 数据加载完成');
+    
+    setNewsUrls(urls);
 
     let lineIndex = 0;
     const interval = setInterval(() => {
@@ -143,14 +151,21 @@ const NewsTerminal: React.FC = () => {
           </div>
         )}
         
-        {!loading && !error && displayedLines.map((line, index) => (
-          <div key={index} className="terminal-line">
-            {line}
-            {index === displayedLines.length - 1 && (
-              <span className="cursor-blink">▋</span>
-            )}
-          </div>
-        ))}
+        {!loading && !error && displayedLines.map((line, index) => {
+          const isClickable = newsUrls[index];
+          return (
+            <div 
+              key={index} 
+              className={`terminal-line ${isClickable ? 'clickable' : ''}`}
+              onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
+            >
+              {line}
+              {index === displayedLines.length - 1 && (
+                <span className="cursor-blink">▋</span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
