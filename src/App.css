@@ -1,0 +1,203 @@
+.matrix-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  color: #00FF00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  overflow: hidden;
+}
+
+/* CRT 扫描线效果 */
+.crt-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 255, 0, 0.03) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 3;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+/* CRT 噪点效果 */
+.crt-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.02) 2px,
+      rgba(0, 255, 0, 0.02) 4px
+    );
+  pointer-events: none;
+  z-index: 3;
+  animation: noise 0.1s infinite;
+  opacity: 0.3;
+}
+
+@keyframes noise {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* 终端内容 */
+.terminal-content {
+  position: relative;
+  z-index: 4;
+  text-align: center;
+  padding: 30px 40px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  border-radius: 10px;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+  border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+/* 打字机效果文本 */
+.typewriter-text {
+  font-size: 24px;
+  line-height: 1.8;
+  color: #00FF00;
+  text-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00;
+  white-space: pre-wrap;
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 光标闪烁效果 */
+.cursor {
+  display: inline-block;
+  animation: blink 1s infinite;
+  color: #00FF00;
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+/* 按钮容器 */
+.button-container {
+  margin-top: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 矩阵风格按钮 */
+.matrix-button {
+  position: relative;
+  background: transparent;
+  border: 2px solid #00FF00;
+  color: #00FF00;
+  font-size: 18px;
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  padding: 15px 30px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  min-width: 350px;
+}
+
+.matrix-button:hover {
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+  transform: scale(1.05);
+}
+
+.matrix-button:active {
+  transform: scale(0.98);
+}
+
+/* 按钮扫描线特效 */
+.button-scanline {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.4),
+    transparent
+  );
+  animation: scanline-sweep 3s infinite;
+}
+
+@keyframes scanline-sweep {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .typewriter-text {
+    font-size: 18px;
+  }
+  
+  .matrix-button {
+    font-size: 14px;
+    padding: 12px 20px;
+    min-width: 280px;
+  }
+}
+

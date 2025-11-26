@@ -1,0 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+code {
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
