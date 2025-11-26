@@ -5,7 +5,7 @@
   background-color: #000000;
   color: #00FF00;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
   overflow-y: auto;
@@ -200,23 +200,22 @@
   animation: fadeIn 1.5s ease-in;
 }
 
-/* 自定义滚动条 */
+/* 自定义滚动条 - 细一点 */
 .matrix-container::-webkit-scrollbar {
-  width: 10px;
+  width: 6px;
 }
 
 .matrix-container::-webkit-scrollbar-track {
-  background: #000;
+  background: transparent;
 }
 
 .matrix-container::-webkit-scrollbar-thumb {
-  background: #00FF00;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  background: rgba(0, 255, 0, 0.3);
+  border-radius: 3px;
 }
 
 .matrix-container::-webkit-scrollbar-thumb:hover {
-  background: #00cc00;
+  background: rgba(0, 255, 0, 0.5);
 }
 
 /* 响应式设计 */
