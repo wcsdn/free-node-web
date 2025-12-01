@@ -29,8 +29,8 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
     const chars = englishChars + otherChars;
     const charArray = chars.split('');
 
-    // 计算列数（增加 5%）
-    const calculatedColumns = Math.floor(canvas.width / fontSize / 2 * 1.05);
+    // 计算列数，均匀分布
+    const calculatedColumns = Math.floor(canvas.width / (fontSize * 2));
     const drops: number[] = [];
     const charIndexes: number[] = [];
     const speeds: number[] = [];
@@ -40,14 +40,14 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
     for (let i = 0; i < calculatedColumns; i++) {
       drops[i] = Math.random() * -100; // 随机起始位置
       charIndexes[i] = Math.floor(Math.random() * charArray.length);
-      speeds[i] = 0.3 + Math.random() * 2.5; // 随机速度范围更大：0.3-2.8，有快有慢
+      speeds[i] = 0.3 + Math.random() * 0.7; // 恢复原来的速度：0.3-1.0
       fontSizes[i] = fontSize * (0.85 + Math.random() * 0.3); // 字体大小在 85%-115% 之间随机
     }
 
     // 绘制函数
     const draw = () => {
-      // 更高透明度让拖尾快速消失，减少重影密度
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      // 适中的透明度，让残影保持适当长度的尾巴
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.textAlign = 'center';
@@ -59,8 +59,8 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
 
         const char = charArray[charIndexes[i]];
         const columnFontSize = fontSizes[i]; // 使用该列的字体大小
-        const x = i * fontSize * 2; // 增加列间距
-        const y = drops[i] * fontSize * 1.5; // 增加行间距，让每列字符更稀疏
+        const x = i * fontSize * 2; // 列间距
+        const y = drops[i] * fontSize * 1.5; // 行间距
 
         // 设置该列的字体大小
         ctx.font = `bold ${columnFontSize}px 'Courier New', monospace`;
@@ -80,7 +80,7 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
         if (drops[i] * fontSize * 1.5 > canvas.height && Math.random() > 0.97) {
           drops[i] = 0;
           charIndexes[i] = Math.floor(Math.random() * charArray.length);
-          speeds[i] = 0.3 + Math.random() * 2.5; // 重新随机速度，范围更大
+          speeds[i] = 0.3 + Math.random() * 0.7; // 重新随机速度
         }
 
         // 移动位置（使用随机速度）
@@ -107,7 +107,7 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
       ref={canvasRef}
       className="matrix-rain"
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
