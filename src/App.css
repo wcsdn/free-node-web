@@ -231,3 +231,70 @@
   }
 }
 
+
+/* 钱包连接区域 */
+.wallet-connect-section {
+  margin: 30px 0;
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 1s ease-in;
+}
+
+/* 连接提示 */
+.connect-prompt {
+  margin-top: 40px;
+  padding: 20px;
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.05);
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  font-size: 18px;
+  text-shadow: 0 0 10px #00ff00;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* RainbowKit 按钮自定义样式 */
+[data-rk] button {
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+[data-rk] button:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+  transform: scale(1.05);
+}
+
+/* RainbowKit 模态框样式 */
+[data-rk] [role="dialog"] {
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace !important;
+}
+
+/* RainbowKit 文本样式 */
+[data-rk] * {
+  font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace !important;
+}
+
+/* 响应式 - 钱包连接 */
+@media (max-width: 768px) {
+  .wallet-connect-section {
+    margin: 20px 0;
+  }
+  
+  .connect-prompt {
+    font-size: 16px;
+    padding: 15px;
+  }
+}
