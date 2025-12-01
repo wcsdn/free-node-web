@@ -42,6 +42,24 @@
 npm install
 ```
 
+### 配置环境变量
+
+1. 复制 `.env.example` 文件并重命名为 `.env`：
+
+```bash
+cp .env.example .env
+```
+
+2. 访问 [WalletConnect Cloud](https://cloud.walletconnect.com/) 注册并创建项目
+
+3. 获取 Project ID 并填入 `.env` 文件：
+
+```env
+REACT_APP_WALLETCONNECT_PROJECT_ID=your_project_id_here
+```
+
+> **注意：** `.env` 文件包含敏感信息，已被 `.gitignore` 忽略，不会提交到 Git 仓库。
+
 ### 本地开发
 
 ```bash
@@ -64,6 +82,9 @@ npm run build
 - **TypeScript** - 类型安全
 - **CSS3** - 动画和特效
 - **Canvas API** - Matrix 字符雨渲染
+- **RainbowKit** - Web3 钱包连接 UI
+- **wagmi** - React Hooks for Ethereum
+- **viem** - TypeScript Ethereum 接口
 
 ## 🎨 组件说明
 
