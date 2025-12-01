@@ -13,7 +13,7 @@
 
 /* CRT 扫描线效果 */
 .crt-scanline {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -25,7 +25,7 @@
   background-size: 100% 4px;
   pointer-events: none;
   z-index: 3;
-  animation: scanline 8s linear infinite;
+  will-change: transform;
 }
 
 @keyframes scanline {
@@ -39,7 +39,7 @@
 
 /* CRT 噪点效果 */
 .crt-noise {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -54,17 +54,7 @@
     );
   pointer-events: none;
   z-index: 3;
-  animation: noise 0.1s infinite;
   opacity: 0.3;
-}
-
-@keyframes noise {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.35;
-  }
 }
 
 /* 终端内容 */
