@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import MatrixRain from './MatrixRain';
 import NewsTerminal from './components/NewsTerminal';
+import CyberRabbit from './components/CyberRabbit';
 
 const LINES = [
-  '> Wake up, free node space...',
-  '> The Matrix has you...'
+  '> Wake up, Neo...',
+  '> The Matrix has you...',
+  '> Follow the white rabbit.'
 ];
 
 const App: React.FC = () => {
@@ -56,6 +58,8 @@ const App: React.FC = () => {
         
         {showButtons && (
           <>
+            <CyberRabbit />
+            
             <div className="button-container">
               <button className="matrix-button">
                 <span className="button-scanline"></span>

@@ -53,8 +53,8 @@
   color: #00ff00;
   padding: 20px;
   min-height: 500px;
-  max-height: 800px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
   font-size: 14px;
   line-height: 1.8;
 }
@@ -116,6 +116,42 @@
   }
 }
 
+/* 加载更多按钮容器 */
+.load-more-container {
+  margin-top: 20px;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.load-more-button {
+  background: transparent;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  font-size: 14px;
+  font-family: 'Courier New', 'Monaco', monospace;
+  padding: 10px 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.load-more-button:hover:not(:disabled) {
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+  transform: scale(1.05);
+}
+
+.load-more-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.load-more-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .news-terminal-container {
@@ -131,5 +167,10 @@
 
   .terminal-title {
     font-size: 12px;
+  }
+
+  .load-more-button {
+    font-size: 12px;
+    padding: 8px 20px;
   }
 }

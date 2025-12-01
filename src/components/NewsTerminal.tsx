@@ -20,7 +20,12 @@ const NewsTerminal: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [newsUrls, setNewsUrls] = useState<{ [key: number]: string }>({});
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [noMoreData, setNoMoreData] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [displayNumber, setDisplayNumber] = useState(1);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const hasFetchedRef = useRef(false);
 
   // 备用模拟数据（使用 useMemo 避免重复创建）
   const mockNews: NewsItem[] = React.useMemo(() => [
@@ -38,6 +43,10 @@ const NewsTerminal: React.FC = () => {
 
   // 获取新闻数据
   useEffect(() => {
+    // 防止重复请求
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
     const fetchNews = async () => {
       try {
         setLoading(true);
@@ -59,11 +68,13 @@ const NewsTerminal: React.FC = () => {
         // 只取前10条
         const top10 = data.items.slice(0, 10);
         setNews(top10);
+        setCurrentOffset(10);
         setLoading(false);
       } catch (err) {
         console.error('获取新闻失败，使用备用数据:', err);
         // 使用备用数据
         setNews(mockNews);
+        setCurrentOffset(10);
         setError(null); // 不显示错误，直接使用备用数据
         setLoading(false);
       }
@@ -72,39 +83,114 @@ const NewsTerminal: React.FC = () => {
     fetchNews();
   }, [mockNews]);
 
+  // 加载更多新闻
+  const loadMoreNews = async () => {
+    if (loadingMore || noMoreData) return;
+
+    try {
+      setLoadingMore(true);
+      
+      const response = await fetch('https://news.free-node.xyz/api/news', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data: NewsData = await response.json();
+      
+      // 获取下一批10条
+      const nextBatch = data.items.slice(currentOffset, currentOffset + 10);
+      
+      if (nextBatch.length === 0) {
+        setNoMoreData(true);
+        setDisplayedLines(prev => [...prev, '', '> 已经到底了，没有更多新闻了']);
+      } else {
+        setCurrentOffset(prev => prev + nextBatch.length);
+        
+        // 追加新闻行到显示列表
+        const newLines: string[] = [];
+        const newUrls: { [key: number]: string } = { ...newsUrls };
+        let currentDisplayNum = displayNumber;
+        
+        nextBatch.forEach((item) => {
+          const title = item.titleCn || item.title;
+          // 根据显示编号添加表情（只显示前5名）
+          let prefix = '';
+          if (currentDisplayNum === 1) prefix = '🔥 ';
+          else if (currentDisplayNum === 2) prefix = '⚡ ';
+          else if (currentDisplayNum === 3) prefix = '💎 ';
+          else if (currentDisplayNum === 4) prefix = '⭐ ';
+          else if (currentDisplayNum === 5) prefix = '✨ ';
+          
+          const lineIndex = displayedLines.length + newLines.length;
+          newLines.push(`${prefix}${currentDisplayNum}. ${title}`);
+          newUrls[lineIndex] = item.url;
+          currentDisplayNum++;
+        });
+        
+        setDisplayNumber(currentDisplayNum);
+        setNewsUrls(newUrls);
+        
+        // 逐行显示新新闻
+        let lineIndex = 0;
+        const interval = setInterval(() => {
+          if (lineIndex < newLines.length) {
+            setDisplayedLines(prev => [...prev, newLines[lineIndex]]);
+            lineIndex++;
+          } else {
+            clearInterval(interval);
+          }
+        }, 100);
+      }
+      
+      setLoadingMore(false);
+    } catch (err) {
+      console.error('加载更多新闻失败:', err);
+      setNoMoreData(true);
+      setDisplayedLines(prev => [...prev, '', '> 加载失败，已经没有更多新闻了']);
+      setLoadingMore(false);
+    }
+  };
+
   // 终端打字机效果
   useEffect(() => {
     if (loading || error || news.length === 0) return;
 
+    // 重置显示的行
+    setDisplayedLines([]);
+    setDisplayNumber(1);
+
     const lines: string[] = [
-      '> 正在连接 Hacker News 数据流...',
-      '> 连接成功',
-      '',
-      '🔥 HACKER NEWS 热榜 TOP 10',
+      '🔥 HACKER NEWS 热榜',
       '> 点击新闻标题可跳转查看详情',
       '',
     ];
 
     const urls: { [key: number]: string } = {};
+    let currentDisplayNum = 1;
     
     news.forEach((item) => {
       const title = item.titleCn || item.title;
-      // 根据排名添加不同的热度表情（只显示前5名）
+      // 根据显示编号添加不同的热度表情（只显示前5名）
       let prefix = '';
-      if (item.rank === 1) prefix = '🔥 ';
-      else if (item.rank === 2) prefix = '⚡ ';
-      else if (item.rank === 3) prefix = '💎 ';
-      else if (item.rank === 4) prefix = '⭐ ';
-      else if (item.rank === 5) prefix = '✨ ';
+      if (currentDisplayNum === 1) prefix = '🔥 ';
+      else if (currentDisplayNum === 2) prefix = '⚡ ';
+      else if (currentDisplayNum === 3) prefix = '💎 ';
+      else if (currentDisplayNum === 4) prefix = '⭐ ';
+      else if (currentDisplayNum === 5) prefix = '✨ ';
       
       const lineIndex = lines.length;
-      lines.push(`${prefix}${item.rank}. ${title}`);
+      lines.push(`${prefix}${currentDisplayNum}. ${title}`);
       urls[lineIndex] = item.url;
+      currentDisplayNum++;
     });
 
-    lines.push('');
-    lines.push('> 数据加载完成');
-    
+    setDisplayNumber(currentDisplayNum);
     setNewsUrls(urls);
 
     let lineIndex = 0;
@@ -160,12 +246,30 @@ const NewsTerminal: React.FC = () => {
               onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
             >
               {line}
-              {index === displayedLines.length - 1 && (
+              {index === displayedLines.length - 1 && !loadingMore && !noMoreData && (
                 <span className="cursor-blink">▋</span>
               )}
             </div>
           );
         })}
+        
+        {!loading && !error && displayedLines.length > 0 && !noMoreData && (
+          <div className="load-more-container">
+            <button 
+              className="load-more-button" 
+              onClick={loadMoreNews}
+              disabled={loadingMore}
+            >
+              {loadingMore ? '> 正在加载...' : '> [ 加载更多新闻 ]'}
+            </button>
+          </div>
+        )}
+        
+        {!loading && !error && noMoreData && (
+          <div className="terminal-line" style={{ marginTop: '20px', textAlign: 'center', opacity: 0.7 }}>
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+          </div>
+        )}
       </div>
     </div>
   );

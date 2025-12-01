@@ -2,12 +2,13 @@
   position: relative;
   width: 100vw;
   min-height: 100vh;
+  height: auto;
   background-color: #000000;
   color: #00FF00;
   font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
-  overflow-y: auto;
+  overflow-y: visible;
   overflow-x: hidden;
-  padding: 60px 20px;
+  padding: 60px 20px 60px 20px;
 }
 
 /* CRT 扫描线效果 */
@@ -115,7 +116,7 @@
 
 /* 按钮容器 */
 .button-container {
-  margin-top: 60px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -195,6 +196,8 @@
   margin-top: 60px;
   width: 100%;
   max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
   animation: fadeIn 1.5s ease-in;
 }
 
