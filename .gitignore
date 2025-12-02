@@ -13,6 +13,9 @@
 /dist
 /dist-node
 
+# wrangler
+/.wrangler
+
 # Kiro IDE
 /.kiro
 
