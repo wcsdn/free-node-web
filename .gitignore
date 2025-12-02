@@ -10,6 +10,14 @@
 
 # production
 /build
+/dist
+/dist-node
+
+# Kiro IDE
+/.kiro
+
+# documentation
+/docs
 
 # misc
 .DS_Store

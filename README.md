@@ -55,7 +55,7 @@ cp .env.example .env
 3. 获取 Project ID 并填入 `.env` 文件：
 
 ```env
-REACT_APP_WALLETCONNECT_PROJECT_ID=your_project_id_here
+VITE_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ```
 
 > **注意：** `.env` 文件包含敏感信息，已被 `.gitignore` 忽略，不会提交到 Git 仓库。
@@ -63,10 +63,10 @@ REACT_APP_WALLETCONNECT_PROJECT_ID=your_project_id_here
 ### 本地开发
 
 ```bash
-npm start
+npm run dev
 ```
 
-项目将在 http://localhost:3000 启动。
+项目将在 http://localhost:5173 启动。
 
 ### 构建生产版本
 
@@ -74,12 +74,34 @@ npm start
 npm run build
 ```
 
-构建产物将输出到 `build/` 目录。
+构建产物将输出到 `dist/` 目录。
+
+### 预览生产构建
+
+```bash
+npm run preview
+```
+
+### 部署到 Cloudflare Pages
+
+```bash
+# 快速部署
+npm run deploy
+
+# 部署到生产环境
+npm run deploy:prod
+
+# 部署到预览环境
+npm run deploy:preview
+```
+
+详细部署说明请查看 [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ## 📦 技术栈
 
 - **React 18** - UI 框架
 - **TypeScript** - 类型安全
+- **Vite** - 快速构建工具
 - **CSS3** - 动画和特效
 - **Canvas API** - Matrix 字符雨渲染
 - **RainbowKit** - Web3 钱包连接 UI
@@ -143,14 +165,33 @@ const response = await fetch('你的API地址');
 
 ## 🌐 部署
 
-### Cloudflare Pages
+### 自动部署（推荐）
 
-项目已配置自动部署到 Cloudflare Pages：
+项目已配置 GitHub Actions 自动部署：
 
-1. 推送代码到 GitHub
-2. Cloudflare Pages 自动检测并构建
-3. 构建命令：`npm run build`
-4. 输出目录：`build`
+1. 推送代码到 `main` 分支自动触发生产部署
+2. 创建 Pull Request 自动创建预览部署
+3. 需要配置 GitHub Secrets（详见 [DEPLOYMENT.md](./docs/DEPLOYMENT.md)）
+
+### 手动部署
+
+```bash
+# 使用 yarn
+yarn deploy:prod
+
+# 使用 npm
+npm run deploy:prod
+```
+
+### Cloudflare Pages 配置
+
+⚠️ **重要：** 如果你的 Cloudflare Pages 项目之前使用 Create React App，需要更新配置：
+
+- 构建命令：`yarn build` 或 `npm run build`
+- 输出目录：**`dist`**（不是 `build`）
+- Node.js 版本：18+
+
+详细配置步骤请查看 [CLOUDFLARE_SETUP.md](./docs/CLOUDFLARE_SETUP.md)
 
 ### 其他平台
 
@@ -160,6 +201,8 @@ const response = await fetch('你的API地址');
 - GitHub Pages
 - AWS S3 + CloudFront
 
+详细部署指南请查看 [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+
 ## 📱 响应式设计
 
 - 桌面端：完整体验
@@ -168,23 +211,41 @@ const response = await fetch('你的API地址');
 
 ## 🔧 开发说明
 
+详细的项目结构说明请查看 [PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
+
 ### 项目结构
 
 ```
 free-node-web/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # GitHub Actions 自动部署
+├── docs/
+│   ├── DEPLOYMENT.md             # 部署指南
+│   └── SETUP_COMPLETE.md         # 配置完成总结
 ├── public/
-│   └── index.html
+│   ├── favicon.ico
+│   └── favicon.svg
+├── scripts/
+│   └── deploy.sh                 # 快速部署脚本
 ├── src/
 │   ├── components/
+│   │   ├── CyberRabbit.tsx       # 赛博兔子组件
+│   │   ├── CyberRabbit.css
+│   │   ├── MatrixRain.tsx        # Matrix 字符雨
 │   │   ├── NewsTerminal.tsx      # 新闻终端组件
-│   │   ├── NewsTerminal.css      # 新闻终端样式
-│   │   └── NewsTerminal-README.md
+│   │   └── NewsTerminal.css
+│   ├── config/
+│   │   └── wagmiConfig.ts        # Web3 配置
 │   ├── App.tsx                   # 主应用
-│   ├── App.css                   # 主应用样式
-│   ├── MatrixRain.tsx            # 字符雨组件
+│   ├── App.css
 │   ├── index.tsx                 # 入口文件
-│   └── index.css                 # 全局样式
+│   └── index.css
+├── .env.example                  # 环境变量示例
 ├── package.json
+├── tsconfig.json
+├── vite.config.mjs
+├── wrangler.toml                 # Cloudflare Pages 配置
 └── README.md
 ```
 

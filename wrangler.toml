@@ -1,0 +1,9 @@
+name = "free-node-web"
+compatibility_date = "2024-12-02"
+pages_build_output_dir = "dist"
+
+[env.production]
+name = "free-node-web"
+
+[env.preview]
+name = "free-node-web-preview"

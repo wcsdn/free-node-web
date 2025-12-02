@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import MatrixRain from './MatrixRain';
+import MatrixRain from './components/MatrixRain';
 import NewsTerminal from './components/NewsTerminal';
 import CyberRabbit from './components/CyberRabbit';
 import { useAccount } from 'wagmi';
@@ -31,7 +31,7 @@ const App: React.FC = () => {
       
       const typeInterval = setInterval(() => {
         if (charIndex < line.length) {
-          setDisplayedText(prev => {
+          setDisplayedText(() => {
             const currentLineText = LINES.slice(0, currentLine).join('\n');
             return currentLineText + (currentLineText ? '\n' : '') + line.substring(0, charIndex + 1);
           });
@@ -39,7 +39,7 @@ const App: React.FC = () => {
         } else {
           clearInterval(typeInterval);
           setTimeout(() => {
-            setCurrentLine(prev => prev + 1);
+            setCurrentLine((prev) => prev + 1);
           }, 500);
         }
       }, 50);
