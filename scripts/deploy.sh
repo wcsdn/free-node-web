@@ -30,6 +30,7 @@ echo ""
 # 部署到 Cloudflare Pages
 echo "🌐 正在部署到 Cloudflare Pages..."
 # npx wrangler pages deploy dist --project-name=free-node-web
+#。git commit --allow-empty -m "trigger: force cloudflare build"
 ./node_modules/.bin/wrangler pages deploy dist --project-name=free-node-web
 
 if [ $? -eq 0 ]; then
