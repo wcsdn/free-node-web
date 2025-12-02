@@ -3,7 +3,7 @@ import './App.css';
 import MatrixRain from './components/MatrixRain';
 import NewsTerminal from './components/NewsTerminal';
 import CyberRabbit from './components/CyberRabbit';
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const LINES = [
@@ -13,7 +13,9 @@ const LINES = [
 ];
 
 const App: React.FC = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, address, chain } = useAccount();
+  const { data: ensName } = useEnsName({ address });
+  const { data: balance } = useBalance({ address });
   const [mounted, setMounted] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [currentLine, setCurrentLine] = useState(0);
@@ -73,6 +75,29 @@ const App: React.FC = () => {
             {mounted && (
               <div className="wallet-connect-section">
                 <ConnectButton />
+              </div>
+            )}
+            
+            {/* 连接成功后显示用户信息 */}
+            {mounted && isConnected && address && (
+              <div className="user-info-panel">
+                <div className="info-header">✅ 钱包已连接</div>
+                <div className="info-row">
+                  <span className="info-label">地址:</span>
+                  <span className="info-value">{ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}</span>
+                </div>
+                {chain && (
+                  <div className="info-row">
+                    <span className="info-label">网络:</span>
+                    <span className="info-value">{chain.name}</span>
+                  </div>
+                )}
+                {balance && (
+                  <div className="info-row">
+                    <span className="info-label">余额:</span>
+                    <span className="info-value">{parseFloat(balance.formatted).toFixed(4)} {balance.symbol}</span>
+                  </div>
+                )}
               </div>
             )}
             

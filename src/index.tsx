@@ -9,7 +9,17 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { config } from './config/wagmiConfig';
 
-const queryClient = new QueryClient();
+// 配置 QueryClient 以支持持久化缓存
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      gcTime: 1000 * 60 * 60 * 24, // 24 小时缓存
+      staleTime: 1000 * 60 * 5, // 5 分钟内数据视为新鲜
+      refetchOnWindowFocus: false, // 窗口聚焦时不自动重新获取
+      refetchOnReconnect: false, // 重新连接时不自动重新获取
+    },
+  },
+});
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
