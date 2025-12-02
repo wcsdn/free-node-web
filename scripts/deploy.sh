@@ -17,7 +17,7 @@ fi
 
 # 构建项目
 echo "📦 正在构建项目..."
-yarn build
+npm run build
 
 if [ $? -ne 0 ]; then
     echo "❌ 构建失败"
@@ -29,7 +29,8 @@ echo ""
 
 # 部署到 Cloudflare Pages
 echo "🌐 正在部署到 Cloudflare Pages..."
-wrangler pages deploy dist --project-name=free-node-web
+# npx wrangler pages deploy dist --project-name=free-node-web
+./node_modules/.bin/wrangler pages deploy dist --project-name=free-node-web
 
 if [ $? -eq 0 ]; then
     echo ""

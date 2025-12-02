@@ -176,10 +176,6 @@ const response = await fetch('你的API地址');
 ### 手动部署
 
 ```bash
-# 使用 yarn
-yarn deploy:prod
-
-# 使用 npm
 npm run deploy:prod
 ```
 
@@ -187,7 +183,7 @@ npm run deploy:prod
 
 ⚠️ **重要：** 如果你的 Cloudflare Pages 项目之前使用 Create React App，需要更新配置：
 
-- 构建命令：`yarn build` 或 `npm run build`
+- 构建命令：`npm run build`
 - 输出目录：**`dist`**（不是 `build`）
 - Node.js 版本：18+
 
