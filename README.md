@@ -260,7 +260,7 @@ MIT
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
-
+https://free-node.xyz
 ## 📧 联系方式
 
 - GitHub: [@wcsdn](https://github.com/wcsdn)
