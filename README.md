@@ -12,7 +12,7 @@
 
 ### ⌨️ 打字机动画
 - 页面中心逐行打印欢迎文字
-- "Wake up, free node space..."
+- "Wake up, Neo.."
 - "The Matrix has you..."
 - 光标闪烁效果
 
