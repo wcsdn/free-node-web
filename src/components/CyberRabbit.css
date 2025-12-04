@@ -308,17 +308,23 @@
 
 /* 响应式 */
 @media (max-width: 768px) {
+  .cyber-rabbit-container {
+    margin: 15px auto;
+  }
+
   .cyber-rabbit-svg {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
   }
 
   .rabbit-text {
     font-size: 14px;
+    margin-top: 15px;
   }
 
   .rabbit-switch-btn {
     font-size: 10px;
-    padding: 6px 15px;
+    padding: 6px 12px;
+    margin-top: 15px;
   }
 }

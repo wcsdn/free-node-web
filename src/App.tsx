@@ -5,28 +5,45 @@ import NewsTerminal from './components/NewsTerminal';
 import CyberRabbit from './components/CyberRabbit';
 import VipContent from './components/VipContent';
 import DonateButton from './components/DonateButton';
+import Guestbook from './components/Guestbook';
+import SettingsPanel from './components/SettingsPanel';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
-const LINES = [
-  '> Wake up, Neo...',
-  '> The Matrix has you...',
-  '> Follow the white rabbit.'
-];
+import { useLanguage } from './contexts/LanguageContext';
+import { useSoundEffect } from './hooks/useSoundEffect';
 
 const App: React.FC = () => {
   const { isConnected, address, chain } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { data: balance } = useBalance({ address });
+  const { t } = useLanguage();
+  const { playSuccess } = useSoundEffect();
   const [mounted, setMounted] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [currentLine, setCurrentLine] = useState(0);
   const [showButtons, setShowButtons] = useState(false);
+  const [hasPlayedConnectSound, setHasPlayedConnectSound] = useState(false);
+
+  const LINES = [
+    '> Wake up, Neo...',
+    '> The Matrix has you...',
+    '> Follow the white rabbit.',
+  ];
 
   // 防止 hydration 不匹配
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // 连接成功时播放音效
+  useEffect(() => {
+    if (isConnected && !hasPlayedConnectSound) {
+      playSuccess();
+      setHasPlayedConnectSound(true);
+    } else if (!isConnected) {
+      setHasPlayedConnectSound(false);
+    }
+  }, [isConnected, hasPlayedConnectSound, playSuccess]);
 
   useEffect(() => {
     if (currentLine < LINES.length) {
@@ -59,6 +76,7 @@ const App: React.FC = () => {
 
   return (
     <div className="matrix-container">
+      <SettingsPanel />
       <MatrixRain fontSize={16} />
       <div className="crt-scanline"></div>
       <div className="crt-noise"></div>
@@ -122,20 +140,20 @@ const App: React.FC = () => {
             {/* 连接成功后显示用户信息 */}
             {mounted && isConnected && address && (
               <div className="user-info-panel">
-                <div className="info-header">✅ 钱包已连接</div>
+                <div className="info-header">{t('walletConnected')}</div>
                 <div className="info-row">
-                  <span className="info-label">地址:</span>
+                  <span className="info-label">{t('address')}</span>
                   <span className="info-value">{ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}</span>
                 </div>
                 {chain && (
                   <div className="info-row">
-                    <span className="info-label">网络:</span>
+                    <span className="info-label">{t('network')}</span>
                     <span className="info-value">{chain.name}</span>
                   </div>
                 )}
                 {balance && (
                   <div className="info-row">
-                    <span className="info-label">余额:</span>
+                    <span className="info-label">{t('balance')}</span>
                     <span className="info-value">{parseFloat(balance.formatted).toFixed(4)} {balance.symbol}</span>
                   </div>
                 )}
@@ -143,11 +161,12 @@ const App: React.FC = () => {
             )}
             
             
-            {/* 只在连接钱包后显示 VipContent、DonateButton 和 NewsTerminal */}
+            {/* 只在连接钱包后显示 VipContent、DonateButton、Guestbook 和 NewsTerminal */}
             {mounted && isConnected && (
               <>
                 <VipContent />
                 <DonateButton />
+                <Guestbook />
                 <div className="news-section">
                   <NewsTerminal />
                 </div>

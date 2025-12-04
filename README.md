@@ -1,8 +1,8 @@
 # FREE-NODE Web3 Matrix Terminal
 
-🎬 黑客帝国风格的终端入口页面，采用 React + TypeScript 构建。
+🎬 黑客帝国风格的 Web3 终端入口，采用 React + TypeScript + RainbowKit 构建。
 
-## ✨ 特性
+## ✨ 核心特性
 
 ### 🌧️ Matrix 字符雨背景
 - 动态下落的字符流（95% 英文数字，5% 日文中文）
@@ -14,6 +14,7 @@
 - 页面中心逐行打印欢迎文字
 - "Wake up, Neo.."
 - "The Matrix has you..."
+- "Follow the white rabbit."
 - 光标闪烁效果
 
 ### 🎯 CRT 显示器特效
@@ -22,17 +23,40 @@
 - 绿色荧光字体
 - 复古终端美学
 
-### 📰 Hacker News 终端
-- 实时获取 Hacker News 热榜 TOP 10
-- 黑客终端风格界面（红黄绿三色按钮）
-- 逐行打印新闻内容
-- 中英文双语显示
-- 自动滚动和光标闪烁
+### � 赛博c机械兔子
+- 4 种风格切换（经典/几何/极简/黑客）
+- 黑客风格：胸口呼吸的红色爱心 ❤️
+- 肚子显示 "I LOVE YOU" 带闪烁动画
+- 耳朵摆动、手臂挥动、眼睛眨动
+- 绿色荧光特效
 
-### 🎨 交互按钮
-- 三个幽灵按钮（带扫描线特效）
-- 悬停发光效果
-- 响应式设计
+### 🔐 Web3 钱包连接
+- 自定义 "Open Door" 按钮（黑客风格）
+- 支持多种钱包（MetaMask、WalletConnect 等）
+- RainbowKit 集成
+- 显示钱包地址、网络、余额
+- ENS 域名支持
+
+### 💎 VIP 内容区
+- 连接钱包后解锁
+- 黑客风格卡片设计
+- 独家内容展示
+
+### 💰 捐赠模块
+- 迷你机械兔子（带呼吸爱心）
+- "Feed the Rabbit" 主题
+- 一键捐赠 0.001 ETH
+- 交易状态实时显示
+- 呼吸光效按钮
+
+### 📰 Hacker News 终端
+- 实时获取 Hacker News 热榜
+- 黑客终端风格界面（红黄绿三色按钮）
+- 逐行打印新闻内容（打字机效果）
+- 中英文双语显示
+- 点击标题跳转原文
+- 加载更多功能
+- 自动滚动和光标闪烁
 
 ## 🚀 快速开始
 
@@ -85,30 +109,40 @@ npm run preview
 ### 部署到 Cloudflare Pages
 
 ```bash
-# 快速部署
-npm run deploy
+# 完整部署（构建+发布）
+npm run deploy              # 预览环境
+npm run deploy:prod         # 生产环境
 
-# 部署到生产环境
-npm run deploy:prod
-
-# 部署到预览环境
-npm run deploy:preview
+# 仅发布（不构建，适合构建已完成的情况）
+npm run pub                 # 预览环境
+npm run pub:prod            # 生产环境
 ```
 
 详细部署说明请查看 [DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ## 📦 技术栈
 
+### 前端框架
 - **React 18** - UI 框架
 - **TypeScript** - 类型安全
 - **Vite** - 快速构建工具
+
+### Web3 集成
+- **RainbowKit 2.2.9** - Web3 钱包连接 UI
+- **wagmi 2.12.0** - React Hooks for Ethereum
+- **viem 2.40.3** - TypeScript Ethereum 接口
+- **TanStack Query** - 数据获取和缓存
+
+### 样式和动画
 - **CSS3** - 动画和特效
 - **Canvas API** - Matrix 字符雨渲染
-- **RainbowKit** - Web3 钱包连接 UI
-- **wagmi** - React Hooks for Ethereum
-- **viem** - TypeScript Ethereum 接口
+- **SVG 动画** - 机械兔子动效
 
-## 🎨 组件说明
+### 部署
+- **Cloudflare Pages** - 静态网站托管
+- **Wrangler** - Cloudflare 部署工具
+
+## 🎨 核心组件
 
 ### MatrixRain.tsx
 Matrix 字符雨背景组件，使用 Canvas 实现：
@@ -117,17 +151,41 @@ Matrix 字符雨背景组件，使用 Canvas 实现：
 - 行间距：1.5 倍字体大小
 - 拖尾效果：透明度 0.15
 
+### CyberRabbit.tsx
+赛博机械兔子组件：
+- 4 种风格：经典圆润、几何棱角、极简线条、黑客代码
+- SVG 动画：耳朵摆动、手臂挥动、眼睛眨动
+- 黑客风格特色：胸口呼吸爱心、肚子显示 "I LOVE YOU"
+- 绿色荧光滤镜效果
+
+### DonateButton.tsx
+捐赠按钮组件：
+- 迷你机械兔子（带呼吸爱心）
+- 集成 wagmi 钱包交互
+- 一键捐赠 0.001 ETH
+- 交易状态实时反馈
+- 呼吸光效按钮
+
+### VipContent.tsx
+VIP 内容展示组件：
+- 钱包连接后解锁
+- 黑客风格卡片设计
+- 独家内容区域
+
 ### NewsTerminal.tsx
 黑客终端风格的新闻展示组件：
 - API 地址：`https://news.free-node.xyz/api/news`
 - 打字速度：100ms/行
-- 显示数量：TOP 10
+- 初始显示：TOP 10
+- 加载更多：每次 10 条
+- 点击标题跳转原文
 - 自动滚动到底部
 
 ### App.tsx
 主应用组件，整合所有功能：
 - 打字机动画控制
-- 按钮显示逻辑
+- Web3 钱包状态管理
+- 条件渲染逻辑
 - 布局和样式
 
 ## 🎯 自定义配置
@@ -215,33 +273,45 @@ npm run deploy:prod
 free-node-web/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml            # GitHub Actions 自动部署
+│       └── deploy.yml                # GitHub Actions 自动部署
 ├── docs/
-│   ├── DEPLOYMENT.md             # 部署指南
-│   └── SETUP_COMPLETE.md         # 配置完成总结
+│   ├── CLOUDFLARE_CHECKLIST.md       # Cloudflare 配置检查清单
+│   ├── CLOUDFLARE_SETUP.md           # Cloudflare 详细配置
+│   ├── DEPLOYMENT.md                 # 部署指南
+│   ├── DONATION_MODULE.md            # 捐赠模块文档
+│   ├── PROJECT_STRUCTURE.md          # 项目结构说明
+│   ├── SETUP_COMPLETE.md             # 配置完成总结
+│   └── WALLET_CACHE.md               # 钱包缓存说明
 ├── public/
 │   ├── favicon.ico
 │   └── favicon.svg
 ├── scripts/
-│   └── deploy.sh                 # 快速部署脚本
+│   └── deploy.sh                     # 快速部署脚本
 ├── src/
 │   ├── components/
-│   │   ├── CyberRabbit.tsx       # 赛博兔子组件
+│   │   ├── CyberRabbit.tsx           # 赛博兔子组件
 │   │   ├── CyberRabbit.css
-│   │   ├── MatrixRain.tsx        # Matrix 字符雨
-│   │   ├── NewsTerminal.tsx      # 新闻终端组件
-│   │   └── NewsTerminal.css
+│   │   ├── DonateButton.tsx          # 捐赠按钮组件
+│   │   ├── DonateButton.css
+│   │   ├── MatrixRain.tsx            # Matrix 字符雨
+│   │   ├── NewsTerminal.tsx          # 新闻终端组件
+│   │   ├── NewsTerminal.css
+│   │   ├── VipContent.tsx            # VIP 内容组件
+│   │   └── VipContent.css
 │   ├── config/
-│   │   └── wagmiConfig.ts        # Web3 配置
-│   ├── App.tsx                   # 主应用
+│   │   └── wagmiConfig.ts            # Web3 配置
+│   ├── App.tsx                       # 主应用
 │   ├── App.css
-│   ├── index.tsx                 # 入口文件
-│   └── index.css
-├── .env.example                  # 环境变量示例
+│   ├── index.tsx                     # 入口文件
+│   ├── index.css
+│   └── global.d.ts                   # TypeScript 全局类型
+├── .env.example                      # 环境变量示例
+├── .gitignore
 ├── package.json
 ├── tsconfig.json
+├── tsconfig.node.json
 ├── vite.config.mjs
-├── wrangler.toml                 # Cloudflare Pages 配置
+├── wrangler.toml                     # Cloudflare Pages 配置
 └── README.md
 ```
 
