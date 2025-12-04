@@ -3,6 +3,8 @@ import './App.css';
 import MatrixRain from './components/MatrixRain';
 import NewsTerminal from './components/NewsTerminal';
 import CyberRabbit from './components/CyberRabbit';
+import VipContent from './components/VipContent';
+import DonateButton from './components/DonateButton';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
@@ -74,7 +76,46 @@ const App: React.FC = () => {
             {/* 只在客户端挂载后显示钱包相关 UI */}
             {mounted && (
               <div className="wallet-connect-section">
-                <ConnectButton />
+                <ConnectButton.Custom>
+                  {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+                    const ready = mounted;
+                    const connected = ready && account && chain;
+
+                    return (
+                      <div
+                        {...(!ready && {
+                          'aria-hidden': true,
+                          style: {
+                            opacity: 0,
+                            pointerEvents: 'none',
+                            userSelect: 'none',
+                          },
+                        })}
+                      >
+                        {(() => {
+                          if (!connected) {
+                            return (
+                              <button onClick={openConnectModal} className="custom-connect-button">
+                                Open Door
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <div style={{ display: 'flex', gap: 12 }}>
+                              <button onClick={openChainModal} className="custom-connect-button">
+                                {chain.name}
+                              </button>
+                              <button onClick={openAccountModal} className="custom-connect-button">
+                                {account.displayName}
+                              </button>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    );
+                  }}
+                </ConnectButton.Custom>
               </div>
             )}
             
@@ -101,18 +142,16 @@ const App: React.FC = () => {
               </div>
             )}
             
-            {/* 未连接时显示提示 */}
-            {mounted && !isConnected && (
-              <div className="connect-prompt">
-                <p>🔐 连接钱包以访问新闻终端</p>
-              </div>
-            )}
             
-            {/* 只在连接钱包后显示 NewsTerminal */}
+            {/* 只在连接钱包后显示 VipContent、DonateButton 和 NewsTerminal */}
             {mounted && isConnected && (
-              <div className="news-section">
-                <NewsTerminal />
-              </div>
+              <>
+                <VipContent />
+                <DonateButton />
+                <div className="news-section">
+                  <NewsTerminal />
+                </div>
+              </>
             )}
           </>
         )}

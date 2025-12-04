@@ -67,6 +67,8 @@ const NewsTerminal: React.FC = () => {
         
         // 只取前10条
         const top10 = data.items.slice(0, 10);
+        console.log('获取到的新闻数据:', top10);
+        console.log('第一条新闻:', top10[0]);
         setNews(top10);
         setCurrentOffset(10);
         setLoading(false);
@@ -119,16 +121,9 @@ const NewsTerminal: React.FC = () => {
         
         nextBatch.forEach((item) => {
           const title = item.titleCn || item.title;
-          // 根据显示编号添加表情（只显示前5名）
-          let prefix = '';
-          if (currentDisplayNum === 1) prefix = '🔥 ';
-          else if (currentDisplayNum === 2) prefix = '⚡ ';
-          else if (currentDisplayNum === 3) prefix = '💎 ';
-          else if (currentDisplayNum === 4) prefix = '⭐ ';
-          else if (currentDisplayNum === 5) prefix = '✨ ';
           
           const lineIndex = displayedLines.length + newLines.length;
-          newLines.push(`${prefix}${currentDisplayNum}. ${title}`);
+          newLines.push(`${currentDisplayNum}. ${title}`);
           newUrls[lineIndex] = item.url;
           currentDisplayNum++;
         });
@@ -176,16 +171,9 @@ const NewsTerminal: React.FC = () => {
     
     news.forEach((item) => {
       const title = item.titleCn || item.title;
-      // 根据显示编号添加不同的热度表情（只显示前5名）
-      let prefix = '';
-      if (currentDisplayNum === 1) prefix = '🔥 ';
-      else if (currentDisplayNum === 2) prefix = '⚡ ';
-      else if (currentDisplayNum === 3) prefix = '💎 ';
-      else if (currentDisplayNum === 4) prefix = '⭐ ';
-      else if (currentDisplayNum === 5) prefix = '✨ ';
       
       const lineIndex = lines.length;
-      lines.push(`${prefix}${currentDisplayNum}. ${title}`);
+      lines.push(`${currentDisplayNum}. ${title}`);
       urls[lineIndex] = item.url;
       currentDisplayNum++;
     });

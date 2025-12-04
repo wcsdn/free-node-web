@@ -136,22 +136,48 @@ const CyberRabbit: React.FC = () => {
         </filter>
       </defs>
 
-      <path d="M 75 65 L 70 15 L 65 15 L 70 65 Z" stroke="#00ff00" strokeWidth="1" fill="rgba(0, 255, 0, 0.1)" className="rabbit-ear left-ear" filter="url(#glow)"/>
-      <path d="M 125 65 L 130 15 L 135 15 L 130 65 Z" stroke="#00ff00" strokeWidth="1" fill="rgba(0, 255, 0, 0.1)" className="rabbit-ear right-ear" filter="url(#glow)"/>
-      <rect x="70" y="65" width="60" height="50" rx="5" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.05)" className="rabbit-head" filter="url(#glow)"/>
-      <text x="85" y="90" fill="#00ff00" fontSize="20" fontFamily="monospace" className="rabbit-eye" filter="url(#glow)">
+      <path d="M 75 65 L 70 15 L 65 15 L 70 65 Z" stroke="#00ff00" strokeWidth="1" fill="rgba(0, 255, 0, 0.1)" filter="url(#glow)">
+        <animateTransform attributeName="transform" type="rotate" values="0 70 65; -5 70 65; 0 70 65; 5 70 65; 0 70 65" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <path d="M 125 65 L 130 15 L 135 15 L 130 65 Z" stroke="#00ff00" strokeWidth="1" fill="rgba(0, 255, 0, 0.1)" filter="url(#glow)">
+        <animateTransform attributeName="transform" type="rotate" values="0 130 65; 5 130 65; 0 130 65; -5 130 65; 0 130 65" dur="3s" repeatCount="indefinite"/>
+      </path>
+      <rect x="70" y="65" width="60" height="50" rx="5" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.05)" filter="url(#glow)"/>
+      <text x="85" y="90" fill="#00ff00" fontSize="20" fontFamily="monospace" filter="url(#glow)">
         <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
         &gt;
       </text>
-      <text x="105" y="90" fill="#00ff00" fontSize="20" fontFamily="monospace" className="rabbit-eye" filter="url(#glow)">
+      <text x="105" y="90" fill="#00ff00" fontSize="20" fontFamily="monospace" filter="url(#glow)">
         <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
         _
       </text>
       <line x1="90" y1="100" x2="110" y2="100" stroke="#00ff00" strokeWidth="2" filter="url(#glow)"/>
-      <rect x="65" y="115" width="70" height="70" rx="5" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.03)" className="rabbit-body" filter="url(#glow)"/>
-      <line x1="65" y1="135" x2="40" y2="160" stroke="#00ff00" strokeWidth="3" strokeDasharray="5,5" className="rabbit-arm left-arm" filter="url(#glow)"/>
-      <line x1="135" y1="135" x2="160" y2="160" stroke="#00ff00" strokeWidth="3" strokeDasharray="5,5" className="rabbit-arm right-arm" filter="url(#glow)"/>
-      <rect x="95" y="185" width="10" height="10" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.1)" className="rabbit-tail" filter="url(#glow)"/>
+      <rect x="65" y="115" width="70" height="70" rx="5" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.03)" filter="url(#glow)"/>
+      
+      {/* 红色爱心在胸口 - 往右移 */}
+      <path d="M 112 132 L 109 129 Q 106 126 103 129 Q 100 132 103 135 L 112 144 L 121 135 Q 124 132 121 129 Q 118 126 115 129 Z" 
+            fill="#ff0000" 
+            stroke="#ff3333" 
+            strokeWidth="0.8"
+            opacity="0.8">
+        <animate attributeName="opacity" values="0.6;0.85;0.6" dur="1.8s" repeatCount="indefinite"/>
+        <animateTransform attributeName="transform" 
+                          type="scale" 
+                          values="1;1.04;1" 
+                          dur="1.8s" 
+                          repeatCount="indefinite"
+                          additive="sum"/>
+      </path>
+      
+      <line x1="65" y1="135" x2="40" y2="160" stroke="#00ff00" strokeWidth="3" strokeDasharray="5,5" filter="url(#glow)">
+        <animate attributeName="x2" values="40;35;40;45;40" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="160;155;160;155;160" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <line x1="135" y1="135" x2="160" y2="160" stroke="#00ff00" strokeWidth="3" strokeDasharray="5,5" filter="url(#glow)">
+        <animate attributeName="x2" values="160;165;160;155;160" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="160;155;160;155;160" dur="2s" repeatCount="indefinite"/>
+      </line>
+      <rect x="95" y="185" width="10" height="10" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.1)" filter="url(#glow)"/>
       <text x="75" y="145" fill="#00ff00" fontSize="8" fontFamily="monospace" opacity="0.5">01010</text>
       <text x="75" y="160" fill="#00ff00" fontSize="8" fontFamily="monospace" opacity="0.5">11001</text>
       <text x="75" y="175" fill="#00ff00" fontSize="8" fontFamily="monospace" opacity="0.5">10110</text>
