@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { config } from './config/wagmiConfig';
+import { LanguageProvider } from './contexts/LanguageContext';
+import { SoundProvider } from './contexts/SoundContext';
 
 // 配置 QueryClient 以支持持久化缓存
 const queryClient = new QueryClient({
@@ -29,20 +31,24 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: '#00ff00',
-            accentColorForeground: '#000000',
-            borderRadius: 'none',
-            fontStack: 'system',
-          })}
-        >
-          <App />
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <LanguageProvider>
+      <SoundProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider
+              theme={darkTheme({
+                accentColor: '#00ff00',
+                accentColorForeground: '#000000',
+                borderRadius: 'none',
+                fontStack: 'system',
+              })}
+            >
+              <App />
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </SoundProvider>
+    </LanguageProvider>
   </React.StrictMode>
 );
 

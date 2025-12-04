@@ -85,41 +85,51 @@
 /* 响应式设计 */
 @media (max-width: 768px) {
   .vip-content-container {
-    margin: 15px 10px;
+    margin: 15px 8px;
+    max-width: calc(100% - 16px);
   }
 
   .vip-header {
     flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-    padding: 10px 15px;
+    gap: 6px;
+    padding: 10px 12px;
+    align-items: center;
+    text-align: center;
   }
 
   .vip-title {
-    font-size: 12px;
-  }
-
-  .balance-info {
-    align-items: flex-start;
+    font-size: 11px;
     width: 100%;
   }
 
+  .balance-info {
+    align-items: center;
+    width: 100%;
+    gap: 4px;
+  }
+
   .vip-balance {
-    font-size: 11px;
+    font-size: 10px;
+    word-break: break-all;
+    text-align: center;
   }
 
   .usdt-balance {
     font-size: 10px;
+    word-break: break-all;
+    text-align: center;
   }
 
   .requirement-hint {
-    font-size: 10px;
+    font-size: 9px;
     display: block;
     margin-left: 0;
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   .na {
     font-size: 9px;
+    display: block;
+    margin-top: 2px;
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
+import { useSoundEffect } from '../hooks/useSoundEffect';
 import './DonateButton.css';
 
 // 接收打赏的地址（你的以太坊地址）
@@ -10,7 +11,7 @@ const DONATION_ADDRESS = '0xb6a227d01b06be808aec2041694f85f43ba1b028' as const;
 const DONATION_AMOUNT = '0.001';
 
 const DonateButton: React.FC = () => {
-  const [rabbitStyle] = useState<'hacker'>('hacker');
+  const { playHover, playClick } = useSoundEffect();
 
   // 发送交易
   const { data: hash, isPending, error, sendTransaction } = useSendTransaction();
@@ -116,7 +117,11 @@ const DonateButton: React.FC = () => {
         className={`donate-button ${isPending || isConfirming ? 'processing' : ''} ${
           isConfirmed ? 'success' : ''
         }`}
-        onClick={handleDonate}
+        onClick={() => {
+          playClick();
+          handleDonate();
+        }}
+        onMouseEnter={playHover}
         disabled={isPending || isConfirming}
       >
         {isPending && '等待签名...'}

@@ -17,4 +17,8 @@ export default defineConfig({
   define: {
     global: 'globalThis', // 修复 Web3 库的关键配置
   },
+  server: {
+    host: true, // 监听所有网络接口
+    port: 5173,
+  },
 });

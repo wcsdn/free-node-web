@@ -212,21 +212,26 @@
 /* 响应式设计 */
 @media (max-width: 768px) {
   .matrix-container {
-    padding: 20px 10px;
+    padding: 15px 8px;
+  }
+
+  .terminal-content {
+    padding: 20px 15px;
   }
   
   .typewriter-text {
-    font-size: 18px;
+    font-size: 16px;
+    min-height: 120px;
   }
   
   .matrix-button {
-    font-size: 14px;
-    padding: 12px 20px;
-    min-width: 280px;
+    font-size: 13px;
+    padding: 10px 18px;
+    min-width: 240px;
   }
   
   .news-section {
-    margin-top: 40px;
+    margin-top: 30px;
     padding: 0;
   }
 }
@@ -244,7 +249,7 @@
 .user-info-panel {
   margin: 30px auto;
   padding: 25px;
-  max-width: 600px;
+  max-width: 800px;
   border: 2px solid rgba(0, 255, 0, 0.5);
   background: rgba(0, 255, 0, 0.08);
   color: #00ff00;
@@ -322,12 +327,10 @@
   font-family: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace !important;
   text-transform: uppercase;
   letter-spacing: 2px;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 [data-rk] button:hover {
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
   transform: scale(1.05);
 }
 
@@ -384,7 +387,6 @@
   padding: 12px 30px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: bold;
@@ -392,7 +394,6 @@
 
 .custom-connect-button:hover {
   background: rgba(0, 255, 0, 0.1);
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
   transform: scale(1.05);
 }
 

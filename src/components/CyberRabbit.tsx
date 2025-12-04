@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getTranslation } from '../i18n/translations';
 import './CyberRabbit.css';
 
 type RabbitStyle = 'classic' | 'geometric' | 'minimal' | 'hacker';
 
 const CyberRabbit: React.FC = () => {
+  const { language } = useLanguage();
   const [currentStyle, setCurrentStyle] = useState<RabbitStyle>('hacker');
 
   const nextStyle = () => {
@@ -186,10 +189,10 @@ const CyberRabbit: React.FC = () => {
 
   const getStyleName = () => {
     switch (currentStyle) {
-      case 'classic': return '经典圆润';
-      case 'geometric': return '几何棱角';
-      case 'minimal': return '极简线条';
-      case 'hacker': return '黑客代码';
+      case 'classic': return getTranslation(language, 'classic');
+      case 'geometric': return getTranslation(language, 'geometric');
+      case 'minimal': return getTranslation(language, 'minimal');
+      case 'hacker': return getTranslation(language, 'hacker');
       default: return '';
     }
   };
@@ -203,7 +206,7 @@ const CyberRabbit: React.FC = () => {
       </div>
 
       <button className="rabbit-switch-btn" onClick={nextStyle}>
-        [ 切换风格: {getStyleName()} ]
+        [ {getTranslation(language, 'switchStyle')} {getStyleName()} ]
       </button>
     </div>
   );

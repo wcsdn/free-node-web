@@ -67,8 +67,6 @@ const NewsTerminal: React.FC = () => {
         
         // 只取前10条
         const top10 = data.items.slice(0, 10);
-        console.log('获取到的新闻数据:', top10);
-        console.log('第一条新闻:', top10[0]);
         setNews(top10);
         setCurrentOffset(10);
         setLoading(false);

@@ -2,6 +2,8 @@ import React from 'react';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { formatUnits, parseAbi } from 'viem';
 import { mainnet } from 'wagmi/chains';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getTranslation } from '../i18n/translations';
 import './VipContent.css';
 
 // USDT 合约地址（以太坊主网）
@@ -13,6 +15,7 @@ const usdtAbi = parseAbi([
 ]);
 
 const VipContent: React.FC = () => {
+  const { language } = useLanguage();
   const { address, chain } = useAccount();
   const { data: balance } = useBalance({ address });
 
@@ -42,22 +45,22 @@ const VipContent: React.FC = () => {
   return (
     <div className="vip-content-container">
       <div className="vip-header">
-        <div className="vip-title">🔒 权限验证</div>
+        <div className="vip-title">{getTranslation(language, 'permissionVerification')}</div>
         <div className="balance-info">
           <div className={`vip-balance ${!hasVipAccess ? 'insufficient' : ''}`}>
-            ETH: {parseFloat(balance.formatted).toFixed(4)} {balance.symbol}
-            {!hasVipAccess && <span className="requirement-hint"> (需要 ≥ 0.01 ETH)</span>}
+            {getTranslation(language, 'ethBalance')} {parseFloat(balance.formatted).toFixed(4)} {balance.symbol}
+            {!hasVipAccess && <span className="requirement-hint"> {getTranslation(language, 'requirementHint')}</span>}
           </div>
           <div className="usdt-balance">
-            USDT Assets:{' '}
+            {getTranslation(language, 'usdtAssets')}{' '}
             {chain?.id === mainnet.id ? (
               formattedUsdtBalance !== null ? (
                 <span className="usdt-amount">{parseFloat(formattedUsdtBalance).toFixed(2)}</span>
               ) : (
-                <span className="loading">加载中...</span>
+                <span className="loading">{getTranslation(language, 'loadingBalance')}</span>
               )
             ) : (
-              <span className="na">N/A (请切换到以太坊主网)</span>
+              <span className="na">{getTranslation(language, 'switchToMainnet')}</span>
             )}
           </div>
         </div>
