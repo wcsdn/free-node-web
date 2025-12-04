@@ -20,20 +20,9 @@
 
 .cyber-rabbit-svg {
   filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
-  animation: breathe 3s ease-in-out infinite;
 }
 
-/* 呼吸灯效果 */
-@keyframes breathe {
-  0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 30px rgba(0, 255, 0, 0.8));
-    transform: scale(1.02);
-  }
-}
+/* 移除呼吸动画，避免绿框闪烁 */
 
 /* 耳朵摆动 */
 .rabbit-ear {

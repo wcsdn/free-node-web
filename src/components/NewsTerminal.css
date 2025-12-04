@@ -1,12 +1,13 @@
 .news-terminal-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 800px;
   margin: 20px auto;
+  padding: 0 10px;
   background: #0a0a0a;
   border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 255, 0, 0.2);
   overflow: hidden;
   font-family: 'Courier New', 'Monaco', monospace;
+  box-sizing: border-box;
 }
 
 .terminal-header {
@@ -155,8 +156,10 @@
 /* 响应式设计 */
 @media (max-width: 768px) {
   .news-terminal-container {
-    margin: 10px;
+    margin: 10px auto;
+    padding: 0 5px;
     border-radius: 4px;
+    max-width: calc(100% - 20px);
   }
 
   .terminal-body {
