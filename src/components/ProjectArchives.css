@@ -1,0 +1,230 @@
+.archives-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 10px;
+  font-family: 'Courier New', monospace;
+}
+
+.archives-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border: 1px solid #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.archives-title {
+  color: #00ff00;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.archives-subtitle {
+  color: #ff0000;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.archives-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  max-width: 100%;
+}
+
+/* 当只有一个项目时，限制最大宽度 */
+.archive-file:only-child {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .archives-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .archive-file:only-child {
+    max-width: 100%;
+  }
+}
+
+.archive-file {
+  position: relative;
+  border: 2px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.archive-file::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.archive-file:hover::before {
+  left: 100%;
+}
+
+.archive-file:hover {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.archive-file.expanded {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.08);
+}
+
+.file-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.file-status {
+  color: #ffff00;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.file-title {
+  color: #00ff00;
+  font-size: 14px;
+  font-weight: bold;
+  flex: 1;
+  text-align: right;
+}
+
+.file-content {
+  min-height: 100px;
+}
+
+.file-description {
+  color: rgba(0, 255, 0, 0.8);
+  font-size: 12px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.file-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.file-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  background: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.file-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 255, 0, 0.2);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.file-link {
+  color: #00ff00;
+  text-decoration: none;
+  font-size: 11px;
+  padding: 5px 10px;
+  border: 1px solid #00ff00;
+  transition: all 0.3s ease;
+}
+
+.file-link:hover {
+  background: rgba(0, 255, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.file-stamp {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  color: rgba(255, 0, 0, 0.3);
+  font-size: 40px;
+  font-weight: bold;
+  transform: rotate(15deg);
+  pointer-events: none;
+  letter-spacing: 3px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .archives-container {
+    margin: 15px 8px;
+  }
+
+  .archives-header {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+
+  .archives-title {
+    font-size: 14px;
+  }
+
+  .archives-subtitle {
+    font-size: 11px;
+  }
+
+  .archives-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .archive-file {
+    padding: 15px;
+  }
+
+  .file-title {
+    font-size: 13px;
+  }
+
+  .file-description {
+    font-size: 11px;
+  }
+
+  .file-stamp {
+    font-size: 30px;
+    right: -20px;
+  }
+}

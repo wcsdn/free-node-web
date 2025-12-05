@@ -7,6 +7,9 @@ import VipContent from './components/VipContent';
 import DonateButton from './components/DonateButton';
 import Guestbook from './components/Guestbook';
 import SettingsPanel from './components/SettingsPanel';
+import ProjectArchives from './components/ProjectArchives';
+import SkillRadar from './components/SkillRadar';
+import ExecutionLog from './components/ExecutionLog';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useLanguage } from './contexts/LanguageContext';
@@ -161,10 +164,13 @@ const App: React.FC = () => {
             )}
             
             
-            {/* 只在连接钱包后显示 VipContent、DonateButton、Guestbook 和 NewsTerminal */}
+            {/* 只在连接钱包后显示所有内容 */}
             {mounted && isConnected && (
               <>
                 <VipContent />
+                <ProjectArchives />
+                <SkillRadar />
+                <ExecutionLog />
                 <DonateButton />
                 <Guestbook />
                 <div className="news-section">
