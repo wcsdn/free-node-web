@@ -146,7 +146,7 @@ export class AmbientSound {
   private gainNode: GainNode | null = null;
   private isPlaying: boolean = false;
 
-  start(volume: number = 0.03) {
+  start(volume: number = 0.08) {
     if (this.isPlaying) return;
 
     try {
@@ -209,7 +209,7 @@ export class AmbientSound {
     }
   }
 
-  toggle(volume: number = 0.03) {
+  toggle(volume: number = 0.08) {
     if (this.isPlaying) {
       this.stop();
     } else {

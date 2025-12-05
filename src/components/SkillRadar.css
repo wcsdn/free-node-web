@@ -1,0 +1,141 @@
+.skill-radar-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 10px;
+  font-family: 'Courier New', monospace;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border: 1px solid #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+  margin-bottom: 20px;
+}
+
+.skill-title {
+  color: #00ff00;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.skill-subtitle {
+  color: #00ffff;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.radar-wrapper {
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.skill-legend {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.skill-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.skill-name {
+  color: rgba(0, 255, 0, 0.8);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.skill-bar {
+  height: 20px;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 255, 0, 0.3), rgba(0, 255, 0, 0.6));
+  transition: width 1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 5px;
+  position: relative;
+}
+
+.skill-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skill-value {
+  color: #00ff00;
+  font-size: 10px;
+  font-weight: bold;
+  position: relative;
+  z-index: 1;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .skill-radar-container {
+    margin: 15px 8px;
+  }
+
+  .skill-header {
+    padding: 12px 15px;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+  }
+
+  .skill-title {
+    font-size: 14px;
+  }
+
+  .skill-subtitle {
+    font-size: 11px;
+  }
+
+  .radar-wrapper {
+    padding: 10px;
+  }
+
+  .skill-legend {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .skill-name {
+    font-size: 10px;
+  }
+
+  .skill-bar {
+    height: 18px;
+  }
+}

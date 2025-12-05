@@ -58,6 +58,53 @@
 - 加载更多功能
 - 自动滚动和光标闪烁
 
+### 📁 项目档案馆（Mission Archives）
+- 机密文件风格的项目展示
+- 卡片式布局，支持展开/收起
+- 显示项目状态（ACTIVE/WIP/ARCHIVED）
+- 技术栈标签展示
+- GitHub 和 Demo 链接
+- "TOP SECRET" 水印效果
+
+### 🎯 技能树雷达图（Skill Tree）
+- 六边形雷达图可视化技能水平
+- 神经网络风格设计
+- 技能进度条动画
+- 支持前端、后端、区块链、DevOps、设计、安全等维度
+
+### 📜 执行日志时间轴（Execution Log）
+- 垂直时间轴展示个人经历
+- 里程碑、升级、当前任务等不同类型标记
+- 悬停动画效果
+- 当前任务脉冲动画
+
+### 🎵 音效系统
+- 按钮 hover 音效（机械滋滋声）
+- 点击音效
+- 成功/错误提示音
+- 背景白噪音（Server Room Hum）
+- 可开关控制
+
+### ⚙️ 设置面板
+- 机械代码风格弹窗
+- 居中显示，背景遮罩
+- 语言切换（中文/English）
+- 音效开关
+- 背景音开关
+
+### 🌐 多语言支持
+- 中英文无缝切换
+- 所有组件完整翻译
+- 语言偏好持久化存储
+
+### 🔒 留言板（Guestbook）
+- 钱包签名留言系统
+- 首次签名，后续免签
+- 回复功能（单层回复）
+- 管理员删除功能
+- XSS 安全防护
+- 紧凑显示，优化移动端
+
 ## 🚀 快速开始
 
 ### 安装依赖
@@ -126,6 +173,7 @@ npm run pub:prod            # 生产环境
 - **React 18** - UI 框架
 - **TypeScript** - 类型安全
 - **Vite** - 快速构建工具
+- **Recharts** - 数据可视化（雷达图）
 
 ### Web3 集成
 - **RainbowKit 2.2.9** - Web3 钱包连接 UI
@@ -180,6 +228,43 @@ VIP 内容展示组件：
 - 加载更多：每次 10 条
 - 点击标题跳转原文
 - 自动滚动到底部
+
+### ProjectArchives.tsx
+项目档案展示组件：
+- 机密文件风格卡片
+- 点击展开查看详情
+- 技术栈标签
+- GitHub 和 Demo 链接
+- 配置文件：`src/config/profile.ts`
+
+### SkillRadar.tsx
+技能雷达图组件：
+- 使用 Recharts 库
+- 六边形雷达图
+- 技能进度条
+- 配置文件：`src/config/profile.ts`
+
+### ExecutionLog.tsx
+时间轴组件：
+- 垂直时间轴布局
+- 不同类型标记（里程碑/升级/当前）
+- 悬停动画
+- 配置文件：`src/config/profile.ts`
+
+### Guestbook.tsx
+留言板组件：
+- 钱包签名验证
+- 留言存储（localStorage）
+- 回复功能
+- 管理员控制
+- XSS 防护（`src/utils/sanitize.ts`）
+
+### SettingsPanel.tsx
+设置面板组件：
+- 语言切换
+- 音效控制
+- 背景音控制
+- 机械代码风格弹窗
 
 ### App.tsx
 主应用组件，整合所有功能：
@@ -293,13 +378,36 @@ free-node-web/
 │   │   ├── CyberRabbit.css
 │   │   ├── DonateButton.tsx          # 捐赠按钮组件
 │   │   ├── DonateButton.css
+│   │   ├── ExecutionLog.tsx          # 时间轴组件
+│   │   ├── ExecutionLog.css
+│   │   ├── Guestbook.tsx             # 留言板组件
+│   │   ├── Guestbook.css
+│   │   ├── LanguageSwitcher.tsx      # 语言切换器
+│   │   ├── LanguageSwitcher.css
 │   │   ├── MatrixRain.tsx            # Matrix 字符雨
 │   │   ├── NewsTerminal.tsx          # 新闻终端组件
 │   │   ├── NewsTerminal.css
+│   │   ├── ProjectArchives.tsx       # 项目档案组件
+│   │   ├── ProjectArchives.css
+│   │   ├── SettingsPanel.tsx         # 设置面板组件
+│   │   ├── SettingsPanel.css
+│   │   ├── SkillRadar.tsx            # 技能雷达图组件
+│   │   ├── SkillRadar.css
 │   │   ├── VipContent.tsx            # VIP 内容组件
 │   │   └── VipContent.css
 │   ├── config/
+│   │   ├── profile.ts                # 个人信息配置
 │   │   └── wagmiConfig.ts            # Web3 配置
+│   ├── contexts/
+│   │   ├── LanguageContext.tsx       # 语言上下文
+│   │   └── SoundContext.tsx          # 音效上下文
+│   ├── hooks/
+│   │   └── useSoundEffect.ts         # 音效 Hook
+│   ├── i18n/
+│   │   └── translations.ts           # 翻译文件
+│   ├── utils/
+│   │   ├── sanitize.ts               # XSS 防护工具
+│   │   └── soundEffects.ts           # 音效生成工具
 │   ├── App.tsx                       # 主应用
 │   ├── App.css
 │   ├── index.tsx                     # 入口文件
