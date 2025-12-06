@@ -11,7 +11,10 @@
     "deploy:prod": "npm run build && wrangler pages deploy dist --project-name=free-node-web --branch=main",
     "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=free-node-web --branch=preview",
     "pub": "wrangler pages deploy dist --project-name=free-node-web",
-    "pub:prod": "wrangler pages deploy dist --project-name=free-node-web --branch=main"
+    "pub:prod": "wrangler pages deploy dist --project-name=free-node-web --branch=main",
+    "deploy:mail": "cd workers/ghost-mail && npm run deploy",
+    "deploy:news": "cd workers/news-server && npm run deploy",
+    "db:init": "cd workers/ghost-mail && npm run db:init"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.9",
