@@ -11,7 +11,7 @@
   padding: 60px 20px 60px 20px;
 }
 
-/* CRT 扫描线效果 */
+/* CRT 扫描线效果 - 优化版（静态） */
 .crt-scanline {
   position: fixed;
   top: 0;
@@ -20,24 +20,15 @@
   height: 100%;
   background: linear-gradient(
     transparent 50%,
-    rgba(0, 255, 0, 0.03) 50%
+    rgba(0, 255, 0, 0.02) 50%
   );
   background-size: 100% 4px;
   pointer-events: none;
   z-index: 3;
-  will-change: transform;
+  /* 移除 will-change 和动画，减少重绘 */
 }
 
-@keyframes scanline {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(4px);
-  }
-}
-
-/* CRT 噪点效果 */
+/* CRT 噪点效果 - 简化版 */
 .crt-noise {
   position: fixed;
   top: 0;
@@ -48,29 +39,32 @@
     repeating-linear-gradient(
       0deg,
       transparent,
-      transparent 2px,
-      rgba(0, 255, 0, 0.02) 2px,
-      rgba(0, 255, 0, 0.02) 4px
+      transparent 3px,
+      rgba(0, 255, 0, 0.01) 3px,
+      rgba(0, 255, 0, 0.01) 6px
     );
   pointer-events: none;
   z-index: 3;
-  opacity: 0.3;
+  opacity: 0.2;
 }
 
-/* 终端内容 */
+/* 终端内容 - 优化版 */
 .terminal-content {
   position: relative;
   z-index: 4;
   text-align: center;
   padding: 30px 40px;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.7);
+  /* 移除 backdrop-filter，这个很消耗性能 */
   border-radius: 10px;
-  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
   border: 1px solid rgba(0, 255, 0, 0.1);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  /* 添加硬件加速 */
+  transform: translateZ(0);
+  will-change: auto;
 }
 
 /* 打字机效果文本 */
@@ -185,7 +179,7 @@
 .news-section {
   margin-top: 60px;
   width: 100%;
-  max-width: 900px;
+  max-width: var(--content-max-width);
   margin-left: auto;
   margin-right: auto;
   animation: fadeIn 1.5s ease-in;

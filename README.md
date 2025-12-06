@@ -359,67 +359,40 @@ free-node-web/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml                # GitHub Actions 自动部署
-├── docs/
-│   ├── CLOUDFLARE_CHECKLIST.md       # Cloudflare 配置检查清单
-│   ├── CLOUDFLARE_SETUP.md           # Cloudflare 详细配置
-│   ├── DEPLOYMENT.md                 # 部署指南
-│   ├── DONATION_MODULE.md            # 捐赠模块文档
-│   ├── PROJECT_STRUCTURE.md          # 项目结构说明
-│   ├── SETUP_COMPLETE.md             # 配置完成总结
-│   └── WALLET_CACHE.md               # 钱包缓存说明
+├── docs/                             # 项目文档
 ├── public/
 │   ├── favicon.ico
 │   └── favicon.svg
 ├── scripts/
 │   └── deploy.sh                     # 快速部署脚本
 ├── src/
-│   ├── components/
-│   │   ├── CyberRabbit.tsx           # 赛博兔子组件
-│   │   ├── CyberRabbit.css
-│   │   ├── DonateButton.tsx          # 捐赠按钮组件
-│   │   ├── DonateButton.css
-│   │   ├── ExecutionLog.tsx          # 时间轴组件
-│   │   ├── ExecutionLog.css
-│   │   ├── Guestbook.tsx             # 留言板组件
-│   │   ├── Guestbook.css
-│   │   ├── LanguageSwitcher.tsx      # 语言切换器
-│   │   ├── LanguageSwitcher.css
-│   │   ├── MatrixRain.tsx            # Matrix 字符雨
-│   │   ├── NewsTerminal.tsx          # 新闻终端组件
-│   │   ├── NewsTerminal.css
-│   │   ├── ProjectArchives.tsx       # 项目档案组件
-│   │   ├── ProjectArchives.css
-│   │   ├── SettingsPanel.tsx         # 设置面板组件
-│   │   ├── SettingsPanel.css
-│   │   ├── SkillRadar.tsx            # 技能雷达图组件
-│   │   ├── SkillRadar.css
-│   │   ├── VipContent.tsx            # VIP 内容组件
-│   │   └── VipContent.css
-│   ├── config/
-│   │   ├── profile.ts                # 个人信息配置
-│   │   └── wagmiConfig.ts            # Web3 配置
-│   ├── contexts/
-│   │   ├── LanguageContext.tsx       # 语言上下文
-│   │   └── SoundContext.tsx          # 音效上下文
-│   ├── hooks/
-│   │   └── useSoundEffect.ts         # 音效 Hook
-│   ├── i18n/
-│   │   └── translations.ts           # 翻译文件
-│   ├── utils/
-│   │   ├── sanitize.ts               # XSS 防护工具
-│   │   └── soundEffects.ts           # 音效生成工具
-│   ├── App.tsx                       # 主应用
+│   ├── features/                     # 功能模块
+│   │   ├── ghost-mail/              # Ghost Mail 功能
+│   │   ├── news/                    # News 功能
+│   │   └── guestbook/               # Guestbook 功能
+│   ├── shared/                      # 共享组件
+│   │   ├── components/              # 通用组件
+│   │   ├── contexts/                # React Context
+│   │   ├── hooks/                   # 自定义 Hooks
+│   │   └── utils/                   # 工具函数
+│   ├── config/                      # 配置文件
+│   │   ├── constants.ts             # 常量配置
+│   │   ├── profile.ts               # 个人信息
+│   │   └── wagmiConfig.ts           # Web3 配置
+│   ├── i18n/                        # 国际化
+│   │   ├── translations.ts          # 翻译主入口
+│   │   ├── en.ts                    # 英文翻译
+│   │   └── zh.ts                    # 中文翻译
+│   ├── types/                       # TypeScript 类型
+│   ├── App.tsx                      # 主应用
 │   ├── App.css
-│   ├── index.tsx                     # 入口文件
-│   ├── index.css
-│   └── global.d.ts                   # TypeScript 全局类型
-├── .env.example                      # 环境变量示例
+│   ├── index.tsx                    # 入口文件
+│   └── index.css
+├── .env.example                     # 环境变量示例
 ├── .gitignore
 ├── package.json
 ├── tsconfig.json
-├── tsconfig.node.json
 ├── vite.config.mjs
-├── wrangler.toml                     # Cloudflare Pages 配置
 └── README.md
 ```
 

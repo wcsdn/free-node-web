@@ -1,0 +1,292 @@
+.access-guard-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.access-denied-panel,
+.checking-panel {
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid #ff0000;
+  padding: 40px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+  animation: glitchIn 0.5s ease;
+}
+
+.checking-panel {
+  border-color: #00ff00;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+.checking-panel p {
+  color: #00ff00;
+  font-size: 16px;
+  margin-top: 20px;
+  font-family: 'Courier New', monospace;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 255, 0, 0.2);
+  border-top-color: #00ff00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.denied-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.denied-title {
+  color: #ff0000;
+  font-size: 32px;
+  font-family: 'Courier New', monospace;
+  margin: 0 0 20px 0;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  letter-spacing: 4px;
+}
+
+.denied-message {
+  color: #00ff00;
+  font-size: 16px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.access-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.access-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px 30px;
+  border: 2px solid #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+  color: #00ff00;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.access-option-btn:hover {
+  background: rgba(0, 255, 0, 0.15);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-icon {
+  font-size: 24px;
+}
+
+/* 支付弹窗 */
+.payment-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9998;
+}
+
+.payment-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #000;
+  border: 2px solid #00ff00;
+  padding: 30px;
+  z-index: 9999;
+  min-width: 400px;
+}
+
+.payment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #00ff00;
+}
+
+.payment-confirm-btn {
+  width: 100%;
+  padding: 15px;
+  background: rgba(0, 255, 0, 0.1);
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.payment-confirm-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 0, 0.2);
+}
+
+.payment-confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 任务列表 */
+.task-modal {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.task-item:hover {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+  transform: translateX(5px);
+}
+
+.task-icon {
+  font-size: 32px;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-title {
+  color: #00ff00;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.task-reward {
+  color: rgba(0, 255, 0, 0.6);
+  font-size: 12px;
+}
+
+.task-arrow {
+  color: #00ff00;
+  font-size: 20px;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes glitchIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .access-denied-panel {
+    padding: 30px 20px;
+  }
+
+  .denied-icon {
+    font-size: 48px;
+  }
+
+  .denied-title {
+    font-size: 18px;
+  }
+
+  .denied-message {
+    font-size: 12px;
+  }
+
+  .access-options {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .access-option-btn {
+    width: 100%;
+    padding: 12px 20px;
+  }
+
+  .btn-text {
+    font-size: 12px;
+  }
+
+  /* 支付弹框 */
+  .payment-modal {
+    width: 90%;
+    max-width: none;
+  }
+
+  .payment-modal-header h3 {
+    font-size: 14px;
+  }
+
+  .payment-modal-content {
+    padding: 20px 15px;
+  }
+
+  .payment-info {
+    font-size: 12px;
+  }
+
+  .payment-confirm-btn {
+    font-size: 12px;
+    padding: 10px 20px;
+  }
+
+  /* 任务弹框 */
+  .task-modal {
+    min-width: 90%;
+    max-width: 95%;
+  }
+
+  .task-item {
+    padding: 12px;
+  }
+
+  .task-icon {
+    font-size: 24px;
+  }
+
+  .task-title {
+    font-size: 12px;
+  }
+
+  .task-reward {
+    font-size: 10px;
+  }
+}

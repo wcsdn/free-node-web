@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/workers/*/node_modules
 
 # testing
 /coverage
@@ -15,6 +16,10 @@
 
 # wrangler
 /.wrangler
+/workers/*/.wrangler
+
+# workers
+/workers
 
 # Kiro IDE
 /.kiro

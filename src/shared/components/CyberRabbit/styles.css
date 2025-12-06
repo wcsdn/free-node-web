@@ -1,0 +1,332 @@
+.cyber-rabbit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  animation: fadeInRabbit 2s ease-in;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@keyframes fadeInRabbit {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cyber-rabbit-svg {
+  filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
+}
+
+/* 移除呼吸动画，避免绿框闪烁 */
+
+/* 耳朵摆动 */
+.rabbit-ear {
+  animation: earWiggle 2s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.left-ear {
+  animation-delay: 0s;
+}
+
+.right-ear {
+  animation-delay: 0.3s;
+}
+
+@keyframes earWiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+/* 手臂摆动 */
+.rabbit-arm {
+  animation: armWave 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.left-arm {
+  animation-delay: 0s;
+}
+
+.right-arm {
+  animation-delay: 1.5s;
+}
+
+@keyframes armWave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 尾巴摇摆 */
+.rabbit-tail {
+  animation: tailWag 1.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes tailWag {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* 故障文字效果 */
+.rabbit-text {
+  margin-top: 20px;
+  font-family: 'Courier New', 'Monaco', monospace;
+  font-size: 18px;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  animation: glitchText 5s infinite;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff00ff;
+  clip: rect(24px, 550px, 90px, 0);
+  animation: glitchBefore 3s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -2px;
+  text-shadow: -2px 0 #00ffff;
+  clip: rect(85px, 550px, 140px, 0);
+  animation: glitchAfter 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitchText {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes glitchBefore {
+  0% {
+    clip: rect(61px, 9999px, 52px, 0);
+  }
+  5% {
+    clip: rect(33px, 9999px, 144px, 0);
+  }
+  10% {
+    clip: rect(121px, 9999px, 115px, 0);
+  }
+  15% {
+    clip: rect(144px, 9999px, 162px, 0);
+  }
+  20% {
+    clip: rect(62px, 9999px, 180px, 0);
+  }
+  25% {
+    clip: rect(34px, 9999px, 42px, 0);
+  }
+  30% {
+    clip: rect(147px, 9999px, 179px, 0);
+  }
+  35% {
+    clip: rect(99px, 9999px, 63px, 0);
+  }
+  40% {
+    clip: rect(188px, 9999px, 122px, 0);
+  }
+  45% {
+    clip: rect(154px, 9999px, 14px, 0);
+  }
+  50% {
+    clip: rect(63px, 9999px, 37px, 0);
+  }
+  55% {
+    clip: rect(161px, 9999px, 147px, 0);
+  }
+  60% {
+    clip: rect(109px, 9999px, 175px, 0);
+  }
+  65% {
+    clip: rect(157px, 9999px, 88px, 0);
+  }
+  70% {
+    clip: rect(173px, 9999px, 131px, 0);
+  }
+  75% {
+    clip: rect(62px, 9999px, 70px, 0);
+  }
+  80% {
+    clip: rect(24px, 9999px, 153px, 0);
+  }
+  85% {
+    clip: rect(138px, 9999px, 40px, 0);
+  }
+  90% {
+    clip: rect(79px, 9999px, 136px, 0);
+  }
+  95% {
+    clip: rect(25px, 9999px, 34px, 0);
+  }
+  100% {
+    clip: rect(173px, 9999px, 166px, 0);
+  }
+}
+
+@keyframes glitchAfter {
+  0% {
+    clip: rect(26px, 9999px, 33px, 0);
+  }
+  5% {
+    clip: rect(140px, 9999px, 198px, 0);
+  }
+  10% {
+    clip: rect(184px, 9999px, 89px, 0);
+  }
+  15% {
+    clip: rect(121px, 9999px, 6px, 0);
+  }
+  20% {
+    clip: rect(181px, 9999px, 99px, 0);
+  }
+  25% {
+    clip: rect(154px, 9999px, 133px, 0);
+  }
+  30% {
+    clip: rect(134px, 9999px, 169px, 0);
+  }
+  35% {
+    clip: rect(26px, 9999px, 187px, 0);
+  }
+  40% {
+    clip: rect(147px, 9999px, 137px, 0);
+  }
+  45% {
+    clip: rect(31px, 9999px, 52px, 0);
+  }
+  50% {
+    clip: rect(191px, 9999px, 109px, 0);
+  }
+  55% {
+    clip: rect(74px, 9999px, 54px, 0);
+  }
+  60% {
+    clip: rect(145px, 9999px, 75px, 0);
+  }
+  65% {
+    clip: rect(153px, 9999px, 198px, 0);
+  }
+  70% {
+    clip: rect(99px, 9999px, 136px, 0);
+  }
+  75% {
+    clip: rect(118px, 9999px, 192px, 0);
+  }
+  80% {
+    clip: rect(1px, 9999px, 83px, 0);
+  }
+  85% {
+    clip: rect(145px, 9999px, 98px, 0);
+  }
+  90% {
+    clip: rect(121px, 9999px, 154px, 0);
+  }
+  95% {
+    clip: rect(156px, 9999px, 44px, 0);
+  }
+  100% {
+    clip: rect(67px, 9999px, 122px, 0);
+  }
+}
+
+/* 切换按钮 */
+.rabbit-switch-btn {
+  margin-top: 20px;
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-size: 12px;
+  font-family: 'Courier New', 'Monaco', monospace;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.rabbit-switch-btn:hover {
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+  transform: scale(1.05);
+}
+
+.rabbit-switch-btn:active {
+  transform: scale(0.95);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .cyber-rabbit-container {
+    margin: 15px auto;
+  }
+
+  .cyber-rabbit-svg {
+    width: 140px;
+    height: 140px;
+  }
+
+  .rabbit-text {
+    font-size: 14px;
+    margin-top: 15px;
+  }
+
+  .rabbit-switch-btn {
+    font-size: 10px;
+    padding: 6px 12px;
+    margin-top: 15px;
+  }
+}

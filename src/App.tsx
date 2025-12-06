@@ -1,31 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import MatrixRain from './components/MatrixRain';
-import NewsTerminal from './components/NewsTerminal';
-import CyberRabbit from './components/CyberRabbit';
-import VipContent from './components/VipContent';
-import DonateButton from './components/DonateButton';
-import Guestbook from './components/Guestbook';
-import SettingsPanel from './components/SettingsPanel';
-import ProjectArchives from './components/ProjectArchives';
-import SkillRadar from './components/SkillRadar';
-import ExecutionLog from './components/ExecutionLog';
+import './features/ghost-mail/styles.css';
+import MatrixRain from './shared/components/MatrixRain';
+import NewsTerminal from './features/news/components/NewsTerminal';
+import CyberRabbit from './shared/components/CyberRabbit';
+import VipContent from './features/web3/components/VipContent';
+import DonateButton from './features/donation/components/DonateButton';
+import Guestbook from './features/guestbook/components/Guestbook';
+import SettingsPanel from './shared/components/SettingsPanel';
+import ProfileButton from './shared/components/ProfileButton';
+import ProfileModal from './shared/components/ProfileModal';
+import GhostMailButton from './shared/components/GhostMailButton';
+import GhostMail from './features/ghost-mail';
+import Backdrop from './shared/components/Backdrop';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useLanguage } from './contexts/LanguageContext';
-import { useSoundEffect } from './hooks/useSoundEffect';
+import { useLanguage } from './shared/contexts/LanguageContext';
+import { useSoundEffect } from './shared/hooks/useSoundEffect';
 
 const App: React.FC = () => {
   const { isConnected, address, chain } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { data: balance } = useBalance({ address });
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { playSuccess } = useSoundEffect();
   const [mounted, setMounted] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [currentLine, setCurrentLine] = useState(0);
   const [showButtons, setShowButtons] = useState(false);
   const [hasPlayedConnectSound, setHasPlayedConnectSound] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isGhostMailOpen, setIsGhostMailOpen] = useState(false);
 
   const LINES = [
     '> Wake up, Neo...',
@@ -78,8 +83,15 @@ const App: React.FC = () => {
   }, [currentLine]);
 
   return (
+    <>
     <div className="matrix-container">
-      <SettingsPanel />
+      {showButtons && (
+        <>
+          <GhostMailButton onClick={() => setIsGhostMailOpen(true)} />
+          <ProfileButton onClick={() => setIsProfileModalOpen(true)} />
+          <SettingsPanel />
+        </>
+      )}
       <MatrixRain fontSize={16} />
       <div className="crt-scanline"></div>
       <div className="crt-noise"></div>
@@ -163,16 +175,31 @@ const App: React.FC = () => {
               </div>
             )}
             
+            {/* 游客模式提示 */}
+            {mounted && !isConnected && (
+              <div className="user-info-panel" style={{ opacity: 0.7 }}>
+                <div className="info-header">👻 {t('guestMode') || 'Guest Mode'}</div>
+                <div className="info-row">
+                  <span className="info-value" style={{ fontSize: '0.9em' }}>
+                    {t('guestModeHint') || 'Connect wallet to unlock full features'}
+                  </span>
+                </div>
+              </div>
+            )}
             
-            {/* 只在连接钱包后显示所有内容 */}
-            {mounted && isConnected && (
+            {/* 主页内容 - 简洁版 */}
+            {mounted && (
               <>
-                <VipContent />
-                <ProjectArchives />
-                <SkillRadar />
-                <ExecutionLog />
-                <DonateButton />
+                {/* VIP 内容（仅连接钱包后显示） */}
+                {isConnected && <VipContent />}
+                
+                {/* 捐赠按钮（仅连接钱包后显示） */}
+                {isConnected && <DonateButton />}
+                
+                {/* 留言板 */}
                 <Guestbook />
+                
+                {/* 新闻终端 */}
                 <div className="news-section">
                   <NewsTerminal />
                 </div>
@@ -181,7 +208,42 @@ const App: React.FC = () => {
           </>
         )}
       </div>
+
+
     </div>
+
+    {/* 个人信息弹窗 - 移到 matrix-container 外面 */}
+    <ProfileModal 
+      isOpen={isProfileModalOpen} 
+      onClose={() => setIsProfileModalOpen(false)} 
+    />
+
+    {/* Ghost Mail 弹窗 - 移到 matrix-container 外面 */}
+    {isGhostMailOpen && (
+      <>
+        <Backdrop 
+          onClick={() => setIsGhostMailOpen(false)}
+          zIndex={9998}
+        />
+        <div className="ghost-mail-modal">
+          <div className="ghost-mail-modal-header">
+            <h2 className="ghost-mail-modal-title">
+              {language === 'en' ? '> GHOST MAIL' : '> 幽灵信箱'}
+            </h2>
+            <button
+              onClick={() => setIsGhostMailOpen(false)}
+              className="ghost-mail-modal-close"
+            >
+              [ X ]
+            </button>
+          </div>
+          <div className="ghost-mail-modal-content">
+            <GhostMail />
+          </div>
+        </div>
+      </>
+    )}
+  </>
   );
 };
 

@@ -1,0 +1,86 @@
+// Chinese translations
+export const zh = {
+  // App
+  wakeUp: '> 醒醒，Neo...',
+  matrixHasYou: '> 矩阵拥有你...',
+  followRabbit: '> 跟随白兔。',
+  walletConnected: '✅ 钱包已连接',
+  guestMode: '游客模式',
+  guestModeHint: '连接钱包以解锁捐赠和 VIP 功能',
+  aboutMe: '关于我',
+  profileData: '> 个人资料',
+  ghostMail: '幽灵信箱',
+  address: '地址:',
+  network: '网络:',
+  balance: '余额:',
+  
+  // Ghost Mail
+  accessRequired: '需要访问权限',
+  accessDenied: '访问被拒绝',
+  vipRequired: '需要 VIP 权限才能使用幽灵信箱',
+  connectWalletToAccess: '请连接钱包以访问幽灵信箱',
+  verifyingAccess: '验证访问权限中...',
+  payToUnlock: '支付 0.001 ETH',
+  completeTask: '完成任务',
+  upgradeToVIP: '升级为 VIP',
+  sendPayment: '发送支付',
+  viewTransaction: '查看交易 ↗',
+  waitingForSignature: '等待签名...',
+  confirming: '确认中...',
+  
+  // Guestbook
+  intrusionSystem: '> 入侵检测系统',
+  leaveYourMark: '> 在矩阵中留下你的印记...',
+  signatureRequired: '> 首次留言需要签名（无 Gas 费用）',
+  signatureVerified: '> 已验证 ✓ - 无需签名',
+  yourMessage: '> 你的留言（最多 100 字符）:',
+  enterMessage: '输入你的留言...',
+  signing: '[ 签名中... ]',
+  submitting: '[ 提交中... ]',
+  signAndSubmit: '[ 签名并提交 ]',
+  sendMessage: '[ 发送留言 ]',
+  sendReply: '[ 发送回复 ]',
+  detectedIntrusions: '条入侵',
+  noIntrusions: '> 暂无入侵记录...',
+  replyingTo: '> 回复给:',
+  replyTo: '> 回复',
+  deleteAll: '全部',
+  connectWalletFirst: '⚠️ 请先连接钱包才能留言。',
+  unsafeContent: '⚠️ 留言包含不安全内容，请移除 HTML 标签、脚本或特殊字符。',
+  emptyMessage: '⚠️ 留言不能为空。',
+  
+  // VIP Content
+  vipAccess: 'VIP 访问已授权',
+  exclusiveContent: '独家内容',
+  vipMessage: '欢迎来到矩阵的内部圈子。',
+  permissionVerification: '🔒 权限验证',
+  ethBalance: 'ETH:',
+  requirementHint: '(需要 ≥ 0.01 ETH)',
+  usdtAssets: 'USDT 资产:',
+  loadingBalance: '加载中...',
+  switchToMainnet: 'N/A (请切换到以太坊主网)',
+  
+  // Donate
+  feedRabbit: '🥕 喂养兔子',
+  donate: '捐赠',
+  transactionSuccess: '交易成功 ✓',
+  userCancelled: '用户取消了交易',
+  insufficientBalance: '余额不足',
+  transactionFailed: '交易失败',
+  
+  // News Terminal
+  hackerNews: '🔥 黑客新闻热榜',
+  clickToView: '> 点击新闻标题查看详情',
+  loading: '正在加载数据...',
+  loadingMore: '> 正在加载...',
+  loadMore: '> [ 加载更多新闻 ]',
+  noMoreNews: '> 已经到底了，没有更多新闻了',
+  loadFailed: '> 加载失败，已经没有更多新闻了',
+  
+  // Rabbit
+  switchStyle: '切换风格:',
+  classic: '经典圆润',
+  geometric: '几何棱角',
+  minimal: '极简线条',
+  hacker: '黑客代码',
+} as const;
