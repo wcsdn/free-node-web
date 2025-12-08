@@ -76,6 +76,7 @@ export const zh = {
   loadMore: '> [ 加载更多新闻 ]',
   noMoreNews: '> 已经到底了，没有更多新闻了',
   loadFailed: '> 加载失败，已经没有更多新闻了',
+  connectWalletForNews: '⚠️ 请先连接钱包才能查看新闻',
   
   // Rabbit
   switchStyle: '切换风格:',
@@ -83,4 +84,27 @@ export const zh = {
   geometric: '几何棱角',
   minimal: '极简线条',
   hacker: '黑客代码',
+  
+  // Footer
+  freeNode: '> 自由节点',
+  footerDescription: '面向未来的去中心化 Web3 平台。探索区块链技术，连接你的钱包，深入可能性的矩阵。为去中心化网络而生，用热情构建。',
+  quickLinks: '快速链接',
+  legal: '法律信息',
+  termsOfService: '服务条款',
+  privacyPolicy: '隐私政策',
+  disclaimer: '免责声明',
+  disclaimerFull: '⚠️ 免责声明：本平台仅供教育和实验目的使用。所有区块链交互均存在风险，包括但不限于资金损失、智能合约漏洞、网络攻击等。用户应充分了解相关风险并自行承担一切后果。我们不对任何直接或间接的损失、损害或法律责任负责。使用本平台即表示您已阅读并同意此免责声明。请务必做好自己的研究（DYOR）并谨慎操作。',
+  disclaimerShort: '⚠️ 免责声明：本平台仅供教育和实验目的使用，风险自负。我们不对任何损失或损害负责。',
+  allRightsReserved: '保留所有权利。',
+  builtWith: '基于 React + Web3 + Cloudflare 构建',
+  github: 'GitHub',
+  twitter: 'Twitter',
+  discord: 'Discord',
+  
+  // Modals
+  connectWallet: '> 连接钱包',
+  connectWalletDescription: '连接钱包以访问所有功能',
+  walletConnectedSuccess: '钱包已连接!',
+  ghostMailTitle: '> 幽灵信箱',
+  newsTerminal: '> 新闻终端',
 } as const;

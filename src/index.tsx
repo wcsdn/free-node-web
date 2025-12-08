@@ -11,6 +11,8 @@ import { config } from './features/web3/config';
 import { LanguageProvider } from './shared/contexts/LanguageContext';
 import { SoundProvider } from './shared/contexts/SoundContext';
 import { ToastProvider } from './shared/contexts/ToastContext';
+import { ModalProvider } from './shared/contexts/ModalContext';
+import { RouterProvider } from './shared/contexts/RouterContext';
 
 // 配置 QueryClient 以支持持久化缓存
 const queryClient = new QueryClient({
@@ -35,20 +37,24 @@ root.render(
     <LanguageProvider>
       <SoundProvider>
         <ToastProvider>
-          <WagmiProvider config={config}>
-            <QueryClientProvider client={queryClient}>
-              <RainbowKitProvider
-                theme={darkTheme({
-                  accentColor: '#00ff00',
-                  accentColorForeground: '#000000',
-                  borderRadius: 'none',
-                  fontStack: 'system',
-                })}
-              >
-                <App />
-              </RainbowKitProvider>
-            </QueryClientProvider>
-          </WagmiProvider>
+          <ModalProvider>
+            <RouterProvider>
+              <WagmiProvider config={config}>
+                <QueryClientProvider client={queryClient}>
+                  <RainbowKitProvider
+                    theme={darkTheme({
+                      accentColor: '#00ff00',
+                      accentColorForeground: '#000000',
+                      borderRadius: 'none',
+                      fontStack: 'system',
+                    })}
+                  >
+                    <App />
+                  </RainbowKitProvider>
+                </QueryClientProvider>
+              </WagmiProvider>
+            </RouterProvider>
+          </ModalProvider>
         </ToastProvider>
       </SoundProvider>
     </LanguageProvider>

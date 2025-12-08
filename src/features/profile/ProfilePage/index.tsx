@@ -2,9 +2,9 @@ import React from 'react';
 import ProjectArchives from '../../../features/profile/components/ProjectArchives';
 import SkillRadar from '../../../features/profile/components/SkillRadar';
 import ExecutionLog from '../../../features/profile/components/ExecutionLog';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useSoundEffect } from '../../hooks/useSoundEffect';
-import Backdrop from '../Backdrop';
+import { useLanguage } from '../../../shared/contexts/LanguageContext';
+import { useSoundEffect } from '../../../shared/hooks/useSoundEffect';
+import Backdrop from '../../../shared/components/Backdrop';
 import './styles.css';
 
 interface ProfileModalProps {

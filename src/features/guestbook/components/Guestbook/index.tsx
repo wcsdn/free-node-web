@@ -3,6 +3,8 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { useLanguage } from '../../../../shared/contexts/LanguageContext';
 import { sanitizeAndValidate, sanitizeInput } from '../../utils/sanitize';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
+import { useToast } from '../../../../shared/contexts/ToastContext';
+import { openWallet } from '../../../../shared/utils/globalAPI';
 import './styles.css';
 
 interface GuestbookEntry {
@@ -31,6 +33,7 @@ const Guestbook: React.FC = () => {
   const { address } = useAccount();
   const { t } = useLanguage();
   const { playHover, playClick, playSuccess, playError } = useSoundEffect();
+  const { showSuccess, showError } = useToast();
   const [message, setMessage] = useState('');
   const [entries, setEntries] = useState<GuestbookEntry[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,15 +86,14 @@ const Guestbook: React.FC = () => {
     
     // 检查是否连接钱包
     if (!address) {
-      playError();
-      alert(t('connectWalletFirst') || '⚠️ Please connect your wallet first to leave a message.');
+      openWallet();
       return;
     }
     
     // 检查消息是否为空
     if (!message.trim()) {
       playError();
-      alert(t('emptyMessage'));
+      showError(t('emptyMessage'));
       return;
     }
 
@@ -100,7 +102,7 @@ const Guestbook: React.FC = () => {
     
     if (!validation.isValid) {
       playError();
-      alert(t('unsafeContent'));
+      showError(t('unsafeContent'));
       return;
     }
 

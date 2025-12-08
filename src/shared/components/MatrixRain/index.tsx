@@ -42,6 +42,17 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
     const speeds: number[] = [];
     const fontSizes: number[] = [];
 
+    // 溅射粒子系统
+    interface Splash {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      char: string;
+    }
+    const splashes: Splash[] = [];
+
     // 初始化每列
     for (let i = 0; i < calculatedColumns; i++) {
       drops[i] = Math.random() * -100;
@@ -86,14 +97,48 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
         ctx.fillStyle = brightness > 0.7 ? '#00ff00' : brightness > 0.5 ? '#00cc00' : '#009900';
         ctx.fillText(char, x, y);
 
-        // 重置位置
+        // 重置位置并创建溅射效果
         if (y > window.innerHeight && Math.random() > 0.975) {
+          // 创建溅射粒子
+          const splashCount = 3 + Math.floor(Math.random() * 3); // 3-5个粒子
+          for (let j = 0; j < splashCount; j++) {
+            splashes.push({
+              x: x,
+              y: window.innerHeight,
+              vx: (Math.random() - 0.5) * 4, // 水平速度
+              vy: -2 - Math.random() * 3, // 向上速度
+              life: 1.0,
+              char: charArray[Math.floor(Math.random() * charArray.length)]
+            });
+          }
+          
           drops[i] = 0;
           speeds[i] = 0.5 + Math.random() * 0.5;
         }
 
         // 移动位置
         drops[i] += speeds[i];
+      }
+
+      // 绘制溅射粒子
+      for (let i = splashes.length - 1; i >= 0; i--) {
+        const splash = splashes[i];
+        
+        // 更新粒子位置
+        splash.x += splash.vx;
+        splash.y += splash.vy;
+        splash.vy += 0.3; // 重力
+        splash.life -= 0.05;
+
+        // 绘制粒子
+        if (splash.life > 0) {
+          ctx.font = `${fontSize * 0.8}px monospace`;
+          ctx.fillStyle = `rgba(0, 255, 0, ${splash.life * 0.8})`;
+          ctx.fillText(splash.char, splash.x, splash.y);
+        } else {
+          // 移除死亡粒子
+          splashes.splice(i, 1);
+        }
       }
     };
 

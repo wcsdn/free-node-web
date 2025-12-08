@@ -1,0 +1,292 @@
+/* Wallet Modal */
+.wallet-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background: #000;
+  border: 2px solid #00ff00;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.wallet-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.wallet-modal-title {
+  color: #00ff00;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.wallet-modal-close {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: background 0.3s ease;
+}
+
+.wallet-modal-close:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.wallet-modal-content {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.wallet-modal-description {
+  color: rgba(0, 255, 0, 0.8);
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  text-align: center;
+  margin: 0;
+}
+
+.wallet-connect-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Ghost Mail Modal - 移动到这里统一管理 */
+.ghost-mail-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  background: #000;
+  border: 2px solid #00ff00;
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ghost-mail-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.ghost-mail-modal-title {
+  color: #00ff00;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+}
+
+.ghost-mail-modal-close {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: background 0.3s ease;
+}
+
+.ghost-mail-modal-close:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.ghost-mail-modal-content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+}
+
+/* News Modal */
+.news-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  background: #000;
+  border: 2px solid #00ff00;
+  z-index: 9999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.news-modal-title {
+  color: #00ff00;
+  margin: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 20px;
+}
+
+.news-modal-close {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: background 0.3s ease;
+}
+
+.news-modal-close:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.news-modal-content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  padding: 20px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .wallet-modal {
+    width: 95%;
+    max-width: none;
+  }
+
+  .wallet-modal-header {
+    padding: 12px 15px;
+  }
+
+  .wallet-modal-title {
+    font-size: 16px;
+  }
+
+  .wallet-modal-content {
+    padding: 20px;
+  }
+
+  .wallet-modal-description {
+    font-size: 12px;
+  }
+
+  .ghost-mail-modal {
+    width: 100%;
+    height: 100vh;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .ghost-mail-modal-header {
+    padding: 10px 12px;
+  }
+
+  .ghost-mail-modal-title {
+    font-size: 16px;
+  }
+
+  .ghost-mail-modal-close {
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-modal-header {
+    padding: 10px 12px;
+  }
+
+  .wallet-modal-title {
+    font-size: 14px;
+  }
+
+  .wallet-modal-close {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .ghost-mail-modal-header {
+    padding: 8px 10px;
+  }
+
+  .ghost-mail-modal-title {
+    font-size: 14px;
+  }
+
+  .ghost-mail-modal-close {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .news-modal {
+    width: 100%;
+    height: 100vh;
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .news-modal-header {
+    padding: 10px 12px;
+  }
+
+  .news-modal-title {
+    font-size: 16px;
+  }
+
+  .news-modal-close {
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+
+  .news-modal-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-modal-header {
+    padding: 8px 10px;
+  }
+
+  .news-modal-title {
+    font-size: 14px;
+  }
+
+  .news-modal-close {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .news-modal-content {
+    padding: 10px;
+  }
+}
