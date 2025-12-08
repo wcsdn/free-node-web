@@ -3,50 +3,11 @@ import { useAccount } from 'wagmi';
 import { useLanguage } from '../../../../shared/contexts/LanguageContext';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
 import { useToast } from '../../../../shared/contexts/ToastContext';
+import { useRouter } from '../../../../shared/contexts/RouterContext';
 import { UserStatus, Mail } from '../../../../types/ghost-mail';
 import { API_ENDPOINTS } from '../../../../config/constants';
 import Backdrop from '../../../../shared/components/Backdrop';
 import './styles.css';
-
-// 使用 URL 参数管理邮件详情状态
-const useMailDetailRoute = () => {
-  const [selectedMailId, setSelectedMailId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const mailId = params.get('mail');
-    setSelectedMailId(mailId ? parseInt(mailId, 10) : null);
-  }, []);
-
-  const openMail = (mailId: number) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('mail', mailId.toString());
-    window.history.pushState({}, '', `?${params.toString()}`);
-    setSelectedMailId(mailId);
-  };
-
-  const closeMail = () => {
-    const params = new URLSearchParams(window.location.search);
-    params.delete('mail');
-    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
-    window.history.pushState({}, '', newUrl);
-    setSelectedMailId(null);
-  };
-
-  // 监听浏览器前进后退
-  useEffect(() => {
-    const handlePopState = () => {
-      const params = new URLSearchParams(window.location.search);
-      const mailId = params.get('mail');
-      setSelectedMailId(mailId ? parseInt(mailId, 10) : null);
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  return { selectedMailId, openMail, closeMail };
-};
 
 interface MailTerminalProps {
   userStatus: UserStatus;
@@ -58,15 +19,26 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
   const { language } = useLanguage();
   const { playClick, playSuccess, playError, playHover } = useSoundEffect();
   const { showSuccess, showError } = useToast();
-  const { selectedMailId, openMail, closeMail } = useMailDetailRoute();
+  const { getParam, setParam, clearParam } = useRouter();
 
   const [mails, setMails] = useState<Mail[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isLoadingMails, setIsLoadingMails] = useState(false);
 
-  // 根据 URL 参数获取选中的邮件
+  // 从全局路由获取选中的邮件 ID
+  const selectedMailId = getParam('mail') ? parseInt(getParam('mail')!, 10) : null;
   const selectedMail = mails.find(m => m.id === selectedMailId) || null;
+
+  // 打开邮件
+  const openMail = (mailId: number) => {
+    setParam('mail', mailId.toString());
+  };
+
+  // 关闭邮件
+  const closeMail = () => {
+    clearParam('mail');
+  };
 
   // 加载邮件
   useEffect(() => {

@@ -1,0 +1,228 @@
+/* 统一的按钮容器 */
+.action-button-container {
+  position: fixed;
+  top: 20px;
+  z-index: 1000;
+}
+
+/* PC 端位置 - 水平排列 (从右到左: 设置、邮件、新闻、档案) */
+.action-button-pos-0 {
+  right: 185px;
+}
+
+.action-button-pos-1 {
+  right: 130px;
+}
+
+.action-button-pos-2 {
+  right: 75px;
+}
+
+.action-button-pos-3 {
+  right: 20px;
+}
+
+/* 设置菜单样式 */
+.settings-menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background: #0a0a0a;
+  border: 2px solid #00ff00;
+  z-index: 2000;
+  font-family: 'Courier New', monospace;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #00ff00;
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.settings-title {
+  color: #00ff00;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 0 5px #00ff00;
+  margin: 0;
+}
+
+.settings-close {
+  background: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 8px;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s ease;
+}
+
+.settings-close:hover {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.settings-content {
+  padding: 20px 15px;
+  background: #000;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 10px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  background: rgba(0, 255, 0, 0.02);
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+  border-color: rgba(0, 255, 0, 0.5);
+  background: rgba(0, 255, 0, 0.05);
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-label {
+  color: rgba(0, 255, 0, 0.8);
+  font-size: 12px;
+  flex: 1;
+  text-shadow: 0 0 3px rgba(0, 255, 0, 0.3);
+}
+
+.setting-label::before {
+  content: '> ';
+  color: #00ff00;
+}
+
+.setting-toggle {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  color: rgba(0, 255, 0, 0.7);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 5px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 60px;
+  letter-spacing: 1px;
+}
+
+.setting-toggle::before {
+  content: '[ ';
+}
+
+.setting-toggle::after {
+  content: ' ]';
+}
+
+.setting-toggle:hover {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+.setting-toggle.active {
+  background: rgba(0, 255, 0, 0.2);
+  border-color: #00ff00;
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+}
+
+/* 移动端适配 - 竖向排列 */
+@media (max-width: 768px) {
+  .action-button-container {
+    right: 10px;
+  }
+
+  .action-button-pos-0 {
+    top: 20px;
+  }
+
+  .action-button-pos-1 {
+    top: 75px;
+  }
+
+  .action-button-pos-2 {
+    top: 130px;
+  }
+
+  .action-button-pos-3 {
+    top: 185px;
+  }
+
+  .settings-menu {
+    width: 85%;
+    max-width: 320px;
+  }
+
+  .settings-header {
+    padding: 10px 12px;
+  }
+
+  .settings-title {
+    font-size: 12px;
+  }
+
+  .settings-close {
+    font-size: 14px;
+    padding: 2px 6px;
+  }
+
+  .settings-content {
+    padding: 15px 12px;
+  }
+
+  .setting-item {
+    padding: 10px 8px;
+    margin-bottom: 8px;
+  }
+
+  .setting-label {
+    font-size: 11px;
+  }
+
+  .setting-toggle {
+    font-size: 10px;
+    padding: 4px 12px;
+    min-width: 55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-button-pos-0 {
+    top: 20px;
+  }
+
+  .action-button-pos-1 {
+    top: 75px;
+  }
+
+  .action-button-pos-2 {
+    top: 130px;
+  }
+
+  .action-button-pos-3 {
+    top: 185px;
+  }
+}

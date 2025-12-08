@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import AccessGuard from './components/AccessGuard';
-import MailTerminal from './components/MailTerminal';
-import { UserStatus } from '../../types/ghost-mail';
-import { API_ENDPOINTS } from '../../config/constants';
+import AccessGuard from '../components/AccessGuard';
+import MailTerminal from '../components/MailTerminal';
+import { UserStatus } from '../../../types/ghost-mail';
+import { API_ENDPOINTS } from '../../../config/constants';
 
 const GhostMail: React.FC = () => {
   const { address } = useAccount();

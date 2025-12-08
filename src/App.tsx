@@ -1,36 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import './features/ghost-mail/styles.css';
 import MatrixRain from './shared/components/MatrixRain';
-import NewsTerminal from './features/news/components/NewsTerminal';
 import CyberRabbit from './shared/components/CyberRabbit';
+import CyberRose from './shared/components/CyberRose';
 import VipContent from './features/web3/components/VipContent';
 import DonateButton from './features/donation/components/DonateButton';
 import Guestbook from './features/guestbook/components/Guestbook';
-import SettingsPanel from './shared/components/SettingsPanel';
-import ProfileButton from './shared/components/ProfileButton';
-import ProfileModal from './shared/components/ProfileModal';
-import GhostMailButton from './shared/components/GhostMailButton';
-import GhostMail from './features/ghost-mail';
-import Backdrop from './shared/components/Backdrop';
+import ActionButton from './shared/components/ActionButton';
+import GlobalModals from './shared/layouts/GlobalModals';
+import Footer from './shared/components/Footer';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useLanguage } from './shared/contexts/LanguageContext';
 import { useSoundEffect } from './shared/hooks/useSoundEffect';
+import { useModal } from './shared/contexts/ModalContext';
 
 const App: React.FC = () => {
   const { isConnected, address, chain } = useAccount();
   const { data: ensName } = useEnsName({ address });
   const { data: balance } = useBalance({ address });
   const { t, language } = useLanguage();
-  const { playSuccess } = useSoundEffect();
+  const { playSuccess, playClick } = useSoundEffect();
+  const { openModal } = useModal();
   const [mounted, setMounted] = useState(false);
   const [displayedText, setDisplayedText] = useState('');
   const [currentLine, setCurrentLine] = useState(0);
   const [showButtons, setShowButtons] = useState(false);
   const [hasPlayedConnectSound, setHasPlayedConnectSound] = useState(false);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isGhostMailOpen, setIsGhostMailOpen] = useState(false);
 
   const LINES = [
     '> Wake up, Neo...',
@@ -87,9 +83,10 @@ const App: React.FC = () => {
     <div className="matrix-container">
       {showButtons && (
         <>
-          <GhostMailButton onClick={() => setIsGhostMailOpen(true)} />
-          <ProfileButton onClick={() => setIsProfileModalOpen(true)} />
-          <SettingsPanel />
+          <ActionButton type="profile" position={0} />
+          <ActionButton type="news" position={1} />
+          <ActionButton type="ghost-mail" position={2} />
+          <ActionButton type="settings" position={3} />
         </>
       )}
       <MatrixRain fontSize={16} />
@@ -105,13 +102,14 @@ const App: React.FC = () => {
         {showButtons && (
           <>
             <CyberRabbit />
+            <CyberRose />
             
             {/* 只在客户端挂载后显示钱包相关 UI */}
             {mounted && (
               <div className="wallet-connect-section">
                 <ConnectButton.Custom>
-                  {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
-                    const ready = mounted;
+                  {({ account, chain, openAccountModal, openChainModal, mounted: buttonMounted }) => {
+                    const ready = buttonMounted;
                     const connected = ready && account && chain;
 
                     return (
@@ -128,7 +126,10 @@ const App: React.FC = () => {
                         {(() => {
                           if (!connected) {
                             return (
-                              <button onClick={openConnectModal} className="custom-connect-button">
+                              <button onClick={() => {
+                                playClick();
+                                openModal('wallet');
+                              }} className="custom-connect-button">
                                 Open Door
                               </button>
                             );
@@ -198,51 +199,18 @@ const App: React.FC = () => {
                 
                 {/* 留言板 */}
                 <Guestbook />
-                
-                {/* 新闻终端 */}
-                <div className="news-section">
-                  <NewsTerminal />
-                </div>
               </>
             )}
           </>
         )}
       </div>
 
-
+      {/* 页脚 */}
+      {showButtons && <Footer />}
     </div>
 
-    {/* 个人信息弹窗 - 移到 matrix-container 外面 */}
-    <ProfileModal 
-      isOpen={isProfileModalOpen} 
-      onClose={() => setIsProfileModalOpen(false)} 
-    />
-
-    {/* Ghost Mail 弹窗 - 移到 matrix-container 外面 */}
-    {isGhostMailOpen && (
-      <>
-        <Backdrop 
-          onClick={() => setIsGhostMailOpen(false)}
-          zIndex={9998}
-        />
-        <div className="ghost-mail-modal">
-          <div className="ghost-mail-modal-header">
-            <h2 className="ghost-mail-modal-title">
-              {language === 'en' ? '> GHOST MAIL' : '> 幽灵信箱'}
-            </h2>
-            <button
-              onClick={() => setIsGhostMailOpen(false)}
-              className="ghost-mail-modal-close"
-            >
-              [ X ]
-            </button>
-          </div>
-          <div className="ghost-mail-modal-content">
-            <GhostMail />
-          </div>
-        </div>
-      </>
-    )}
+    {/* 全局模态框 */}
+    <GlobalModals />
   </>
   );
 };

@@ -83,6 +83,30 @@ export const en = {
   geometric: 'Geometric',
   minimal: 'Minimal',
   hacker: 'Hacker',
+  
+  // Footer
+  freeNode: '> FREE NODE',
+  footerDescription: 'A decentralized Web3 platform for the future. Explore blockchain technology, connect your wallet, and dive into the matrix of possibilities. Built with passion for the decentralized web.',
+  quickLinks: 'Quick Links',
+  legal: 'Legal',
+  termsOfService: 'Terms of Service',
+  privacyPolicy: 'Privacy Policy',
+  disclaimer: 'Disclaimer',
+  disclaimerFull: '⚠️ DISCLAIMER: This platform is for educational and experimental purposes only. All blockchain interactions carry inherent risks, including but not limited to loss of funds, smart contract vulnerabilities, and network attacks. Users should fully understand these risks and bear all consequences. We are not responsible for any direct or indirect losses, damages, or legal liabilities. By using this platform, you acknowledge that you have read and agree to this disclaimer. Always do your own research (DYOR) and proceed with caution.',
+  disclaimerShort: '⚠️ Educational & experimental platform. Blockchain interactions carry risks. DYOR and use at your own discretion.',
+  allRightsReserved: 'All rights reserved.',
+  builtWith: 'Built with React + Web3 + Cloudflare',
+  github: 'GitHub',
+  twitter: 'Twitter',
+  discord: 'Discord',
+  connectWalletForNews: '⚠️ Please connect your wallet to view news',
+  
+  // Modals
+  connectWallet: '> CONNECT WALLET',
+  connectWalletDescription: 'Connect your wallet to access all features',
+  walletConnectedSuccess: 'Wallet connected successfully!',
+  ghostMailTitle: '> GHOST MAIL',
+  newsTerminal: '> NEWS TERMINAL',
 } as const;
 
 export type TranslationKey = keyof typeof en;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { API_ENDPOINTS } from '../../../../config/constants';
+import { API_ENDPOINTS } from '../../../config/constants';
 import './styles.css';
 
 interface NewsItem {
