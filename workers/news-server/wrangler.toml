@@ -1,0 +1,16 @@
+name = "free-node-news"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+# 启用 workers.dev 子域名
+workers_dev = true
+
+# KV 命名空间配置
+[[kv_namespaces]]
+binding = "NEWS_CACHE"
+id = "fe4901d1d41f4c8880ec776be03058fc"
+
+# 自定义域名配置
+[[routes]]
+pattern = "news.free-node.xyz/*"
+zone_name = "free-node.xyz"

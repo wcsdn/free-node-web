@@ -1,0 +1,21 @@
+name = "ghost-mail-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-06"
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "ghost-mail-db"
+database_id = "cc8390e3-c42a-4484-9e75-0789b38ec863"  # 创建数据库后填入
+
+# 定时任务 - 每小时清理一次旧邮件（每个邮箱保留最近5条）
+[triggers]
+crons = ["0 * * * *"]  # 每小时执行一次
+
+# 环境变量
+[vars]
+MAX_ALIASES = "5"
+DOMAIN = "free-node.xyz"
+TREASURY_ADDRESS = "0xb6a227d01b06be808aec2041694f85f43ba1b028"  # 收款地址
+
+# 注意：使用 Base RPC 验证交易，无需 API Key
