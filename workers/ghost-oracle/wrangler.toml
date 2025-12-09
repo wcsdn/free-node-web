@@ -1,0 +1,9 @@
+name = "ghost-oracle"
+main = "src/index.ts"
+compatibility_date = "2024-12-02"
+
+[env.production]
+name = "ghost-oracle"
+
+[env.preview]
+name = "ghost-oracle-preview"

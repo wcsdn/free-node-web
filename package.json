@@ -34,6 +34,7 @@
     "pub:prod": "wrangler pages deploy dist --project-name=free-node-web --branch=main",
     "deploy:mail": "cd workers/ghost-mail && npm run deploy",
     "deploy:news": "cd workers/news-server && npm run deploy",
+    "deploy:oracle": "cd workers/ghost-oracle && npm run deploy",
     "db:init": "cd workers/ghost-mail && npm run db:init"
   },
   "dependencies": {

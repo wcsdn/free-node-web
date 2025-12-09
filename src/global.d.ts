@@ -24,3 +24,12 @@ declare module '*.jpeg';
 declare module '*.gif';
 declare module '*.svg';
 declare module '*.webp';
+
+// Vite 环境变量类型声明
+interface ImportMetaEnv {
+  readonly VITE_ORACLE_API?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
