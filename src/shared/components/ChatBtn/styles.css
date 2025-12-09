@@ -1,9 +1,9 @@
 /**
- * OracleFab 样式
+ * ChatBtn 样式
  * 悬浮按钮 - 赛博朋克风格
  */
 
-.oracle-fab {
+.chat-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -26,7 +26,7 @@
 }
 
 /* 背景光效 */
-.oracle-fab::before {
+.chat-btn::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -44,7 +44,7 @@
   transition: opacity 0.3s ease;
 }
 
-.oracle-fab:hover::before {
+.chat-btn:hover::before {
   opacity: 1;
 }
 
@@ -57,7 +57,7 @@
   }
 }
 
-.oracle-fab:hover {
+.chat-btn:hover {
   transform: translateY(-3px);
   border-color: #00ff41;
   box-shadow:
@@ -66,11 +66,11 @@
     0 0 60px rgba(0, 255, 65, 0.1);
 }
 
-.oracle-fab:active {
+.chat-btn:active {
   transform: translateY(-1px) scale(0.98);
 }
 
-.oracle-fab-icon {
+.chat-btn-icon {
   position: relative;
   z-index: 2;
   display: flex;
@@ -79,12 +79,12 @@
   transition: transform 0.3s ease;
 }
 
-.oracle-fab:hover .oracle-fab-icon {
+.chat-btn:hover .chat-btn-icon {
   transform: scale(1.1);
 }
 
 /* 脉冲光环 - 更精致 */
-.oracle-fab-pulse {
+.chat-btn-pulse {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -108,8 +108,8 @@
   }
 }
 
-/* Oracle Modal */
-.oracle-modal {
+/* Chat Modal */
+.chat-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -132,7 +132,7 @@
 }
 
 /* 兔子趴在顶部边缘 */
-.oracle-modal-rabbit {
+.chat-modal-rabbit {
   position: absolute;
   top: -52px;
   left: 20px;
@@ -151,7 +151,7 @@
   }
 }
 
-.oracle-modal-header {
+.chat-modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -164,7 +164,7 @@
   border-bottom: 1px solid rgba(0, 255, 65, 0.15);
 }
 
-.oracle-modal-title {
+.chat-modal-title {
   font-family: var(--font-mono);
   font-size: 16px;
   font-weight: 500;
@@ -177,7 +177,7 @@
   gap: 8px;
 }
 
-.oracle-modal-close {
+.chat-modal-close {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.6);
@@ -189,13 +189,13 @@
   transition: all 0.2s ease;
 }
 
-.oracle-modal-close:hover {
+.chat-modal-close:hover {
   background: rgba(255, 60, 60, 0.15);
   border-color: rgba(255, 60, 60, 0.4);
   color: #ff6b6b;
 }
 
-.oracle-modal-body {
+.chat-modal-body {
   flex: 1;
   overflow: hidden;
   padding: 0;
@@ -203,7 +203,7 @@
 
 /* 响应式 */
 @media (max-width: 768px) {
-  .oracle-fab {
+  .chat-btn {
     bottom: 16px;
     right: 16px;
     width: 40px;
@@ -211,21 +211,21 @@
     border-radius: 8px;
   }
 
-  .oracle-fab-pulse {
+  .chat-btn-pulse {
     border-radius: 8px;
   }
 
-  .oracle-modal {
+  .chat-modal {
     width: 95%;
     max-height: 80vh;
     border-radius: 12px;
   }
 
-  .oracle-modal-header {
+  .chat-modal-header {
     padding: 12px 16px;
   }
 
-  .oracle-modal-title {
+  .chat-modal-title {
     font-size: 14px;
     letter-spacing: 1px;
   }

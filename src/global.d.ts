@@ -33,3 +33,5 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+// Turnstile 类型声明 - 见 src/types/turnstile.d.ts
