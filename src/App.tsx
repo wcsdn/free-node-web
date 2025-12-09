@@ -8,6 +8,7 @@ import HomePage from './features/home/HomePage';
 import GlobalModals from './shared/layouts/GlobalModals';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import PerformanceMonitor from './shared/components/PerformanceMonitor';
+import OracleFab from './shared/components/OracleFab';
 import './App.css';
 
 const App: React.FC = () => {
@@ -26,6 +27,9 @@ const App: React.FC = () => {
 
       {/* 全局模态框 */}
       <GlobalModals />
+
+      {/* Ghost Oracle 悬浮按钮 */}
+      <OracleFab />
 
       {/* 性能监控 */}
       <PerformanceMonitor />

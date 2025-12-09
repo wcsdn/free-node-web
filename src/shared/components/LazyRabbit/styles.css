@@ -1,0 +1,23 @@
+/**
+ * LazyRabbit 样式
+ */
+
+.lazy-rabbit {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.lazy-rabbit-sm {
+  width: 36px;
+  height: 28px;
+}
+
+.lazy-rabbit-md {
+  width: 54px;
+  height: 42px;
+}
+
+.lazy-rabbit-lg {
+  width: 72px;
+  height: 56px;
+}
