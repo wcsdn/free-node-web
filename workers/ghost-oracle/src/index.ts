@@ -7,6 +7,35 @@
 
 interface Env {
   DEEPSEEK_API_KEY: string;
+  TURNSTILE_SECRET_KEY: string;
+}
+
+// Turnstile 验证
+async function verifyTurnstile(token: string, env: Env): Promise<boolean> {
+  if (!env.TURNSTILE_SECRET_KEY) {
+    console.error('TURNSTILE_SECRET_KEY not configured');
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: token,
+        }),
+      }
+    );
+
+    const result = (await response.json()) as { success: boolean };
+    return result.success;
+  } catch (err) {
+    console.error('Turnstile verification error:', err);
+    return false;
+  }
 }
 
 // 允许的域名
@@ -47,7 +76,7 @@ const SYSTEM_PROMPT = `你是 Ghost Oracle，Free-Node 的站点智能助手。
 - 可以用中文或英文回答，根据用户的语言自动切换
 
 ## 签名
-回答结束时可以加上: " -- 🐰"`;
+回答结束时可以加上: " -- 🐇"`;//🐰
 
 // CORS 头
 function getCorsHeaders(origin: string | null): HeadersInit {
@@ -57,7 +86,7 @@ function getCorsHeaders(origin: string | null): HeadersInit {
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Turnstile-Token',
     'Access-Control-Max-Age': '86400',
   };
 }
@@ -105,6 +134,16 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
     console.error('DEEPSEEK_API_KEY not configured');
     return errorResponse('Service unavailable', 503, origin);
   }
+
+  // Turnstile 验证（如果提供了 token 则验证，否则跳过）
+  const turnstileToken = request.headers.get('X-Turnstile-Token');
+  if (turnstileToken) {
+    const isHuman = await verifyTurnstile(turnstileToken, env);
+    if (!isHuman) {
+      return errorResponse('Human verification failed', 403, origin);
+    }
+  }
+  // 注意：允许无 token 请求通过，前端控制首次验证逻辑
 
   try {
     const body = (await request.json()) as {

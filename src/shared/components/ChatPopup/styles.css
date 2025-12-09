@@ -1,9 +1,9 @@
 /**
- * OracleTerminal 样式
+ * ChatPopup 样式
  * Matrix/CRT 风格终端
  */
 
-.oracle-terminal {
+.chat-popup {
   position: relative;
   width: 100%;
   height: 450px;
@@ -18,7 +18,7 @@
 }
 
 /* CRT 扫描线效果 - 更轻微 */
-.oracle-scanlines {
+.chat-scanlines {
   position: absolute;
   top: 0;
   left: 0;
@@ -35,61 +35,33 @@
   );
 }
 
-/* 终端头部 */
-.oracle-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 15px;
-  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-  background: rgba(0, 255, 65, 0.05);
-}
-
-.oracle-title {
-  color: #00ff41;
-  font-size: 12px;
-  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
-  letter-spacing: 2px;
-}
-
-.oracle-status {
-  font-size: 11px;
-  color: #00ff41;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
 /* 消息区域 */
-.oracle-messages {
+.chat-messages {
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-md);
   scroll-behavior: smooth;
 }
 
-.oracle-messages::-webkit-scrollbar {
+.chat-messages::-webkit-scrollbar {
   width: 6px;
 }
 
-.oracle-messages::-webkit-scrollbar-track {
+.chat-messages::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.oracle-messages::-webkit-scrollbar-thumb {
+.chat-messages::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 3px;
 }
 
-.oracle-messages::-webkit-scrollbar-thumb:hover {
+.chat-messages::-webkit-scrollbar-thumb:hover {
   background: var(--primary-color);
 }
 
 /* 欢迎消息 */
-.oracle-welcome {
+.chat-welcome {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -99,7 +71,7 @@
   animation: fadeIn 0.8s ease;
 }
 
-.oracle-welcome-main {
+.chat-welcome-main {
   color: #00ff41;
   font-size: 20px;
   font-weight: bold;
@@ -108,7 +80,7 @@
   letter-spacing: 2px;
 }
 
-.oracle-welcome-sub {
+.chat-welcome-sub {
   color: rgba(0, 255, 65, 0.6);
   font-size: 13px;
   margin: 0;
@@ -120,7 +92,7 @@
 }
 
 /* 消息样式 */
-.oracle-message {
+.chat-message {
   display: flex;
   margin-bottom: 16px;
   animation: messageIn 0.3s ease;
@@ -137,11 +109,11 @@
   }
 }
 
-.oracle-prompt {
+.chat-prompt {
   display: none;
 }
 
-.oracle-content {
+.chat-content {
   max-width: 80%;
   padding: 10px 14px;
   border-radius: 12px;
@@ -152,11 +124,11 @@
 }
 
 /* 用户消息 - 右边 */
-.oracle-user {
+.chat-user {
   justify-content: flex-end;
 }
 
-.oracle-user .oracle-content {
+.chat-user .chat-content {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
@@ -164,11 +136,11 @@
 }
 
 /* AI 消息 - 左边 */
-.oracle-assistant {
+.chat-assistant {
   justify-content: flex-start;
 }
 
-.oracle-assistant .oracle-content {
+.chat-assistant .chat-content {
   background: rgba(0, 255, 65, 0.1);
   border: 1px solid rgba(0, 255, 65, 0.3);
   color: #00ff41;
@@ -177,7 +149,7 @@
 }
 
 /* 流式输出光标 */
-.oracle-cursor {
+.chat-cursor {
   display: inline-block;
   color: var(--primary-color);
   animation: blink 0.7s step-end infinite;
@@ -190,13 +162,13 @@
 }
 
 /* 打字指示器 */
-.oracle-typing-indicator {
+.chat-typing-indicator {
   display: flex;
   gap: 4px;
   padding: 4px 0;
 }
 
-.oracle-typing-indicator span {
+.chat-typing-indicator span {
   width: 6px;
   height: 6px;
   background: #00ff41;
@@ -204,11 +176,11 @@
   animation: typing 1.4s ease-in-out infinite;
 }
 
-.oracle-typing-indicator span:nth-child(2) {
+.chat-typing-indicator span:nth-child(2) {
   animation-delay: 0.2s;
 }
 
-.oracle-typing-indicator span:nth-child(3) {
+.chat-typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
 }
 
@@ -225,9 +197,8 @@
   }
 }
 
-
 /* 代码块 */
-.oracle-code-block {
+.chat-code-block {
   background: rgba(0, 0, 0, 0.5);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-sm);
@@ -237,7 +208,7 @@
   position: relative;
 }
 
-.oracle-code-lang {
+.chat-code-lang {
   position: absolute;
   top: 0;
   right: 0;
@@ -249,14 +220,14 @@
   text-transform: uppercase;
 }
 
-.oracle-code-block code {
+.chat-code-block code {
   color: #00ff41;
   font-size: var(--font-size-xs);
   line-height: 1.5;
 }
 
 /* 行内代码 */
-.oracle-inline-code {
+.chat-inline-code {
   background: rgba(0, 255, 0, 0.1);
   border: 1px solid var(--border-color);
   border-radius: 3px;
@@ -266,7 +237,7 @@
 }
 
 /* 输入区域 */
-.oracle-input-area {
+.chat-input-area {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -275,7 +246,7 @@
   background: rgba(0, 255, 65, 0.03);
 }
 
-.oracle-input-prompt {
+.chat-input-prompt {
   color: #00ff41;
   font-weight: bold;
   font-size: 16px;
@@ -283,7 +254,7 @@
   animation: blink 1s step-end infinite;
 }
 
-.oracle-input {
+.chat-input {
   flex: 1;
   background: transparent;
   border: none;
@@ -295,40 +266,77 @@
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
-.oracle-input::placeholder {
+.chat-input::placeholder {
   color: #00aa33;
   opacity: 0.6;
 }
 
-.oracle-input:disabled {
+.chat-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
+/* Turnstile 验证区域 */
+.chat-turnstile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  min-height: 65px;
+  border-top: 1px solid rgba(0, 255, 65, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
 /* 响应式 */
 @media (max-width: 768px) {
-  .oracle-terminal {
+  .chat-popup {
     height: 400px;
     max-height: 60vh;
   }
 
-  .oracle-header {
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .oracle-title {
-    font-size: var(--font-size-xs);
-  }
-
-  .oracle-messages {
+  .chat-messages {
     padding: var(--spacing-sm);
   }
 
-  .oracle-content {
+  .chat-content {
     font-size: var(--font-size-xs);
   }
 
-  .oracle-input {
+  .chat-input {
     font-size: var(--font-size-sm);
   }
+}
+
+
+/* 发送按钮 */
+.chat-send-btn {
+  background: rgba(0, 255, 65, 0.15);
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  color: #00ff41;
+  font-size: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  background: rgba(0, 255, 65, 0.25);
+  border-color: #00ff41;
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+.chat-send-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }

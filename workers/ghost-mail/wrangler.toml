@@ -1,6 +1,12 @@
 name = "ghost-mail-api"
 main = "src/index.ts"
 compatibility_date = "2024-12-06"
+workers_dev = true
+preview_urls = false
+
+routes = [
+  { pattern = "mail.free-node.xyz/*", zone_name = "free-node.xyz" }
+]
 
 # D1 数据库绑定
 [[d1_databases]]

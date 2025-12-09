@@ -8,7 +8,7 @@ import HomePage from './features/home/HomePage';
 import GlobalModals from './shared/layouts/GlobalModals';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import PerformanceMonitor from './shared/components/PerformanceMonitor';
-import OracleFab from './shared/components/OracleFab';
+import ChatBtn from './shared/components/ChatBtn';
 import './App.css';
 
 const App: React.FC = () => {
@@ -29,7 +29,7 @@ const App: React.FC = () => {
       <GlobalModals />
 
       {/* Ghost Oracle 悬浮按钮 */}
-      <OracleFab />
+      <ChatBtn />
 
       {/* 性能监控 */}
       <PerformanceMonitor />
