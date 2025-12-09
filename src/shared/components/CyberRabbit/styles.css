@@ -4,9 +4,13 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  animation: fadeInRabbit 2s ease-in;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* 只在首次加载时播放淡入动画 */
+.cyber-rabbit-container.animate-in {
+  animation: fadeInRabbit 2s ease-in forwards;
 }
 
 @keyframes fadeInRabbit {

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { useLanguage } from '../../../../shared/contexts/LanguageContext';
+import { useSearchParams } from 'react-router-dom';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
 import { useToast } from '../../../../shared/contexts/ToastContext';
-import { useRouter } from '../../../../shared/contexts/RouterContext';
 import { UserStatus, Mail } from '../../../../types/ghost-mail';
 import { API_ENDPOINTS } from '../../../../config/constants';
 import Backdrop from '../../../../shared/components/Backdrop';
@@ -19,26 +19,30 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
   const { language } = useLanguage();
   const { playClick, playSuccess, playError, playHover } = useSoundEffect();
   const { showSuccess, showError } = useToast();
-  const { getParam, setParam, clearParam } = useRouter();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [mails, setMails] = useState<Mail[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isLoadingMails, setIsLoadingMails] = useState(false);
 
-  // 从全局路由获取选中的邮件 ID
-  const selectedMailId = getParam('mail') ? parseInt(getParam('mail')!, 10) : null;
-  const selectedMail = mails.find(m => m.id === selectedMailId) || null;
+  // 从 URL 获取选中的邮件 ID
+  const mailParam = searchParams.get('mail');
+  const selectedMailId = mailParam ? parseInt(mailParam, 10) : null;
+  const selectedMail = mails.find((m) => m.id === selectedMailId) || null;
 
   // 打开邮件
-  const openMail = (mailId: number) => {
-    setParam('mail', mailId.toString());
-  };
+  const openMail = useCallback(
+    (mailId: number) => {
+      setSearchParams({ mail: mailId.toString() });
+    },
+    [setSearchParams]
+  );
 
   // 关闭邮件
-  const closeMail = () => {
-    clearParam('mail');
-  };
+  const closeMail = useCallback(() => {
+    setSearchParams({});
+  }, [setSearchParams]);
 
   // 加载邮件
   useEffect(() => {

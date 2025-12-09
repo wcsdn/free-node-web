@@ -1,207 +1,26 @@
-/* 弹窗主体 - 固定在视口中间，限制高度 */
-.profile-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: var(--modal-width);
-  max-width: var(--modal-max-width);
-  height: auto;
-  max-height: 85vh; /* 最大高度不超过视口的 85% */
-  background: #000000;
-  border: 2px solid #00ff00;
-  border-radius: 8px;
-  box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
-  z-index: 9999;
-  animation: fadeIn 0.2s ease;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  visibility: visible !important;
-  opacity: 1 !important;
-  box-sizing: border-box;
-}
-
-/* 弹窗头部 */
-.profile-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 30px;
-  background: rgba(0, 255, 0, 0.05);
-  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
-}
-
-.profile-modal-title {
-  font-size: 24px;
-  color: #00ff00;
-  margin: 0;
-  font-family: 'Courier New', monospace;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-}
-
-.profile-modal-close {
-  background: transparent;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  padding: 8px 16px;
-  font-size: 16px;
-  font-family: 'Courier New', monospace;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.profile-modal-close:hover {
-  background: rgba(0, 255, 0, 0.1);
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-  transform: scale(1.05);
-}
-
-/* 弹窗内容区域 - 确保可滚动 */
-.profile-modal-content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 30px;
+/* Profile 页面样式 */
+.profile-content {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  min-height: 0; /* 重要：允许 flex 子元素缩小 */
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
+  max-width: 100%;
 }
 
 /* 确保所有子元素不超出容器 */
-.profile-modal-content > * {
+.profile-content > * {
   max-width: 100%;
   box-sizing: border-box;
 }
 
-/* 自定义滚动条 */
-.profile-modal-content::-webkit-scrollbar {
-  width: 10px;
-}
-
-.profile-modal-content::-webkit-scrollbar-track {
-  background: rgba(0, 255, 0, 0.05);
-}
-
-.profile-modal-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 0, 0.3);
-  border-radius: 5px;
-}
-
-.profile-modal-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 0, 0.5);
-}
-
-/* 动画 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* 响应式 - 平板 */
-@media (max-width: 1024px) {
-  .profile-modal {
-    width: 92%;
-    max-height: 88vh;
-  }
-}
-
-/* 响应式 - 手机 */
+/* 响应式 */
 @media (max-width: 768px) {
-  .profile-modal {
-    width: 95%;
-    max-height: 92vh; /* 移动端占更多空间 */
-    border-radius: 4px;
-  }
-
-  .profile-modal-header {
-    padding: 12px 15px;
-  }
-
-  .profile-modal-title {
-    font-size: 16px;
-    letter-spacing: 1px;
-  }
-
-  .profile-modal-close {
-    padding: 6px 12px;
-    font-size: 14px;
-  }
-
-  .profile-modal-content {
-    padding: 15px;
+  .profile-content {
     gap: 20px;
   }
 }
 
-/* 小屏手机 */
 @media (max-width: 480px) {
-  .profile-modal {
-    width: 98%;
-    max-height: 95vh;
-    border-radius: 0;
-  }
-
-  .profile-modal-header {
-    padding: 10px 12px;
-  }
-
-  .profile-modal-title {
-    font-size: 14px;
-  }
-
-  .profile-modal-close {
-    padding: 4px 10px;
-    font-size: 12px;
-  }
-
-  .profile-modal-content {
-    padding: 12px;
+  .profile-content {
     gap: 15px;
-  }
-}
-
-/* 横屏或矮屏幕 */
-@media (max-height: 600px) {
-  .profile-modal {
-    max-height: 95vh;
-  }
-  
-  .profile-modal-header {
-    padding: 8px 15px;
-  }
-  
-  .profile-modal-title {
-    font-size: 14px;
-  }
-  
-  .profile-modal-content {
-    padding: 12px 15px;
-    gap: 12px;
-  }
-}
-
-/* 超小屏幕 */
-@media (max-height: 500px) {
-  .profile-modal {
-    max-height: 98vh;
-  }
-  
-  .profile-modal-header {
-    padding: 6px 12px;
-  }
-  
-  .profile-modal-content {
-    padding: 10px 12px;
-    gap: 10px;
   }
 }

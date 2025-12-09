@@ -3,8 +3,10 @@
  * 统一管理收款地址等配置
  */
 
-// 收款地址（你的钱包地址）
-export const TREASURY_ADDRESS = '0xb6a227d01b06be808aec2041694f85f43ba1b028' as const;
+import { env } from './env';
+
+// 收款地址（从环境变量读取）
+export const TREASURY_ADDRESS = env.treasury.address;
 
 // 管理员地址（用于留言板等管理功能）
 export const ADMIN_ADDRESS = TREASURY_ADDRESS;
@@ -15,10 +17,10 @@ export const PAYMENT_AMOUNTS = {
   GHOST_MAIL_VIP: '0.001', // Ghost Mail VIP 升级
 } as const;
 
-// API 端点
+// API 端点（从环境变量读取）
 export const API_ENDPOINTS = {
-  NEWS: 'https://news.free-node.xyz',
-  GHOST_MAIL: 'https://ghost-mail-api.unlocks.workers.dev',
+  NEWS: env.api.news,
+  GHOST_MAIL: env.api.ghostMail,
 } as const;
 
 // 域名配置

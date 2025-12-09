@@ -1,0 +1,66 @@
+/**
+ * 全局 CSS 变量
+ * 统一管理所有尺寸、颜色等
+ */
+
+:root {
+  /* 颜色系统 */
+  --primary-color: #00ff00;
+  --secondary-color: #00cc00;
+  --tertiary-color: #009900;
+  --bg-color: #000000;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --border-color: rgba(0, 255, 0, 0.3);
+  --border-color-strong: rgba(0, 255, 0, 0.5);
+  --error-color: #ff0000;
+  --warning-color: #ffff00;
+  
+  /* 透明度 */
+  --opacity-light: 0.1;
+  --opacity-medium: 0.3;
+  --opacity-strong: 0.5;
+  
+  /* 宽度变量 */
+  --content-max-width: 900px;
+  --modal-width: 90%;
+  --modal-max-width: 900px;
+  
+  /* 间距系统 */
+  --spacing-xs: 5px;
+  --spacing-sm: 10px;
+  --spacing-md: 20px;
+  --spacing-lg: 30px;
+  --spacing-xl: 40px;
+  --spacing-2xl: 60px;
+  
+  /* 字体系统 */
+  --font-mono: 'Courier New', 'Monaco', 'Menlo', 'Consolas', monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 32px;
+  
+  /* 阴影系统 */
+  --glow-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  --glow-shadow-strong: 0 0 20px rgba(0, 255, 0, 0.8);
+  --glow-shadow-text: 0 0 10px var(--primary-color);
+  
+  /* 边框系统 */
+  --border-width: 2px;
+  --border-radius: 10px;
+  --border-radius-sm: 5px;
+  
+  /* 过渡动画 */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Z-index 层级 */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-modal: 1000;
+  --z-overlay: 9998;
+  --z-tooltip: 10000;
+}

@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useSound } from '../contexts/SoundContext';
+import { useAppStore } from '@/stores/useAppStore';
 import { 
   playHoverSound, 
   playClickSound, 
@@ -8,7 +8,7 @@ import {
 } from '../utils/soundEffects';
 
 export const useSoundEffect = () => {
-  const { soundEnabled } = useSound();
+  const soundEnabled = useAppStore((state) => state.soundEnabled);
 
   const playHover = useCallback(() => {
     if (soundEnabled) {

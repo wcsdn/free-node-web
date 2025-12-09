@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
-import { useLanguage } from '../../../../shared/contexts/LanguageContext';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { sanitizeAndValidate, sanitizeInput } from '../../utils/sanitize';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
 import { useToast } from '../../../../shared/contexts/ToastContext';
@@ -81,7 +81,7 @@ const Guestbook: React.FC = () => {
   }, [entries.length]); // 只依赖长度，减少重新创建
 
   // 提交留言
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     // 检查是否连接钱包
@@ -147,29 +147,29 @@ const Guestbook: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [address, message, hasSigned, replyTo, entries, signMessageAsync, playSuccess, playError, showError, t]);
 
   // 删除单条留言（仅管理员）
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     if (!isAdmin) return;
     
     const updatedEntries = entries.filter(entry => entry.id !== id);
     setEntries(updatedEntries);
     localStorage.setItem('guestbook_entries', JSON.stringify(updatedEntries));
-  };
+  }, [isAdmin, entries]);
 
   // 删除所有留言（仅管理员）
-  const handleDeleteAll = () => {
+  const handleDeleteAll = useCallback(() => {
     if (!isAdmin) return;
     
     if (window.confirm('确定要删除所有留言吗？此操作不可恢复！')) {
       setEntries([]);
       localStorage.setItem('guestbook_entries', JSON.stringify([]));
     }
-  };
+  }, [isAdmin]);
 
   // 回复留言
-  const handleReply = (id: string) => {
+  const handleReply = useCallback((id: string) => {
     setReplyTo(id);
     // 聚焦到输入框
     setTimeout(() => {
@@ -179,12 +179,12 @@ const Guestbook: React.FC = () => {
         input.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }, 100);
-  };
+  }, []);
 
   // 获取被回复的消息
-  const getReplyMessage = (replyToId: string) => {
+  const getReplyMessage = useCallback((replyToId: string) => {
     return entries.find(entry => entry.id === replyToId);
-  };
+  }, [entries]);
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;

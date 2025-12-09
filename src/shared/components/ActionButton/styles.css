@@ -156,19 +156,19 @@
   }
 
   .action-button-pos-0 {
-    top: 20px;
+    top: 15px;
   }
 
   .action-button-pos-1 {
-    top: 75px;
+    top: 60px;
   }
 
   .action-button-pos-2 {
-    top: 130px;
+    top: 105px;
   }
 
   .action-button-pos-3 {
-    top: 185px;
+    top: 150px;
   }
 
   .settings-menu {
@@ -211,18 +211,18 @@
 
 @media (max-width: 480px) {
   .action-button-pos-0 {
-    top: 20px;
+    top: 12px;
   }
 
   .action-button-pos-1 {
-    top: 75px;
+    top: 54px;
   }
 
   .action-button-pos-2 {
-    top: 130px;
+    top: 96px;
   }
 
   .action-button-pos-3 {
-    top: 185px;
+    top: 138px;
   }
 }

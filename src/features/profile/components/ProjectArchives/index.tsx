@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { profileConfig } from '../../config';
-import { useLanguage } from '../../../../shared/contexts/LanguageContext';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
 import './styles.css';
 

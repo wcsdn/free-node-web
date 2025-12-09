@@ -1,6 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSoundEffect } from '../../hooks/useSoundEffect';
-import { useModal } from '../../contexts/ModalContext';
 import '../../../styles/common-button.css';
 import './styles.css';
 
@@ -15,33 +15,33 @@ const BUTTON_CONFIG = {
   profile: {
     icon: '👤',
     title: 'Profile',
-    action: 'profile' as const,
+    path: '/profile',
   },
   news: {
     icon: '📰',
     title: 'News',
-    action: 'news' as const,
+    path: '/news',
   },
   'ghost-mail': {
     icon: '📧',
     title: 'Ghost Mail',
-    action: 'ghost-mail' as const,
+    path: '/ghost-mail',
   },
   settings: {
     icon: '⚙️',
     title: 'Settings',
-    action: 'settings' as const,
+    path: '/settings',
   },
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
+  const navigate = useNavigate();
   const { playHover, playClick } = useSoundEffect();
-  const { openModal } = useModal();
   const config = BUTTON_CONFIG[type];
 
   const handleClick = () => {
     playClick();
-    openModal(config.action);
+    navigate(config.path);
   };
 
   return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles.css';
 
-const CyberRose: React.FC = () => {
+const CyberRose: React.FC = React.memo(() => {
   return (
     <div className="cyber-rose-container">
       <div className="cyber-rose">
@@ -46,6 +46,6 @@ const CyberRose: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 export default CyberRose;
