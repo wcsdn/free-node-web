@@ -17,9 +17,7 @@
 # wrangler
 /.wrangler
 /workers/*/.wrangler
-
-# workers
-/workers
+/workers/*/node_modules
 
 # Kiro IDE
 /.kiro
