@@ -1,0 +1,93 @@
+/* 性能监控组件样式 */
+.perf-monitor {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #00ff00;
+  z-index: 9999;
+  min-width: 80px;
+  user-select: none;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.perf-monitor.expanded {
+  min-width: 180px;
+}
+
+.perf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.perf-header:hover {
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.perf-fps {
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 5px currentColor;
+}
+
+.perf-toggle {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.perf-details {
+  padding: 8px 10px;
+}
+
+.perf-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.perf-label {
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.perf-value {
+  font-weight: bold;
+}
+
+.perf-chart {
+  margin-top: 8px;
+  height: 40px;
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.perf-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .perf-monitor {
+    bottom: 60px;
+    left: 5px;
+    font-size: 10px;
+  }
+
+  .perf-fps {
+    font-size: 12px;
+  }
+
+  .perf-monitor.expanded {
+    min-width: 150px;
+  }
+}

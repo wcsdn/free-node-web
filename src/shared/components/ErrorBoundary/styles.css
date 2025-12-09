@@ -1,0 +1,55 @@
+.error-boundary-fallback {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.error-content {
+  max-width: 600px;
+  padding: 40px;
+  text-align: center;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+  background: rgba(255, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.error-content h2 {
+  color: #ff0000;
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #ff0000;
+}
+
+.error-message {
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  margin-bottom: 30px;
+  word-break: break-word;
+}
+
+.error-reload-button {
+  background: transparent;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  padding: 12px 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.error-reload-button:hover {
+  background: rgba(0, 255, 0, 0.1);
+  transform: scale(1.05);
+}

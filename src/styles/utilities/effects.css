@@ -1,0 +1,60 @@
+/**
+ * Effects Utilities
+ */
+
+/* Glow Effects */
+.glow {
+  box-shadow: var(--glow-shadow);
+}
+
+.glow-strong {
+  box-shadow: var(--glow-shadow-strong);
+}
+
+.glow-text {
+  text-shadow: var(--glow-shadow-text);
+}
+
+/* Opacity */
+.opacity-light {
+  opacity: var(--opacity-light);
+}
+
+.opacity-medium {
+  opacity: var(--opacity-medium);
+}
+
+.opacity-strong {
+  opacity: var(--opacity-strong);
+}
+
+/* Transitions */
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition {
+  transition: all var(--transition-normal);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* Hover Effects */
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--glow-shadow-strong);
+}
+
+/* Cursor */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}

@@ -5,9 +5,12 @@ interface MatrixRainProps {
   columns?: number;
 }
 
-const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) => {
+const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, columns = 50 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameCountRef = useRef(0);
+  const fpsRef = useRef(60);
+  const lastFrameTimeRef = useRef(Date.now());
+  const densityRef = useRef(1.0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -145,6 +148,26 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
     // 动画循环
     let animationId: number;
     const animate = () => {
+      // 计算帧率
+      const now = Date.now();
+      const delta = now - lastFrameTimeRef.current;
+      if (delta > 0) {
+        const currentFps = 1000 / delta;
+        fpsRef.current = fpsRef.current * 0.9 + currentFps * 0.1; // 平滑 FPS
+        
+        // 自动降级：如果帧率低于 30fps，降低密度
+        if (fpsRef.current < 30 && densityRef.current > 0.5) {
+          densityRef.current *= 0.9;
+          // 减少列数
+          const targetColumns = Math.floor(calculatedColumns * densityRef.current);
+          drops.length = targetColumns;
+          charIndexes.length = targetColumns;
+          speeds.length = targetColumns;
+          fontSizes.length = targetColumns;
+        }
+      }
+      lastFrameTimeRef.current = now;
+      
       draw();
       animationId = requestAnimationFrame(animate);
     };
@@ -171,7 +194,7 @@ const MatrixRain: React.FC<MatrixRainProps> = ({ fontSize = 14, columns = 50 }) 
       }}
     />
   );
-};
+});
 
 export default MatrixRain;
 

@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { getTranslation } from '../../../i18n/translations';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
+import { getTranslation } from '../../../config/i18n/translations';
 import './styles.css';
 
 type RabbitStyle = 'classic' | 'geometric' | 'minimal' | 'hacker';
 
-const CyberRabbit: React.FC = () => {
+const CyberRabbit: React.FC = React.memo(() => {
   const { language } = useLanguage();
   const [currentStyle, setCurrentStyle] = useState<RabbitStyle>('hacker');
+  const hasAnimated = useRef(false);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  // 只在首次挂载时触发动画
+  useEffect(() => {
+    if (!hasAnimated.current) {
+      setShouldAnimate(true);
+      hasAnimated.current = true;
+    }
+  }, []);
 
   const nextStyle = () => {
     const styles: RabbitStyle[] = ['classic', 'geometric', 'minimal', 'hacker'];
@@ -198,7 +208,7 @@ const CyberRabbit: React.FC = () => {
   };
 
   return (
-    <div className="cyber-rabbit-container">
+    <div className={`cyber-rabbit-container${shouldAnimate ? ' animate-in' : ''}`}>
       {renderRabbit()}
       
       <div className="rabbit-text">
@@ -210,6 +220,6 @@ const CyberRabbit: React.FC = () => {
       </button>
     </div>
   );
-};
+});
 
 export default CyberRabbit;

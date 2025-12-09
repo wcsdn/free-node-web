@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
-import { useLanguage } from '../../../../shared/contexts/LanguageContext';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
 import { UserStatus } from '../../../../types/ghost-mail';
 import Backdrop from '../../../../shared/components/Backdrop';

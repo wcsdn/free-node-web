@@ -1,5 +1,5 @@
 .guestbook-container {
-  width: 100%;
+  width: 90%;
   max-width: 800px;
   margin: 20px auto;
   padding: 0 10px;
@@ -17,6 +17,30 @@
   display: flex;
   align-items: center;
   border-bottom: 1px solid #00ff00;
+}
+
+.terminal-buttons {
+  display: flex;
+  gap: 8px;
+  margin-right: 15px;
+}
+
+.terminal-buttons span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.btn-close {
+  background: #ff5f56;
+}
+
+.btn-minimize {
+  background: #ffbd2e;
+}
+
+.btn-maximize {
+  background: #27c93f;
 }
 
 .guestbook-title {
@@ -68,7 +92,7 @@
   border: 1px solid #00ff00;
   color: #00ff00;
   font-family: 'Courier New', 'Monaco', monospace;
-  font-size: 14px;
+  font-size: 16px;
   box-sizing: border-box;
   transition: all 0.3s ease;
 }
@@ -240,9 +264,9 @@
 /* 响应式 */
 @media (max-width: 768px) {
   .guestbook-container {
-    margin: 20px auto;
+    width: calc(100% - 20px);
+    margin: 10px auto;
     padding: 0 5px;
-    max-width: calc(100% - 20px);
   }
 
   .guestbook-body {
@@ -250,7 +274,7 @@
   }
 
   .form-input {
-    font-size: 13px;
+    font-size: 16px;
   }
 
   .submit-button {

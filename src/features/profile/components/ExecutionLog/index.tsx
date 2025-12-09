@@ -1,6 +1,6 @@
 import React from 'react';
 import { profileConfig } from '../../config';
-import { useLanguage } from '../../../../shared/contexts/LanguageContext';
+import { useLanguage } from '../../../../shared/hooks/useLanguage';
 import './styles.css';
 
 const ExecutionLog: React.FC = () => {

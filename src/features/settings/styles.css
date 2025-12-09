@@ -1,54 +1,7 @@
-.settings-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
-  background: #0a0a0a;
-  border: 2px solid #00ff00;
-  z-index: 9999;
-  font-family: 'Courier New', monospace;
-}
-
-.settings-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #00ff00;
-  background: rgba(0, 255, 0, 0.05);
-}
-
-.settings-modal-title {
-  color: #00ff00;
-  font-size: 16px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  text-shadow: 0 0 5px #00ff00;
-  margin: 0;
-}
-
-.settings-modal-close {
-  background: transparent;
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  font-size: 14px;
-  cursor: pointer;
-  padding: 4px 10px;
-  font-family: 'Courier New', monospace;
-  transition: all 0.3s ease;
-}
-
-.settings-modal-close:hover {
-  background: rgba(255, 0, 0, 0.2);
-  border-color: #ff0000;
-  color: #ff0000;
-}
-
-.settings-modal-content {
-  padding: 25px 20px;
-  background: #000;
+/* Settings 页面样式 */
+.settings-content {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .setting-item {
@@ -73,7 +26,7 @@
 
 .setting-label {
   color: rgba(0, 255, 0, 0.8);
-  font-size: 13px;
+  font-size: 14px;
   flex: 1;
   text-shadow: 0 0 3px rgba(0, 255, 0, 0.3);
 }
@@ -90,10 +43,10 @@
   font-family: 'Courier New', monospace;
   font-size: 12px;
   font-weight: bold;
-  padding: 6px 18px;
+  padding: 8px 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  min-width: 70px;
+  min-width: 80px;
   letter-spacing: 1px;
 }
 
@@ -118,58 +71,23 @@
   text-shadow: 0 0 5px #00ff00;
 }
 
-/* 扫描线效果 */
-.settings-modal::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    transparent 50%,
-    rgba(0, 255, 0, 0.03) 50%
-  );
-  background-size: 100% 4px;
-  pointer-events: none;
-}
-
 /* 响应式 */
 @media (max-width: 768px) {
-  .settings-modal {
-    width: 85%;
-    max-width: 350px;
-  }
-
-  .settings-modal-header {
-    padding: 12px 15px;
-  }
-
-  .settings-modal-title {
-    font-size: 14px;
-  }
-
-  .settings-modal-content {
-    padding: 20px 15px;
-  }
-
   .setting-item {
     padding: 12px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
   }
 
   .setting-label {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .setting-toggle {
     font-size: 11px;
-    padding: 5px 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .settings-modal {
-    width: 90%;
-    max-width: 320px;
+    padding: 6px 16px;
+    width: 100%;
+    text-align: center;
   }
 }

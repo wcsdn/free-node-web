@@ -1,7 +1,11 @@
+/**
+ * 模态框 Context
+ * 现在只管理钱包连接模态框
+ */
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { registerModalController } from '../utils/globalAPI';
 
-type ModalType = 'ghost-mail' | 'profile' | 'wallet' | 'news' | 'settings' | null;
+type ModalType = 'wallet' | null;
 
 interface ModalContextType {
   currentModal: ModalType;
@@ -23,14 +27,37 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCurrentModal(null);
   }, []);
 
-  const isModalOpen = useCallback((modal: ModalType) => {
-    return currentModal === modal;
+  const isModalOpen = useCallback(
+    (modal: ModalType) => {
+      return currentModal === modal;
+    },
+    [currentModal]
+  );
+
+  // 当弹框打开时禁止背景滚动
+  useEffect(() => {
+    if (currentModal) {
+      const scrollY = window.scrollY;
+
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
   }, [currentModal]);
 
   // 注册全局控制器
   useEffect(() => {
     registerModalController({
-      openModal: (modal) => openModal(modal),
+      openModal,
       closeModal,
     });
   }, [openModal, closeModal]);

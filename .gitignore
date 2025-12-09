@@ -24,9 +24,6 @@
 # Kiro IDE
 /.kiro
 
-# documentation
-/docs
-
 # misc
 .DS_Store
 .env
