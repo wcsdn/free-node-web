@@ -678,10 +678,15 @@ async function handleGetAchievements(request: Request, env: Env, origin: string 
     // 获取用户统计
     const user = await getUser(env.DB, authResult.address);
     if (user) {
+      // 累计总对话次数 (从 daily_usage 表)
+      const chatSum = await env.DB.prepare(
+        'SELECT COALESCE(SUM(ai_count), 0) as total FROM daily_usage WHERE identifier = ?'
+      ).bind(authResult.address).first<{ total: number }>();
+      
       userStats = {
         level: user.level,
         referral_count: (user as any).referral_count || 0,
-        total_chat: 0, // TODO: 从 daily_usage 累计
+        total_chat: chatSum?.total || 0,
       };
     }
     
