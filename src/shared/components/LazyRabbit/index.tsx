@@ -40,16 +40,16 @@ export const LazyRabbit: React.FC<LazyRabbitProps> = ({
           </feMerge>
         </filter>
       </defs>
-      {/* 左耳 - 耷拉着 */}
+      {/* 左耳 - 耷拉着，往左上移动 */}
       <ellipse
-        cx="25"
-        cy="18"
+        cx="15"
+        cy="11"
         rx="6"
         ry="16"
         fill="rgba(255, 255, 255, 0.9)"
         stroke="rgba(0, 255, 65, 0.6)"
         strokeWidth="1"
-        transform="rotate(-20 25 18)"
+        transform="rotate(-35 15 11)"
         filter="url(#rabbitGlow)"
       />
       {/* 右耳 - 竖起一点 */}
@@ -73,6 +73,30 @@ export const LazyRabbit: React.FC<LazyRabbitProps> = ({
         fill="rgba(255, 255, 255, 0.95)"
         stroke="rgba(0, 255, 65, 0.5)"
         strokeWidth="1"
+        filter="url(#rabbitGlow)"
+      />
+      {/* 前爪 - 左 */}
+      <ellipse
+        cx="28"
+        cy="62"
+        rx="8"
+        ry="4"
+        fill="rgba(255, 255, 255, 0.9)"
+        stroke="rgba(0, 255, 65, 0.4)"
+        strokeWidth="1"
+        transform="rotate(-15 28 62)"
+        filter="url(#rabbitGlow)"
+      />
+      {/* 前爪 - 右 */}
+      <ellipse
+        cx="45"
+        cy="64"
+        rx="8"
+        ry="4"
+        fill="rgba(255, 255, 255, 0.9)"
+        stroke="rgba(0, 255, 65, 0.4)"
+        strokeWidth="1"
+        transform="rotate(10 45 64)"
         filter="url(#rabbitGlow)"
       />
       {/* 头 */}
@@ -102,11 +126,23 @@ export const LazyRabbit: React.FC<LazyRabbitProps> = ({
       />
       {/* 鼻子 */}
       <ellipse cx="30" cy="45" rx="2" ry="1.5" fill="#ffcccc" />
+      {/* 后腿 */}
+      <ellipse
+        cx="78"
+        cy="63"
+        rx="10"
+        ry="6"
+        fill="rgba(255, 255, 255, 0.9)"
+        stroke="rgba(0, 255, 65, 0.4)"
+        strokeWidth="1"
+        transform="rotate(155 78 63)"
+        filter="url(#rabbitGlow)"
+      />
       {/* 尾巴 */}
       <circle
-        cx="88"
-        cy="45"
-        r="6"
+        cx="89"
+        cy="44"
+        r="5"
         fill="rgba(255, 255, 255, 0.9)"
         stroke="rgba(0, 255, 65, 0.4)"
         strokeWidth="1"

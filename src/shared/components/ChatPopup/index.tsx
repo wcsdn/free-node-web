@@ -39,7 +39,7 @@ export const ChatPopup: React.FC = () => {
 
   // 多语言文本
   const texts = {
-    welcomeMain: language === 'zh' ? '你想问啥涅~(￣▽￣)~*' : 'Wake up, Neo...',
+    welcomeMain: language === 'zh' ? '要不要先看看尾巴？😏' : 'Wanna see my tail? 😏',
     welcomeSub:
       language === 'zh'
         ? '关于 Free-Node 和 Web3 的问题都可以问我哦'

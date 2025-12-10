@@ -42,12 +42,20 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <div className="error-content">
             <h2>⚠️ Something went wrong</h2>
             <p className="error-message">{this.state.error?.message}</p>
-            <button
-              className="error-reload-button"
-              onClick={() => window.location.reload()}
-            >
-              Reload Page
-            </button>
+            <div className="error-buttons">
+              <button
+                className="error-home-button"
+                onClick={() => (window.location.href = '/')}
+              >
+                Back to Home
+              </button>
+              <button
+                className="error-reload-button"
+                onClick={() => window.location.reload()}
+              >
+                Reload Page
+              </button>
+            </div>
           </div>
         </div>
       );

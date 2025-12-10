@@ -36,20 +36,38 @@
   word-break: break-word;
 }
 
+.error-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.error-home-button,
 .error-reload-button {
   background: transparent;
   border: 2px solid #00ff00;
   color: #00ff00;
   font-family: 'Courier New', monospace;
-  font-size: 16px;
-  padding: 12px 30px;
+  font-size: 14px;
+  padding: 12px 24px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
 }
 
+.error-home-button:hover,
 .error-reload-button:hover {
   background: rgba(0, 255, 0, 0.1);
   transform: scale(1.05);
+}
+
+.error-home-button {
+  border-color: #ff9900;
+  color: #ff9900;
+}
+
+.error-home-button:hover {
+  background: rgba(255, 153, 0, 0.1);
 }
