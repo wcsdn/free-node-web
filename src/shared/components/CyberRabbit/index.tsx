@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLanguage } from '../../hooks/useLanguage';
-import { getTranslation } from '../../../config/i18n/translations';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { getTranslation } from '@/config/i18n/translations';
 import './styles.css';
 
 type RabbitStyle = 'classic' | 'geometric' | 'minimal' | 'hacker';

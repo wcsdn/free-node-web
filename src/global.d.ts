@@ -28,6 +28,9 @@ declare module '*.webp';
 // Vite 环境变量类型声明
 interface ImportMetaEnv {
   readonly VITE_ORACLE_API?: string;
+  readonly PROD: boolean;
+  readonly DEV: boolean;
+  readonly MODE: string;
 }
 
 interface ImportMeta {

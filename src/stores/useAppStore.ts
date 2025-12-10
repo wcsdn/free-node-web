@@ -54,6 +54,10 @@ export const useAppStore = create<AppState>()(
       showPerformanceMonitor: false,
       togglePerformanceMonitor: () => set((state) => ({ showPerformanceMonitor: !state.showPerformanceMonitor })),
       setShowPerformanceMonitor: (show) => set({ showPerformanceMonitor: show }),
+
+      // 首页动画状态（不持久化）
+      homeAnimationComplete: false,
+      setHomeAnimationComplete: (complete) => set({ homeAnimationComplete: complete }),
     }),
     {
       name: 'app-storage',

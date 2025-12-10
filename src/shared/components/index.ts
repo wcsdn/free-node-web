@@ -1,12 +1,12 @@
 export { default as ActionButton } from './ActionButton';
 export { default as Backdrop } from './Backdrop';
 export { default as ChatBtn } from './ChatBtn';
-export { default as ChatPopup } from './ChatPopup';
+export { default as ChatPopup } from '../popup/ChatPopup';
 export { default as CyberRabbit } from './CyberRabbit';
 export { default as CyberRose } from './CyberRose';
 export { default as Footer } from './Footer';
 export { default as LazyRabbit } from './LazyRabbit';
 export { default as Loading } from './Loading';
 export { default as MatrixRain } from './MatrixRain';
-export { default as PerformanceMonitor } from './PerformanceMonitor';
+export { default as PerformanceMonitor } from './Fps';
 export { default as Toast } from './Toast';

@@ -10,13 +10,22 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Turnstile from 'react-turnstile';
-import { useLanguage } from '../../hooks/useLanguage';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 import './styles.css';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
+
+// 等级配置
+const LEVEL_CONFIG = {
+  zh: ['游客', '觉醒者', 'VIP'],
+  en: ['Guest', 'Awakened', 'VIP'],
+};
 
 // Worker API 地址
 const ORACLE_API =
@@ -31,11 +40,14 @@ export const ChatPopup: React.FC = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  // 本次弹窗会话是否已验证过
   const [hasVerified, setHasVerified] = useState(false);
+  const [quota, setQuota] = useState<{ today: number; limit: number | 'unlimited' } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { language } = useLanguage();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const { authHeader, isAuthenticated, isSigning, authenticate } = useWalletAuth();
 
   // 多语言文本
   const texts = {
@@ -47,12 +59,50 @@ export const ChatPopup: React.FC = () => {
     placeholder: language === 'zh' ? '输入你的问题...' : 'Type your question...',
     verifyFirst:
       language === 'zh' ? '请先完成人机验证 ↑' : 'Please complete verification ↑',
+    connectWallet: language === 'zh' ? '连接钱包升级配额' : 'Connect wallet for more quota',
+    signing: language === 'zh' ? '签名中...' : 'Signing...',
   };
+
+  // 获取用户等级
+  const userLevel = isAuthenticated ? 1 : 0;
+  const levelName = language === 'zh' ? LEVEL_CONFIG.zh[userLevel] : LEVEL_CONFIG.en[userLevel];
+
+  // 计算剩余次数
+  const remainingNum = quota
+    ? quota.limit === 'unlimited'
+      ? Infinity
+      : Math.max(0, (quota.limit as number) - quota.today)
+    : null;
+  const remaining = remainingNum === null ? '--' : remainingNum === Infinity ? '∞' : remainingNum;
+  const isQuotaExhausted = remainingNum !== null && remainingNum <= 0;
 
   // 自动滚动到底部
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
+
+  // 初始化时获取配额
+  useEffect(() => {
+    const fetchQuota = async () => {
+      try {
+        const response = await fetch('https://core.free-node.xyz/api/user', {
+          headers: authHeader ? { 'X-Wallet-Auth': authHeader } : {},
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.usage?.ai) {
+            setQuota({
+              today: data.usage.ai.today,
+              limit: data.usage.ai.limit === 'unlimited' ? 'unlimited' : data.usage.ai.limit,
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch quota:', err);
+      }
+    };
+    fetchQuota();
+  }, [authHeader]);
 
   useEffect(() => {
     scrollToBottom();
@@ -88,6 +138,7 @@ export const ChatPopup: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           ...(turnstileToken && { 'X-Turnstile-Token': turnstileToken }),
+          ...(authHeader && { 'X-Wallet-Auth': authHeader }),
         },
         body: JSON.stringify({
           messages: [...messages, userMessage].map((m) => ({
@@ -97,14 +148,27 @@ export const ChatPopup: React.FC = () => {
         }),
       });
 
-      // 标记本次弹窗已验证，token 用完后不再显示验证组件
+      // 标记本次弹窗已验证
       if (turnstileToken) {
         setHasVerified(true);
       }
       setTurnstileToken(null);
 
+      // 更新配额信息 (从响应头获取)
+      const usageToday = response.headers.get('X-Usage-Today');
+      const usageLimit = response.headers.get('X-Usage-Limit');
+      if (usageToday && usageLimit) {
+        setQuota({
+          today: parseInt(usageToday, 10),
+          limit: usageLimit === 'Infinity' ? 'unlimited' : parseInt(usageLimit, 10),
+        });
+      }
+
       if (!response.ok) {
-        throw new Error(`Oracle 连接失败: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData.error || `Oracle 连接失败: ${response.status}`;
+        const tip = errorData.tip ? `\n\n💡 ${errorData.tip}` : '';
+        throw new Error(errorMsg + tip);
       }
 
       const reader = response.body?.getReader();
@@ -263,8 +327,40 @@ export const ChatPopup: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* 配额用尽升级引导 */}
+      {isQuotaExhausted && (
+        <div className="chat-upgrade-card">
+          <div className="upgrade-icon">⚡</div>
+          <div className="upgrade-content">
+            <p className="upgrade-title">
+              {language === 'zh' ? '今日能量已耗尽' : 'Daily quota exhausted'}
+            </p>
+            <p className="upgrade-desc">
+              {!isConnected
+                ? (language === 'zh' ? '连接钱包升级为觉醒者，每日 20 次' : 'Connect wallet to get 20/day')
+                : !isAuthenticated
+                  ? (language === 'zh' ? '签名认证升级为觉醒者，每日 20 次' : 'Verify to get 20/day')
+                  : (language === 'zh' ? '升级 VIP 解锁无限次数' : 'Upgrade to VIP for unlimited')}
+            </p>
+          </div>
+          {!isConnected ? (
+            <button className="upgrade-btn" onClick={openConnectModal}>
+              🔗 {language === 'zh' ? '连接钱包' : 'Connect'}
+            </button>
+          ) : !isAuthenticated ? (
+            <button className="upgrade-btn" onClick={authenticate} disabled={isSigning}>
+              🔐 {isSigning ? '...' : (language === 'zh' ? '认证' : 'Verify')}
+            </button>
+          ) : (
+            <button className="upgrade-btn upgrade-vip">
+              👑 VIP
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Turnstile 验证 - 只在本次弹窗未验证过且没有 token 时显示 */}
-      {!hasVerified && !turnstileToken && (
+      {!hasVerified && !turnstileToken && !isQuotaExhausted && (
         <div className="chat-turnstile">
           <Turnstile
             sitekey={TURNSTILE_SITE_KEY}
@@ -284,6 +380,28 @@ export const ChatPopup: React.FC = () => {
           />
         </div>
       )}
+
+      {/* 状态栏 */}
+      <div className="chat-status-bar">
+        <span className="chat-level">{levelName}</span>
+        <span className="chat-quota" title={language === 'zh' ? '今日剩余次数' : 'Remaining today'}>
+          ⚡ {language === 'zh' ? `剩余 ${remaining} 次` : `${remaining} left`}
+        </span>
+        {!isAuthenticated && isConnected && (
+          <button
+            className="chat-auth-btn"
+            onClick={authenticate}
+            disabled={isSigning}
+          >
+            {isSigning ? texts.signing : (language === 'zh' ? '🔐 认证升级' : '🔐 Verify')}
+          </button>
+        )}
+        {!isConnected && (
+          <button className="chat-auth-btn" onClick={openConnectModal}>
+            🔗 {language === 'zh' ? '连接钱包 +10次' : 'Connect +10'}
+          </button>
+        )}
+      </div>
 
       {/* 输入区域 */}
       <div className="chat-input-area">

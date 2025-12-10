@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSoundEffect } from '../../hooks/useSoundEffect';
-import '../../../styles/common-button.css';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import UserPopup from '@/shared/popup/UserPopup';
+import '@/styles/common-button.css';
 import './styles.css';
 
 export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings';
@@ -14,8 +15,8 @@ interface ActionButtonProps {
 const BUTTON_CONFIG = {
   profile: {
     icon: '👤',
-    title: 'Profile',
-    path: '/profile',
+    title: 'User',
+    path: null, // 不跳转，打开弹窗
   },
   news: {
     icon: '📰',
@@ -38,26 +39,37 @@ const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
   const navigate = useNavigate();
   const { playHover, playClick } = useSoundEffect();
   const config = BUTTON_CONFIG[type];
+  const [showUserPanel, setShowUserPanel] = useState(false);
 
   const handleClick = () => {
     playClick();
-    navigate(config.path);
+    if (type === 'profile') {
+      setShowUserPanel(true);
+    } else if (config.path) {
+      navigate(config.path);
+    }
   };
 
   return (
-    <div 
-      className={`action-button-container action-button-pos-${position}`}
-      data-type={type}
-    >
-      <button
-        className="cyber-button action-btn"
-        onClick={handleClick}
-        onMouseEnter={playHover}
-        title={config.title}
+    <>
+      <div 
+        className={`action-button-container action-button-pos-${position}`}
+        data-type={type}
       >
-        {config.icon}
-      </button>
-    </div>
+        <button
+          className="cyber-button action-btn"
+          onClick={handleClick}
+          onMouseEnter={playHover}
+          title={config.title}
+        >
+          {config.icon}
+        </button>
+      </div>
+      
+      {type === 'profile' && (
+        <UserPopup isOpen={showUserPanel} onClose={() => setShowUserPanel(false)} />
+      )}
+    </>
   );
 };
 

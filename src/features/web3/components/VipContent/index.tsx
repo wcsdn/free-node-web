@@ -2,8 +2,8 @@ import React from 'react';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { formatUnits, parseAbi } from 'viem';
 import { mainnet } from 'wagmi/chains';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
-import { getTranslation } from '../../../../config/i18n/translations';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { getTranslation } from '@/config/i18n/translations';
 import './styles.css';
 
 // USDT 合约地址（以太坊主网）

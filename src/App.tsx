@@ -5,10 +5,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import HomePage from './features/home/HomePage';
-import GlobalModals from './shared/layouts/GlobalModals';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
-import PerformanceMonitor from './shared/components/PerformanceMonitor';
-import ChatBtn from './shared/components/ChatBtn';
 import './App.css';
 
 const App: React.FC = () => {
@@ -24,15 +21,6 @@ const App: React.FC = () => {
 
       {/* 其他页面作为覆盖层 */}
       {!isHomePage && <Outlet />}
-
-      {/* 全局模态框 */}
-      <GlobalModals />
-
-      {/* Ghost Oracle 悬浮按钮 */}
-      <ChatBtn />
-
-      {/* 性能监控 */}
-      <PerformanceMonitor />
     </ErrorBoundary>
   );
 };

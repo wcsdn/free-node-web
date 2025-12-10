@@ -6,7 +6,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useBalance, useEnsName } from 'wagmi';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
-import { useModal } from '@/shared/contexts/ModalContext';
 import './WalletSection.css';
 
 export const WalletSection: React.FC = memo(() => {
@@ -15,14 +14,13 @@ export const WalletSection: React.FC = memo(() => {
   const { data: balance } = useBalance({ address });
   const { t } = useLanguage();
   const { playClick } = useSoundEffect();
-  const { openModal } = useModal();
 
   return (
     <>
       {/* 钱包连接按钮 */}
       <div className="wallet-connect-section">
         <ConnectButton.Custom>
-          {({ account, chain: currentChain, openAccountModal, openChainModal, mounted }) => {
+          {({ account, chain: currentChain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
             const ready = mounted;
             const connected = ready && account && currentChain;
 
@@ -41,7 +39,7 @@ export const WalletSection: React.FC = memo(() => {
                   <button
                     onClick={() => {
                       playClick();
-                      openModal('wallet');
+                      openConnectModal();
                     }}
                     className="custom-connect-button"
                   >

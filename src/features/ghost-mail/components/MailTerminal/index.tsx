@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { useSearchParams } from 'react-router-dom';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
-import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
-import { useToast } from '../../../../shared/contexts/ToastContext';
-import { UserStatus, Mail } from '../../../../types/ghost-mail';
-import { API_ENDPOINTS } from '../../../../config/constants';
-import Backdrop from '../../../../shared/components/Backdrop';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import { useToast } from '@/shared/components/Toast/ToastContext';
+import { UserStatus, Mail } from '@/types/ghost-mail';
+import { API_ENDPOINTS } from '@/config/constants';
+import Backdrop from '@/shared/components/Backdrop';
 import './styles.css';
 
 interface MailTerminalProps {

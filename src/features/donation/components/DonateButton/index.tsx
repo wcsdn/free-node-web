@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
-import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import { TREASURY_ADDRESS, PAYMENT_AMOUNTS } from '@/config/constants';
 import './styles.css';
-
-import { TREASURY_ADDRESS, PAYMENT_AMOUNTS } from '../../../../config/constants';
 
 // 接收打赏的地址（你的以太坊地址）
 const DONATION_ADDRESS = TREASURY_ADDRESS;

@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect } from 'react';
-import Backdrop from '../../Backdrop';
+import Backdrop from '@/shared/components/Backdrop';
 import type { ModalProps } from '@/types';
 import './styles.css';
 

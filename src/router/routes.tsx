@@ -9,8 +9,9 @@ import Loading from '@/shared/components/Loading';
 
 // 懒加载页面组件（HomePage 不需要懒加载，因为始终挂载）
 const NewsPage = lazy(() => import('@/features/news/NewsPage'));
-const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
+// const ProfilePage = lazy(() => import('@/features/profile/ProfilePage')); // 暂时下架，改用 UserPanel 弹窗
 const GhostMailPage = lazy(() => import('@/features/ghost-mail/GhostMailPage'));
+const QuestsPage = lazy(() => import('@/features/quests/QuestsPage'));
 const SettingsPage = lazy(() => import('@/features/settings'));
 
 // 页面包装器 - 添加 Suspense
@@ -33,19 +34,27 @@ export const routes: RouteObject[] = [
           </PageWrapper>
         ),
       },
-      {
-        path: 'profile',
-        element: (
-          <PageWrapper>
-            <ProfilePage />
-          </PageWrapper>
-        ),
-      },
+      // {
+      //   path: 'profile',
+      //   element: (
+      //     <PageWrapper>
+      //       <ProfilePage />
+      //     </PageWrapper>
+      //   ),
+      // },
       {
         path: 'ghost-mail',
         element: (
           <PageWrapper>
             <GhostMailPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'quests',
+        element: (
+          <PageWrapper>
+            <QuestsPage />
           </PageWrapper>
         ),
       },

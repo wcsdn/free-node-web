@@ -4,37 +4,16 @@
  * 使用示例:
  * import { openWallet } from '@/shared/utils/globalAPI';
  *
- * // 打开钱包连接
+ * // 提示用户连接钱包
  * openWallet();
  */
 
-// 模态框控制
-let modalController: {
-  openModal: (modal: ModalType) => void;
-  closeModal: () => void;
-} | null = null;
-
-// 注册控制器（由 ModalContext 调用）
-export const registerModalController = (controller: typeof modalController) => {
-  modalController = controller;
-};
-
-// 全局 API
+/**
+ * 提示用户连接钱包
+ * 注意：实际的钱包连接由 RainbowKit 的 ConnectButton 处理
+ * 这个函数只是在没有连接按钮的地方给用户提示
+ */
 export const openWallet = () => {
-  if (!modalController) {
-    console.error('Modal controller not initialized');
-    return;
-  }
-  modalController.openModal('wallet');
+  console.warn('请点击页面上的 "Open Door" 按钮连接钱包');
+  // 可以在这里添加 Toast 提示
 };
-
-export const closeAllModals = () => {
-  if (!modalController) {
-    console.error('Modal controller not initialized');
-    return;
-  }
-  modalController.closeModal();
-};
-
-// 导出类型
-export type ModalType = 'wallet' | null;

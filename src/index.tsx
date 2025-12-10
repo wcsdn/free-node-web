@@ -11,8 +11,7 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 
 import { config } from './features/web3/config';
-import { ToastProvider } from './shared/contexts/ToastContext';
-import { ModalProvider } from './shared/contexts/ModalContext';
+import { ToastProvider } from '@/shared/components/Toast/ToastContext';
 import { AppRouter } from './router';
 
 // 配置 QueryClient 以支持持久化缓存
@@ -36,22 +35,20 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ToastProvider>
-      <ModalProvider>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider
-              theme={darkTheme({
-                accentColor: '#00ff00',
-                accentColorForeground: '#000000',
-                borderRadius: 'none',
-                fontStack: 'system',
-              })}
-            >
-              <AppRouter />
-            </RainbowKitProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </ModalProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider
+            theme={darkTheme({
+              accentColor: '#00ff00',
+              accentColorForeground: '#000000',
+              borderRadius: 'none',
+              fontStack: 'system',
+            })}
+          >
+            <AppRouter />
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </ToastProvider>
   </React.StrictMode>
 );
