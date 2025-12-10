@@ -2,7 +2,7 @@
 .action-button-container {
   position: fixed;
   top: 20px;
-  z-index: 1000;
+  z-index: 9;
 }
 
 /* PC 端位置 - 水平排列 (从右到左: 设置、邮件、新闻、档案) */

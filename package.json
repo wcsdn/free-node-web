@@ -36,7 +36,11 @@
     "deploy:mail": "cd workers/ghost-mail && npm run deploy",
     "deploy:news": "cd workers/news-server && npm run deploy",
     "deploy:oracle": "cd workers/ghost-oracle && npm run deploy",
-    "db:init": "cd workers/ghost-mail && npm run db:init"
+    "deploy:core": "cd workers/ghost-core && npm run deploy",
+    "deploy:live": "cd workers/ghost-live && npm run deploy",
+    "deploy:workers": "npm run deploy:core && npm run deploy:oracle && npm run deploy:mail && npm run deploy:news && npm run deploy:live",
+    "db:init": "cd workers/ghost-mail && npm run db:init",
+    "db:init:core": "cd workers/ghost-core && npm run db:init"
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.9",

@@ -1,0 +1,188 @@
+/**
+ * LiveCounter 样式 - 赛博朋克风格
+ */
+
+.live-counter {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(13, 17, 23, 0.95) 100%);
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  border-radius: 24px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.85);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 255, 65, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+/* 背景扫描线 */
+.live-counter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+  animation: scanMove 3s infinite;
+}
+
+@keyframes scanMove {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+.live-counter.connected {
+  cursor: pointer;
+}
+
+.live-counter.connected:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.15) 0%, rgba(13, 17, 23, 0.95) 100%);
+  border-color: #00ff41;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 255, 65, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.live-counter.connected:active {
+  transform: translateY(0);
+}
+
+.live-counter.disconnected {
+  opacity: 0.6;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.live-counter.disconnected::before {
+  display: none;
+}
+
+/* 在线指示灯 */
+.live-dot {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00ff41;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 65, 0.8),
+    0 0 20px rgba(0, 255, 65, 0.4);
+  animation: livePulse 2s ease-in-out infinite;
+}
+
+.live-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  animation: liveRipple 2s ease-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { 
+    opacity: 1;
+    box-shadow: 
+      0 0 10px rgba(0, 255, 65, 0.8),
+      0 0 20px rgba(0, 255, 65, 0.4);
+  }
+  50% { 
+    opacity: 0.7;
+    box-shadow: 
+      0 0 6px rgba(0, 255, 65, 0.6),
+      0 0 12px rgba(0, 255, 65, 0.3);
+  }
+}
+
+@keyframes liveRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+.disconnected .live-dot {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+  animation: none;
+}
+
+.disconnected .live-dot::after {
+  display: none;
+}
+
+/* 文字 */
+.live-text {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.live-text strong {
+  color: #00ff41;
+  font-weight: bold;
+  font-size: 15px;
+  text-shadow: 
+    0 0 10px rgba(0, 255, 65, 0.6),
+    0 0 20px rgba(0, 255, 65, 0.3);
+  margin: 0 4px;
+}
+
+/* 聊天提示图标 */
+.live-chat-hint {
+  position: relative;
+  z-index: 1;
+  margin-left: 2px;
+  font-size: 14px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.3));
+}
+
+.live-counter.connected:hover .live-chat-hint {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(0, 255, 65, 0.6));
+}
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .live-counter {
+    padding: 8px 14px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .live-text strong {
+    font-size: 13px;
+  }
+
+  .live-chat-hint {
+    font-size: 12px;
+  }
+}

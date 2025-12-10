@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { profileConfig } from '../../config';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
-import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import './styles.css';
 
 const ProjectArchives: React.FC = () => {

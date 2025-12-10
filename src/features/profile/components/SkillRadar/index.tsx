@@ -1,7 +1,7 @@
 import React from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { profileConfig } from '../../config';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 import './styles.css';
 
 const SkillRadar: React.FC = () => {

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { useSoundEffect } from '../../../hooks/useSoundEffect';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import type { ButtonProps } from '@/types';
 import './styles.css';
 

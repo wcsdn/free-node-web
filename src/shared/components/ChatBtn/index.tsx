@@ -3,13 +3,13 @@
  *
  * 右下角的神秘入口
  */
-
+import { createPortal } from 'react-dom';
 import React, { useState, useEffect } from 'react';
-import Backdrop from '../Backdrop';
-import ChatPopup from '../ChatPopup';
-import LazyRabbit from '../LazyRabbit';
-import { useSoundEffect } from '../../hooks/useSoundEffect';
-import { useLanguage } from '../../hooks/useLanguage';
+import Backdrop from '@/shared/components/Backdrop';
+import ChatPopup from '@/shared/popup/ChatPopup';
+import LazyRabbit from '@/shared/components/LazyRabbit';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 import './styles.css';
 
 export const ChatBtn: React.FC = () => {
@@ -83,9 +83,9 @@ export const ChatBtn: React.FC = () => {
       </button>
 
       {/* Chat Modal */}
-      {isOpen && (
+      {isOpen && createPortal(
         <>
-          <Backdrop onClick={handleClose} zIndex={9998} />
+          <Backdrop onClick={handleClose} zIndex={99} />
           <div className="chat-modal" onClick={(e) => e.stopPropagation()}>
             {/* 兔子趴在顶部边缘 */}
             <div
@@ -122,7 +122,7 @@ export const ChatBtn: React.FC = () => {
               <ChatPopup />
             </div>
           </div>
-        </>
+        </>,document.body 
       )}
     </>
   );

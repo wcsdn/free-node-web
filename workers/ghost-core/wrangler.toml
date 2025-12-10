@@ -1,0 +1,21 @@
+name = "ghost-core"
+main = "src/index.ts"
+compatibility_date = "2024-12-02"
+workers_dev = true
+preview_urls = false
+
+routes = [
+  { pattern = "core.free-node.xyz/*", zone_name = "free-node.xyz" }
+]
+
+# D1 数据库绑定
+[[d1_databases]]
+binding = "DB"
+database_name = "ghost-core-db"
+database_id = "647bab8b-f789-4298-a653-3bdd9a3ea592"
+
+[env.production]
+name = "ghost-core"
+
+[env.preview]
+name = "ghost-core-preview"

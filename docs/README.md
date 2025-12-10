@@ -6,6 +6,7 @@
 |------|------|
 | [Monorepo 架构](./MONOREPO_STRUCTURE.md) | 项目结构、依赖管理、开发工作流 |
 | [Ghost Mail](./GHOST_MAIL.md) | 幽灵信箱功能、数据库、API |
+| [Ghost Oracle](./GHOST_ORACLE.md) | AI 聊天助手、DeepSeek API、Turnstile |
 | [部署指南](./DEPLOYMENT.md) | 前端部署、自动部署配置 |
 | [Cloudflare 配置](./CLOUDFLARE_SETUP.md) | Workers、D1、域名配置 |
 | [全局 API](./GLOBAL_API.md) | 模态框 API、Hook 使用 |

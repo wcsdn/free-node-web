@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
-import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
-import { UserStatus } from '../../../../types/ghost-mail';
-import Backdrop from '../../../../shared/components/Backdrop';
+import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import { UserStatus } from '@/types/ghost-mail';
+import Backdrop from '@/shared/components/Backdrop';
+import { TREASURY_ADDRESS, PAYMENT_AMOUNTS, API_ENDPOINTS } from '@/config/constants';
 import './styles.css';
 
 interface AccessGuardProps {
   children: React.ReactNode;
   onAccessGranted: (status: UserStatus) => void;
 }
-
-import { TREASURY_ADDRESS, PAYMENT_AMOUNTS, API_ENDPOINTS } from '../../../../config/constants';
 
 // 接收支付的地址
 const PAYMENT_ADDRESS = TREASURY_ADDRESS;

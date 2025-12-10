@@ -1,0 +1,19 @@
+{
+  "name": "ghost-core",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create ghost-core-db",
+    "db:init": "wrangler d1 execute ghost-core-db --remote --file=schema.sql",
+    "db:init:local": "wrangler d1 execute ghost-core-db --local --file=schema.sql",
+    "db:query": "wrangler d1 execute ghost-core-db --remote --command",
+    "db:studio": "wrangler d1 studio ghost-core-db"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.93.0"
+  }
+}

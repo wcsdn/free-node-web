@@ -1,0 +1,549 @@
+/**
+ * 任务与成就页面样式
+ */
+
+.quests-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 状态栏 */
+.quests-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  border-radius: 8px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.stat-value {
+  color: #00ff41;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: var(--font-mono);
+}
+
+/* XP 进度条 */
+.xp-progress-section {
+  width: 100%;
+}
+
+.xp-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.xp-label {
+  color: #ffd700;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.xp-value {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.xp-progress-bar {
+  position: relative;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.xp-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff41 0%, #00cc33 50%, #ffd700 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.xp-progress-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+  animation: xpShine 2s infinite;
+}
+
+@keyframes xpShine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.xp-progress-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.xp-progress-footer span:first-child {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.xp-progress-footer span:nth-child(2) {
+  color: #00ff41;
+}
+
+.xp-progress-footer span:last-child {
+  color: rgba(255, 215, 0, 0.7);
+}
+
+/* Tab 切换 */
+.quests-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-family: var(--font-mono);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.tab-btn:hover {
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.tab-btn.active {
+  color: #00ff41;
+  background: rgba(0, 255, 65, 0.15);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+/* 加载状态 */
+.quests-loading {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 40px;
+}
+
+/* 任务区块 */
+.quest-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  color: #00ff41;
+  font-size: 14px;
+  margin: 0 0 16px 0;
+  font-family: var(--font-mono);
+}
+
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 任务卡片 */
+.quest-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.quest-card:hover {
+  border-color: rgba(0, 255, 65, 0.5);
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.quest-card.completed {
+  border-color: rgba(0, 255, 65, 0.6);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.15);
+}
+
+.quest-card.claimed {
+  opacity: 0.6;
+}
+
+.quest-icon {
+  font-size: 28px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 65, 0.1);
+  border-radius: 8px;
+}
+
+.quest-info {
+  flex: 1;
+}
+
+.quest-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.quest-desc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.quest-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #00ff41;
+  transition: width 0.3s;
+}
+
+.progress-text {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  min-width: 40px;
+}
+
+.quest-reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.reward-value {
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.reward-type {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+}
+
+.claim-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 60px;
+}
+
+.claim-btn.locked {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.claim-btn.ready {
+  background: rgba(0, 255, 65, 0.2);
+  border: 1px solid #00ff41;
+  color: #00ff41;
+  animation: pulse 1.5s infinite;
+}
+
+.claim-btn.ready:hover {
+  background: rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+}
+
+.claim-btn.claimed {
+  background: rgba(0, 255, 65, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  color: #00ff41;
+  cursor: default;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 65, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(0, 255, 65, 0.5); }
+}
+
+/* 成就网格 */
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.achievement-card {
+  padding: 16px;
+  background: rgba(0, 255, 65, 0.05);
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.achievement-card.locked {
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.achievement-card.unlocked {
+  border-color: rgba(0, 255, 65, 0.7);
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.achievement-card.unlocked.rarity-common {
+  border-color: rgba(0, 255, 65, 0.6);
+}
+
+.achievement-card.rarity-rare,
+.achievement-card.unlocked.rarity-rare {
+  border-color: rgba(100, 149, 237, 0.8);
+  background: rgba(100, 149, 237, 0.08);
+}
+
+.achievement-card.rarity-epic,
+.achievement-card.unlocked.rarity-epic {
+  border-color: rgba(148, 0, 211, 0.8);
+  background: rgba(148, 0, 211, 0.08);
+}
+
+.achievement-card.rarity-legendary,
+.achievement-card.unlocked.rarity-legendary {
+  border-color: rgba(255, 215, 0, 0.8);
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.achievement-badge {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.achievement-name {
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.achievement-desc {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+
+.achievement-progress {
+  color: #00ff41;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+/* 响应式 */
+@media (max-width: 600px) {
+  .quests-stats {
+    flex-wrap: wrap;
+  }
+  
+  .quest-card {
+    flex-wrap: wrap;
+  }
+  
+  .quest-info {
+    width: 100%;
+    order: 2;
+  }
+  
+  .quest-reward {
+    flex-direction: row;
+    gap: 4px;
+  }
+}
+
+
+/* 去完成按钮 */
+.claim-btn.go-btn {
+  background: rgba(100, 149, 237, 0.2);
+  border: 1px solid rgba(100, 149, 237, 0.5);
+  color: #6495ed;
+}
+
+.claim-btn.go-btn:hover {
+  background: rgba(100, 149, 237, 0.3);
+  box-shadow: 0 0 10px rgba(100, 149, 237, 0.4);
+}
+
+
+/* 签到按钮 */
+.claim-btn.checkin-btn {
+  background: rgba(255, 165, 0, 0.2);
+  border: 1px solid rgba(255, 165, 0, 0.5);
+  color: #ffa500;
+}
+
+.claim-btn.checkin-btn:hover {
+  background: rgba(255, 165, 0, 0.3);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+}
+
+/* 已签到按钮 (置灰) */
+.claim-btn.checked-in {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+}
+
+
+/* 成就解锁动画 */
+.achievement-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.achievement-card.unlocked:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 255, 65, 0.2);
+}
+
+.achievement-card.anim-unlock {
+  animation: unlockPop 0.5s ease;
+}
+
+@keyframes unlockPop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.1); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.unlock-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+  animation: burstExpand 1.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes burstExpand {
+  0% { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% { 
+    opacity: 0.8;
+  }
+  100% { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+/* 稀有度标签 */
+.achievement-rarity-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.rarity-common .achievement-rarity-tag {
+  color: #999;
+  border: 1px solid rgba(150, 150, 150, 0.3);
+}
+
+.rarity-rare .achievement-rarity-tag {
+  color: #6495ed;
+  border: 1px solid rgba(100, 149, 237, 0.4);
+}
+
+.rarity-epic .achievement-rarity-tag {
+  color: #9400d3;
+  border: 1px solid rgba(148, 0, 211, 0.4);
+}
+
+.rarity-legendary .achievement-rarity-tag {
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+/* 稀有度边框发光 */
+.achievement-card.unlocked.rarity-rare {
+  box-shadow: 0 0 10px rgba(100, 149, 237, 0.2);
+}
+
+.achievement-card.unlocked.rarity-epic {
+  box-shadow: 0 0 10px rgba(148, 0, 211, 0.2);
+}
+
+.achievement-card.unlocked.rarity-legendary {
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: legendaryGlow 2s infinite alternate;
+}
+
+@keyframes legendaryGlow {
+  0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+}

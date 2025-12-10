@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAccount, useSignMessage } from 'wagmi';
-import { useLanguage } from '../../../../shared/hooks/useLanguage';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 import { sanitizeAndValidate, sanitizeInput } from '../../utils/sanitize';
-import { useSoundEffect } from '../../../../shared/hooks/useSoundEffect';
-import { useToast } from '../../../../shared/contexts/ToastContext';
-import { openWallet } from '../../../../shared/utils/globalAPI';
+import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
+import { useToast } from '@/shared/components/Toast/ToastContext';
+import { ADMIN_ADDRESS } from '@/config/constants';
 import './styles.css';
 
 interface GuestbookEntry {
@@ -16,8 +17,6 @@ interface GuestbookEntry {
   avatar: string;
   replyTo?: string; // 回复的消息 ID
 }
-
-import { ADMIN_ADDRESS } from '../../../../config/constants';
 
 // 管理员地址（你的钱包地址）
 const ADMIN_ADDR = ADMIN_ADDRESS.toLowerCase();
@@ -31,6 +30,7 @@ const getAvatarForAddress = (address: string): string => {
 
 const Guestbook: React.FC = () => {
   const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const { t } = useLanguage();
   const { playHover, playClick, playSuccess, playError } = useSoundEffect();
   const { showSuccess, showError } = useToast();
@@ -86,7 +86,7 @@ const Guestbook: React.FC = () => {
     
     // 检查是否连接钱包
     if (!address) {
-      openWallet();
+      openConnectModal?.();
       return;
     }
     
