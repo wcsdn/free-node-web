@@ -29,6 +29,7 @@
     "typecheck": "tsc --noEmit",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=free-node-web",
     "deploy:prod": "npm run build && wrangler pages deploy dist --project-name=free-node-web --branch=main",
+    "fabu": "npm run build && wrangler pages deploy dist --project-name=free-node-web --branch=main",
     "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=free-node-web --branch=preview",
     "pub": "wrangler pages deploy dist --project-name=free-node-web",
     "pub:prod": "wrangler pages deploy dist --project-name=free-node-web --branch=main",

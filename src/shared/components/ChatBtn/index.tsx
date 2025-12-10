@@ -88,12 +88,31 @@ export const ChatBtn: React.FC = () => {
           <Backdrop onClick={handleClose} zIndex={9998} />
           <div className="chat-modal" onClick={(e) => e.stopPropagation()}>
             {/* 兔子趴在顶部边缘 */}
-            <div className="chat-modal-rabbit">
+            <div
+              className="chat-modal-rabbit"
+              onClick={(e) => {
+                e.stopPropagation();
+                const bubble = e.currentTarget.querySelector('.rabbit-bubble');
+                if (bubble) {
+                  bubble.classList.add('show');
+                  setTimeout(() => bubble.classList.remove('show'), 2000);
+                }
+              }}
+            >
               <LazyRabbit size="lg" />
+              <div className="rabbit-bubble">
+                {language === 'zh' ? '要翘起来了...💕' : 'Lifting it up... 💕'}
+              </div>
             </div>
             <div className="chat-modal-header">
               <div className="chat-modal-title">
                 <span>{title}</span>
+              </div>
+              <div className="chat-modal-status">
+                <span className="status-dot" />
+                <span className="status-text">
+                  {language === 'zh' ? '正在摇尾巴...' : 'Tail wagging...'}
+                </span>
               </div>
               <button onClick={handleClose} className="chat-modal-close">
                 ✕

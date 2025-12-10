@@ -252,63 +252,73 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
               {language === 'en' ? 'No mailboxes yet' : '暂无邮箱'}
             </div>
           ) : (
-            userStatus.aliases.map((alias) => {
-              const aliasMails = mails.filter((m) => m.alias_name === alias.alias_name);
-              const mailCount = aliasMails.length;
-              const unreadCount = aliasMails.filter((m) => !m.is_read).length;
-              // 获取最新一封邮件的时间
-              const latestMail = aliasMails.length > 0
-                ? aliasMails.reduce((latest, m) => m.created_at > latest.created_at ? m : latest)
-                : null;
-              return (
-                <div
-                  key={alias.alias_name}
-                  className={`alias-item ${selectedAlias === alias.alias_name ? 'selected' : ''}`}
-                  onClick={() => {
-                    playClick();
-                    setSelectedAlias(
-                      selectedAlias === alias.alias_name ? null : alias.alias_name
-                    );
-                  }}
-                  onMouseEnter={playHover}
-                >
-                  <div className="alias-info">
-                    <div className="alias-header">
-                      <span className="alias-name">{alias.alias_name}@free-node.xyz</span>
-                      {unreadCount > 0 && (
-                        <span className="alias-unread-badge">
-                          <span className="alias-unread-dot" />
-                          {unreadCount}
-                        </span>
-                      )}
-                    </div>
-                    <div className="alias-meta">
-                      {latestMail ? (
-                        <span className="alias-latest-time">
-                          {formatRelativeTime(latestMail.created_at)}
-                        </span>
-                      ) : (
-                        <span className="alias-date">{formatDate(alias.created_at)}</span>
-                      )}
-                      {mailCount > 0 && (
-                        <span className="alias-mail-count">{mailCount}</span>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    className="delete-alias-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteAlias(alias.alias_name);
+            // 按最新邮件时间排序，有新邮件的排前面
+            [...userStatus.aliases]
+              .map((alias) => {
+                const aliasMails = mails.filter((m) => m.alias_name === alias.alias_name);
+                const latestMailTime = aliasMails.length > 0
+                  ? Math.max(...aliasMails.map((m) => m.created_at))
+                  : alias.created_at;
+                return { alias, latestMailTime, aliasMails };
+              })
+              .sort((a, b) => b.latestMailTime - a.latestMailTime)
+              .map(({ alias, aliasMails }) => {
+                const mailCount = aliasMails.length;
+                const unreadCount = aliasMails.filter((m) => !m.is_read).length;
+                const latestMail = aliasMails.length > 0
+                  ? aliasMails.reduce((latest, m) =>
+                      m.created_at > latest.created_at ? m : latest
+                    )
+                  : null;
+                return (
+                  <div
+                    key={alias.alias_name}
+                    className={`alias-item ${selectedAlias === alias.alias_name ? 'selected' : ''}`}
+                    onClick={() => {
+                      playClick();
+                      setSelectedAlias(
+                        selectedAlias === alias.alias_name ? null : alias.alias_name
+                      );
                     }}
-                    disabled={isDeleting === alias.alias_name}
                     onMouseEnter={playHover}
                   >
-                    {isDeleting === alias.alias_name ? '...' : '🗑️'}
-                  </button>
-                </div>
-              );
-            })
+                    <div className="alias-info">
+                      <div className="alias-header">
+                        <span className="alias-name">{alias.alias_name}@free-node.xyz</span>
+                        {unreadCount > 0 && (
+                          <span className="alias-unread-badge">
+                            <span className="alias-unread-dot" />
+                            {unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      <div className="alias-meta">
+                        {latestMail ? (
+                          <span className="alias-latest-time">
+                            {formatRelativeTime(latestMail.created_at)}
+                          </span>
+                        ) : (
+                          <span className="alias-date">{formatDate(alias.created_at)}</span>
+                        )}
+                        {mailCount > 0 && (
+                          <span className="alias-mail-count">{mailCount}</span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      className="delete-alias-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteAlias(alias.alias_name);
+                      }}
+                      disabled={isDeleting === alias.alias_name}
+                      onMouseEnter={playHover}
+                    >
+                      {isDeleting === alias.alias_name ? '...' : '🗑️'}
+                    </button>
+                  </div>
+                );
+              })
           )}
         </div>
       </div>
