@@ -25,11 +25,18 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isLoadingMails, setIsLoadingMails] = useState(false);
+  // 当前选中的邮箱账号
+  const [selectedAlias, setSelectedAlias] = useState<string | null>(null);
 
   // 从 URL 获取选中的邮件 ID
   const mailParam = searchParams.get('mail');
   const selectedMailId = mailParam ? parseInt(mailParam, 10) : null;
   const selectedMail = mails.find((m) => m.id === selectedMailId) || null;
+
+  // 过滤当前选中邮箱的邮件
+  const filteredMails = selectedAlias
+    ? mails.filter((m) => m.alias_name === selectedAlias)
+    : [];
 
   // 打开邮件
   const openMail = useCallback(
@@ -167,6 +174,36 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
     });
   };
 
+  // 相对时间格式化
+  const formatRelativeTime = (timestamp: number) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+
+    if (language === 'zh') {
+      if (seconds < 10) return '刚刚';
+      if (seconds < 60) return `${seconds}秒前`;
+      if (minutes < 60) return `${minutes}分钟前`;
+      if (hours < 24) return `${hours}小时前`;
+      if (days < 30) return `${days}天前`;
+      if (months < 12) return `${months}个月前`;
+      return `${years}年前`;
+    } else {
+      if (seconds < 10) return 'just now';
+      if (seconds < 60) return `${seconds}s ago`;
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days < 30) return `${days}d ago`;
+      if (months < 12) return `${months}mo ago`;
+      return `${years}y ago`;
+    }
+  };
+
   const canGenerate = userStatus.activeSlots < userStatus.maxSlots;
 
   return (
@@ -215,22 +252,63 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
               {language === 'en' ? 'No mailboxes yet' : '暂无邮箱'}
             </div>
           ) : (
-            userStatus.aliases.map((alias) => (
-              <div key={alias.alias_name} className="alias-item">
-                <div className="alias-info">
-                  <div className="alias-name">{alias.alias_name}@free-node.xyz</div>
-                  <div className="alias-date">{formatDate(alias.created_at)}</div>
-                </div>
-                <button
-                  className="delete-alias-btn"
-                  onClick={() => handleDeleteAlias(alias.alias_name)}
-                  disabled={isDeleting === alias.alias_name}
+            userStatus.aliases.map((alias) => {
+              const aliasMails = mails.filter((m) => m.alias_name === alias.alias_name);
+              const mailCount = aliasMails.length;
+              const unreadCount = aliasMails.filter((m) => !m.is_read).length;
+              // 获取最新一封邮件的时间
+              const latestMail = aliasMails.length > 0
+                ? aliasMails.reduce((latest, m) => m.created_at > latest.created_at ? m : latest)
+                : null;
+              return (
+                <div
+                  key={alias.alias_name}
+                  className={`alias-item ${selectedAlias === alias.alias_name ? 'selected' : ''}`}
+                  onClick={() => {
+                    playClick();
+                    setSelectedAlias(
+                      selectedAlias === alias.alias_name ? null : alias.alias_name
+                    );
+                  }}
                   onMouseEnter={playHover}
                 >
-                  {isDeleting === alias.alias_name ? '...' : '🗑️'}
-                </button>
-              </div>
-            ))
+                  <div className="alias-info">
+                    <div className="alias-header">
+                      <span className="alias-name">{alias.alias_name}@free-node.xyz</span>
+                      {unreadCount > 0 && (
+                        <span className="alias-unread-badge">
+                          <span className="alias-unread-dot" />
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                    <div className="alias-meta">
+                      {latestMail ? (
+                        <span className="alias-latest-time">
+                          {formatRelativeTime(latestMail.created_at)}
+                        </span>
+                      ) : (
+                        <span className="alias-date">{formatDate(alias.created_at)}</span>
+                      )}
+                      {mailCount > 0 && (
+                        <span className="alias-mail-count">{mailCount}</span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    className="delete-alias-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteAlias(alias.alias_name);
+                    }}
+                    disabled={isDeleting === alias.alias_name}
+                    onMouseEnter={playHover}
+                  >
+                    {isDeleting === alias.alias_name ? '...' : '🗑️'}
+                  </button>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
@@ -239,7 +317,11 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
       <div className="mail-stream">
         <div className="stream-header">
           <h3 className="stream-title">
-            {language === 'en' ? '> INBOX' : '> 收件箱'}
+            {selectedAlias
+              ? `> ${selectedAlias}@free-node.xyz`
+              : language === 'en'
+              ? '> SELECT A MAILBOX'
+              : '> 请选择邮箱'}
           </h3>
           <button
             className="refresh-btn"
@@ -264,7 +346,16 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
 
         {/* 邮件列表 */}
         <div className="mail-list">
-          {mails.length === 0 ? (
+          {!selectedAlias ? (
+            <div className="no-mails">
+              <div className="no-mails-icon">📬</div>
+              <div className="no-mails-text">
+                {language === 'en'
+                  ? 'Click a mailbox on the left to view emails'
+                  : '点击左侧邮箱查看邮件'}
+              </div>
+            </div>
+          ) : filteredMails.length === 0 ? (
             <div className="no-mails">
               <div className="no-mails-icon">📭</div>
               <div className="no-mails-text">
@@ -272,7 +363,7 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
               </div>
             </div>
           ) : (
-            mails.map((mail) => (
+            filteredMails.map((mail) => (
               <div
                 key={mail.id}
                 className={`mail-item ${selectedMail?.id === mail.id ? 'selected' : ''} ${
@@ -285,12 +376,19 @@ const MailTerminal: React.FC<MailTerminalProps> = ({ userStatus, onStatusUpdate 
                 onMouseEnter={playHover}
               >
                 <div className="mail-item-header">
-                  <span className="mail-to">→ {mail.alias_name}@free-node.xyz</span>
+                  <div className="mail-time-badge">
+                    {!mail.is_read && <span className="mail-unread-dot" />}
+                    <span className="mail-relative-time">
+                      {formatRelativeTime(mail.created_at)}
+                    </span>
+                  </div>
                   <span className="mail-date">{formatDate(mail.created_at)}</span>
                 </div>
                 <div className="mail-from">From: {mail.sender}</div>
                 <div className="mail-subject">{mail.subject}</div>
-                <div className="mail-preview">{mail.preview}</div>
+                <div className="mail-preview">
+                  {mail.preview?.slice(0, 100)}{mail.preview?.length > 100 ? '...' : ''}
+                </div>
               </div>
             ))
           )}
