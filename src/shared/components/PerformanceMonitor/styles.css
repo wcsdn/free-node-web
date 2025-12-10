@@ -1,7 +1,7 @@
 /* 性能监控组件样式 */
 .perf-monitor {
   position: fixed;
-  bottom: 10px;
+  top: 10px;
   left: 10px;
   background: rgba(0, 0, 0, 0.9);
   border: 1px solid rgba(0, 255, 0, 0.5);
@@ -78,7 +78,7 @@
 /* 响应式 */
 @media (max-width: 768px) {
   .perf-monitor {
-    bottom: 60px;
+    top: 5px;
     left: 5px;
     font-size: 10px;
   }
