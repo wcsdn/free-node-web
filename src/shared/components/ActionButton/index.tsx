@@ -5,7 +5,7 @@ import UserPopup from '@/shared/popup/UserPopup';
 import '@/styles/common-button.css';
 import './styles.css';
 
-export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings';
+export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges';
 
 interface ActionButtonProps {
   type: ActionButtonType;
@@ -33,6 +33,11 @@ const BUTTON_CONFIG = {
     title: 'Settings',
     path: '/settings',
   },
+  exchanges: {
+    icon: '🏦',
+    title: 'Exchanges',
+    path: '/exchanges',
+  },
 };
 
 const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
@@ -53,8 +58,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
   return (
     <>
       <div 
-        className={`action-button-container action-button-pos-${position}`}
+        className="action-button-container"
         data-type={type}
+        style={{ '--btn-index': position } as React.CSSProperties}
       >
         <button
           className="cyber-button action-btn"

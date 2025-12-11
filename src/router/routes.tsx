@@ -13,6 +13,7 @@ const NewsPage = lazy(() => import('@/features/news/NewsPage'));
 const GhostMailPage = lazy(() => import('@/features/ghost-mail/GhostMailPage'));
 const QuestsPage = lazy(() => import('@/features/quests/QuestsPage'));
 const SettingsPage = lazy(() => import('@/features/settings'));
+const ExchangesPage = lazy(() => import('@/features/exchanges/ExchangesPage'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -63,6 +64,14 @@ export const routes: RouteObject[] = [
         element: (
           <PageWrapper>
             <SettingsPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'exchanges',
+        element: (
+          <PageWrapper>
+            <ExchangesPage />
           </PageWrapper>
         ),
       },

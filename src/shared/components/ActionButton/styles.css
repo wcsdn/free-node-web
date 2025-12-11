@@ -1,25 +1,10 @@
-/* 统一的按钮容器 */
+/* 统一的按钮容器 - 使用 CSS 变量自动计算位置 */
 .action-button-container {
   position: fixed;
   top: 20px;
   z-index: 9;
-}
-
-/* PC 端位置 - 水平排列 (从右到左: 设置、邮件、新闻、档案) */
-.action-button-pos-0 {
-  right: 185px;
-}
-
-.action-button-pos-1 {
-  right: 130px;
-}
-
-.action-button-pos-2 {
-  right: 75px;
-}
-
-.action-button-pos-3 {
-  right: 20px;
+  /* PC 端：从右往左水平排列，使用 CSS 变量计算位置 */
+  right: calc(20px + var(--btn-index, 0) * 55px);
 }
 
 /* 设置菜单样式 */
@@ -153,22 +138,7 @@
 @media (max-width: 768px) {
   .action-button-container {
     right: 10px;
-  }
-
-  .action-button-pos-0 {
-    top: 15px;
-  }
-
-  .action-button-pos-1 {
-    top: 60px;
-  }
-
-  .action-button-pos-2 {
-    top: 105px;
-  }
-
-  .action-button-pos-3 {
-    top: 150px;
+    top: calc(15px + var(--btn-index, 0) * 45px);
   }
 
   .settings-menu {
@@ -210,19 +180,7 @@
 }
 
 @media (max-width: 480px) {
-  .action-button-pos-0 {
-    top: 12px;
-  }
-
-  .action-button-pos-1 {
-    top: 54px;
-  }
-
-  .action-button-pos-2 {
-    top: 96px;
-  }
-
-  .action-button-pos-3 {
-    top: 138px;
+  .action-button-container {
+    top: calc(12px + var(--btn-index, 0) * 42px);
   }
 }
