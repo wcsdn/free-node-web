@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import UserPopup from '@/shared/popup/UserPopup';
+import SettingsPopup from '@/shared/popup/SettingsPopup';
 import '@/styles/common-button.css';
 import './styles.css';
 
@@ -31,7 +34,7 @@ const BUTTON_CONFIG = {
   settings: {
     icon: '⚙️',
     title: 'Settings',
-    path: '/settings',
+    path: null, // 不跳转，打开弹窗
   },
   exchanges: {
     icon: '🏦',
@@ -40,16 +43,31 @@ const BUTTON_CONFIG = {
   },
 };
 
+// 需要登录才能访问的按钮类型
+const REQUIRE_LOGIN: ActionButtonType[] = ['exchanges'];
+
 const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
   const navigate = useNavigate();
   const { playHover, playClick } = useSoundEffect();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const config = BUTTON_CONFIG[type];
   const [showUserPanel, setShowUserPanel] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleClick = () => {
     playClick();
+    
+    // 检查是否需要登录
+    if (REQUIRE_LOGIN.includes(type) && !isConnected) {
+      openConnectModal?.();
+      return;
+    }
+    
     if (type === 'profile') {
       setShowUserPanel(true);
+    } else if (type === 'settings') {
+      setShowSettings(true);
     } else if (config.path) {
       navigate(config.path);
     }
@@ -74,6 +92,9 @@ const ActionButton: React.FC<ActionButtonProps> = ({ type, position }) => {
       
       {type === 'profile' && (
         <UserPopup isOpen={showUserPanel} onClose={() => setShowUserPanel(false)} />
+      )}
+      {type === 'settings' && (
+        <SettingsPopup isOpen={showSettings} onClose={() => setShowSettings(false)} />
       )}
     </>
   );

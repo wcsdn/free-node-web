@@ -1,5 +1,5 @@
 /**
- * 新闻页面
+ * 新闻页面 - 支持 HN 新闻 / 空投活动 切换
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PageLayout from '@/shared/layouts/PageLayout';
@@ -14,10 +14,31 @@ interface NewsItem {
   url: string;
 }
 
+interface Activity {
+  id: string;
+  exchange: string;
+  title: string;
+  title_cn: string | null;
+  url: string;
+  type: string;
+  end_time: string | null;
+  created_at: number;
+}
+
+type TabType = 'news' | 'activities';
+
+const API_BASE = 'https://core.free-node.xyz';
+
 const NewsPage: React.FC = () => {
   const { language } = useLanguage();
+  const isZh = language === 'zh';
+  
+  // Tab 状态
+  const [activeTab, setActiveTab] = useState<TabType>('news');
+  
+  // 新闻状态
   const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [newsLoading, setNewsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [newsUrls, setNewsUrls] = useState<{ [key: number]: string }>({});
@@ -26,47 +47,67 @@ const NewsPage: React.FC = () => {
   const [currentOffset, setCurrentOffset] = useState(0);
   const [displayNumber, setDisplayNumber] = useState(1);
   const terminalRef = useRef<HTMLDivElement>(null);
-  const hasFetchedRef = useRef(false);
+  const hasFetchedNewsRef = useRef(false);
+  
+  // 活动状态
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  const hasFetchedActivitiesRef = useRef(false);
 
   // 备用模拟数据
   const mockNews: NewsItem[] = useMemo(() => [
     { rank: 1, title: '去中心化节点网络架构设计与实现', url: 'https://free-node.xyz' },
     { rank: 2, title: 'Web3 基础设施的未来发展趋势', url: 'https://free-node.xyz' },
     { rank: 3, title: 'React 中实现 Matrix 风格终端界面', url: 'https://free-node.xyz' },
-    { rank: 4, title: 'TypeScript 2025 年最佳实践指南', url: 'https://free-node.xyz' },
-    { rank: 5, title: 'Cloudflare Pages 自动化部署完整教程', url: 'https://free-node.xyz' },
-    { rank: 6, title: 'Canvas API 性能优化技巧与实战', url: 'https://free-node.xyz' },
-    { rank: 7, title: '使用 React Hooks 构建实时应用', url: 'https://free-node.xyz' },
-    { rank: 8, title: 'CSS 动画和过渡效果深度解析', url: 'https://free-node.xyz' },
-    { rank: 9, title: '现代 JavaScript 开发工作流最佳实践', url: 'https://free-node.xyz' },
-    { rank: 10, title: '团队协作中的 Git 使用技巧', url: 'https://free-node.xyz' },
   ], []);
 
   // 获取新闻数据
   useEffect(() => {
-    if (hasFetchedRef.current) return;
-    hasFetchedRef.current = true;
+    if (hasFetchedNewsRef.current) return;
+    hasFetchedNewsRef.current = true;
 
     const fetchNews = async () => {
       try {
-        setLoading(true);
+        setNewsLoading(true);
         setError(null);
         const data = await newsService.getNews(0, 10);
         const top10 = data.items.slice(0, 10);
         setNews(top10);
         setCurrentOffset(10);
-        setLoading(false);
       } catch (err) {
         console.error('获取新闻失败，使用备用数据:', err);
         setNews(mockNews);
         setCurrentOffset(10);
-        setError(null);
-        setLoading(false);
+      } finally {
+        setNewsLoading(false);
       }
     };
 
     fetchNews();
   }, [mockNews]);
+
+  // 获取活动数据
+  useEffect(() => {
+    if (activeTab !== 'activities' || hasFetchedActivitiesRef.current) return;
+    hasFetchedActivitiesRef.current = true;
+
+    const fetchActivities = async () => {
+      setActivitiesLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/activities?limit=50`);
+        if (res.ok) {
+          const data = await res.json();
+          setActivities(data.activities || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch activities:', err);
+      } finally {
+        setActivitiesLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, [activeTab]);
 
   // 加载更多新闻
   const loadMoreNews = async () => {
@@ -108,19 +149,18 @@ const NewsPage: React.FC = () => {
           }
         }, 100);
       }
-
-      setLoadingMore(false);
     } catch (err) {
       console.error('加载更多新闻失败:', err);
       setNoMoreData(true);
-      setDisplayedLines(prev => [...prev, '', '> 加载失败，已经没有更多新闻了']);
+      setDisplayedLines(prev => [...prev, '', '> 加载失败']);
+    } finally {
       setLoadingMore(false);
     }
   };
 
   // 终端打字机效果
   useEffect(() => {
-    if (loading || error || news.length === 0) return;
+    if (newsLoading || error || news.length === 0) return;
 
     setDisplayedLines([]);
     setDisplayNumber(1);
@@ -160,66 +200,139 @@ const NewsPage: React.FC = () => {
     }, 100);
 
     return () => clearInterval(interval);
-  }, [news, loading, error]);
+  }, [news, newsLoading, error]);
+
+  // 活动类型配置
+  const activityTypes: Record<string, { label: string; labelCn: string; color: string }> = {
+    airdrop: { label: 'Airdrop', labelCn: '空投', color: '#00ff41' },
+    bonus: { label: 'Bonus', labelCn: '奖励', color: '#ffcc00' },
+    competition: { label: 'Competition', labelCn: '比赛', color: '#ff6600' },
+    other: { label: 'Event', labelCn: '活动', color: '#00ccff' },
+  };
+
+  const getTypeInfo = (type: string) => activityTypes[type] || activityTypes.other;
 
   return (
-    <PageLayout title={language === 'en' ? '> NEWS TERMINAL' : '> 新闻终端'}>
+    <PageLayout title={isZh ? '> 信息终端' : '> INFO TERMINAL'}>
       <div className="news-terminal-container">
+        {/* Tab 切换 */}
+        <div className="news-tabs">
+          <button
+            className={`news-tab ${activeTab === 'news' ? 'active' : ''}`}
+            onClick={() => setActiveTab('news')}
+          >
+            {isZh ? '📰 HN 热榜' : '📰 HN News'}
+          </button>
+          <button
+            className={`news-tab ${activeTab === 'activities' ? 'active' : ''}`}
+            onClick={() => setActiveTab('activities')}
+          >
+            {isZh ? '🎁 空投活动' : '🎁 Airdrops'}
+          </button>
+        </div>
+
         <div className="terminal-header">
           <div className="terminal-buttons">
             <span className="btn-close"></span>
             <span className="btn-minimize"></span>
             <span className="btn-maximize"></span>
           </div>
-          <div className="terminal-title">root@hackernews:~$</div>
+          <div className="terminal-title">
+            {activeTab === 'news' ? 'root@hackernews:~$' : 'root@airdrops:~$'}
+          </div>
         </div>
 
         <div className="terminal-body" ref={terminalRef}>
-          {loading && (
-            <div className="terminal-loading">
-              <span className="cursor-blink">▋</span> 正在加载数据...
-            </div>
+          {/* 新闻 Tab */}
+          {activeTab === 'news' && (
+            <>
+              {newsLoading && (
+                <div className="terminal-loading">
+                  <span className="cursor-blink">▋</span> {isZh ? '正在加载数据...' : 'Loading...'}
+                </div>
+              )}
+
+              {error && (
+                <div className="terminal-error">
+                  <div>&gt; ERROR: {error}</div>
+                </div>
+              )}
+
+              {!newsLoading && !error && displayedLines.map((line, index) => {
+                const isClickable = newsUrls[index];
+                return (
+                  <div
+                    key={index}
+                    className={`terminal-line ${isClickable ? 'clickable' : ''}`}
+                    onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
+                  >
+                    {line}
+                    {index === displayedLines.length - 1 && !loadingMore && !noMoreData && (
+                      <span className="cursor-blink">▋</span>
+                    )}
+                  </div>
+                );
+              })}
+
+              {!newsLoading && !error && displayedLines.length > 0 && !noMoreData && (
+                <div className="load-more-container">
+                  <button
+                    className="load-more-button"
+                    onClick={loadMoreNews}
+                    disabled={loadingMore}
+                  >
+                    {loadingMore ? '> 正在加载...' : '> [ 加载更多 ]'}
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
-          {error && (
-            <div className="terminal-error">
-              <div>&gt; ERROR: {error}</div>
-              <div>&gt; 请检查网络连接或稍后重试</div>
-            </div>
-          )}
+          {/* 活动 Tab */}
+          {activeTab === 'activities' && (
+            <>
+              {activitiesLoading && (
+                <div className="terminal-loading">
+                  <span className="cursor-blink">▋</span> {isZh ? '正在加载活动...' : 'Loading activities...'}
+                </div>
+              )}
 
-          {!loading && !error && displayedLines.map((line, index) => {
-            const isClickable = newsUrls[index];
-            return (
-              <div
-                key={index}
-                className={`terminal-line ${isClickable ? 'clickable' : ''}`}
-                onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
-              >
-                {line}
-                {index === displayedLines.length - 1 && !loadingMore && !noMoreData && (
-                  <span className="cursor-blink">▋</span>
-                )}
-              </div>
-            );
-          })}
+              {!activitiesLoading && activities.length === 0 && (
+                <div className="terminal-line">
+                  {isZh ? '> 暂无活动数据，敬请期待' : '> No activities yet, stay tuned'}
+                </div>
+              )}
 
-          {!loading && !error && displayedLines.length > 0 && !noMoreData && (
-            <div className="load-more-container">
-              <button
-                className="load-more-button"
-                onClick={loadMoreNews}
-                disabled={loadingMore}
-              >
-                {loadingMore ? '> 正在加载...' : '> [ 加载更多新闻 ]'}
-              </button>
-            </div>
-          )}
-
-          {!loading && !error && noMoreData && (
-            <div className="terminal-line" style={{ marginTop: '20px', textAlign: 'center', opacity: 0.7 }}>
-              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            </div>
+              {!activitiesLoading && activities.length > 0 && (
+                <>
+                  <div className="terminal-line">🎁 {isZh ? '交易所空投活动' : 'Exchange Airdrops'}</div>
+                  <div className="terminal-line">&gt; {isZh ? '点击活动可跳转查看详情' : 'Click to view details'}</div>
+                  <div className="terminal-line">&nbsp;</div>
+                  {activities.map((activity, index) => {
+                    const typeInfo = getTypeInfo(activity.type);
+                    return (
+                      <div
+                        key={activity.id}
+                        className="terminal-line clickable activity-line"
+                        onClick={() => window.open(activity.url, '_blank')}
+                      >
+                        <span className="activity-index">{index + 1}.</span>
+                        <span 
+                          className="activity-type-tag"
+                          style={{ backgroundColor: typeInfo.color }}
+                        >
+                          {isZh ? typeInfo.labelCn : typeInfo.label}
+                        </span>
+                        <span className="activity-exchange">[{activity.exchange.toUpperCase()}]</span>
+                        <span className="activity-title">
+                          {isZh && activity.title_cn ? activity.title_cn : activity.title}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </>
           )}
         </div>
       </div>

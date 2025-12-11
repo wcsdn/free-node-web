@@ -2,8 +2,10 @@
  * 路由配置
  * HomePage 始终挂载，其他页面作为覆盖层显示
  */
-import React, { lazy, Suspense } from 'react';
-import { RouteObject } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect } from 'react';
+import { RouteObject, useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import App from '@/App';
 import Loading from '@/shared/components/Loading';
 
@@ -12,7 +14,7 @@ const NewsPage = lazy(() => import('@/features/news/NewsPage'));
 // const ProfilePage = lazy(() => import('@/features/profile/ProfilePage')); // 暂时下架，改用 UserPanel 弹窗
 const GhostMailPage = lazy(() => import('@/features/ghost-mail/GhostMailPage'));
 const QuestsPage = lazy(() => import('@/features/quests/QuestsPage'));
-const SettingsPage = lazy(() => import('@/features/settings'));
+// const SettingsPage = lazy(() => import('@/features/settings')); // 改为弹窗模式
 const ExchangesPage = lazy(() => import('@/features/exchanges/ExchangesPage'));
 
 // 页面包装器 - 添加 Suspense
@@ -21,6 +23,23 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     {children}
   </Suspense>
 );
+
+// 受保护路由 - 需要登录
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isConnected) {
+      openConnectModal?.();
+      navigate('/');
+    }
+  }, [isConnected, openConnectModal, navigate]);
+
+  if (!isConnected) return null;
+  return <>{children}</>;
+};
 
 export const routes: RouteObject[] = [
   {
@@ -55,18 +74,13 @@ export const routes: RouteObject[] = [
         path: 'quests',
         element: (
           <PageWrapper>
-            <QuestsPage />
+            <ProtectedRoute>
+              <QuestsPage />
+            </ProtectedRoute>
           </PageWrapper>
         ),
       },
-      {
-        path: 'settings',
-        element: (
-          <PageWrapper>
-            <SettingsPage />
-          </PageWrapper>
-        ),
-      },
+      // settings 改为弹窗模式，不再需要路由
       {
         path: 'exchanges',
         element: (

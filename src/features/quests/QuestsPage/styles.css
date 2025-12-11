@@ -3,7 +3,7 @@
  */
 
 .quests-page {
-  padding: 20px;
+  padding: 2px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -181,12 +181,13 @@
 .quest-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 16px;
+  padding: 16px 20px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(0, 255, 65, 0.25);
   border-radius: 8px;
   transition: all 0.2s;
+  min-width: 100%;
 }
 
 .quest-card:hover {
@@ -277,13 +278,13 @@
 }
 
 .claim-btn {
-  padding: 8px 16px;
+  padding: 8px 12px;
   border-radius: 4px;
   font-size: 12px;
   font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.2s;
-  min-width: 60px;
+  min-width: 40px;
 }
 
 .claim-btn.locked {

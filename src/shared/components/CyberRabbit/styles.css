@@ -6,6 +6,7 @@
   margin: 0 auto;
   max-width: 100%;
   overflow: hidden;
+  opacity: 0;
 }
 
 /* 只在首次加载时播放淡入动画 */

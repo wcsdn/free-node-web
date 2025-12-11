@@ -106,7 +106,7 @@ const HomePage: React.FC = memo(() => {
         {/* 页脚 */}
         {showContent && <Footer />}
       </div>
-            {/* 在线人数 + 聊天室容器 */}
+      {/* 在线人数 + 聊天室容器 */}
       <div className="live-overlay-container">
         {showContent && (
           <div className="live-counter-wrapper">
@@ -116,7 +116,7 @@ const HomePage: React.FC = memo(() => {
         <GhostChat isOpen={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
       {/* Ghost Oracle 悬浮按钮 */}
-      <ChatBtn />
+      {showContent && <ChatBtn />}
             {/* 性能监控 */}
       <PerformanceMonitor />
     </>

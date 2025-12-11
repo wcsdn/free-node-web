@@ -1,8 +1,8 @@
 .cyber-rose-container {
-  position: fixed;
-  bottom: -50px;
-  right: 10%;
-  z-index: 100;
+  position: absolute;
+  bottom: 100;
+  left: 20px;
+  z-index: 10;
   pointer-events: none;
   filter: drop-shadow(0 0 20px rgba(255, 0, 102, 0.4));
 }
@@ -503,7 +503,7 @@
 @media (max-width: 768px) {
   .cyber-rose-container {
     bottom: -45px;
-    right: 10%;
+    left: 10%;
   }
 
   .cyber-rose {
@@ -583,7 +583,7 @@
 @media (max-width: 480px) {
   .cyber-rose-container {
     bottom: -40px;
-    right: 10%;
+    left: 10%;
   }
 
   .cyber-rose {

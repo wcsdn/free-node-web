@@ -1,0 +1,143 @@
+/**
+ * SettingsPopup 样式
+ */
+
+.settings-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 800;
+  width: 90%;
+  max-width: 400px;
+  background: #0d1117;
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.2);
+  animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translate(-50%, calc(-50% + 20px)); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translate(-50%, -50%); 
+    opacity: 1; 
+  }
+}
+
+.settings-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 255, 65, 0.08);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.settings-popup-title {
+  color: #00ff41;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.settings-popup-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.settings-popup-close:hover {
+  color: #ff6b6b;
+}
+
+.settings-popup-content {
+  padding: 16px;
+}
+
+.settings-popup-content .setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  background: rgba(0, 255, 65, 0.02);
+  margin-bottom: 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.settings-popup-content .setting-item:hover {
+  border-color: rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.settings-popup-content .setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.settings-popup-content .setting-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: 'Courier New', monospace;
+}
+
+.settings-popup-content .setting-label::before {
+  content: '> ';
+  color: #00ff41;
+}
+
+.settings-popup-content .setting-toggle {
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.4);
+  color: rgba(0, 255, 65, 0.7);
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  border-radius: 4px;
+}
+
+.settings-popup-content .setting-toggle:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.settings-popup-content .setting-toggle.active {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: #00ff41;
+  color: #00ff41;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .settings-popup {
+    width: 95%;
+  }
+
+  .settings-popup-content .setting-item {
+    padding: 10px;
+  }
+
+  .settings-popup-content .setting-label {
+    font-size: 12px;
+  }
+
+  .settings-popup-content .setting-toggle {
+    font-size: 10px;
+    padding: 5px 12px;
+  }
+}

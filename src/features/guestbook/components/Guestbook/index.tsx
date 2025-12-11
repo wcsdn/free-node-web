@@ -144,9 +144,10 @@ const Guestbook: React.FC = () => {
     } catch (error) {
       console.error('签名失败:', error);
       playError();
-    } finally {
       setIsSubmitting(false);
+      return;
     }
+    setIsSubmitting(false);
   }, [address, message, hasSigned, replyTo, entries, signMessageAsync, playSuccess, playError, showError, t]);
 
   // 删除单条留言（仅管理员）
@@ -215,7 +216,7 @@ const Guestbook: React.FC = () => {
         <div className="guestbook-intro">
           <p className="intro-line">{t('intrusionSystem')}</p>
           <p className="intro-line">{t('leaveYourMark')}</p>
-          <p className="intro-line">{hasSigned ? t('signatureVerified') : t('signatureRequired')}</p>
+          {/* <p className="intro-line">{hasSigned ? t('signatureVerified') : t('signatureRequired')}</p> */}
           <p className="intro-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
         </div>
 
