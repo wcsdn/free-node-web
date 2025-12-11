@@ -7,6 +7,8 @@ interface NewsItem {
 
 interface Env {
   NEWS_CACHE: KVNamespace;
+  GHOST_CORE_API?: string;
+  ADMIN_KEY?: string;
 }
 
 interface CachedData {
@@ -15,7 +17,208 @@ interface CachedData {
   updateTime: string;
 }
 
+// ============================================
+// 交易所活动爬虫
+// ============================================
+
+interface ActivityItem {
+  exchange: string;
+  title: string;
+  titleCn?: string;
+  url: string;
+  type: 'airdrop' | 'bonus' | 'competition' | 'other';
+}
+
+// 交易所关键词
+const EXCHANGE_KEYWORDS = ['binance', 'okx', 'bybit', 'bitget', 'gate', '币安', '欧易'];
+const ACTIVITY_KEYWORDS = ['空投', 'airdrop', '活动', '奖励', 'bonus', '大赛', 'competition', '福利', '注册'];
+
+// 爬取 BlockBeats 快讯
+async function fetchBlockBeats(): Promise<ActivityItem[]> {
+  try {
+    const response = await fetch('https://api.theblockbeats.news/v1/open-api/open-flash?size=50&page=1&type=push', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('BlockBeats API error:', response.status);
+      return [];
+    }
+
+    const data = await response.json() as any;
+    const articles = data?.data?.data || [];
+    
+    return articles
+      .filter((item: any) => {
+        const content = (item.title + ' ' + item.content).toLowerCase();
+        const hasExchange = EXCHANGE_KEYWORDS.some(k => content.includes(k.toLowerCase()));
+        const hasActivity = ACTIVITY_KEYWORDS.some(k => content.includes(k.toLowerCase()));
+        return hasExchange && hasActivity;
+      })
+      .map((item: any) => {
+        const content = (item.title + ' ' + item.content).toLowerCase();
+        let exchange = 'other';
+        if (content.includes('binance') || content.includes('币安')) exchange = 'binance';
+        else if (content.includes('okx') || content.includes('欧易')) exchange = 'okx';
+        else if (content.includes('bybit')) exchange = 'bybit';
+        else if (content.includes('bitget')) exchange = 'bitget';
+        else if (content.includes('gate')) exchange = 'gate';
+
+        let type: ActivityItem['type'] = 'other';
+        if (content.includes('空投') || content.includes('airdrop')) type = 'airdrop';
+        else if (content.includes('奖励') || content.includes('bonus')) type = 'bonus';
+        else if (content.includes('大赛') || content.includes('competition')) type = 'competition';
+
+        return {
+          exchange,
+          title: item.title,
+          titleCn: item.title, // BlockBeats 本身是中文
+          url: `https://www.theblockbeats.info/flash/${item.id}`,
+          type,
+        };
+      })
+      .slice(0, 10); // 最多取 10 条
+  } catch (error) {
+    console.error('BlockBeats fetch error:', error);
+    return [];
+  }
+}
+
+// 爬取 TechFlow 快讯
+async function fetchTechFlow(): Promise<ActivityItem[]> {
+  try {
+    const response = await fetch('https://api.techflowpost.com/ashare/posts?page=1&per_page=30&post_type=news', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('TechFlow API error:', response.status);
+      return [];
+    }
+
+    const data = await response.json() as any;
+    const articles = data?.data || [];
+    
+    return articles
+      .filter((item: any) => {
+        const content = (item.title + ' ' + (item.excerpt || '')).toLowerCase();
+        const hasExchange = EXCHANGE_KEYWORDS.some(k => content.includes(k.toLowerCase()));
+        const hasActivity = ACTIVITY_KEYWORDS.some(k => content.includes(k.toLowerCase()));
+        return hasExchange && hasActivity;
+      })
+      .map((item: any) => {
+        const content = (item.title + ' ' + (item.excerpt || '')).toLowerCase();
+        let exchange = 'other';
+        if (content.includes('binance') || content.includes('币安')) exchange = 'binance';
+        else if (content.includes('okx') || content.includes('欧易')) exchange = 'okx';
+        else if (content.includes('bybit')) exchange = 'bybit';
+        else if (content.includes('bitget')) exchange = 'bitget';
+        else if (content.includes('gate')) exchange = 'gate';
+
+        let type: ActivityItem['type'] = 'other';
+        if (content.includes('空投') || content.includes('airdrop')) type = 'airdrop';
+        else if (content.includes('奖励') || content.includes('bonus')) type = 'bonus';
+        else if (content.includes('大赛') || content.includes('competition')) type = 'competition';
+
+        return {
+          exchange,
+          title: item.title,
+          titleCn: item.title,
+          url: `https://www.techflowpost.com/article/detail_${item.id}.html`,
+          type,
+        };
+      })
+      .slice(0, 10);
+  } catch (error) {
+    console.error('TechFlow fetch error:', error);
+    return [];
+  }
+}
+
+// 推送活动到 ghost-core
+async function pushActivitiesToCore(activities: ActivityItem[], env: Env): Promise<number> {
+  const apiBase = env.GHOST_CORE_API || 'https://core.free-node.xyz';
+  const adminKey = env.ADMIN_KEY || '';
+  
+  if (!adminKey) {
+    console.error('ADMIN_KEY not configured');
+    return 0;
+  }
+
+  let pushed = 0;
+  for (const activity of activities) {
+    try {
+      const response = await fetch(`${apiBase}/api/activities`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminKey}`,
+        },
+        body: JSON.stringify({
+          exchange: activity.exchange,
+          title: activity.title,
+          title_cn: activity.titleCn,
+          url: activity.url,
+          type: activity.type,
+        }),
+      });
+
+      if (response.ok) {
+        pushed++;
+        console.log(`Pushed activity: ${activity.title}`);
+      } else {
+        console.error(`Failed to push: ${activity.title}`, await response.text());
+      }
+    } catch (error) {
+      console.error(`Error pushing activity: ${activity.title}`, error);
+    }
+  }
+
+  return pushed;
+}
+
+// 定时任务：爬取并推送活动
+async function crawlAndPushActivities(env: Env): Promise<{ blockbeats: number; techflow: number; pushed: number }> {
+  console.log('Starting activity crawl...');
+  
+  // 并行爬取
+  const [blockbeatsItems, techflowItems] = await Promise.all([
+    fetchBlockBeats(),
+    fetchTechFlow(),
+  ]);
+
+  console.log(`BlockBeats: ${blockbeatsItems.length}, TechFlow: ${techflowItems.length}`);
+
+  // 合并去重（按 URL）
+  const allItems = [...blockbeatsItems, ...techflowItems];
+  const uniqueItems = allItems.filter((item, index, self) => 
+    index === self.findIndex(t => t.url === item.url)
+  );
+
+  // 推送到 ghost-core
+  const pushed = await pushActivitiesToCore(uniqueItems, env);
+
+  return {
+    blockbeats: blockbeatsItems.length,
+    techflow: techflowItems.length,
+    pushed,
+  };
+}
+
 export default {
+  // 定时任务入口
+  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+    console.log('Cron triggered:', event.cron);
+    const result = await crawlAndPushActivities(env);
+    console.log('Crawl result:', result);
+  },
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     
@@ -45,6 +248,16 @@ export default {
         return Response.json({ error: 'No cached data' }, { status: 404, headers: corsHeaders });
       }
       
+      // 手动触发活动爬虫
+      if (url.pathname === '/api/crawl-activities') {
+        const result = await crawlAndPushActivities(env);
+        return Response.json({
+          success: true,
+          message: '活动爬取完成',
+          data: result
+        }, { headers: corsHeaders });
+      }
+
       // 强制刷新并存入 KV
       if (url.pathname === '/api/refresh') {
         const items = await fetchHackerNews();

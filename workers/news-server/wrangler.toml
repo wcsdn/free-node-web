@@ -10,7 +10,18 @@ workers_dev = true
 binding = "NEWS_CACHE"
 id = "fe4901d1d41f4c8880ec776be03058fc"
 
-# 自定义域名配置
-[[routes]]
-pattern = "news.free-node.xyz/*"
-zone_name = "free-node.xyz"
+# 自定义域名配置（已在 Dashboard 配置，无需重复）
+# [[routes]]
+# pattern = "news.free-node.xyz/*"
+# zone_name = "free-node.xyz"
+
+# 定时任务：每小时爬取交易所活动
+[triggers]
+crons = ["0 * * * *"]
+
+# 环境变量
+[vars]
+GHOST_CORE_API = "https://core.free-node.xyz"
+
+# Secrets (需要通过 wrangler secret put 设置)
+# ADMIN_KEY = "xxx"

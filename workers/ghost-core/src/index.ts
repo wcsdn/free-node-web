@@ -8,6 +8,7 @@
 interface Env {
   DB: D1Database;
   SERVICE_SECRET?: string;  // 内部服务通信密钥 (可选)
+  ADMIN_KEY?: string;       // 管理员密钥
 }
 
 // ============================================
@@ -751,6 +752,161 @@ async function handleGetAchievements(request: Request, env: Env, origin: string 
 }
 
 // ============================================
+// API: 交易所活动
+// ============================================
+
+interface Activity {
+  id: string;
+  exchange: string;
+  title: string;
+  title_cn: string | null;
+  url: string;
+  type: string;
+  end_time: string | null;
+  is_active: number;
+  created_at: number;
+}
+
+async function handleGetActivities(request: Request, env: Env, origin: string | null): Promise<Response> {
+  const url = new URL(request.url);
+  const exchange = url.searchParams.get('exchange');
+  const type = url.searchParams.get('type');
+  const limit = parseInt(url.searchParams.get('limit') || '20');
+  
+  let query = 'SELECT * FROM exchange_activities WHERE is_active = 1';
+  const params: string[] = [];
+  
+  if (exchange) {
+    query += ' AND exchange = ?';
+    params.push(exchange);
+  }
+  if (type) {
+    query += ' AND type = ?';
+    params.push(type);
+  }
+  
+  query += ' ORDER BY created_at DESC LIMIT ?';
+  params.push(limit.toString());
+  
+  const stmt = env.DB.prepare(query);
+  const result = await stmt.bind(...params).all<Activity>();
+  
+  return jsonResponse({
+    activities: result.results || [],
+    total: result.results?.length || 0,
+  }, 200, origin);
+}
+
+async function handleCreateActivity(request: Request, env: Env, origin: string | null): Promise<Response> {
+  // 验证管理员密钥
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.slice(7) !== env.ADMIN_KEY) {
+    return errorResponse('Unauthorized', 401, origin);
+  }
+  
+  try {
+    const body = await request.json() as {
+      exchange: string;
+      title: string;
+      title_cn?: string;
+      url: string;
+      type?: string;
+      end_time?: string;
+    };
+    
+    const { exchange, title, title_cn, url, type = 'other', end_time } = body;
+    
+    if (!exchange || !title || !url) {
+      return errorResponse('Missing required fields: exchange, title, url', 400, origin);
+    }
+    
+    const validExchanges = ['binance', 'okx', 'bybit', 'bitget', 'gate'];
+    if (!validExchanges.includes(exchange)) {
+      return errorResponse('Invalid exchange', 400, origin);
+    }
+    
+    const id = crypto.randomUUID();
+    
+    await env.DB.prepare(`
+      INSERT INTO exchange_activities (id, exchange, title, title_cn, url, type, end_time)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(id, exchange, title, title_cn || null, url, type, end_time || null).run();
+    
+    return jsonResponse({ success: true, id }, 201, origin);
+  } catch (err) {
+    console.error('Create activity error:', err);
+    return errorResponse('Internal server error', 500, origin);
+  }
+}
+
+async function handleDeleteActivity(request: Request, env: Env, origin: string | null, activityId: string): Promise<Response> {
+  // 验证管理员密钥
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ') || authHeader.slice(7) !== env.ADMIN_KEY) {
+    return errorResponse('Unauthorized', 401, origin);
+  }
+  
+  await env.DB.prepare('UPDATE exchange_activities SET is_active = 0 WHERE id = ?')
+    .bind(activityId).run();
+  
+  return jsonResponse({ success: true }, 200, origin);
+}
+
+// ============================================
+// API: 页面访问统计
+// ============================================
+
+async function handleGetPageViews(request: Request, env: Env, origin: string | null): Promise<Response> {
+  const url = new URL(request.url);
+  const page = url.searchParams.get('page') || '/exchanges';
+  const days = parseInt(url.searchParams.get('days') || '30');
+  
+  // 获取指定天数内的访问量
+  const result = await env.DB.prepare(`
+    SELECT COALESCE(SUM(count), 0) as total
+    FROM page_views 
+    WHERE page = ? AND date >= date('now', '-' || ? || ' days')
+  `).bind(page, days).first<{ total: number }>();
+  
+  // 获取今日访问量
+  const today = new Date().toISOString().split('T')[0];
+  const todayResult = await env.DB.prepare(
+    'SELECT count FROM page_views WHERE page = ? AND date = ?'
+  ).bind(page, today).first<{ count: number }>();
+  
+  return jsonResponse({
+    page,
+    total: result?.total || 0,
+    today: todayResult?.count || 0,
+    days,
+  }, 200, origin);
+}
+
+async function handleRecordPageView(request: Request, env: Env, origin: string | null): Promise<Response> {
+  try {
+    const body = await request.json() as { page: string };
+    const { page } = body;
+    
+    if (!page) {
+      return errorResponse('Missing page', 400, origin);
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    await env.DB.prepare(`
+      INSERT INTO page_views (page, date, count)
+      VALUES (?, ?, 1)
+      ON CONFLICT (page, date) DO UPDATE SET count = count + 1
+    `).bind(page, today).run();
+    
+    return jsonResponse({ success: true }, 200, origin);
+  } catch (err) {
+    console.error('Record page view error:', err);
+    return errorResponse('Internal server error', 500, origin);
+  }
+}
+
+// ============================================
 // API: 每日签到
 // ============================================
 
@@ -928,11 +1084,28 @@ export default {
       case '/api/achievements':
         return handleGetAchievements(request, env, origin);
       
+      // 交易所活动 API
+      case '/api/activities':
+        if (request.method === 'GET') return handleGetActivities(request, env, origin);
+        if (request.method === 'POST') return handleCreateActivity(request, env, origin);
+        return errorResponse('Method not allowed', 405, origin);
+      
+      // 页面访问统计 API
+      case '/api/stats/pageviews':
+        if (request.method === 'GET') return handleGetPageViews(request, env, origin);
+        if (request.method === 'POST') return handleRecordPageView(request, env, origin);
+        return errorResponse('Method not allowed', 405, origin);
+      
       // 健康检查
       case '/health':
         return jsonResponse({ status: 'ok', service: 'ghost-core' }, 200, origin);
       
       default:
+        // 动态路由: /api/activities/:id
+        if (path.startsWith('/api/activities/') && request.method === 'DELETE') {
+          const activityId = path.split('/')[3];
+          return handleDeleteActivity(request, env, origin, activityId);
+        }
         return errorResponse('Not found', 404, origin);
     }
   },
