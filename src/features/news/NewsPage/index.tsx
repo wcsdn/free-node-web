@@ -58,8 +58,10 @@ function getCategory(activity: Activity): CategoryType {
 
 // 格式化时间
 function formatTime(timestamp: number, isZh: boolean): string {
+  // 如果时间戳小于 10^12，说明是秒级，需要转换为毫秒
+  const ts = timestamp < 1e12 ? timestamp * 1000 : timestamp;
   const now = Date.now();
-  const diff = now - timestamp;
+  const diff = now - ts;
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
@@ -67,6 +69,7 @@ function formatTime(timestamp: number, isZh: boolean): string {
   if (minutes < 1) return isZh ? '刚刚' : 'Just now';
   if (minutes < 60) return isZh ? `${minutes}分钟前` : `${minutes}m ago`;
   if (hours < 24) return isZh ? `${hours}小时前` : `${hours}h ago`;
+  if (days > 365) return isZh ? '很久以前' : 'Long ago';
   return isZh ? `${days}天前` : `${days}d ago`;
 }
 
