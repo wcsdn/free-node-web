@@ -1,18 +1,14 @@
 /**
- * 新闻页面 - 支持 HN 新闻 / 空投活动 切换
+ * 新闻页面 - Web3 快讯 + HN 热榜
+ * 支持分类筛选，未登录只显示 2 条
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { newsService } from '@/services/news';
 import './styles.css';
-
-interface NewsItem {
-  rank: number;
-  title: string;
-  titleCn?: string;
-  url: string;
-}
 
 interface Activity {
   id: string;
@@ -21,83 +17,97 @@ interface Activity {
   title_cn: string | null;
   url: string;
   type: string;
-  end_time: string | null;
+  category?: string;
+  priority?: number;
+  source?: string;
   created_at: number;
 }
 
-type TabType = 'news' | 'activities';
+interface HNNewsItem {
+  rank: number;
+  title: string;
+  titleCn?: string;
+  url: string;
+}
+
+type TabType = 'web3' | 'hn';
+type CategoryType = 'all' | 'exchange_activity' | 'airdrop' | 'exchange_news' | 'project_update' | 'market_hot';
 
 const API_BASE = 'https://core.free-node.xyz';
+
+// 分类配置
+const CATEGORY_CONFIG: Record<CategoryType, { label: string; labelCn: string; icon: string; color: string }> = {
+  all: { label: 'All', labelCn: '全部', icon: '📋', color: '#00ff41' },
+  exchange_activity: { label: 'Exchange', labelCn: '交易所活动', icon: '🔥', color: '#ff4444' },
+  airdrop: { label: 'Airdrop', labelCn: '空投', icon: '🪂', color: '#aa44ff' },
+  exchange_news: { label: 'CEX News', labelCn: '交易所', icon: '🏦', color: '#4488ff' },
+  project_update: { label: 'Project', labelCn: '项目动态', icon: '🚀', color: '#44ff88' },
+  market_hot: { label: 'Market', labelCn: '市场热点', icon: '📈', color: '#ffaa44' },
+};
+
+// 根据 type 或 category 获取分类
+function getCategory(activity: Activity): CategoryType {
+  if (activity.category && activity.category !== 'general') {
+    return activity.category as CategoryType;
+  }
+  // 兼容旧数据
+  if (activity.type === 'airdrop') return 'airdrop';
+  if (activity.type === 'bonus') return 'exchange_activity';
+  return 'exchange_news';
+}
+
+// 格式化时间
+function formatTime(timestamp: number, isZh: boolean): string {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return isZh ? '刚刚' : 'Just now';
+  if (minutes < 60) return isZh ? `${minutes}分钟前` : `${minutes}m ago`;
+  if (hours < 24) return isZh ? `${hours}小时前` : `${hours}h ago`;
+  return isZh ? `${days}天前` : `${days}d ago`;
+}
 
 const NewsPage: React.FC = () => {
   const { language } = useLanguage();
   const isZh = language === 'zh';
-  
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+
   // Tab 状态
-  const [activeTab, setActiveTab] = useState<TabType>('news');
+  const [activeTab, setActiveTab] = useState<TabType>('web3');
   
-  // 新闻状态
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [newsLoading, setNewsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [displayedLines, setDisplayedLines] = useState<string[]>([]);
-  const [newsUrls, setNewsUrls] = useState<{ [key: number]: string }>({});
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [noMoreData, setNoMoreData] = useState(false);
-  const [currentOffset, setCurrentOffset] = useState(0);
-  const [displayNumber, setDisplayNumber] = useState(1);
-  const terminalRef = useRef<HTMLDivElement>(null);
-  const hasFetchedNewsRef = useRef(false);
-  
-  // 活动状态
+  // Web3 快讯状态
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [activitiesLoading, setActivitiesLoading] = useState(false);
+  const [activitiesLoading, setActivitiesLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
   const hasFetchedActivitiesRef = useRef(false);
+  
+  // HN 新闻状态
+  const [hnNews, setHnNews] = useState<HNNewsItem[]>([]);
+  const [hnLoading, setHnLoading] = useState(false);
+  const hasFetchedHNRef = useRef(false);
 
-  // 备用模拟数据
-  const mockNews: NewsItem[] = useMemo(() => [
-    { rank: 1, title: '去中心化节点网络架构设计与实现', url: 'https://free-node.xyz' },
-    { rank: 2, title: 'Web3 基础设施的未来发展趋势', url: 'https://free-node.xyz' },
-    { rank: 3, title: 'React 中实现 Matrix 风格终端界面', url: 'https://free-node.xyz' },
-  ], []);
-
-  // 获取新闻数据
+  // 获取 Web3 活动数据
   useEffect(() => {
-    if (hasFetchedNewsRef.current) return;
-    hasFetchedNewsRef.current = true;
-
-    const fetchNews = async () => {
-      try {
-        setNewsLoading(true);
-        setError(null);
-        const data = await newsService.getNews(0, 10);
-        const top10 = data.items.slice(0, 10);
-        setNews(top10);
-        setCurrentOffset(10);
-      } catch (err) {
-        console.error('获取新闻失败，使用备用数据:', err);
-        setNews(mockNews);
-        setCurrentOffset(10);
-      } finally {
-        setNewsLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, [mockNews]);
-
-  // 获取活动数据
-  useEffect(() => {
-    if (activeTab !== 'activities' || hasFetchedActivitiesRef.current) return;
+    if (hasFetchedActivitiesRef.current) return;
     hasFetchedActivitiesRef.current = true;
 
     const fetchActivities = async () => {
       setActivitiesLoading(true);
       try {
-        const res = await fetch(`${API_BASE}/api/activities?limit=50`);
+        const res = await fetch(`${API_BASE}/api/activities?limit=100`);
         if (res.ok) {
           const data = await res.json();
-          setActivities(data.activities || []);
+          const sorted = (data.activities || []).sort((a: Activity, b: Activity) => {
+            const priorityA = a.priority || 5;
+            const priorityB = b.priority || 5;
+            if (priorityA !== priorityB) return priorityA - priorityB;
+            return b.created_at - a.created_at;
+          });
+          setActivities(sorted);
         }
       } catch (err) {
         console.error('Failed to fetch activities:', err);
@@ -107,234 +117,186 @@ const NewsPage: React.FC = () => {
     };
 
     fetchActivities();
+  }, []);
+
+  // 获取 HN 新闻（切换到 HN Tab 时加载）
+  useEffect(() => {
+    if (activeTab !== 'hn' || hasFetchedHNRef.current) return;
+    hasFetchedHNRef.current = true;
+
+    const fetchHN = async () => {
+      setHnLoading(true);
+      try {
+        const data = await newsService.getNews(0, 30);
+        setHnNews(data.items || []);
+      } catch (err) {
+        console.error('Failed to fetch HN news:', err);
+      } finally {
+        setHnLoading(false);
+      }
+    };
+
+    fetchHN();
   }, [activeTab]);
 
-  // 加载更多新闻
-  const loadMoreNews = async () => {
-    if (loadingMore || noMoreData) return;
+  // 筛选活动
+  const filteredActivities = activities.filter(activity => {
+    if (activeCategory === 'all') return true;
+    return getCategory(activity) === activeCategory;
+  });
 
-    try {
-      setLoadingMore(true);
-      const data = await newsService.getNews(currentOffset, 10);
-      const nextBatch = data.items.slice(currentOffset, currentOffset + 10);
+  // 未登录只显示 2 条
+  const displayActivities = isConnected ? filteredActivities : filteredActivities.slice(0, 2);
 
-      if (nextBatch.length === 0) {
-        setNoMoreData(true);
-        setDisplayedLines(prev => [...prev, '', '> 已经到底了，没有更多新闻了']);
-      } else {
-        setCurrentOffset(prev => prev + nextBatch.length);
-
-        const newLines: string[] = [];
-        const newUrls: { [key: number]: string } = { ...newsUrls };
-        let currentDisplayNum = displayNumber;
-
-        nextBatch.forEach((item) => {
-          const title = item.titleCn || item.title;
-          const lineIndex = displayedLines.length + newLines.length;
-          newLines.push(`${currentDisplayNum}. ${title}`);
-          newUrls[lineIndex] = item.url;
-          currentDisplayNum++;
-        });
-
-        setDisplayNumber(currentDisplayNum);
-        setNewsUrls(newUrls);
-
-        let lineIndex = 0;
-        const interval = setInterval(() => {
-          if (lineIndex < newLines.length) {
-            setDisplayedLines(prev => [...prev, newLines[lineIndex]]);
-            lineIndex++;
-          } else {
-            clearInterval(interval);
-          }
-        }, 100);
-      }
-    } catch (err) {
-      console.error('加载更多新闻失败:', err);
-      setNoMoreData(true);
-      setDisplayedLines(prev => [...prev, '', '> 加载失败']);
-    } finally {
-      setLoadingMore(false);
-    }
+  const handleLoginClick = () => {
+    openConnectModal?.();
   };
 
-  // 终端打字机效果
-  useEffect(() => {
-    if (newsLoading || error || news.length === 0) return;
-
-    setDisplayedLines([]);
-    setDisplayNumber(1);
-
-    const lines: string[] = [
-      '🔥 HACKER NEWS 热榜',
-      '> 点击新闻标题可跳转查看详情',
-      '',
-    ];
-
-    const urls: { [key: number]: string } = {};
-    let currentDisplayNum = 1;
-
-    news.forEach((item) => {
-      const title = item.titleCn || item.title;
-      const lineIndex = lines.length;
-      lines.push(`${currentDisplayNum}. ${title}`);
-      urls[lineIndex] = item.url;
-      currentDisplayNum++;
-    });
-
-    setDisplayNumber(currentDisplayNum);
-    setNewsUrls(urls);
-
-    let lineIndex = 0;
-    const interval = setInterval(() => {
-      if (lineIndex < lines.length) {
-        setDisplayedLines((prev) => [...prev, lines[lineIndex]]);
-        lineIndex++;
-
-        if (terminalRef.current) {
-          terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
-        }
-      } else {
-        clearInterval(interval);
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [news, newsLoading, error]);
-
-  // 活动类型配置
-  const activityTypes: Record<string, { label: string; labelCn: string; color: string }> = {
-    airdrop: { label: 'Airdrop', labelCn: '空投', color: '#00ff41' },
-    bonus: { label: 'Bonus', labelCn: '奖励', color: '#ffcc00' },
-    competition: { label: 'Competition', labelCn: '比赛', color: '#ff6600' },
-    other: { label: 'Event', labelCn: '活动', color: '#00ccff' },
-  };
-
-  const getTypeInfo = (type: string) => activityTypes[type] || activityTypes.other;
+  const loading = activeTab === 'web3' ? activitiesLoading : hnLoading;
 
   return (
     <PageLayout title={isZh ? '> 信息终端' : '> INFO TERMINAL'}>
-      <div className="news-terminal-container">
+      <div className="news-container">
         {/* Tab 切换 */}
         <div className="news-tabs">
           <button
-            className={`news-tab ${activeTab === 'news' ? 'active' : ''}`}
-            onClick={() => setActiveTab('news')}
+            className={`news-tab ${activeTab === 'web3' ? 'active' : ''}`}
+            onClick={() => setActiveTab('web3')}
           >
-            {isZh ? '📰 HN 热榜' : '📰 HN News'}
+            {isZh ? '🔥 Web3 快讯' : '🔥 Web3 News'}
           </button>
           <button
-            className={`news-tab ${activeTab === 'activities' ? 'active' : ''}`}
-            onClick={() => setActiveTab('activities')}
+            className={`news-tab ${activeTab === 'hn' ? 'active' : ''}`}
+            onClick={() => setActiveTab('hn')}
           >
-            {isZh ? '🎁 空投活动' : '🎁 Airdrops'}
+            {isZh ? '📰 HN 热榜' : '📰 HN Top'}
           </button>
         </div>
 
-        <div className="terminal-header">
-          <div className="terminal-buttons">
-            <span className="btn-close"></span>
-            <span className="btn-minimize"></span>
-            <span className="btn-maximize"></span>
-          </div>
-          <div className="terminal-title">
-            {activeTab === 'news' ? 'root@hackernews:~$' : 'root@airdrops:~$'}
-          </div>
+        {/* Web3 快讯 Tab */}
+        {activeTab === 'web3' && (
+          <>
+            {/* 分类筛选 */}
+            <div className="news-categories">
+          {(Object.keys(CATEGORY_CONFIG) as CategoryType[]).map(cat => {
+            const config = CATEGORY_CONFIG[cat];
+            return (
+              <button
+                key={cat}
+                className={`category-btn ${activeCategory === cat ? 'active' : ''}`}
+                onClick={() => setActiveCategory(cat)}
+                style={{ '--cat-color': config.color } as React.CSSProperties}
+              >
+                <span className="cat-icon">{config.icon}</span>
+                <span className="cat-label">{isZh ? config.labelCn : config.label}</span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="terminal-body" ref={terminalRef}>
-          {/* 新闻 Tab */}
-          {activeTab === 'news' && (
-            <>
-              {newsLoading && (
-                <div className="terminal-loading">
-                  <span className="cursor-blink">▋</span> {isZh ? '正在加载数据...' : 'Loading...'}
-                </div>
-              )}
-
-              {error && (
-                <div className="terminal-error">
-                  <div>&gt; ERROR: {error}</div>
-                </div>
-              )}
-
-              {!newsLoading && !error && displayedLines.map((line, index) => {
-                const isClickable = newsUrls[index];
-                return (
-                  <div
-                    key={index}
-                    className={`terminal-line ${isClickable ? 'clickable' : ''}`}
-                    onClick={() => isClickable && window.open(newsUrls[index], '_blank')}
-                  >
-                    {line}
-                    {index === displayedLines.length - 1 && !loadingMore && !noMoreData && (
-                      <span className="cursor-blink">▋</span>
-                    )}
-                  </div>
-                );
-              })}
-
-              {!newsLoading && !error && displayedLines.length > 0 && !noMoreData && (
-                <div className="load-more-container">
-                  <button
-                    className="load-more-button"
-                    onClick={loadMoreNews}
-                    disabled={loadingMore}
-                  >
-                    {loadingMore ? '> 正在加载...' : '> [ 加载更多 ]'}
-                  </button>
-                </div>
-              )}
-            </>
+        {/* 新闻列表 */}
+        <div className="news-list">
+          {loading && (
+            <div className="news-loading">
+              <span className="loading-dot">●</span>
+              {isZh ? '加载中...' : 'Loading...'}
+            </div>
           )}
 
-          {/* 活动 Tab */}
-          {activeTab === 'activities' && (
-            <>
-              {activitiesLoading && (
-                <div className="terminal-loading">
-                  <span className="cursor-blink">▋</span> {isZh ? '正在加载活动...' : 'Loading activities...'}
-                </div>
-              )}
+          {!loading && displayActivities.length === 0 && (
+            <div className="news-empty">
+              {isZh ? '暂无相关快讯' : 'No news yet'}
+            </div>
+          )}
 
-              {!activitiesLoading && activities.length === 0 && (
-                <div className="terminal-line">
-                  {isZh ? '> 暂无活动数据，敬请期待' : '> No activities yet, stay tuned'}
-                </div>
-              )}
+          {!loading && displayActivities.map(activity => {
+            const category = getCategory(activity);
+            const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.exchange_news;
+            const source = activity.source || activity.exchange || 'unknown';
 
-              {!activitiesLoading && activities.length > 0 && (
-                <>
-                  <div className="terminal-line">🎁 {isZh ? '交易所空投活动' : 'Exchange Airdrops'}</div>
-                  <div className="terminal-line">&gt; {isZh ? '点击活动可跳转查看详情' : 'Click to view details'}</div>
-                  <div className="terminal-line">&nbsp;</div>
-                  {activities.map((activity, index) => {
-                    const typeInfo = getTypeInfo(activity.type);
-                    return (
-                      <div
-                        key={activity.id}
-                        className="terminal-line clickable activity-line"
-                        onClick={() => window.open(activity.url, '_blank')}
-                      >
-                        <span className="activity-index">{index + 1}.</span>
-                        <span 
-                          className="activity-type-tag"
-                          style={{ backgroundColor: typeInfo.color }}
-                        >
-                          {isZh ? typeInfo.labelCn : typeInfo.label}
-                        </span>
-                        <span className="activity-exchange">[{activity.exchange.toUpperCase()}]</span>
-                        <span className="activity-title">
-                          {isZh && activity.title_cn ? activity.title_cn : activity.title}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </>
-              )}
-            </>
+            return (
+              <div
+                key={activity.id}
+                className="news-card"
+                onClick={() => window.open(activity.url, '_blank')}
+              >
+                <div className="news-card-header">
+                  <span 
+                    className="news-tag"
+                    style={{ backgroundColor: config.color }}
+                  >
+                    {config.icon} {isZh ? config.labelCn : config.label}
+                  </span>
+                  {activity.priority === 1 && (
+                    <span className="news-hot">HOT</span>
+                  )}
+                </div>
+                <div className="news-card-title">
+                  {isZh && activity.title_cn ? activity.title_cn : activity.title}
+                </div>
+                <div className="news-card-meta">
+                  <span className="news-source">
+                    {source.toUpperCase()}
+                  </span>
+                  <span className="news-time">
+                    {formatTime(activity.created_at, isZh)}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* 未登录提示 */}
+          {!activitiesLoading && !isConnected && filteredActivities.length > 2 && (
+            <div className="news-login-prompt">
+              <div className="login-prompt-text">
+                {isZh 
+                  ? `还有 ${filteredActivities.length - 2} 条快讯，登录后查看全部`
+                  : `${filteredActivities.length - 2} more news, login to view all`
+                }
+              </div>
+              <button className="login-prompt-btn" onClick={handleLoginClick}>
+                {isZh ? '🔓 连接钱包查看全部' : '🔓 Connect to View All'}
+              </button>
+            </div>
           )}
         </div>
+          </>
+        )}
+
+        {/* HN 热榜 Tab */}
+        {activeTab === 'hn' && (
+          <div className="news-list hn-list">
+            {hnLoading && (
+              <div className="news-loading">
+                <span className="loading-dot">●</span>
+                {isZh ? '加载中...' : 'Loading...'}
+              </div>
+            )}
+
+            {!hnLoading && hnNews.length === 0 && (
+              <div className="news-empty">
+                {isZh ? '暂无新闻' : 'No news yet'}
+              </div>
+            )}
+
+            {!hnLoading && hnNews.map((item, index) => (
+              <div
+                key={index}
+                className="hn-card"
+                onClick={() => window.open(item.url, '_blank')}
+              >
+                <span className="hn-rank">{item.rank}</span>
+                <div className="hn-content">
+                  <div className="hn-title">{item.title}</div>
+                  {item.titleCn && item.titleCn !== item.title && (
+                    <div className="hn-title-cn">{item.titleCn}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </PageLayout>
   );
