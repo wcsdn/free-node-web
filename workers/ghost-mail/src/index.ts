@@ -42,6 +42,7 @@ export default {
 
       // 严格验证：必须是 7 位数字
       if (!/^\d{7}$/.test(aliasName)) {
+        console.log(`[Email] Rejected: Invalid format - ${aliasName}`);
         message.setReject('Invalid address format');
         return;
       }
@@ -52,6 +53,7 @@ export default {
         .first();
 
       if (!alias) {
+        console.log(`[Email] Rejected: Address not found - ${aliasName}`);
         message.setReject('Address not found'); // 拒收，避免垃圾邮件
         return;
       }
@@ -63,6 +65,7 @@ export default {
       
       for (const word of sensitiveWords) {
         if (subject.includes(word) || body.includes(word)) {
+          console.log(`[Email] Rejected: Sensitive word detected - ${word}`);
           message.setReject('Suspicious content detected');
           return;
         }
@@ -82,10 +85,11 @@ export default {
         )
         .run();
 
-      console.log(`Email received for ${aliasName} from ${message.from}`);
+      console.log(`[Email] Success: ${aliasName} from ${message.from}`);
     } catch (error) {
-      console.error('Email processing error:', error);
-      message.setReject('Internal error');
+      console.error('[Email] Error:', error);
+      // 不要在 catch 里调用 setReject，让邮件正常接收
+      // Cloudflare 会自动重试
     }
   },
 
