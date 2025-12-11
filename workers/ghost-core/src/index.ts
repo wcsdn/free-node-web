@@ -825,6 +825,15 @@ async function handleCreateActivity(request: Request, env: Env, origin: string |
       return errorResponse('Invalid exchange', 400, origin);
     }
     
+    // 检查 URL 是否已存在（去重）
+    const existing = await env.DB.prepare(
+      'SELECT id FROM exchange_activities WHERE url = ?'
+    ).bind(url).first();
+    
+    if (existing) {
+      return jsonResponse({ success: false, message: 'Activity already exists', duplicate: true }, 200, origin);
+    }
+    
     const id = crypto.randomUUID();
     
     await env.DB.prepare(`

@@ -7,12 +7,13 @@ import './index.css';
 
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider, darkTheme, type Locale } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 
 import { config } from './features/web3/config';
 import { ToastProvider } from '@/shared/components/Toast/ToastContext';
 import { AppRouter } from './router';
+import { useLanguage } from '@/shared/hooks/useLanguage';
 
 // 配置 QueryClient 以支持持久化缓存
 const queryClient = new QueryClient({
@@ -26,6 +27,27 @@ const queryClient = new QueryClient({
   },
 });
 
+// RainbowKit 主题配置
+const matrixTheme = darkTheme({
+  accentColor: '#00ff00',
+  accentColorForeground: '#000000',
+  borderRadius: 'small',
+  fontStack: 'system',
+  overlayBlur: 'small',
+});
+
+// 带语言切换的 RainbowKit 包装
+const RainbowKitWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { language } = useLanguage();
+  const locale: Locale = language === 'zh' ? 'zh-CN' : 'en-US';
+
+  return (
+    <RainbowKitProvider theme={matrixTheme} modalSize="compact" locale={locale}>
+      {children}
+    </RainbowKitProvider>
+  );
+};
+
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Failed to find the root element');
@@ -37,16 +59,9 @@ root.render(
     <ToastProvider>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider
-            theme={darkTheme({
-              accentColor: '#00ff00',
-              accentColorForeground: '#000000',
-              borderRadius: 'none',
-              fontStack: 'system',
-            })}
-          >
+          <RainbowKitWrapper>
             <AppRouter />
-          </RainbowKitProvider>
+          </RainbowKitWrapper>
         </QueryClientProvider>
       </WagmiProvider>
     </ToastProvider>

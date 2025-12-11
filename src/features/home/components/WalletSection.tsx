@@ -3,15 +3,13 @@
  */
 import React, { memo } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useBalance, useEnsName } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import './WalletSection.css';
 
 export const WalletSection: React.FC = memo(() => {
-  const { isConnected, address, chain } = useAccount();
-  const { data: ensName } = useEnsName({ address });
-  const { data: balance } = useBalance({ address });
+  const { isConnected } = useAccount();
   const { t } = useLanguage();
   const { playClick } = useSoundEffect();
 
@@ -61,34 +59,7 @@ export const WalletSection: React.FC = memo(() => {
         </ConnectButton.Custom>
       </div>
 
-      {/* 连接成功后显示用户信息 */}
-      {isConnected && address && (
-        <div className="user-info-panel">
-          <div className="info-header">{t('walletConnected')}</div>
-          <div className="info-row">
-            <span className="info-label">{t('address')}</span>
-            <span className="info-value">
-              {ensName || `${address.slice(0, 6)}...${address.slice(-4)}`}
-            </span>
-          </div>
-          {chain && (
-            <div className="info-row">
-              <span className="info-label">{t('network')}</span>
-              <span className="info-value">{chain.name}</span>
-            </div>
-          )}
-          {balance && (
-            <div className="info-row">
-              <span className="info-label">{t('balance')}</span>
-              <span className="info-value">
-                {parseFloat(balance.formatted).toFixed(4)} {balance.symbol}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 游客模式提示 */}
+      {/* 游客模式提示 - 只在未连接时显示 */}
       {!isConnected && (
         <div className="user-info-panel guest-mode-panel">
           <div className="info-header">👻 {t('guestMode') || 'Guest Mode'}</div>

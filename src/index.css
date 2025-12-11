@@ -45,3 +45,169 @@ body {
 
 
 
+
+/* ========================================
+   RainbowKit 样式覆盖 - Matrix 风格
+   ======================================== */
+
+/* 弹窗背景遮罩 */
+[data-rk-portal] > div:first-child {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(4px) !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* 弹窗容器 */
+[data-rk] [role="dialog"] {
+  border: 1px solid #00ff00 !important;
+  box-shadow: 
+    0 0 40px rgba(0, 255, 0, 0.2),
+    0 0 80px rgba(0, 255, 0, 0.1),
+    inset 0 1px 0 rgba(0, 255, 0, 0.1) !important;
+  background: #000 !important;
+  font-family: 'Courier New', monospace !important;
+}
+
+/* 弹窗内所有文字 */
+[data-rk] [role="dialog"] * {
+  font-family: 'Courier New', monospace !important;
+  color: #00ff00 !important;
+}
+
+/* 弹窗内背景色 */
+[data-rk] [role="dialog"] > div {
+  background: #000 !important;
+}
+
+/* 标题 */
+[data-rk] [role="dialog"] h1 {
+  font-size: 20px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 2px !important;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5) !important;
+  margin-bottom: 16px !important;
+}
+
+/* 钱包选项按钮 */
+[data-rk] button[data-testid="rk-wallet-option"] {
+  background: rgba(0, 255, 0, 0.03) !important;
+  border: 1px solid rgba(0, 255, 0, 0.2) !important;
+  padding: 10px 12px !important;
+  margin: 4px 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-rk] button[data-testid="rk-wallet-option"]:hover {
+  background: rgba(0, 255, 0, 0.1) !important;
+  border-color: #00ff00 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3) !important;
+}
+
+/* 钱包名称 - 超过8字符换行居中 */
+[data-rk] button[data-testid="rk-wallet-option"] div,
+[data-rk] button[data-testid="rk-wallet-option"] span {
+  font-size: 11px !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+  max-width: 70px !important;
+  line-height: 1.3 !important;
+  text-align: center !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+/* 钱包图标 */
+[data-rk] button[data-testid="rk-wallet-option"] img {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 4px !important;
+}
+
+/* 关闭按钮 */
+[data-rk] button[aria-label="Close"] {
+  color: #00ff00 !important;
+  background: transparent !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+[data-rk] button[aria-label="Close"]:hover {
+  background: rgba(0, 255, 0, 0.15) !important;
+  border-color: #00ff00 !important;
+}
+
+/* 返回按钮 */
+[data-rk] button[aria-label="Back"] {
+  color: #00ff00 !important;
+}
+
+/* 次要文字和段落 */
+[data-rk] [role="dialog"] span,
+[data-rk] [role="dialog"] p {
+  color: rgba(0, 255, 0, 0.7) !important;
+  font-size: 11px !important;
+}
+
+/* 底部说明区域 */
+[data-rk] [role="dialog"] > div > div:last-child {
+  background: rgba(0, 255, 0, 0.03) !important;
+  border-top: 1px solid rgba(0, 255, 0, 0.15) !important;
+}
+
+/* 了解更多按钮 */
+[data-rk] [role="dialog"] button:not([data-testid]):not([aria-label]) {
+  color: #00ff00 !important;
+  border: 1px solid rgba(0, 255, 0, 0.3) !important;
+  background: transparent !important;
+}
+
+[data-rk] [role="dialog"] button:not([data-testid]):not([aria-label]):hover {
+  background: rgba(0, 255, 0, 0.1) !important;
+  border-color: #00ff00 !important;
+}
+
+/* 分割线 */
+[data-rk] [role="dialog"] hr {
+  border-color: rgba(0, 255, 0, 0.2) !important;
+}
+
+/* 链接 */
+[data-rk] [role="dialog"] a {
+  color: #00ff00 !important;
+  text-decoration: underline !important;
+}
+
+/* QR 码容器 */
+[data-rk] [role="dialog"] svg[role="img"] {
+  background: #fff !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+}
+
+/* 扫描线效果 */
+[data-rk] [role="dialog"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.015) 2px,
+    rgba(0, 255, 0, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+  border-radius: inherit;
+}

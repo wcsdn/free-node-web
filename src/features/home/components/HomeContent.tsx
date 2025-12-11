@@ -21,8 +21,8 @@ export const HomeContent: React.FC = memo(() => {
       {/* 捐赠按钮（仅连接钱包后显示） */}
       {isConnected && <DonateButton />}
 
-      {/* 留言板 */}
-      <Guestbook />
+      {/* 留言板（仅连接钱包后显示） */}
+      {isConnected && <Guestbook />}
     </Suspense>
   );
 });
