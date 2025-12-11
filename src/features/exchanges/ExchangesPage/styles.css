@@ -1,0 +1,406 @@
+/**
+ * 交易所推荐页面样式
+ * Matrix 风格：黑底霓虹绿
+ */
+
+.exchanges-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 页面头部 */
+.exchanges-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header-desc {
+  color: rgba(0, 255, 65, 0.8);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* 访问量统计 */
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(0, 255, 65, 0.6);
+}
+
+.visitor-count {
+  color: #00ff41;
+  font-weight: bold;
+}
+
+/* 视图切换 */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  color: rgba(0, 255, 65, 0.6);
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.toggle-btn.active {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+/* 卡片网格 */
+.exchange-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+/* 交易所卡片 */
+.exchange-card {
+  background: rgba(0, 255, 65, 0.03);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exchange-card:hover {
+  border-color: #00ff41;
+  background: rgba(0, 255, 65, 0.08);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 255, 65, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.exchange-logo {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exchange-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  /* 保留原色，不反转 */
+}
+
+.exchange-name h3 {
+  margin: 0 0 4px 0;
+  color: #00ff41;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.security-rating {
+  font-size: 12px;
+}
+
+.star {
+  color: rgba(0, 255, 65, 0.3);
+}
+
+.star.filled {
+  color: #00ff41;
+}
+
+.card-body {
+  margin-bottom: 16px;
+}
+
+.fee-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.fee-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fee-label {
+  font-size: 11px;
+  color: rgba(0, 255, 65, 0.5);
+  text-transform: uppercase;
+}
+
+.fee-value {
+  font-size: 14px;
+  color: #00ff41;
+  font-weight: 600;
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.feature-tag {
+  padding: 3px 8px;
+  background: rgba(0, 255, 65, 0.1);
+  border: 1px solid rgba(0, 255, 65, 0.2);
+  border-radius: 4px;
+  font-size: 11px;
+  color: rgba(0, 255, 65, 0.8);
+}
+
+.description {
+  font-size: 13px;
+  color: rgba(0, 255, 65, 0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.card-footer {
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 255, 65, 0.1);
+}
+
+.register-btn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #00ff41;
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-btn:hover {
+  background: #00ff41;
+  color: #000;
+}
+
+/* 对比表格 */
+.exchange-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 40px;
+}
+
+.exchange-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.exchange-table th,
+.exchange-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+}
+
+.exchange-table th {
+  background: rgba(0, 255, 65, 0.1);
+  color: #00ff41;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.exchange-table tr {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.exchange-table tbody tr:hover {
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.exchange-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-logo {
+  width: 24px;
+  height: 24px;
+  /* 保留原色 */
+}
+
+.fee-cell {
+  color: #00ff41;
+  font-weight: 500;
+}
+
+.rating-cell .stars {
+  color: #00ff41;
+  letter-spacing: 2px;
+}
+
+.suitable-cell {
+  color: rgba(0, 255, 65, 0.7);
+  font-size: 13px;
+}
+
+.table-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #00ff41;
+  color: #00ff41;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.table-btn:hover {
+  background: #00ff41;
+  color: #000;
+}
+
+/* 活动列表 */
+.activity-list {
+  margin-bottom: 40px;
+  padding: 20px;
+  background: rgba(0, 255, 65, 0.02);
+  border: 1px solid rgba(0, 255, 65, 0.15);
+  border-radius: 8px;
+}
+
+.section-title {
+  margin: 0 0 16px 0;
+  color: #00ff41;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.activity-loading,
+.activity-empty {
+  color: rgba(0, 255, 65, 0.5);
+  font-size: 14px;
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.activity-item:hover {
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.activity-type {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: #000;
+  font-weight: 600;
+}
+
+.activity-exchange {
+  color: rgba(0, 255, 65, 0.6);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.activity-title {
+  flex: 1;
+  color: rgba(0, 255, 65, 0.9);
+  font-size: 14px;
+}
+
+.activity-deadline {
+  color: rgba(255, 200, 0, 0.8);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* 风险提示 */
+.risk-warning {
+  padding: 16px;
+  background: rgba(255, 100, 0, 0.05);
+  border: 1px solid rgba(255, 100, 0, 0.2);
+  border-radius: 8px;
+}
+
+.risk-warning p {
+  margin: 0;
+  color: rgba(255, 150, 50, 0.8);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .exchanges-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .exchange-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .exchange-table {
+    font-size: 12px;
+  }
+
+  .exchange-table th,
+  .exchange-table td {
+    padding: 8px 10px;
+  }
+
+  .activity-item {
+    flex-wrap: wrap;
+  }
+
+  .activity-title {
+    width: 100%;
+    order: 3;
+    margin-top: 4px;
+  }
+}

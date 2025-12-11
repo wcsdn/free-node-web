@@ -75,7 +75,8 @@ const HomePage: React.FC = memo(() => {
             <ActionButton type="profile" position={0} />
             <ActionButton type="news" position={1} />
             <ActionButton type="ghost-mail" position={2} />
-            <ActionButton type="settings" position={3} />
+            <ActionButton type="exchanges" position={3} />
+            <ActionButton type="settings" position={4} />
           </>
         )}
 
