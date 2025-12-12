@@ -17,11 +17,24 @@ function captureRefCode(): void {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get('ref');
   if (ref && /^FN-[A-Z0-9]{6}$/.test(ref)) {
-    localStorage.setItem(REF_STORAGE_KEY, ref);
-    // 清除 URL 参数，保持干净
-    const url = new URL(window.location.href);
-    url.searchParams.delete('ref');
-    window.history.replaceState({}, '', url.toString());
+    // 只在第一次访问时存储，避免重复处理
+    const stored = localStorage.getItem(REF_STORAGE_KEY);
+    if (!stored || stored !== ref) {
+      localStorage.setItem(REF_STORAGE_KEY, ref);
+    }
+    
+    // 使用 replaceState 清除 URL 参数（不会触发页面刷新）
+    // 但要确保在 React 渲染完成后执行
+    if (typeof window !== 'undefined' && window.history.replaceState) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('ref');
+        window.history.replaceState({}, '', url.toString());
+      } catch (err) {
+        // 静默失败，不影响功能
+        console.warn('Failed to clean URL:', err);
+      }
+    }
   }
 }
 
@@ -76,43 +89,50 @@ interface UseWalletAuthReturn {
   clearAuth: () => void;
 }
 
+// 签名有效期：1 天
+const AUTH_EXPIRY = 24 * 60 * 60 * 1000;
+
+// 直接从 localStorage 读取，不用 state
+function getAuthHeader(address: string | undefined): string | null {
+  if (!address) return null;
+  
+  const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+  if (!stored) return null;
+  
+  try {
+    const auth: WalletAuth = JSON.parse(stored);
+    // 检查是否是同一个地址，且未过期 (1天)
+    if (
+      auth.address.toLowerCase() === address.toLowerCase() &&
+      Date.now() - auth.timestamp < AUTH_EXPIRY
+    ) {
+      return `${auth.address}:${auth.signature}`;
+    }
+  } catch {
+    // 忽略解析错误
+  }
+  
+  return null;
+}
+
 export function useWalletAuth(): UseWalletAuthReturn {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   
-  const [authHeader, setAuthHeader] = useState<string | null>(null);
   const [isSigning, setIsSigning] = useState(false);
-  const [userLevel, setUserLevel] = useState(0);
+  const [, setRefreshKey] = useState(0); // 用于强制刷新
+  
+  // 直接从 localStorage 读取，不缓存
+  const authHeader = getAuthHeader(address);
+  const isAuthenticated = !!authHeader;
+  const userLevel = isAuthenticated ? 1 : 0;
 
-  // 从 localStorage 恢复认证
+  // 监听认证变化，强制刷新
   useEffect(() => {
-    if (!address) {
-      setAuthHeader(null);
-      setUserLevel(0);
-      return;
-    }
-
-    const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (stored) {
-      try {
-        const auth: WalletAuth = JSON.parse(stored);
-        // 检查是否是同一个地址，且未过期 (7天)
-        if (
-          auth.address.toLowerCase() === address.toLowerCase() &&
-          Date.now() - auth.timestamp < 7 * 24 * 60 * 60 * 1000
-        ) {
-          setAuthHeader(`${auth.address}:${auth.signature}`);
-          setUserLevel(1); // 已连接钱包至少是 Lv1
-          return;
-        }
-      } catch {
-        // 忽略解析错误
-      }
-    }
-    
-    // 没有有效认证
-    setAuthHeader(null);
-  }, [address]);
+    const handleAuthChange = () => setRefreshKey(k => k + 1);
+    window.addEventListener('wallet-auth-changed', handleAuthChange);
+    return () => window.removeEventListener('wallet-auth-changed', handleAuthChange);
+  }, []);
 
   // 触发签名认证
   const authenticate = useCallback(async (): Promise<boolean> => {
@@ -130,11 +150,12 @@ export function useWalletAuth(): UseWalletAuthReturn {
       };
       
       localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(auth));
-      const newAuthHeader = `${auth.address}:${signature}`;
-      setAuthHeader(newAuthHeader);
-      setUserLevel(1);
+      
+      // 触发自定义事件，通知所有组件刷新
+      window.dispatchEvent(new CustomEvent('wallet-auth-changed'));
       
       // 静默绑定邀请码 (如果有)
+      const newAuthHeader = `${auth.address}:${signature}`;
       silentBindRefCode(newAuthHeader);
       
       return true;
@@ -149,8 +170,7 @@ export function useWalletAuth(): UseWalletAuthReturn {
   // 清除认证
   const clearAuth = useCallback(() => {
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    setAuthHeader(null);
-    setUserLevel(0);
+    window.dispatchEvent(new CustomEvent('wallet-auth-changed'));
   }, []);
 
   // 断开钱包时清除认证

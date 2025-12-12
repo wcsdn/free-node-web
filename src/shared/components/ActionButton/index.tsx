@@ -8,7 +8,7 @@ import SettingsPopup from '@/shared/popup/SettingsPopup';
 import '@/styles/common-button.css';
 import './styles.css';
 
-export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges';
+export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges' | 'debug';
 
 interface ActionButtonProps {
   type: ActionButtonType;
@@ -40,6 +40,11 @@ const BUTTON_CONFIG = {
     icon: '🏦',
     title: 'Exchanges',
     path: '/exchanges',
+  },
+  debug: {
+    icon: '🔍',
+    title: 'Debug Auth',
+    path: '/debug',
   },
 };
 

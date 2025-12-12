@@ -6,6 +6,7 @@ import React, { lazy, Suspense, useEffect } from 'react';
 import { RouteObject, useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 import App from '@/App';
 import Loading from '@/shared/components/Loading';
 
@@ -16,6 +17,7 @@ const GhostMailPage = lazy(() => import('@/features/ghost-mail/GhostMailPage'));
 const QuestsPage = lazy(() => import('@/features/quests/QuestsPage'));
 // const SettingsPage = lazy(() => import('@/features/settings')); // 改为弹窗模式
 const ExchangesPage = lazy(() => import('@/features/exchanges/ExchangesPage'));
+const DebugPage = lazy(() => import('@/features/debug/DebugPage'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -24,20 +26,45 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </Suspense>
 );
 
-// 受保护路由 - 需要登录
+// 受保护路由 - 需要登录和签名
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const { authHeader, authenticate } = useWalletAuth();
   const navigate = useNavigate();
+  const [checking, setChecking] = React.useState(true);
 
   useEffect(() => {
-    if (!isConnected) {
-      openConnectModal?.();
-      navigate('/');
-    }
-  }, [isConnected, openConnectModal, navigate]);
+    const checkAuth = async () => {
+      // 1. 检查是否连接钱包
+      if (!isConnected) {
+        openConnectModal?.();
+        navigate('/');
+        return;
+      }
 
-  if (!isConnected) return null;
+      // 2. 如果已有 authHeader，直接通过
+      if (authHeader) {
+        setChecking(false);
+        return;
+      }
+
+      // 3. 未认证，触发签名
+      const success = await authenticate();
+      if (!success) {
+        navigate('/');
+        return;
+      }
+
+      setChecking(false);
+    };
+
+    if (checking) {
+      checkAuth();
+    }
+  }, [isConnected, authHeader, checking, openConnectModal, authenticate, navigate]);
+
+  if (!isConnected || checking) return null;
   return <>{children}</>;
 };
 
@@ -86,6 +113,14 @@ export const routes: RouteObject[] = [
         element: (
           <PageWrapper>
             <ExchangesPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'debug',
+        element: (
+          <PageWrapper>
+            <DebugPage />
           </PageWrapper>
         ),
       },

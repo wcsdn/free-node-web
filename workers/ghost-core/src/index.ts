@@ -101,14 +101,24 @@ function isValidAddress(address: string): boolean {
 
 // 解析钱包认证头
 function parseWalletAuth(authHeader: string | null): { valid: boolean; address: string | null } {
-  if (!authHeader) return { valid: false, address: null };
+  if (!authHeader) {
+    console.log('[DEBUG] parseWalletAuth: no authHeader');
+    return { valid: false, address: null };
+  }
   
   const parts = authHeader.split(':');
-  if (parts.length !== 2) return { valid: false, address: null };
+  if (parts.length !== 2) {
+    console.log('[DEBUG] parseWalletAuth: invalid format, parts:', parts.length);
+    return { valid: false, address: null };
+  }
   
   const address = parts[0].toLowerCase();
-  if (!isValidAddress(address)) return { valid: false, address: null };
+  if (!isValidAddress(address)) {
+    console.log('[DEBUG] parseWalletAuth: invalid address format:', address);
+    return { valid: false, address: null };
+  }
   
+  console.log('[DEBUG] parseWalletAuth: valid, address:', address);
   // TODO: 实际签名验证 (viem/ethers)
   return { valid: true, address };
 }
@@ -484,6 +494,13 @@ async function handleGetQuests(request: Request, env: Env, origin: string | null
   const walletAuth = request.headers.get('X-Wallet-Auth');
   const authResult = parseWalletAuth(walletAuth);
   
+  // 调试日志
+  console.log('[DEBUG] handleGetQuests:', {
+    hasWalletAuth: !!walletAuth,
+    authValid: authResult.valid,
+    address: authResult.address,
+  });
+  
   // 获取所有任务
   const quests = await env.DB.prepare(
     'SELECT * FROM quests WHERE is_active = 1 ORDER BY sort_order'
@@ -514,16 +531,27 @@ async function handleGetQuests(request: Request, env: Env, origin: string | null
   const questList = (quests.results || []).map((q) => {
     const up = userProgress.find((p) => p.quest_id === q.id);
     let progress = up?.progress || 0;
+    let completed = up?.completed || 0;
     
     // 自动计算某些任务的进度
     if (q.id.startsWith('growth_invite_')) {
       progress = userStats.referral_count;
+      completed = progress >= q.target ? 1 : 0;
+    }
+    
+    // 自动完成连接钱包和签名认证任务
+    if (authResult.valid && authResult.address) {
+      if (q.id === 'growth_connect_wallet' || q.id === 'growth_verify') {
+        console.log('[DEBUG] Auto-completing quest:', q.id);
+        progress = 1;
+        completed = 1;
+      }
     }
     
     return {
       ...q,
       progress,
-      completed: up?.completed || (progress >= q.target ? 1 : 0),
+      completed,
       claimed: up?.claimed || 0,
     };
   });

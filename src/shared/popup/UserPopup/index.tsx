@@ -4,7 +4,7 @@
  * 显示用户等级、配额、邀请码等信息
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -12,34 +12,10 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useUserStore } from '@/stores/useUserStore';
+import { getXpProgress } from '@/shared/utils/xp';
 import Backdrop from '@/shared/components/Backdrop';
 import './styles.css';
-
-interface UserInfo {
-  address: string | null;
-  level: number;
-  levelName: string;
-  inviteCode: string | null;
-  invitedBy: string | null;
-  mailQuota: number;
-  xp: number;
-  xp_level: number;
-  usage: {
-    ai: { today: number; limit: number | 'unlimited' };
-  };
-}
-
-// XP 等级阈值 (与后端保持一致)
-const XP_LEVELS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500];
-
-function getXpProgress(xp: number, level: number) {
-  const currentThreshold = XP_LEVELS[level - 1] || 0;
-  const nextThreshold = XP_LEVELS[level] || XP_LEVELS[XP_LEVELS.length - 1];
-  if (level >= XP_LEVELS.length) return { next: nextThreshold, percent: 100 };
-  const progress = xp - currentThreshold;
-  const needed = nextThreshold - currentThreshold;
-  return { next: nextThreshold, percent: Math.min(100, Math.floor((progress / needed) * 100)) };
-}
 
 const LEVEL_NAMES = {
   zh: ['游客', '觉醒者', 'VIP'],
@@ -58,10 +34,14 @@ export const UserPanel: React.FC<UserPanelProps> = ({ isOpen, onClose }) => {
   const { authHeader, isAuthenticated, isSigning, authenticate } = useWalletAuth();
   const { showSuccess, showError } = useToast();
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const { userInfo, fetchUserInfo } = useUserStore();
 
   // 跳转到任务页面
   const goToQuests = () => {
+    if (!isAuthenticated) {
+      showError(language === 'zh' ? '请先签名认证' : 'Please sign first');
+      return;
+    }
     onClose();
     navigate('/quests');
   };
@@ -70,21 +50,18 @@ export const UserPanel: React.FC<UserPanelProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!isOpen) return;
     
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch('https://core.free-node.xyz/api/user', {
-          headers: authHeader ? { 'X-Wallet-Auth': authHeader } : {},
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUserInfo(data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch user info:', err);
-      }
+    fetchUserInfo(authHeader);
+    
+    // 监听用户数据变化事件
+    const handleUserDataChanged = () => {
+      if (isOpen) fetchUserInfo(authHeader);
     };
-    fetchUserInfo();
-  }, [isOpen, authHeader]);
+    window.addEventListener('user-data-changed', handleUserDataChanged);
+    
+    return () => {
+      window.removeEventListener('user-data-changed', handleUserDataChanged);
+    };
+  }, [isOpen, authHeader, fetchUserInfo]);
 
   // 复制邀请码 (兼容 HTTP 环境)
   const copyInviteCode = async () => {
@@ -153,7 +130,9 @@ export const UserPanel: React.FC<UserPanelProps> = ({ isOpen, onClose }) => {
               <div className="user-xp-bar">
                 <div className="xp-bar-header">
                   <span>⚡ Lv.{userInfo.xp_level || 1}</span>
-                  <span>{userInfo.xp} / {getXpProgress(userInfo.xp, userInfo.xp_level || 1).next}</span>
+                  <span>
+                    {getXpProgress(userInfo.xp, userInfo.xp_level || 1).current} / {getXpProgress(userInfo.xp, userInfo.xp_level || 1).next}
+                  </span>
                 </div>
                 <div className="xp-bar-track">
                   <div 
@@ -178,11 +157,13 @@ export const UserPanel: React.FC<UserPanelProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* 任务中心入口 */}
-          <div className="user-section">
-            <button className="user-btn quests-btn" onClick={goToQuests}>
-              📋 {language === 'zh' ? '任务中心' : 'Quest Center'}
-            </button>
-          </div>
+          {isAuthenticated && (
+            <div className="user-section">
+              <button className="user-btn quests-btn" onClick={goToQuests}>
+                📋 {language === 'zh' ? '任务中心' : 'Quest Center'}
+              </button>
+            </div>
+          )}
 
           {/* 未连接钱包 */}
           {!isConnected && (

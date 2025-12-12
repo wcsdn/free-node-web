@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAccount, useSignMessage } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useLanguage } from '@/shared/hooks/useLanguage';
+import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 import { sanitizeAndValidate, sanitizeInput } from '../../utils/sanitize';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -32,25 +33,32 @@ const Guestbook: React.FC = () => {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { t } = useLanguage();
+  const { isAuthenticated, isSigning, authenticate } = useWalletAuth();
   const { playHover, playClick, playSuccess, playError } = useSoundEffect();
-  const { showSuccess, showError } = useToast();
+  const { showError } = useToast();
   const [message, setMessage] = useState('');
   const [entries, setEntries] = useState<GuestbookEntry[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<string | null>(null);
-  const [hasSigned, setHasSigned] = useState(false); // 是否已签名
-  
-  const { signMessageAsync } = useSignMessage();
   
   const isAdmin = address?.toLowerCase() === ADMIN_ADDR;
 
-  // 检查是否已签名
+  // 恢复未发送的消息（防止签名后刷新丢失）
   useEffect(() => {
-    if (address) {
-      const signedKey = `guestbook_signed_${address.toLowerCase()}`;
-      setHasSigned(localStorage.getItem(signedKey) === 'true');
+    const savedMessage = sessionStorage.getItem('guestbook_draft');
+    if (savedMessage) {
+      setMessage(savedMessage);
     }
-  }, [address]);
+  }, []);
+
+  // 自动保存草稿（实时保存，防止签名时丢失）
+  useEffect(() => {
+    if (message.trim()) {
+      sessionStorage.setItem('guestbook_draft', message);
+    } else {
+      sessionStorage.removeItem('guestbook_draft');
+    }
+  }, [message]);
 
   // 加载留言
   useEffect(() => {
@@ -110,25 +118,25 @@ const Guestbook: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      let signature = 'no-signature';
-      
-      // 只在第一次发言时需要签名
-      if (!hasSigned) {
-        signature = await signMessageAsync({
-          message: `Welcome to the Matrix! Address: ${address}`,
-        });
+      // 使用统一的钱包认证签名
+      if (!isAuthenticated) {
+        // 保存消息到 sessionStorage，防止签名后刷新丢失
+        sessionStorage.setItem('guestbook_draft', cleanedMessage);
         
-        // 记录已签名
-        const signedKey = `guestbook_signed_${address.toLowerCase()}`;
-        localStorage.setItem(signedKey, 'true');
-        setHasSigned(true);
+        const success = await authenticate();
+        if (!success) {
+          playError();
+          showError('Signature failed');
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       const newEntry: GuestbookEntry = {
         id: `${address}-${Date.now()}`,
         address,
         message: cleanedMessage,
-        signature,
+        signature: 'authenticated', // 标记已通过认证
         timestamp: Date.now(),
         avatar: getAvatarForAddress(address),
         replyTo: replyTo || undefined,
@@ -138,17 +146,19 @@ const Guestbook: React.FC = () => {
       setEntries(updatedEntries);
       localStorage.setItem('guestbook_entries', JSON.stringify(updatedEntries));
       
+      // 清除草稿
+      sessionStorage.removeItem('guestbook_draft');
+      
       playSuccess();
       setMessage('');
       setReplyTo(null);
     } catch (error) {
-      console.error('签名失败:', error);
+      console.error('提交失败:', error);
       playError();
+    } finally {
       setIsSubmitting(false);
-      return;
     }
-    setIsSubmitting(false);
-  }, [address, message, hasSigned, replyTo, entries, signMessageAsync, playSuccess, playError, showError, t]);
+  }, [address, message, isAuthenticated, authenticate, replyTo, entries, playSuccess, playError, showError, t, openConnectModal]);
 
   // 删除单条留言（仅管理员）
   const handleDelete = useCallback((id: string) => {
@@ -244,13 +254,13 @@ const Guestbook: React.FC = () => {
           <button 
             type="submit" 
             className="submit-button"
-            disabled={!message.trim() || isSubmitting}
+            disabled={!message.trim() || isSubmitting || isSigning}
             onMouseEnter={playHover}
             onClick={playClick}
           >
-            {isSubmitting 
-              ? (hasSigned ? t('submitting') : t('signing')) 
-              : (replyTo ? t('sendReply') : (hasSigned ? t('sendMessage') : t('signAndSubmit')))
+            {isSubmitting || isSigning
+              ? (isAuthenticated ? t('submitting') : t('signing')) 
+              : (replyTo ? t('sendReply') : (isAuthenticated ? t('sendMessage') : t('signAndSubmit')))
             }
           </button>
         </form>

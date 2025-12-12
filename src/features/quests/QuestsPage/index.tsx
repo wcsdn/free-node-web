@@ -2,11 +2,13 @@
  * 任务与成就页面
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 import { useToast } from '@/shared/components/Toast/ToastContext';
+import { useUserStore } from '@/stores/useUserStore';
+import { getXpProgress, XP_LEVELS } from '@/shared/utils/xp';
 import PageLayout from '@/shared/layouts/PageLayout';
 import './styles.css';
 
@@ -42,42 +44,20 @@ interface Achievement {
 
 const CORE_API = 'https://core.free-node.xyz';
 
-// XP 等级阈值 (与后端保持一致)
-const XP_LEVELS = [0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500];
-
-// 计算当前等级进度百分比
-function getXpProgress(xp: number, level: number): { current: number; next: number; percent: number } {
-  const currentThreshold = XP_LEVELS[level - 1] || 0;
-  const nextThreshold = XP_LEVELS[level] || XP_LEVELS[XP_LEVELS.length - 1];
-  
-  if (level >= XP_LEVELS.length) {
-    return { current: xp, next: nextThreshold, percent: 100 }; // 满级
-  }
-  
-  const progress = xp - currentThreshold;
-  const needed = nextThreshold - currentThreshold;
-  const percent = Math.min(100, Math.floor((progress / needed) * 100));
-  
-  return { current: xp, next: nextThreshold, percent };
-}
-
 const QuestsPage: React.FC = () => {
   const { language } = useLanguage();
   const { authHeader } = useWalletAuth();
   const { showSuccess, showError } = useToast();
+  const { fetchUserInfo } = useUserStore();
   const [tab, setTab] = useState<'quests' | 'achievements'>('quests');
   const [quests, setQuests] = useState<Quest[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [stats, setStats] = useState({ xp: 0, xp_level: 1, referral_count: 0 });
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<string | null>(null);
-  const fetchedRef = useRef(false);
 
-  // 获取任务和成就列表 (只请求一次)
+  // 获取任务和成就列表
   useEffect(() => {
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-    
     const fetchData = async () => {
       const headers: HeadersInit = authHeader ? { 'X-Wallet-Auth': authHeader } : {};
       
@@ -105,13 +85,17 @@ const QuestsPage: React.FC = () => {
       }
     };
 
+    // 每次组件挂载时都获取最新数据
+    setLoading(true);
     fetchData();
-  }, []); // 只在挂载时请求一次
+    // 同时刷新全局用户数据
+    fetchUserInfo(authHeader);
+  }, [authHeader, fetchUserInfo]);
 
   // 每日签到
   const doCheckin = async () => {
     if (!authHeader) {
-      showError(language === 'zh' ? '请先连接钱包' : 'Please connect wallet first');
+      showError(language === 'zh' ? '请先连接钱包并签名' : 'Please connect wallet and sign');
       return;
     }
     
@@ -121,16 +105,17 @@ const QuestsPage: React.FC = () => {
         headers: { 'X-Wallet-Auth': authHeader },
       });
       const data = await res.json();
+      
       if (data.success) {
         showSuccess(language === 'zh' ? '签到成功！' : 'Checked in!');
-        // 更新签到任务状态
         setQuests(quests.map(q => 
           q.id === 'daily_checkin' ? { ...q, progress: 1, completed: 1 } : q
         ));
       } else {
-        showError(data.message || 'Already checked in');
+        showError(data.message || data.error || 'Already checked in');
       }
-    } catch {
+    } catch (err) {
+      console.error('Checkin error:', err);
       showError(language === 'zh' ? '签到失败' : 'Check-in failed');
     }
   };
@@ -162,14 +147,28 @@ const QuestsPage: React.FC = () => {
         // 升级提示
         if (data.newXpLevel) {
           msg += language === 'zh' ? ` 🎉 升级到 Lv.${data.newXpLevel}！` : ` 🎉 Level up to Lv.${data.newXpLevel}!`;
-          setStats(prev => ({ ...prev, xp_level: data.newXpLevel }));
         }
         
         showSuccess(msg);
+        
         // 更新任务状态
         setQuests(quests.map(q => 
           q.id === questId ? { ...q, claimed: 1 } : q
         ));
+        
+        // 重新获取最新数据（包括 XP）
+        const headers: HeadersInit = authHeader ? { 'X-Wallet-Auth': authHeader } : {};
+        const questsRes = await fetch(`${CORE_API}/api/quests`, { headers });
+        if (questsRes.ok) {
+          const questsData = await questsRes.json();
+          setQuests(questsData.quests || []);
+          setStats(questsData.stats || stats);
+        }
+        
+        // 刷新全局用户数据
+        fetchUserInfo(authHeader);
+        // 触发全局事件，通知其他组件
+        window.dispatchEvent(new Event('user-data-changed'));
       } else {
         showError(data.error || 'Claim failed');
       }
