@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>色块RPG游戏</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="gameContainer">
+      <!-- 顶部UI栏 -->
+      <div id="topUI">
+        <div class="stat-bar">
+          <div class="stat-item">
+            <span class="stat-label">LIFE</span>
+            <div class="meter-container">
+              <div class="meter-bar" id="lifeBar"></div>
+              <div class="meter-max" id="lifeMax"></div>
+            </div>
+            <span class="stat-text" id="lifeText">100/100</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">ACT</span>
+            <div class="meter-container">
+              <div class="meter-bar" id="actBar"></div>
+              <div class="meter-max" id="actMax"></div>
+            </div>
+            <span class="stat-text" id="actText">50/50</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">EXP</span>
+            <div class="meter-container">
+              <div class="meter-bar" id="expBar"></div>
+            </div>
+            <span class="stat-text" id="expText">0/100</span>
+          </div>
+        </div>
+        <div class="stat-bar">
+          <div class="stat-item">
+            <span class="stat-label">ATK</span>
+            <div class="meter-container">
+              <div class="meter-bar" id="atkBar"></div>
+              <div class="meter-max" id="atkMax"></div>
+            </div>
+            <span class="stat-text" id="atkText">10/10</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">DEF</span>
+            <div class="meter-container">
+              <div class="meter-bar" id="defBar"></div>
+              <div class="meter-max" id="defMax"></div>
+            </div>
+            <span class="stat-text" id="defText">10/10</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">COMBO</span>
+            <div class="meter-container">
+              <div class="meter-bar combo-bar" id="comboBar"></div>
+            </div>
+            <span class="stat-text" id="comboText">0/120</span>
+          </div>
+        </div>
+        <div class="info-bar">
+          <div class="info-item">
+            <span>LV: <span id="levelText">1</span></span>
+            <span>金币: <span id="goldText">0</span></span>
+            <span>钥匙: <span id="keyText">0</span></span>
+            <span>钥匙2: <span id="key2Text">0</span></span>
+            <span>回复: <span id="rpeText">10</span></span>
+            <span id="addPText" style="color:#FFD700"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 游戏主区域 -->
+      <div id="gameArea">
+        <!-- 任务和敌人色块将动态生成在这里 -->
+      </div>
+
+      <!-- 底部商店栏 -->
+      <div id="bottomUI">
+        <div class="shop-section">
+          <h3>商店</h3>
+          <div class="shop-items" id="shopItems">
+            <!-- 商店物品将动态生成 -->
+          </div>
+        </div>
+        <div class="action-buttons">
+          <button id="btnAddLife" class="action-btn">+生命</button>
+          <button id="btnAddAct" class="action-btn">+行动</button>
+          <button id="btnAddRpe" class="action-btn">+回复</button>
+          <button id="btnAddAtk" class="action-btn">+攻击</button>
+          <button id="btnAddDef" class="action-btn">+防御</button>
+        </div>
+      </div>
+
+      <!-- 消息显示区域 -->
+      <div id="messageArea"></div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script src="config.js"></script>
+    <script src="data.js"></script>
+    <script src="classes/Mission.js"></script>
+    <script src="classes/Enemy.js"></script>
+    <script src="classes/ItemObj.js"></script>
+    <script src="classes/ShopItem.js"></script>
+    <script src="classes/SpecialItems.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
