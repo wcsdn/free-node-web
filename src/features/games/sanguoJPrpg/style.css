@@ -1,0 +1,453 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    user-select: none;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 顶部UI */
+#topUI {
+    background: #1a1a1a;
+    padding: 10px;
+    border-bottom: 2px solid #333;
+    z-index: 100;
+}
+
+.stat-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.stat-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.stat-label {
+    min-width: 40px;
+    font-weight: bold;
+}
+
+.meter-container {
+    flex: 1;
+    height: 20px;
+    background: #333;
+    border: 1px solid #555;
+    position: relative;
+    overflow: hidden;
+}
+
+.meter-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    transition: width 0.1s ease;
+    position: relative;
+}
+
+.meter-bar.combo-bar {
+    background: linear-gradient(90deg, #FF9800, #FFC107);
+}
+
+.meter-max {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #fff;
+}
+
+.stat-text {
+    min-width: 60px;
+    text-align: right;
+    font-size: 11px;
+}
+
+.info-bar {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #333;
+}
+
+.info-item {
+    display: flex;
+    gap: 15px;
+    font-size: 11px;
+}
+
+/* 游戏主区域 */
+#gameArea {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    background: #0a0a0a;
+    width: 100%;
+    min-height: 600px;
+    /* 设置一个最小尺寸，确保色块有足够空间 */
+    -webkit-overflow-scrolling: touch;
+    /* iOS平滑滚动 */
+    overscroll-behavior: contain;
+    /* 防止滚动链 */
+}
+
+/* 确保游戏区域有足够的高度来容纳所有元素 */
+#gameArea::after {
+    content: '';
+    display: block;
+    height: 0;
+    width: 100%;
+    clear: both;
+}
+
+/* 色块样式 */
+.game-block {
+    position: absolute;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    box-sizing: border-box;
+    /* 确保边框不会影响尺寸 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    /* 移动端优化 */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.game-block:hover {
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.game-block.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.game-block.locked::after {
+    content: "🔒";
+    position: absolute;
+    font-size: 20px;
+}
+
+.game-block.mission {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+    z-index: 1;
+}
+
+.game-block.enemy {
+    background: linear-gradient(135deg, #F44336, #D32F2F);
+    z-index: 2;
+}
+
+.game-block.shop-item {
+    /* 颜色由JavaScript动态设置 - ATK洋红色, DEF青色 */
+    z-index: 3;
+}
+
+/* 进度条 */
+.progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    width: 100%;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4CAF50;
+    transition: width 0.2s;
+}
+
+.progress-fill.complete {
+    background: #FF9800;
+}
+
+/* 百分比显示 */
+.percent-text {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 9px;
+    color: #fff;
+    z-index: 5;
+}
+
+/* 底部UI */
+#bottomUI {
+    background: #1a1a1a;
+    padding: 10px;
+    border-top: 2px solid #333;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.shop-section h3 {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.shop-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 8px 15px;
+    background: #333;
+    border: 1px solid #555;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: #444;
+    border-color: #777;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 消息区域 */
+#messageArea {
+    position: fixed;
+    top: 200px;
+    right: 10px;
+    width: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.4;
+    z-index: 200;
+    pointer-events: none;
+    -webkit-overflow-scrolling: touch;
+    /* iOS平滑滚动 */
+}
+
+.message-item {
+    margin-bottom: 5px;
+    padding: 2px 0;
+}
+
+/* 掉落物品 */
+.item-drop {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 50;
+    pointer-events: none;
+    transition: transform 0.3s ease;
+}
+
+.item-drop.gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+}
+
+.item-drop.exp {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    color: #fff;
+}
+
+.item-drop.key {
+    background: linear-gradient(135deg, #9E9E9E, #757575);
+    color: #fff;
+}
+
+.item-drop.key2 {
+    background: linear-gradient(135deg, #E91E63, #C2185B);
+    color: #fff;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    body {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+
+    #topUI {
+        padding: 8px 5px;
+    }
+
+    .stat-bar {
+        flex-direction: column;
+        gap: 3px;
+        margin-bottom: 3px;
+    }
+
+    .stat-item {
+        font-size: 10px;
+        gap: 3px;
+    }
+
+    .stat-label {
+        min-width: 35px;
+        font-size: 9px;
+    }
+
+    .meter-container {
+        height: 16px;
+    }
+
+    .stat-text {
+        min-width: 50px;
+        font-size: 9px;
+    }
+
+    .info-item {
+        font-size: 9px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .game-block {
+        font-size: 8px;
+        min-width: 30px;
+        min-height: 30px;
+        /* 确保触摸目标足够大 */
+    }
+
+    #gameArea {
+        min-height: 400px;
+        /* 移动端需要更多滚动空间 */
+    }
+
+    #bottomUI {
+        padding: 8px 5px;
+        max-height: 150px;
+    }
+
+    .action-btn {
+        padding: 10px 12px;
+        font-size: 11px;
+        min-height: 36px;
+        /* iOS推荐的最小触摸目标44x44px */
+    }
+
+    #messageArea {
+        top: 150px;
+        right: 5px;
+        width: calc(100% - 10px);
+        max-width: 280px;
+        font-size: 10px;
+        padding: 8px;
+        max-height: 200px;
+    }
+
+    .shop-items {
+        gap: 8px;
+    }
+}
+
+/* iPhone 12 特定适配 (390x844) */
+@media (max-width: 390px) {
+    .stat-item {
+        font-size: 9px;
+    }
+
+    .stat-label {
+        min-width: 30px;
+        font-size: 8px;
+    }
+
+    .stat-text {
+        min-width: 45px;
+        font-size: 8px;
+    }
+
+    .info-item {
+        font-size: 8px;
+        gap: 6px;
+    }
+
+    .action-btn {
+        padding: 8px 10px;
+        font-size: 10px;
+        flex: 1;
+        min-width: calc(50% - 5px);
+    }
+
+    #messageArea {
+        width: calc(100% - 10px);
+        max-width: 250px;
+        font-size: 9px;
+    }
+}
+
+/* 横屏适配 */
+@media (max-height: 500px) and (orientation: landscape) {
+    #topUI {
+        padding: 5px;
+    }
+
+    .stat-bar {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    .stat-item {
+        font-size: 9px;
+    }
+
+    #bottomUI {
+        max-height: 120px;
+        padding: 5px;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        font-size: 10px;
+    }
+}
