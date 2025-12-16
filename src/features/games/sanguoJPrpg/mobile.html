@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>色块RPG - 手机版</title>
+    <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 顶部状态栏 -->
+        <header id="statusBar">
+            <div class="status-row">
+                <div class="stat"><span class="label">LV</span><span id="mLv" class="value">1</span></div>
+                <div class="stat"><span class="label">💰</span><span id="mGold" class="value">0</span></div>
+                <div class="stat"><span class="label">🗝️</span><span id="mKey" class="value">0</span></div>
+                <div class="stat"><span class="label">🔐</span><span id="mKey2" class="value">0</span></div>
+                <div class="stat"><span class="label">💫</span><span id="mRpe" class="value">10</span></div>
+            </div>
+            <div class="bars">
+                <div class="bar-item">
+                    <span class="bar-label">❤️</span>
+                    <div class="bar life"><div class="fill" id="mLifeBar"></div></div>
+                    <span class="bar-text" id="mLifeText">100/100</span>
+                </div>
+                <div class="bar-item">
+                    <span class="bar-label">⚡</span>
+                    <div class="bar act"><div class="fill" id="mActBar"></div></div>
+                    <span class="bar-text" id="mActText">50/50</span>
+                </div>
+            </div>
+            <div class="bars">
+                <div class="bar-item">
+                    <span class="bar-label">⚔️</span>
+                    <div class="bar atk"><div class="fill" id="mAtkBar"></div></div>
+                    <span class="bar-text" id="mAtkText">10/10</span>
+                </div>
+                <div class="bar-item">
+                    <span class="bar-label">🛡️</span>
+                    <div class="bar def"><div class="fill" id="mDefBar"></div></div>
+                    <span class="bar-text" id="mDefText">10/10</span>
+                </div>
+            </div>
+            <div class="bars">
+                <div class="bar-item">
+                    <span class="bar-label">⭐</span>
+                    <div class="bar exp"><div class="fill" id="mExpBar"></div></div>
+                    <span class="bar-text" id="mExpText">0/100</span>
+                </div>
+                <div class="bar-item">
+                    <span class="bar-label">🔥</span>
+                    <div class="bar combo"><div class="fill" id="mComboBar"></div></div>
+                    <span class="bar-text" id="mComboText">0/120</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 属性点分配 -->
+        <div class="add-points" id="addPointsArea">
+            <span id="mAddP">可分配: 0</span>
+            <button class="add-btn" data-type="LIFE">❤️生命</button>
+            <button class="add-btn" data-type="ACT">⚡行动</button>
+            <button class="add-btn" data-type="RPE">💫回复</button>
+            <button class="add-btn" data-type="ATK">⚔️攻击</button>
+            <button class="add-btn" data-type="DEF">🛡️防御</button>
+        </div>
+
+        <!-- 混合流布局 -->
+        <main id="content">
+            <div class="mix-grid" id="mixGrid"></div>
+        </main>
+
+        <!-- 消息提示 -->
+        <div id="toast"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="mobile.js"></script>
+</body>
+</html>

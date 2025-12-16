@@ -102,11 +102,16 @@ body {
     background: #0a0a0a;
     width: 100%;
     min-height: 600px;
-    /* 设置一个最小尺寸，确保色块有足够空间 */
     -webkit-overflow-scrolling: touch;
-    /* iOS平滑滚动 */
     overscroll-behavior: contain;
-    /* 防止滚动链 */
+}
+
+/* 游戏内容容器 - 用于缩放 */
+#gameContent {
+    position: relative;
+    width: 850px;
+    height: 630px;
+    transform-origin: top left;
 }
 
 /* 确保游戏区域有足够的高度来容纳所有元素 */
@@ -311,19 +316,18 @@ body {
 }
 
 /* 移动端适配 */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     body {
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
     }
 
     #topUI {
-        padding: 8px 5px;
+        padding: 5px;
     }
 
     .stat-bar {
-        flex-direction: column;
-        gap: 3px;
+        gap: 8px;
         margin-bottom: 3px;
     }
 
@@ -338,7 +342,7 @@ body {
     }
 
     .meter-container {
-        height: 16px;
+        height: 14px;
     }
 
     .stat-text {
@@ -352,102 +356,95 @@ body {
         flex-wrap: wrap;
     }
 
-    .game-block {
-        font-size: 8px;
-        min-width: 30px;
-        min-height: 30px;
-        /* 确保触摸目标足够大 */
-    }
-
-    #gameArea {
-        min-height: 400px;
-        /* 移动端需要更多滚动空间 */
-    }
-
     #bottomUI {
-        padding: 8px 5px;
-        max-height: 150px;
+        padding: 5px;
+        max-height: 80px;
     }
 
-    .action-btn {
-        padding: 10px 12px;
-        font-size: 11px;
-        min-height: 36px;
-        /* iOS推荐的最小触摸目标44x44px */
-    }
-
-    #messageArea {
-        top: 150px;
-        right: 5px;
-        width: calc(100% - 10px);
-        max-width: 280px;
-        font-size: 10px;
-        padding: 8px;
-        max-height: 200px;
-    }
-
-    .shop-items {
-        gap: 8px;
-    }
-}
-
-/* iPhone 12 特定适配 (390x844) */
-@media (max-width: 390px) {
-    .stat-item {
-        font-size: 9px;
-    }
-
-    .stat-label {
-        min-width: 30px;
-        font-size: 8px;
-    }
-
-    .stat-text {
-        min-width: 45px;
-        font-size: 8px;
-    }
-
-    .info-item {
-        font-size: 8px;
-        gap: 6px;
+    .action-buttons {
+        gap: 5px;
     }
 
     .action-btn {
         padding: 8px 10px;
         font-size: 10px;
-        flex: 1;
-        min-width: calc(50% - 5px);
+        min-height: 36px;
     }
 
     #messageArea {
-        width: calc(100% - 10px);
-        max-width: 250px;
+        top: auto;
+        bottom: 90px;
+        right: 5px;
+        width: 200px;
         font-size: 9px;
+        padding: 5px;
+        max-height: 120px;
+    }
+
+    .shop-section {
+        display: none;
+    }
+}
+
+/* 竖屏手机 */
+@media (max-width: 500px) {
+    .stat-bar {
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        flex: 0 0 48%;
+    }
+
+    .action-btn {
+        padding: 6px 8px;
+        font-size: 9px;
+    }
+
+    #messageArea {
+        width: 150px;
+        font-size: 8px;
     }
 }
 
 /* 横屏适配 */
 @media (max-height: 500px) and (orientation: landscape) {
     #topUI {
-        padding: 5px;
+        padding: 3px 5px;
     }
 
     .stat-bar {
         flex-direction: row;
-        gap: 8px;
+        gap: 5px;
+        margin-bottom: 2px;
     }
 
     .stat-item {
-        font-size: 9px;
+        font-size: 8px;
+    }
+
+    .meter-container {
+        height: 12px;
+    }
+
+    .info-bar {
+        display: none;
     }
 
     #bottomUI {
-        max-height: 120px;
-        padding: 5px;
+        max-height: 50px;
+        padding: 3px 5px;
     }
 
     .action-btn {
-        padding: 6px 10px;
-        font-size: 10px;
+        padding: 4px 8px;
+        font-size: 9px;
+        min-height: 28px;
+    }
+
+    #messageArea {
+        top: 60px;
+        bottom: auto;
+        max-height: 100px;
     }
 }

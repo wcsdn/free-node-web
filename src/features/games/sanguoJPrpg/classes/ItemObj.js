@@ -38,14 +38,17 @@ class ItemObj {
         switch(this.kind) {
             case "GOLD": text = '$' + this.val; break;
             case "EXP": text = this.val.toString(); break;
-            case "KEY": text = '🔑'; break;
-            case "KEY2": text = '🔑2'; break;
+            case "KEY": text = '�️';b break;
+            case "KEY2": text = '�''; break;
             case "NEKO": text = '🐱'; break;
         }
         this.element.textContent = text;
         
         this.element.addEventListener('mouseenter', () => this.onOver());
+        this.element.addEventListener('click', () => this.onOver());
         this.element.addEventListener('touchstart', () => this.onOver());
+        this.element.style.cursor = 'pointer';
+        this.element.style.pointerEvents = 'auto';
         this.game.gameArea.appendChild(this.element);
     }
     

@@ -1,0 +1,181 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg: #1a1a2e;
+    --card: #16213e;
+    --accent: #e94560;
+    --text: #eee;
+    --text-dim: #888;
+    --mission: #2196F3;
+    --enemy: #F44336;
+    --atk: #e91e63;
+    --def: #00bcd4;
+    --gold: #f1c40f;
+    --life: #e74c3c;
+    --act: #9b59b6;
+    --exp: #2ecc71;
+    --special: #9C27B0;
+    --treasure: #FF9800;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+#app {
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: 20px;
+}
+
+/* 状态栏 */
+#statusBar {
+    background: var(--card);
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 2px solid var(--accent);
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.stat { text-align: center; flex: 1; }
+.stat .label { font-size: 10px; }
+.stat .value { font-size: 13px; font-weight: bold; margin-left: 2px; }
+
+.bars { display: flex; gap: 6px; margin-bottom: 3px; }
+.bar-item { flex: 1; display: flex; align-items: center; gap: 2px; }
+.bar-label { font-size: 9px; width: 14px; }
+.bar { flex: 1; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
+.bar .fill { height: 100%; transition: width 0.2s; border-radius: 5px; }
+.bar.life .fill { background: linear-gradient(90deg, var(--life), #c0392b); }
+.bar.act .fill { background: linear-gradient(90deg, var(--act), #8e44ad); }
+.bar.exp .fill { background: linear-gradient(90deg, var(--exp), #27ae60); }
+.bar.atk .fill { background: linear-gradient(90deg, var(--atk), #c2185b); }
+.bar.def .fill { background: linear-gradient(90deg, var(--def), #0097a7); }
+.bar.combo .fill { background: linear-gradient(90deg, #ff9800, #ff5722); }
+.bar-text { font-size: 8px; min-width: 40px; text-align: right; }
+
+/* 属性点 */
+.add-points {
+    background: var(--card);
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #333;
+}
+.add-points span { font-size: 11px; color: var(--gold); font-weight: bold; }
+.add-btn {
+    padding: 5px 8px;
+    border: none;
+    border-radius: 12px;
+    background: #333;
+    color: var(--text);
+    font-size: 11px;
+}
+.add-btn:active { background: var(--accent); }
+
+/* 内容区 */
+#content { padding: 8px; }
+
+/* 混合网格 */
+.mix-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+
+/* 圆形色块 */
+.orb {
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.orb:active { transform: scale(0.9); }
+.orb.locked { opacity: 0.4; filter: grayscale(50%); }
+.orb.locked::after { content: "🔒"; position: absolute; font-size: 14px; }
+.orb.completed { box-shadow: 0 0 0 3px var(--exp), 0 0 10px var(--exp); }
+.orb.dead { opacity: 0.2; filter: grayscale(100%); }
+
+/* 消失动画 */
+.orb.hiding {
+    animation: orbHide 0.8s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes orbHide {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(0); }
+}
+
+/* 类型颜色 */
+.orb.mission { background: radial-gradient(circle at 30% 30%, #42A5F5, var(--mission), #1565C0); }
+.orb.enemy { background: radial-gradient(circle at 30% 30%, #EF5350, var(--enemy), #C62828); }
+.orb.shop-atk { background: radial-gradient(circle at 30% 30%, #F06292, var(--atk), #AD1457); }
+.orb.shop-def { background: radial-gradient(circle at 30% 30%, #4DD0E1, var(--def), #00838F); }
+.orb.shop-key { background: radial-gradient(circle at 30% 30%, #90A4AE, #607D8B, #37474F); }
+.orb.special { background: radial-gradient(circle at 30% 30%, #BA68C8, var(--special), #6A1B9A); }
+.orb.treasure { background: radial-gradient(circle at 30% 30%, #FFB74D, var(--treasure), #E65100); }
+.orb.treasure:not(.active) { background: radial-gradient(circle at 30% 30%, #8D6E63, #795548, #4E342E); }
+.orb.boss { background: radial-gradient(circle at 30% 30%, #FF5252, #B71C1C, #4A0000); box-shadow: 0 0 15px #ff0000; }
+
+/* 内容 */
+.orb-icon { font-size: 16px; line-height: 1; }
+.orb-text { font-size: 8px; font-weight: bold; margin-top: 1px; }
+.orb-sub { font-size: 7px; opacity: 0.8; }
+
+/* 进度环 */
+.orb-ring {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: rgba(255,255,255,0.8);
+    pointer-events: none;
+}
+
+/* Toast */
+#toast {
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+#toast.show { opacity: 1; }
