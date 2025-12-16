@@ -42,7 +42,8 @@ class GameMain {
         this.t_list = [0, 0, 0, 0, 0, 0, 0, 0, 0];
         
         // UI元素
-        this.gameArea = document.getElementById('gameArea');
+        this.gameArea = document.getElementById('gameContent') || document.getElementById('gameArea');
+        this.gameAreaWrapper = document.getElementById('gameArea');
         this.messageArea = document.getElementById('messageArea');
         
         this.jp = true; // 使用中文
@@ -50,6 +51,9 @@ class GameMain {
     }
     
     init() {
+        // 移动端缩放适配
+        this.setupMobileScale();
+        window.addEventListener('resize', () => this.setupMobileScale());
         // 创建游戏元素
         MISSION_DATA.forEach((data, i) => this.missions.push(new Mission(this, data, i)));
         ENEMY_DATA.forEach((data, i) => this.enemies.push(new Enemy(this, data, i)));
@@ -297,6 +301,29 @@ class GameMain {
                 ? `${this.exp_total}/${this.exp_total_max}` 
                 : `${Math.floor(current)}/${max}`;
         }
+    }
+    
+    setupMobileScale() {
+        const gameContent = document.getElementById('gameContent');
+        const gameAreaWrapper = document.getElementById('gameArea');
+        if (!gameContent || !gameAreaWrapper) return;
+        
+        const contentWidth = 850;
+        const contentHeight = 630;
+        const availableWidth = gameAreaWrapper.clientWidth;
+        const availableHeight = gameAreaWrapper.clientHeight;
+        
+        // 计算缩放比例
+        const scaleX = availableWidth / contentWidth;
+        const scaleY = availableHeight / contentHeight;
+        const scale = Math.min(scaleX, scaleY, 1); // 不放大，只缩小
+        
+        gameContent.style.transform = `scale(${scale})`;
+        gameContent.style.width = contentWidth + 'px';
+        gameContent.style.height = contentHeight + 'px';
+        
+        // 调整容器高度
+        gameAreaWrapper.style.minHeight = (contentHeight * scale) + 'px';
     }
 }
 
