@@ -1,0 +1,56 @@
+.pathway-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.pathway-card {
+  cursor: pointer;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.pathway-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.pathway-title {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.pathway-desc {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.pathway-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+}
+
+.pathway-tag.beginner {
+  background: rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+  border: 1px solid #00ff41;
+}
+
+.pathway-tag.onchain {
+  background: rgba(0, 255, 255, 0.2);
+  color: #00ffff;
+  border: 1px solid #00ffff;
+}
+
+@media (max-width: 768px) {
+  .pathway-grid {
+    grid-template-columns: 1fr;
+  }
+}

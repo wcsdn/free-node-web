@@ -3,8 +3,8 @@
   position: fixed;
   top: 20px;
   z-index: 9;
-  /* PC 端：从右往左水平排列，使用 CSS 变量计算位置 */
-  right: calc(20px + var(--btn-index, 0) * 55px);
+  /* PC 端：反转顺序，index 0 在最左，index 6 在最右 */
+  right: calc(20px + (6 - var(--btn-index, 0)) * 55px);
 }
 
 /* 设置菜单样式 */
@@ -134,10 +134,11 @@
   text-shadow: 0 0 5px #00ff00;
 }
 
-/* 移动端适配 - 竖向排列 */
+/* 移动端适配 - 竖向排列，正序 */
 @media (max-width: 768px) {
   .action-button-container {
     right: 10px;
+    /* 正序：index 0 在最上面 */
     top: calc(15px + var(--btn-index, 0) * 45px);
   }
 

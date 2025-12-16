@@ -12,11 +12,11 @@ import Loading from '@/shared/components/Loading';
 
 // 懒加载页面组件（HomePage 不需要懒加载，因为始终挂载）
 const NewsPage = lazy(() => import('@/features/news/NewsPage'));
-// const ProfilePage = lazy(() => import('@/features/profile/ProfilePage')); // 暂时下架，改用 UserPanel 弹窗
 const GhostMailPage = lazy(() => import('@/features/ghost-mail/GhostMailPage'));
 const QuestsPage = lazy(() => import('@/features/quests/QuestsPage'));
-// const SettingsPage = lazy(() => import('@/features/settings')); // 改为弹窗模式
 const ExchangesPage = lazy(() => import('@/features/exchanges/ExchangesPage'));
+const StartPage = lazy(() => import('@/features/start/StartPage'));
+const GoRedirect = lazy(() => import('@/features/start/GoRedirect'));
 const DebugPage = lazy(() => import('@/features/debug/DebugPage'));
 
 // 页面包装器 - 添加 Suspense
@@ -113,6 +113,22 @@ export const routes: RouteObject[] = [
         element: (
           <PageWrapper>
             <ExchangesPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'start',
+        element: (
+          <PageWrapper>
+            <StartPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'go/:exchange',
+        element: (
+          <PageWrapper>
+            <GoRedirect />
           </PageWrapper>
         ),
       },

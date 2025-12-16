@@ -1,0 +1,102 @@
+.tutorial-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tutorial-tab {
+  background: transparent;
+  border: 1px solid #444;
+  color: #888;
+  padding: 10px 20px;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.tutorial-tab:hover {
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.tutorial-tab.active {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: #00ff41;
+  color: #00ff41;
+}
+
+.tutorial-content {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 25px;
+}
+
+.tutorial-panel h3 {
+  color: #00ff41;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.tutorial-panel ol {
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+  color: #ccc;
+  line-height: 1.8;
+}
+
+.tutorial-panel li {
+  margin-bottom: 8px;
+}
+
+.tutorial-tip {
+  background: rgba(0, 255, 65, 0.1);
+  border-left: 3px solid #00ff41;
+  padding: 10px 15px;
+  color: #00ff41;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.tutorial-warning {
+  background: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid #ff4444;
+  padding: 10px 15px;
+  color: #ff6666;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.term-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.term-name {
+  color: #00ff41;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.term-desc {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .terms-grid {
+    grid-template-columns: 1fr;
+  }
+}
