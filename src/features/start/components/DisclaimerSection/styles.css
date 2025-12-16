@@ -1,0 +1,21 @@
+.disclaimer-section {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(50, 50, 0, 0.3);
+  border: 1px solid #666;
+  border-radius: 8px;
+}
+
+.disclaimer-content {
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.6;
+}
+
+.disclaimer-content p {
+  margin-bottom: 10px;
+}
+
+.disclaimer-content strong {
+  color: #ff6600;
+}

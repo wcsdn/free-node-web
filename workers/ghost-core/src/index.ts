@@ -1054,6 +1054,150 @@ async function handleQuestProgress(request: Request, env: Env, origin: string | 
 }
 
 // ============================================
+// API: 返佣统计
+// ============================================
+
+async function handleAffiliateStats(request: Request, env: Env, origin: string | null): Promise<Response> {
+  // 验证管理员密钥
+  const adminKey = request.headers.get('x-admin-key') || request.headers.get('Authorization')?.replace('Bearer ', '');
+  if (!adminKey || adminKey !== env.ADMIN_KEY) {
+    return errorResponse('Unauthorized', 401, origin);
+  }
+
+  const url = new URL(request.url);
+  const range = url.searchParams.get('range') || '7d';
+  
+  // 计算时间范围
+  let days = 7;
+  if (range === '1d') days = 1;
+  else if (range === '30d') days = 30;
+  else if (range === '90d') days = 90;
+  
+  const startTime = Date.now() - days * 24 * 60 * 60 * 1000;
+
+  try {
+    // 总点击数
+    const totalResult = await env.DB.prepare(
+      'SELECT COUNT(*) as total FROM exchange_clicks WHERE created_at >= ?'
+    ).bind(startTime).first<{ total: number }>();
+
+    // 按交易所分组
+    const byExchange = await env.DB.prepare(`
+      SELECT exchange_id, COUNT(*) as cnt 
+      FROM exchange_clicks 
+      WHERE created_at >= ? 
+      GROUP BY exchange_id 
+      ORDER BY cnt DESC
+    `).bind(startTime).all<{ exchange_id: string; cnt: number }>();
+
+    // 按 utm_medium 分组
+    const byMedium = await env.DB.prepare(`
+      SELECT utm_medium, COUNT(*) as cnt 
+      FROM exchange_clicks 
+      WHERE created_at >= ? AND utm_medium IS NOT NULL
+      GROUP BY utm_medium 
+      ORDER BY cnt DESC
+    `).bind(startTime).all<{ utm_medium: string; cnt: number }>();
+
+    // 按 utm_content 分组（Top 10）
+    const topContent = await env.DB.prepare(`
+      SELECT utm_content, COUNT(*) as cnt 
+      FROM exchange_clicks 
+      WHERE created_at >= ? AND utm_content IS NOT NULL
+      GROUP BY utm_content 
+      ORDER BY cnt DESC 
+      LIMIT 10
+    `).bind(startTime).all<{ utm_content: string; cnt: number }>();
+
+    // 按天分组趋势
+    const dailyTrend = await env.DB.prepare(`
+      SELECT date(created_at / 1000, 'unixepoch') as day, COUNT(*) as cnt
+      FROM exchange_clicks
+      WHERE created_at >= ?
+      GROUP BY day
+      ORDER BY day DESC
+      LIMIT ?
+    `).bind(startTime, days).all<{ day: string; cnt: number }>();
+
+    return jsonResponse({
+      range,
+      total: totalResult?.total || 0,
+      byExchange: byExchange.results || [],
+      byMedium: byMedium.results || [],
+      topContent: topContent.results || [],
+      dailyTrend: dailyTrend.results || [],
+    }, 200, origin);
+  } catch (err) {
+    console.error('Affiliate stats error:', err);
+    return errorResponse('Internal server error', 500, origin);
+  }
+}
+
+// ============================================
+// 交易所返佣链接映射
+// ============================================
+
+const EXCHANGE_AFFILIATE_MAP: Record<string, string> = {
+  okx: 'https://www.okx.com/join/FREENODE',
+  bybit: 'https://www.bybit.com/invite?ref=FREENODE',
+  bitget: 'https://www.bitget.com/referral/register?ref=FREENODE',
+  gate: 'https://www.gate.io/signup?ref=FREENODE',
+};
+
+// SHA256 哈希（隐私友好，不存明文 IP）
+async function sha256Hex(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ============================================
+// API: 交易所跳转埋点 /go/:exchange
+// ============================================
+
+async function handleExchangeRedirect(request: Request, env: Env, exchange: string): Promise<Response> {
+  const target = EXCHANGE_AFFILIATE_MAP[exchange];
+  if (!target) {
+    return new Response('Exchange not found', { status: 404 });
+  }
+
+  const url = new URL(request.url);
+  const referer = request.headers.get('referer') || '';
+  const ua = request.headers.get('user-agent') || '';
+  const ip = request.headers.get('cf-connecting-ip') || '';
+
+  const id = crypto.randomUUID();
+  const createdAt = Date.now();
+  const ip_hash = ip ? await sha256Hex(ip) : null;
+  const ua_hash = ua ? await sha256Hex(ua) : null;
+
+  // 记录点击
+  try {
+    await env.DB.prepare(`
+      INSERT INTO exchange_clicks (id, exchange_id, created_at, referer, utm_source, utm_medium, utm_campaign, utm_content, utm_term, ip_hash, ua_hash)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      id,
+      exchange,
+      createdAt,
+      referer,
+      url.searchParams.get('utm_source'),
+      url.searchParams.get('utm_medium'),
+      url.searchParams.get('utm_campaign'),
+      url.searchParams.get('utm_content'),
+      url.searchParams.get('utm_term'),
+      ip_hash,
+      ua_hash
+    ).run();
+  } catch (err) {
+    console.error('Failed to record click:', err);
+    // 不阻塞跳转
+  }
+
+  return Response.redirect(target, 302);
+}
+
+// ============================================
 // 路由分发
 // ============================================
 
@@ -1065,6 +1209,12 @@ export default {
     // CORS 预检
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: getCorsHeaders(origin) });
+    }
+    
+    // /go/:exchange 路由（不需要 CORS 验证，直接 302）
+    const goMatch = url.pathname.match(/^\/go\/([^/]+)$/);
+    if (goMatch) {
+      return handleExchangeRedirect(request, env, goMatch[1]);
     }
     
     // 验证来源 (内部服务或允许的前端)
@@ -1136,6 +1286,10 @@ export default {
       // 健康检查
       case '/health':
         return jsonResponse({ status: 'ok', service: 'ghost-core' }, 200, origin);
+      
+      // 返佣统计 API
+      case '/api/admin/affiliate/stats':
+        return handleAffiliateStats(request, env, origin);
       
       default:
         // 动态路由: /api/activities/:id
