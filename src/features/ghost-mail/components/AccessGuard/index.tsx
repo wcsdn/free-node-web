@@ -189,8 +189,8 @@ const AccessGuard: React.FC<AccessGuardProps> = ({ children, onAccessGranted }) 
     );
   }
 
-  // 已是 VIP，放行
-  if (userStatus?.isVIP) {
+  // GM 白名单或 VIP 用户，放行
+  if (isGMWhitelisted || userStatus?.isVIP) {
     return <>{children}</>;
   }
 
