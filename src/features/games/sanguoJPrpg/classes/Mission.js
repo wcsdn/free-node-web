@@ -55,17 +55,17 @@ class Mission {
     
     onClick() {
         this.game.setStartTime();
-        
-        if (this.lock_flg) {
-            if (this.game.useKey(1)) {
-                this.lock_flg = false;
-                this.element.classList.remove('locked');
-                this.game.setMessage("M_UNLOCK");
-            } else {
-                this.game.setMessage("LOCK");
-            }
-            return;
+        // 显示弹框
+        if (typeof showMissionModal === 'function') {
+            showMissionModal(this);
+        } else {
+            this.doExecute();
         }
+    }
+    
+    // 实际执行任务逻辑
+    doExecute() {
+        if (this.lock_flg) return;
         
         if (this.game.act >= this.cost) {
             this.game.act -= this.cost;
@@ -104,26 +104,41 @@ class Mission {
         const items = [];
         // 金币
         let g = Math.floor(this.gold / 10);
-        while (g >= 100) { items.push(["GOLD", 100]); g -= 100; }
-        while (g >= 50) { items.push(["GOLD", 50]); g -= 50; }
-        while (g >= 10) { items.push(["GOLD", 10]); g -= 10; }
-        if (this.gold % 10 > 0) items.push(["GOLD", this.gold % 10]);
+        while (g >= 100) { items.push({ kind: "GOLD", val: 100 }); g -= 100; }
+        while (g >= 50) { items.push({ kind: "GOLD", val: 50 }); g -= 50; }
+        while (g >= 10) { items.push({ kind: "GOLD", val: 10 }); g -= 10; }
+        if (this.gold % 10 > 0) items.push({ kind: "GOLD", val: this.gold % 10 });
         
         // 经验
         let e = Math.floor(this.exp / 10);
-        while (e >= 100) { items.push(["EXP", 100]); e -= 100; }
-        while (e >= 50) { items.push(["EXP", 50]); e -= 50; }
-        while (e >= 10) { items.push(["EXP", 10]); e -= 10; }
-        if (this.exp % 10 > 0) items.push(["EXP", this.exp % 10]);
+        while (e >= 100) { items.push({ kind: "EXP", val: 100 }); e -= 100; }
+        while (e >= 50) { items.push({ kind: "EXP", val: 50 }); e -= 50; }
+        while (e >= 10) { items.push({ kind: "EXP", val: 10 }); e -= 10; }
+        if (this.exp % 10 > 0) items.push({ kind: "EXP", val: this.exp % 10 });
         
         // 随机NEKO
         if (Math.random() * 100 < 3) {
-            items.push(["NEKO", Math.floor(Math.random() * 8)]);
+            items.push({ kind: "NEKO", val: Math.floor(Math.random() * 8) });
         }
         
-        const cx = this.data.x + this.data.w / 2;
-        const cy = this.data.y + this.data.h / 2;
-        this.game.setItem(items, cx, cy);
+        console.log('Mission createItems 生成了物品:', items);
+        
+        // 在弹框中显示掉落物品
+        if (typeof showDropsInModal === 'function') {
+            console.log('调用 showDropsInModal');
+            // 先保存掉落物品
+            this.lastDrops = items;
+            showDropsInModal(items);
+        } else {
+            console.log('showDropsInModal 函数不存在，使用降级方案');
+            // 降级：直接添加到地图
+            this.lastDrops = null;
+            const cx = this.data.x + this.data.w / 2;
+            const cy = this.data.y + this.data.h / 2;
+            items.forEach(item => {
+                this.game.setItem([[item.kind, item.val]], cx, cy);
+            });
+        }
     }
     
     update() {

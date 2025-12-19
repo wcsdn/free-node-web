@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图预览 - 750×1334</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1a1a2e; 
+            color: #fff; 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 { text-align: center; margin-bottom: 10px; color: #e94560; }
+        .info { text-align: center; margin-bottom: 20px; color: #888; }
+        
+        /* 地图选择器 */
+        .map-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .map-tab {
+            padding: 12px 24px;
+            background: #16213e;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .map-tab:hover { border-color: #e94560; }
+        .map-tab.active { 
+            background: #e94560; 
+            border-color: #e94560;
+        }
+        
+        /* 地图详情 */
+        .map-detail {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .map-detail.active { display: block; }
+        
+        .map-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #e94560;
+            font-size: 24px;
+        }
+        .map-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .stat { text-align: center; }
+        .stat-label { color: #888; font-size: 14px; }
+        .stat-value { font-size: 24px; font-weight: bold; }
+        .stat-mission .stat-value { color: #2196F3; }
+        .stat-enemy .stat-value { color: #F44336; }
+        .stat-shop .stat-value { color: #FF00FF; }
+        .stat-special .stat-value { color: #4CAF50; }
+        
+        /* 预览容器 - 放大显示 */
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .preview-container {
+            position: relative;
+            width: 750px;
+            height: 1067px;
+            background: #0f0f23;
+            border: 3px solid #333;
+            overflow: hidden;
+        }
+        
+        /* 色块样式 */
+        .block {
+            position: absolute;
+            border-radius: 3px;
+            opacity: 0.9;
+        }
+        .block:hover {
+            opacity: 1;
+            z-index: 100;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .mission { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        .enemy { background: linear-gradient(135deg, #F44336, #D32F2F); }
+        .shop-atk { background: #FF00FF; }
+        .shop-def { background: #00FFFF; }
+        .special { background: #4CAF50; border: 2px solid #fff; }
+        .treasure { background: #FF9800; border: 2px solid #fff; }
+        .boss { background: #8B0000; border: 3px solid #ff0; }
+        
+        /* 图例 */
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+        
+        /* 滚动提示 */
+        .scroll-hint {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>色块RPG地图预览</h1>
+    <div class="info">屏幕尺寸: 750×1334 | 游戏区域: 750×1067 (80%) | 属性栏: 267px (20%)</div>
+    
+    <!-- 地图选择标签 -->
+    <div class="map-tabs" id="mapTabs"></div>
+    
+    <div class="scroll-hint">↓ 滚动查看完整地图 ↓</div>
+    
+    <!-- 地图详情 -->
+    <div id="mapDetails"></div>
+    
+    <!-- 图例 -->
+    <div class="legend">
+        <div class="legend-item"><div class="legend-color mission"></div>任务 (蓝色)</div>
+        <div class="legend-item"><div class="legend-color enemy"></div>敌人 (红色)</div>
+        <div class="legend-item"><div class="legend-color shop-atk"></div>ATK商店 (洋红)</div>
+        <div class="legend-item"><div class="legend-color shop-def"></div>DEF商店 (青色)</div>
+        <div class="legend-item"><div class="legend-color special"></div>特殊功能 (绿色)</div>
+        <div class="legend-item"><div class="legend-color treasure"></div>宝箱 (橙色)</div>
+        <div class="legend-item"><div class="legend-color boss"></div>Boss (深红)</div>
+    </div>
+
+    <script>
+        const mapsData = [];
+        let currentMap = 0;
+        
+        async function loadMaps() {
+            const mapFiles = [
+                { file: 'maps/data_1_经典随机.js', name: '经典随机' },
+                { file: 'maps/data_2_区域划分.js', name: '区域划分' },
+                { file: 'maps/data_3_螺旋进阶.js', name: '螺旋进阶' },
+                { file: 'maps/data_4_迷宫通道.js', name: '迷宫通道' },
+                { file: 'maps/data_5_塔防路径.js', name: '塔防路径' }
+            ];
+            
+            for (const mapInfo of mapFiles) {
+                try {
+                    const response = await fetch(mapInfo.file);
+                    const text = await response.text();
+                    const mapData = parseMapData(text);
+                    mapData.name = mapInfo.name;
+                    mapsData.push(mapData);
+                } catch (e) {
+                    console.error('加载失败:', mapInfo.file, e);
+                }
+            }
+            
+            renderTabs();
+            renderMapDetail(0);
+        }
+        
+        function parseMapData(jsText) {
+            const data = { missions: [], enemies: [], shops: [], specials: {} };
+            
+            const missionMatch = jsText.match(/MISSION_DATA\s*=\s*\[([\s\S]*?)\];/);
+            if (missionMatch) {
+                const items = missionMatch[1].match(/\{[^}]+\}/g) || [];
+                items.forEach(item => data.missions.push(eval('(' + item + ')')));
+            }
+            
+            const enemyMatch = jsText.match(/ENEMY_DATA\s*=\s*\[([\s\S]*?)\];/);
+            if (enemyMatch) {
+                const items = enemyMatch[1].match(/\{[^}]+\}/g) || [];
+                items.forEach(item => data.enemies.push(eval('(' + item + ')')));
+            }
+            
+            const shopMatch = jsText.match(/SHOP_DATA_TEMPLATE\s*=\s*\[([\s\S]*?)\];/);
+            if (shopMatch) {
+                const items = shopMatch[1].match(/\{[^}]+\}/g) || [];
+                items.forEach(item => data.shops.push(eval('(' + item + ')')));
+            }
+            
+            const specialMatch = jsText.match(/SPECIAL_DATA\s*=\s*\{([\s\S]*?)\};/);
+            if (specialMatch) {
+                const entries = specialMatch[1].match(/(\w+):\s*\{[^}]+\}/g) || [];
+                entries.forEach(entry => {
+                    const keyMatch = entry.match(/^(\w+):/);
+                    const valMatch = entry.match(/\{[^}]+\}/);
+                    if (keyMatch && valMatch) {
+                        data.specials[keyMatch[1]] = eval('(' + valMatch[0] + ')');
+                    }
+                });
+            }
+            
+            return data;
+        }
+        
+        function renderTabs() {
+            const tabsContainer = document.getElementById('mapTabs');
+            mapsData.forEach((map, index) => {
+                const tab = document.createElement('div');
+                tab.className = 'map-tab' + (index === 0 ? ' active' : '');
+                tab.textContent = `地图${index + 1}: ${map.name}`;
+                tab.onclick = () => selectMap(index);
+                tabsContainer.appendChild(tab);
+            });
+        }
+        
+        function selectMap(index) {
+            currentMap = index;
+            document.querySelectorAll('.map-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.map-detail').forEach((detail, i) => {
+                detail.classList.toggle('active', i === index);
+            });
+            
+            // 如果还没渲染过，渲染它
+            if (!document.getElementById(`map-${index}`)) {
+                renderMapDetail(index);
+            }
+        }
+        
+        function renderMapDetail(index) {
+            const map = mapsData[index];
+            const container = document.getElementById('mapDetails');
+            
+            const detail = document.createElement('div');
+            detail.className = 'map-detail' + (index === currentMap ? ' active' : '');
+            detail.id = `map-${index}`;
+            
+            detail.innerHTML = `
+                <h2 class="map-title">地图${index + 1}: ${map.name}</h2>
+                <div class="map-stats">
+                    <div class="stat stat-mission">
+                        <div class="stat-label">任务</div>
+                        <div class="stat-value">${map.missions.length}</div>
+                    </div>
+                    <div class="stat stat-enemy">
+                        <div class="stat-label">敌人</div>
+                        <div class="stat-value">${map.enemies.length}</div>
+                    </div>
+                    <div class="stat stat-shop">
+                        <div class="stat-label">商店</div>
+                        <div class="stat-value">${map.shops.length}</div>
+                    </div>
+                    <div class="stat stat-special">
+                        <div class="stat-label">特殊</div>
+                        <div class="stat-value">${Object.keys(map.specials).length}</div>
+                    </div>
+                </div>
+                <div class="preview-wrapper">
+                    <div class="preview-container" id="preview-${index}"></div>
+                </div>
+            `;
+            
+            container.appendChild(detail);
+            
+            // 渲染色块
+            const preview = document.getElementById(`preview-${index}`);
+            
+            // 任务
+            map.missions.forEach(m => {
+                preview.appendChild(createBlock(m, 'mission'));
+            });
+            
+            // 敌人
+            map.enemies.forEach(e => {
+                preview.appendChild(createBlock(e, 'enemy'));
+            });
+            
+            // 商店
+            map.shops.forEach(s => {
+                preview.appendChild(createBlock(s, s.type === 'atk' ? 'shop-atk' : 'shop-def'));
+            });
+            
+            // 特殊功能
+            Object.entries(map.specials).forEach(([key, s]) => {
+                let className = 'special';
+                if (key.includes('treasure')) className = 'treasure';
+                if (key === 'boss') className = 'boss';
+                preview.appendChild(createBlock(s, className));
+            });
+        }
+        
+        function createBlock(data, className) {
+            const block = document.createElement('div');
+            block.className = `block ${className}`;
+            block.style.left = data.x + 'px';
+            block.style.top = data.y + 'px';
+            block.style.width = data.w + 'px';
+            block.style.height = data.h + 'px';
+            block.title = `位置: (${data.x}, ${data.y}) 尺寸: ${data.w}×${data.h} 面积: ${data.w * data.h}`;
+            return block;
+        }
+        
+        loadMaps();
+    </script>
+</body>
+</html>

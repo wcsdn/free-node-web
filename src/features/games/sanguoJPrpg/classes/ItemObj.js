@@ -36,10 +36,10 @@ class ItemObj {
         
         let text = '';
         switch(this.kind) {
-            case "GOLD": text = '$' + this.val; break;
+            case "GOLD": text = '💰' + this.val; break;
             case "EXP": text = this.val.toString(); break;
-            case "KEY": text = '�️';b break;
-            case "KEY2": text = '�''; break;
+            case "KEY": text = '🗝️'; break;
+            case "KEY2": text = '🔐'; break;
             case "NEKO": text = '🐱'; break;
         }
         this.element.textContent = text;

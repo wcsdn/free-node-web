@@ -1,0 +1,263 @@
+/* 弹框遮罩 */
+#modalOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 750px;
+    height: 1334px;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    justify-content: center;
+    align-items: center;
+}
+#modalOverlay.show { display: flex; }
+
+/* 弹框内容 */
+#modalBox {
+    position: relative;
+    width: 600px;
+    max-height: 900px;
+    background: linear-gradient(180deg, #1e1e3f 0%, #16213e 100%);
+    border-radius: 20px;
+    border: 3px solid #444;
+    padding: 25px;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* 弹框标题 */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #333;
+}
+.modal-title {
+    font-size: 32px;
+    font-weight: bold;
+}
+.modal-close {
+    width: 50px;
+    height: 50px;
+    background: #e94560;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* 弹框信息区 */
+.modal-info-top, .modal-info-bottom {
+    margin-bottom: 10px;
+}
+.modal-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+    font-size: 24px;
+}
+.modal-info-label { color: #888; }
+.modal-info-value { color: #fff; font-weight: bold; }
+
+/* 弹框进度条 */
+.modal-progress {
+    margin: 20px 0;
+}
+.modal-progress-bar {
+    height: 30px;
+    background: #333;
+    border-radius: 15px;
+    overflow: hidden;
+}
+.modal-progress-fill {
+    height: 100%;
+    border-radius: 15px;
+    transition: width 0.3s;
+}
+.modal-progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 22px;
+    color: #888;
+}
+
+/* 弹框按钮 */
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+.modal-btn {
+    flex: 1;
+    padding: 20px;
+    font-size: 26px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.modal-btn-primary {
+    background: linear-gradient(180deg, #4CAF50, #388E3C);
+    color: #fff;
+}
+.modal-btn-danger {
+    background: linear-gradient(180deg, #F44336, #D32F2F);
+    color: #fff;
+}
+.modal-btn-secondary {
+    background: linear-gradient(180deg, #607D8B, #455A64);
+    color: #fff;
+}
+.modal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.modal-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+/* 弹框类型颜色 */
+.modal-type-mission .modal-title { color: #2196F3; }
+.modal-type-enemy .modal-title { color: #F44336; }
+.modal-type-shop .modal-title { color: #FF00FF; }
+.modal-type-special .modal-title { color: #4CAF50; }
+
+
+/* 怪物头像区域 - 在信息区中间 */
+.modal-monster {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    margin: 10px 0;
+    cursor: pointer;
+}
+.monster-icon {
+    font-size: 80px;
+    animation: monster-bounce 1s ease-in-out infinite;
+    transition: transform 0.1s;
+}
+.modal-monster:hover .monster-icon {
+    transform: scale(1.1);
+}
+.modal-monster:active .monster-icon {
+    transform: scale(0.9);
+    animation: none;
+}
+@keyframes monster-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* 掉落物品层 - 覆盖整个弹框 */
+#modalDropsLayer {
+    display: none;
+    position: absolute;
+    top: 70px;
+    left: 10px;
+    right: 10px;
+    height: 350px;
+    z-index: 9999;
+    background: rgba(0,0,20,0.85);
+    border-radius: 15px;
+    border: 2px solid #FFD700;
+    overflow: visible;
+}
+#modalDropsLayer.show {
+    display: block;
+}
+
+/* 掉落物品 */
+.drop-item {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 32px;
+    z-index: 10000;
+    user-select: none;
+    pointer-events: auto !important;
+}
+.drop-item span {
+    margin-left: 3px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+.drop-item:hover {
+    transform: scale(1.3) !important;
+    z-index: 10001;
+    filter: drop-shadow(0 0 10px rgba(255,215,0,0.8)) brightness(1.2);
+}
+.drop-item:active {
+    transform: scale(1.1) !important;
+}
+
+/* 掉落物品收集动画 */
+@keyframes collectItem {
+    0% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        transform: scale(1.3) rotate(180deg);
+    }
+    100% { 
+        opacity: 0; 
+        transform: scale(0) rotate(360deg) translateY(-50px);
+    }
+}
+
+/* 旧的掉落物品样式（兼容） */
+.modal-drop-item {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    padding: 10px 15px;
+    background: linear-gradient(180deg, #5a5a9a, #4a4a8a);
+    border-radius: 12px;
+    border: 3px solid #FFD700;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 10000;
+    user-select: none;
+    box-shadow: 0 4px 20px rgba(255,215,0,0.7), 0 0 30px rgba(255,215,0,0.3);
+    pointer-events: auto !important;
+    animation: dropPop 0.4s ease-out forwards;
+}
+.modal-drop-item:active {
+    transform: scale(0.9);
+}
+@keyframes dropPop {
+    0% { opacity: 0; transform: scale(0); }
+    70% { transform: scale(1.15); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.modal-drop-item:hover {
+    border-color: #FFD700;
+    transform: scale(1.15);
+    z-index: 200;
+}
+.modal-drop-item:active {
+    transform: scale(0.9);
+}
+.modal-drop-item.collected {
+    opacity: 0;
+    transform: scale(0) translateY(-30px);
+    transition: all 0.25s ease-out;
+    pointer-events: none;
+}
+.modal-drop-item.gold { color: #FFD700; text-shadow: 0 0 8px #FFD700; }
+.modal-drop-item.exp { color: #9C27B0; text-shadow: 0 0 8px #9C27B0; }
+.modal-drop-item.key { color: #FF9800; text-shadow: 0 0 8px #FF9800; }
+.modal-drop-item.key2 { color: #E91E63; text-shadow: 0 0 8px #E91E63; }
+.modal-drop-item.neko { color: #4CAF50; text-shadow: 0 0 8px #4CAF50; }
