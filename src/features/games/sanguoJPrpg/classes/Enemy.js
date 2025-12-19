@@ -58,20 +58,18 @@ class Enemy {
     
     onClick() {
         this.game.setStartTime();
-        
-        if (this.game._state !== "standby") return;
-        
-        if (this.lock_flg) {
-            if (this.game.useKey(1)) {
-                this.lock_flg = false;
-                this.element.classList.remove('locked');
-                this.game.setMessage("UNLOCK_ENEMY");
-            } else {
-                this.game.setMessage("LOCK");
-            }
-            return;
+        // 显示弹框
+        if (typeof showEnemyModal === 'function') {
+            showEnemyModal(this);
+        } else {
+            this.doAttack();
         }
-        
+    }
+    
+    // 实际攻击逻辑
+    doAttack() {
+        if (this.game._state !== "standby") return;
+        if (this.lock_flg) return;
         if (this.game.life <= 0 || this.life <= 0) return;
         
         // 计算伤害
@@ -117,35 +115,50 @@ class Enemy {
         
         // 金币
         let g = Math.floor(goldVal);
-        while (g >= 1000) { items.push(["GOLD", 1000]); g -= 1000; }
-        while (g >= 100) { items.push(["GOLD", 100]); g -= 100; }
-        while (g >= 50) { items.push(["GOLD", 50]); g -= 50; }
-        while (g >= 10) { items.push(["GOLD", 10]); g -= 10; }
-        if (this.m % 10 > 0) items.push(["GOLD", this.m % 10]);
+        while (g >= 1000) { items.push({ kind: "GOLD", val: 1000 }); g -= 1000; }
+        while (g >= 100) { items.push({ kind: "GOLD", val: 100 }); g -= 100; }
+        while (g >= 50) { items.push({ kind: "GOLD", val: 50 }); g -= 50; }
+        while (g >= 10) { items.push({ kind: "GOLD", val: 10 }); g -= 10; }
+        if (this.m % 10 > 0) items.push({ kind: "GOLD", val: this.m % 10 });
         
         // 经验
         let e = Math.floor(expVal);
-        while (e >= 1000) { items.push(["EXP", 1000]); e -= 1000; }
-        while (e >= 100) { items.push(["EXP", 100]); e -= 100; }
-        while (e >= 50) { items.push(["EXP", 50]); e -= 50; }
-        while (e >= 10) { items.push(["EXP", 10]); e -= 10; }
-        if (this.m % 10 > 0) items.push(["EXP", this.m % 10]);
+        while (e >= 1000) { items.push({ kind: "EXP", val: 1000 }); e -= 1000; }
+        while (e >= 100) { items.push({ kind: "EXP", val: 100 }); e -= 100; }
+        while (e >= 50) { items.push({ kind: "EXP", val: 50 }); e -= 50; }
+        while (e >= 10) { items.push({ kind: "EXP", val: 10 }); e -= 10; }
+        if (this.m % 10 > 0) items.push({ kind: "EXP", val: this.m % 10 });
         
         // 钥匙
-        items.push(["KEY2", 1]);
+        items.push({ kind: "KEY2", val: 1 });
         for (let i = 0; i < this.key_cnt; i++) {
-            items.push(["KEY", 1]);
+            items.push({ kind: "KEY", val: 1 });
         }
         
         // 随机NEKO
         const rand = Math.floor(Math.random() * 100);
         if (rand < 25) {
-            items.push(["NEKO", rand % 8]);
+            items.push({ kind: "NEKO", val: rand % 8 });
         }
         
-        const cx = this.data.x + this.data.w / 2;
-        const cy = this.data.y + this.data.h / 2;
-        this.game.setItem(items, cx, cy);
+        // 保存掉落物品供弹框显示
+        this.lastDrops = items;
+        
+        console.log('Enemy createRewards 生成了物品:', items);
+        
+        // 在弹框中显示掉落物品
+        if (typeof showDropsInModal === 'function') {
+            console.log('调用 showDropsInModal');
+            showDropsInModal(items);
+        } else {
+            console.log('showDropsInModal 函数不存在，使用降级方案');
+            // 降级：直接添加到地图
+            const cx = this.data.x + this.data.w / 2;
+            const cy = this.data.y + this.data.h / 2;
+            items.forEach(item => {
+                this.game.setItem([[item.kind, item.val]], cx, cy);
+            });
+        }
     }
     
     update() {

@@ -53,24 +53,23 @@ class ShopItem {
     }
     
     onClick() {
+        // 显示弹框
+        if (typeof showShopModal === 'function') {
+            showShopModal(this);
+        } else {
+            this.doBuy();
+        }
+    }
+    
+    // 实际购买逻辑
+    doBuy() {
         // 已达上限
         if (this.cnt >= 9) {
             this.game.setMessage("LIMIT");
             return;
         }
         
-        // 解锁
-        if (this.lock_flg) {
-            if (this.game.key > 0) {
-                this.game.key--;
-                this.lock_flg = false;
-                this.element.classList.remove('locked');
-                this.game.setMessage("I_UNLOCK");
-            } else {
-                this.game.setMessage("LOCK");
-            }
-            return;
-        }
+        if (this.lock_flg) return;
         
         // 购买
         if (this.game.gold >= this.price) {
