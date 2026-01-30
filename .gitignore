@@ -5,6 +5,11 @@
 /.pnp
 .pnp.js
 /workers/*/node_modules
+node_modules/
+
+# npm lock files
+package-lock.json
+/workers/*/package-lock.json
 
 # testing
 /coverage
@@ -17,10 +22,11 @@
 # wrangler
 /.wrangler
 /workers/*/.wrangler
-/workers/*/node_modules
+.wrangler/
 
 # Kiro IDE
 /.kiro
+.kiro/
 
 # misc
 .DS_Store
@@ -46,3 +52,8 @@ __pycache__/
 workers/ghost-mail/邮箱*.txt
 workers/ghost-mail/deleted_accounts.txt
 workers/ghost-mail/delete-invalid-accounts.sql
+
+# Python
+situation-monitor/news.db
+*.py[cod]
+*$py.class
