@@ -31,7 +31,7 @@
 | **Ghost Oracle** | Workers + DeepSeek API + SSE | AI 对话代理，流式响应，Turnstile 人机验证 |
 | **Ghost Core** | Workers + D1 | 中央用户服务，分级配额，邀请系统，任务系统 |
 | **Ghost IoT** | Workers + D1 + Hono + Service Binding | IoT 传感器数据采集，实时广播到聊天室 |
-| **News Server** | Workers + KV + Cron | Web3 新闻爬虫，多源聚合，定时推送 |
+| **News Server** | Workers + KV + Cron + Google Translate | Web3 新闻爬虫，多源聚合，定时推送，幽灵情报站(全球热点监控) |
 
 ### 🎯 核心技术实现
 
@@ -42,6 +42,7 @@
 - **新闻爬虫**: 定时爬取 BlockBeats/TechFlow/金色财经，智能分类，去重入库
 - **IoT 数据采集**: Hono 框架 REST API，D1 存储，Service Binding 实时广播
 - **IoT 监控前端**: WebSocket 实时数据推送，Recharts 双轴趋势图，温度过热警告
+- **幽灵情报站**: 22个RSS源全球热点监控，70+地点关键词识别，Google Translate API自动翻译，3D地球可视化，定时爬虫(30分钟)
 
 ### 🎨 前端特效
 
@@ -76,6 +77,7 @@ src/
 │   ├── news/           # Hacker News 终端
 │   ├── profile/        # 个人档案（项目/技能雷达/时间轴）
 │   ├── quests/         # 任务系统
+│   ├── situation-monitor/ # 幽灵情报站（全球热点监控 + 3D地球）
 │   └── web3/           # 钱包连接 & VIP
 ├── shared/
 │   ├── components/     # MatrixRain / CyberRabbit / Toast / LiveCounter
