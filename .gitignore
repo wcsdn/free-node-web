@@ -24,6 +24,9 @@ package-lock.json
 /workers/*/.wrangler
 .wrangler/
 
+# Workers 完全忽略（包含敏感配置和代码）
+/workers/
+
 # Kiro IDE
 /.kiro
 .kiro/
