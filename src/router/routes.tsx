@@ -18,6 +18,9 @@ const ExchangesPage = lazy(() => import('@/features/exchanges/ExchangesPage'));
 const StartPage = lazy(() => import('@/features/start/StartPage'));
 const GoRedirect = lazy(() => import('@/features/start/GoRedirect'));
 const DebugPage = lazy(() => import('@/features/debug/DebugPage'));
+const IotPage = lazy(() => import('@/features/iot/IotPage'));
+const AlphaTerminal = lazy(() => import('@/features/alpha/AlphaTerminal'));
+const SituationMonitorPage = lazy(() => import('@/features/situation-monitor/SituationMonitorPage'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -137,6 +140,30 @@ export const routes: RouteObject[] = [
         element: (
           <PageWrapper>
             <DebugPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'iot-monitor',
+        element: (
+          <PageWrapper>
+            <IotPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'alpha',
+        element: (
+          <PageWrapper>
+            <AlphaTerminal />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'situation-monitor',
+        element: (
+          <PageWrapper>
+            <SituationMonitorPage />
           </PageWrapper>
         ),
       },

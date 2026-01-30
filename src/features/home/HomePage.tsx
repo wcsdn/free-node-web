@@ -17,6 +17,7 @@ import { useTypewriter, useAmbientSound } from './hooks';
 import { WalletSection, HomeContent } from './components';
 import ChatBtn from '@/shared/components/ChatBtn';
 import PerformanceMonitor from '@/shared/components/Fps';
+import { useAppStore } from '@/stores/useAppStore';
 import './HomePage.css';
 
 const MATRIX_LINES = [
@@ -32,6 +33,7 @@ const HomePage: React.FC = memo(() => {
   const [showContent, setShowContent] = useState(false);
   const [hasPlayedConnectSound, setHasPlayedConnectSound] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const matrixRainEnabled = useAppStore((state) => state.matrixRainEnabled);
 
   // 使用自定义 hooks
   useAmbientSound();
@@ -77,13 +79,16 @@ const HomePage: React.FC = memo(() => {
             <ActionButton type="ghost-mail" position={2} />
             <ActionButton type="exchanges" position={3} />
             <ActionButton type="debug" position={4} />
+            <ActionButton type="iot" position={5} />
+            <ActionButton type="alpha" position={6} />
+            <ActionButton type="situation-monitor" position={7} />
             {/* <ActionButton type="start" position={5} /> */}
-            <ActionButton type="settings" position={5} />
+            <ActionButton type="settings" position={8} />
           </>
         )}
 
         {/* 背景效果 */}
-        <MatrixRain fontSize={16} />
+        {matrixRainEnabled && <MatrixRain fontSize={16} />}
         <div className="crt-scanline" />
         <div className="crt-noise" />
         <div className="terminal-content">

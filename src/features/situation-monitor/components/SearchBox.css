@@ -1,0 +1,74 @@
+/**
+ * 搜索框样式
+ */
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-right: 40px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: var(--spacing-md);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 1.2rem; /* 放大图标 */
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .search-box {
+    min-width: 120px;
+    width: 100%; /* 移动端占满宽度 */
+  }
+
+  .search-input {
+    padding: 8px 10px;
+    padding-right: 35px;
+    font-size: 12px;
+  }
+
+  .search-icon {
+    right: 10px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    padding: 6px 8px;
+    padding-right: 30px;
+    font-size: 11px;
+  }
+
+  .search-icon {
+    right: 8px;
+    font-size: 1rem;
+  }
+}

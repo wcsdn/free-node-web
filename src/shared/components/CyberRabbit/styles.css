@@ -29,9 +29,7 @@
   filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.5));
 }
 
-/* 移除呼吸动画，避免绿框闪烁 */
-
-/* 耳朵摆动 */
+/* 耳朵摆动 - 保留 */
 .rabbit-ear {
   animation: earWiggle 2s ease-in-out infinite;
   transform-origin: center bottom;
@@ -57,7 +55,7 @@
   }
 }
 
-/* 手臂摆动 */
+/* 手臂摆动 - 保留 */
 .rabbit-arm {
   animation: armWave 3s ease-in-out infinite;
   transform-origin: center;
@@ -80,7 +78,7 @@
   }
 }
 
-/* 尾巴摇摆 */
+/* 尾巴摇摆 - 保留 */
 .rabbit-tail {
   animation: tailWag 1.5s ease-in-out infinite;
   transform-origin: center;
@@ -95,7 +93,21 @@
   }
 }
 
-/* 故障文字效果 */
+/* 眼睛眨眼 - 添加简单动画 */
+.rabbit-eye {
+  animation: eyeBlink 4s ease-in-out infinite;
+}
+
+@keyframes eyeBlink {
+  0%, 90%, 100% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.3;
+  }
+}
+
+/* 故障文字效果 - 完全恢复 */
 .rabbit-text {
   margin-top: 20px;
   font-family: 'Courier New', 'Monaco', monospace;

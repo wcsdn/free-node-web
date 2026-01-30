@@ -28,6 +28,16 @@ interface AppState {
   togglePerformanceMonitor: () => void;
   setShowPerformanceMonitor: (show: boolean) => void;
 
+  // 地球样式（态势监控）
+  globeStyle: 'realistic' | 'dark';
+  setGlobeStyle: (style: 'realistic' | 'dark') => void;
+  toggleGlobeStyle: () => void;
+
+  // 字母雨开关
+  matrixRainEnabled: boolean;
+  toggleMatrixRain: () => void;
+  setMatrixRainEnabled: (enabled: boolean) => void;
+
   // 首页动画状态（不持久化，只在会话中保持）
   homeAnimationComplete: boolean;
   setHomeAnimationComplete: (complete: boolean) => void;
@@ -54,6 +64,25 @@ export const useAppStore = create<AppState>()(
       showPerformanceMonitor: false,
       togglePerformanceMonitor: () => set((state) => ({ showPerformanceMonitor: !state.showPerformanceMonitor })),
       setShowPerformanceMonitor: (show) => set({ showPerformanceMonitor: show }),
+
+      // 地球样式
+      globeStyle: 'dark',
+      setGlobeStyle: (style) => {
+        set({ globeStyle: style });
+        // 触发自定义事件通知 Globe 组件
+        window.dispatchEvent(new CustomEvent('settings-changed', { detail: { key: 'globe-style', value: style } }));
+      },
+      toggleGlobeStyle: () => set((state) => {
+        const newStyle = state.globeStyle === 'dark' ? 'realistic' : 'dark';
+        // 触发自定义事件通知 Globe 组件
+        window.dispatchEvent(new CustomEvent('settings-changed', { detail: { key: 'globe-style', value: newStyle } }));
+        return { globeStyle: newStyle };
+      }),
+
+      // 字母雨开关
+      matrixRainEnabled: true,
+      toggleMatrixRain: () => set((state) => ({ matrixRainEnabled: !state.matrixRainEnabled })),
+      setMatrixRainEnabled: (enabled) => set({ matrixRainEnabled: enabled }),
 
       // 首页动画状态（不持久化）
       homeAnimationComplete: false,

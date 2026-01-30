@@ -22,7 +22,7 @@ function generateId(): string {
 
 interface Message {
   id: string;
-  type: 'chat' | 'system' | 'welcome';
+  type: 'chat' | 'system' | 'welcome' | 'security_alert' | 'iot_update' | 'announcement';
   nickname?: string;
   content?: string;
   message?: string;
@@ -44,23 +44,18 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
   
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 生成昵称
-  const generateNickname = useCallback(() => {
-    if (address) {
-      return `0x${address.slice(2, 6)}`;
-    }
-    return `特工${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}`;
-  }, [address]);
-
-  // 连接 WebSocket
-  useEffect(() => {
+  // 连接逻辑
+  const connect = useCallback((isReconnect = false) => {
     if (!isOpen) return;
 
-    const nick = generateNickname();
+    const nick = address ? `0x${address.slice(2, 6)}` : `Agent_${Math.floor(Math.random() * 999)}`;
     setNickname(nick);
 
-    const ws = new WebSocket(`${LIVE_WS_URL}?nickname=${encodeURIComponent(nick)}`);
+    const reconnectParam = isReconnect ? '&reconnect=1' : '';
+    const ws = new WebSocket(`${LIVE_WS_URL}?nickname=${encodeURIComponent(nick)}${reconnectParam}`);
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -76,8 +71,8 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
           setNickname(data.nickname);
         } else if (data.type === 'count') {
           setOnlineCount(data.count);
-        } else if (data.type === 'chat' || data.type === 'system') {
-          setMessages(prev => [...prev.slice(-99), { ...data, id: data.id || generateId() }]);
+        } else if (['chat', 'system', 'security_alert', 'iot_update', 'announcement'].includes(data.type)) {
+          setMessages(prev => [...prev.slice(-50), { ...data, id: data.id || generateId() }]);
         }
       } catch {
         // 忽略
@@ -86,21 +81,39 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
 
     ws.onclose = () => {
       setConnected(false);
-    };
-
-    // 心跳
-    const pingInterval = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'ping' }));
+      if (wsRef.current === ws) {
+        wsRef.current = null;
       }
-    }, 30000);
-
-    return () => {
-      clearInterval(pingInterval);
-      ws.close();
-      wsRef.current = null;
+      
+      // 3秒后自动重连
+      if (isOpen) {
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connect(true);
+        }, 3000);
+      }
     };
-  }, [isOpen, generateNickname]);
+
+    ws.onerror = () => {
+      // 静默处理
+    };
+  }, [isOpen, address]);
+
+  useEffect(() => {
+    connect();
+    
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      if (pingIntervalRef.current) {
+        clearInterval(pingIntervalRef.current);
+      }
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+    };
+  }, [connect]);
 
   // 自动滚动
   useEffect(() => {
@@ -109,13 +122,19 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
 
   // 发送消息
   const sendMessage = () => {
-    if (!input.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    if (!input.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      return;
+    }
     
-    wsRef.current.send(JSON.stringify({
-      type: 'chat',
-      content: input.trim(),
-    }));
-    setInput('');
+    try {
+      wsRef.current.send(JSON.stringify({
+        type: 'chat',
+        content: input.trim(),
+      }));
+      setInput('');
+    } catch (err) {
+      console.error('发送失败:', err);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -128,51 +147,49 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
   return isOpen ? createPortal(
     <>
       <Backdrop onClick={onClose} zIndex={799} />
-      <div className="ghost-chat" onClick={e => e.stopPropagation()}>
+      <div className="ghost-chat terminal-style" onClick={e => e.stopPropagation()}>
         <div className="ghost-chat-header">
-          <span className="ghost-chat-title">👻 Ghost Chat</span>
-          <span className="ghost-chat-status">
-            <span className={`status-dot ${connected ? 'online' : ''}`} />
-            {onlineCount} 在线
-          </span>
-          <button className="ghost-chat-close" onClick={onClose}>✕</button>
+          <div className="flex items-center gap-2">
+            <span className="status-pulse"></span>
+            <span className="text-neon">GHOST_CHAT // {onlineCount} ONLINE</span>
+          </div>
+          <button className="ghost-chat-close" onClick={onClose}>[X]</button>
         </div>
 
-        <div className="ghost-chat-messages">
+        <div className="ghost-chat-messages custom-scrollbar">
           {messages.length === 0 && (
             <div className="ghost-chat-empty">
-              欢迎来到 Ghost Chat，{nickname}！<br />
-              在这里与其他特工交流...
+              {'>>> CONNECTED AS '}{nickname}
             </div>
           )}
           {messages.map(msg => (
-            <div key={msg.id} className={`ghost-msg ${msg.type}`}>
-              {msg.type === 'system' ? (
-                <span className="msg-system">{msg.message}</span>
+            <div key={msg.id} className={`msg-row ${msg.type}`}>
+              {msg.type === 'chat' ? (
+                <p>
+                  <span className="msg-nick">[{msg.nickname}]:</span>
+                  <span className={`msg-text ${msg.content?.startsWith('@iot') ? 'text-command' : ''}`}>
+                    {msg.content}
+                  </span>
+                </p>
               ) : (
-                <>
-                  <span className="msg-nick">{msg.nickname}</span>
-                  <span className="msg-content">{msg.content}</span>
-                </>
+                <p className="text-system">{'>>> '}{msg.message}</p>
               )}
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="ghost-chat-input">
+        <div className="ghost-chat-input-area">
+          <span className="input-prompt">{'>'}</span>
           <input
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={connected ? '输入消息...' : '连接中...'}
-            disabled={!connected}
+            placeholder={input.startsWith('@iot ') ? "ENTER CMD..." : "TYPE MESSAGE..."}
+            className={input.startsWith('@iot ') ? 'input-cmd' : ''}
             maxLength={500}
           />
-          <button onClick={sendMessage} disabled={!connected || !input.trim()}>
-            发送
-          </button>
         </div>
       </div>
     </>,

@@ -101,7 +101,7 @@ export const ChatBtn: React.FC = () => {
             >
               <LazyRabbit size="lg" />
               <div className="rabbit-bubble">
-                {language === 'zh' ? '要翘起来了...💕' : 'Lifting it up... 💕'}
+                {language === 'zh' ? '尾巴有在晃吗？💕' : 'Lifting it up... 💕'}
               </div>
             </div>
             <div className="chat-modal-header">

@@ -45,6 +45,7 @@ export interface ApiResponse<T = any> {
 // 用户状态
 export interface UserStatus {
   isVIP: boolean;
+  isAdmin?: boolean;    // 是否为管理员
   activeSlots: number;  // 当前使用的邮箱数量
   maxSlots: number;     // 最大允许数量 (5)
   aliases: Alias[];     // 拥有的邮箱列表

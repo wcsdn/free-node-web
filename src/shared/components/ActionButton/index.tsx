@@ -8,7 +8,7 @@ import SettingsPopup from '@/shared/popup/SettingsPopup';
 import '@/styles/common-button.css';
 import './styles.css';
 
-export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges' | 'debug' | 'start';
+export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges' | 'debug' | 'start' | 'iot' | 'alpha' | 'situation-monitor';
 
 interface ActionButtonProps {
   type: ActionButtonType;
@@ -50,6 +50,22 @@ const BUTTON_CONFIG = {
     icon: '🔥',
     title: 'Start',
     path: '/start',
+  },
+  iot: {
+    icon: '📡',
+    title: 'IoT Monitor',
+    path: '/iot-monitor',
+  },
+  alpha: {
+    icon: '🔮',
+    title: 'Alpha Pulse',
+    path: '/alpha',
+  },
+  'situation-monitor': {
+    icon: '🕸️',
+    title: 'Ghost Intel',
+    titleCn: '幽灵情报站',
+    path: '/situation-monitor',
   },
 };
 

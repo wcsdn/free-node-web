@@ -16,7 +16,7 @@ export const env = {
   // API 端点配置
   api: {
     news: import.meta.env.VITE_NEWS_API || 'https://news.free-node.xyz',
-    ghostMail: import.meta.env.VITE_GHOST_MAIL_API || 'https://ghost-mail-api.unlocks.workers.dev',
+    ghostMail: import.meta.env.VITE_GHOST_MAIL_API || 'https://mail.free-node.xyz',
   },
   
   // 钱包地址配置

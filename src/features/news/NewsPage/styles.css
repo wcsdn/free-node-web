@@ -206,64 +206,6 @@
   box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .news-container {
-    padding: 1px 10px;
-  }
-
-  .news-categories {
-    gap: 6px;
-    margin-bottom: 15px;
-  }
-
-  .category-btn {
-    padding: 6px 10px;
-    font-size: 11px;
-  }
-
-  .cat-icon {
-    font-size: 12px;
-  }
-
-  .news-card {
-    padding: 12px;
-  }
-
-  .news-card-title {
-    font-size: 13px;
-  }
-
-  .news-tag {
-    font-size: 10px;
-    padding: 3px 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .category-btn {
-    padding: 5px 8px;
-    font-size: 10px;
-  }
-
-  .cat-label {
-    display: none;
-  }
-
-  .cat-icon {
-    font-size: 14px;
-  }
-
-  .news-card-title {
-    font-size: 12px;
-  }
-
-  .news-card-meta {
-    font-size: 10px;
-  }
-}
-
-
 /* Tab 切换 */
 .news-tabs {
   display: flex;
@@ -354,10 +296,46 @@
   line-height: 1.4;
 }
 
+/* 响应式 */
 @media (max-width: 768px) {
+  .news-container {
+    padding: 0 10px 10px;
+  }
+
+  .news-tabs {
+    margin-bottom: 15px;
+  }
+
   .news-tab {
     padding: 10px 15px;
     font-size: 13px;
+  }
+
+  .news-categories {
+    gap: 6px;
+    margin-bottom: 15px;
+  }
+
+  .category-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .cat-icon {
+    font-size: 12px;
+  }
+
+  .news-card {
+    padding: 12px;
+  }
+
+  .news-card-title {
+    font-size: 13px;
+  }
+
+  .news-tag {
+    font-size: 10px;
+    padding: 3px 8px;
   }
 
   .hn-card {
@@ -376,5 +354,83 @@
 
   .hn-title-cn {
     font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-container {
+    padding: 0 8px 8px;
+  }
+
+  .news-tabs {
+    margin-bottom: 12px;
+  }
+
+  .news-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .category-btn {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .cat-label {
+    display: none;
+  }
+
+  .cat-icon {
+    font-size: 14px;
+  }
+
+  .news-card {
+    padding: 10px;
+  }
+
+  .news-card-title {
+    font-size: 12px;
+  }
+
+  .news-card-meta {
+    font-size: 10px;
+  }
+
+  .news-tag {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .news-hot {
+    font-size: 9px;
+    padding: 2px 6px;
+  }
+
+  .login-prompt-text {
+    font-size: 12px;
+  }
+
+  .login-prompt-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .hn-card {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .hn-rank {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  .hn-title {
+    font-size: 11px;
+  }
+
+  .hn-title-cn {
+    font-size: 10px;
   }
 }

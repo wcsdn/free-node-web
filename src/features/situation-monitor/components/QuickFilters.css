@@ -1,0 +1,54 @@
+/**
+ * 快速筛选样式
+ */
+
+.quick-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.quick-filter-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.quick-filter-btn:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: rgba(0, 255, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .quick-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .quick-filter-btn {
+    flex: 0 1 auto;
+    padding: 6px 10px;
+    font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 768px) {
+  .quick-filters {
+    gap: 4px;
+  }
+
+  .quick-filter-btn {
+    padding: 4px 8px;
+    font-size: var(--font-size-xs);
+  }
+}

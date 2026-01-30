@@ -11,6 +11,8 @@ const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, colum
   const fpsRef = useRef(60);
   const lastFrameTimeRef = useRef(Date.now());
   const densityRef = useRef(1.0);
+  const animationIdRef = useRef<number>(0);
+  const isVisibleRef = useRef(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,6 +23,16 @@ const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, colum
       desynchronized: true // 允许异步渲染
     });
     if (!ctx) return;
+
+    // 监听页面可见性变化
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden;
+      if (!document.hidden && animationIdRef.current === 0) {
+        // 页面重新可见时恢复动画
+        animate();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // 设置画布大小（使用设备像素比）
     const resizeCanvas = () => {
@@ -146,8 +158,13 @@ const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, colum
     };
 
     // 动画循环
-    let animationId: number;
     const animate = () => {
+      // 如果页面不可见，停止动画
+      if (!isVisibleRef.current) {
+        animationIdRef.current = 0;
+        return;
+      }
+
       // 计算帧率
       const now = Date.now();
       const delta = now - lastFrameTimeRef.current;
@@ -169,12 +186,15 @@ const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, colum
       lastFrameTimeRef.current = now;
       
       draw();
-      animationId = requestAnimationFrame(animate);
+      animationIdRef.current = requestAnimationFrame(animate);
     };
     animate();
 
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('resize', resizeCanvas);
     };
   }, [fontSize]);

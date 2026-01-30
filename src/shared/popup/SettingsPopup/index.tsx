@@ -21,9 +21,13 @@ export const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose })
   const soundEnabled = useAppStore((state) => state.soundEnabled);
   const ambientEnabled = useAppStore((state) => state.ambientEnabled);
   const showPerformanceMonitor = useAppStore((state) => state.showPerformanceMonitor);
+  const globeStyle = useAppStore((state) => state.globeStyle);
+  const matrixRainEnabled = useAppStore((state) => state.matrixRainEnabled);
   const toggleSound = useAppStore((state) => state.toggleSound);
   const toggleAmbient = useAppStore((state) => state.toggleAmbient);
   const togglePerformanceMonitor = useAppStore((state) => state.togglePerformanceMonitor);
+  const toggleGlobeStyle = useAppStore((state) => state.toggleGlobeStyle);
+  const toggleMatrixRain = useAppStore((state) => state.toggleMatrixRain);
   const { playClick } = useSoundEffect();
 
   const handleLanguageToggle = () => {
@@ -44,6 +48,16 @@ export const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose })
   const handlePerfMonitorToggle = () => {
     playClick();
     togglePerformanceMonitor();
+  };
+
+  const handleGlobeStyleToggle = () => {
+    playClick();
+    toggleGlobeStyle();
+  };
+
+  const handleMatrixRainToggle = () => {
+    playClick();
+    toggleMatrixRain();
   };
 
   return isOpen ? createPortal(
@@ -98,6 +112,30 @@ export const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose })
               className={`setting-toggle ${showPerformanceMonitor ? 'active' : ''}`}
             >
               {showPerformanceMonitor ? 'ON' : 'OFF'}
+            </button>
+          </div>
+
+          <div className="setting-item">
+            <span className="setting-label">
+              {isZh ? '地球样式' : 'Globe Style'}
+            </span>
+            <button
+              onClick={handleGlobeStyleToggle}
+              className={`setting-toggle ${globeStyle === 'realistic' ? 'active' : ''}`}
+            >
+              {globeStyle === 'realistic' ? (isZh ? '真实' : 'Real') : (isZh ? '暗黑' : 'Dark')}
+            </button>
+          </div>
+
+          <div className="setting-item">
+            <span className="setting-label">
+              {isZh ? '字母雨' : 'Matrix Rain'}
+            </span>
+            <button
+              onClick={handleMatrixRainToggle}
+              className={`setting-toggle ${matrixRainEnabled ? 'active' : ''}`}
+            >
+              {matrixRainEnabled ? 'ON' : 'OFF'}
             </button>
           </div>
         </div>

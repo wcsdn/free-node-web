@@ -1,0 +1,209 @@
+.nurture-stats {
+  padding: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.nurture-loading,
+.nurture-error {
+  text-align: center;
+  padding: 2rem;
+  color: var(--terminal-green, #00ff00);
+}
+
+.nurture-error {
+  color: var(--terminal-red, #ff4444);
+}
+
+.retry-btn {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--terminal-green, #00ff00);
+  color: var(--terminal-green, #00ff00);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.retry-btn:hover {
+  background: var(--terminal-green, #00ff00);
+  color: #000;
+}
+
+.stats-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--terminal-green, #00ff00);
+  border-radius: 4px;
+}
+
+.stats-section h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: var(--terminal-green, #00ff00);
+  border-bottom: 1px dashed var(--terminal-green, #00ff00);
+  padding-bottom: 0.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat-card {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(0, 255, 0, 0.05);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 4px;
+}
+
+.stat-card.active {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.stat-card.success {
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.stat-card.error {
+  border-color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+.stat-card.token {
+  border-color: #00bfff;
+  background: rgba(0, 191, 255, 0.1);
+}
+
+.stat-card.pending {
+  border-color: #ffaa00;
+  background: rgba(255, 170, 0, 0.1);
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--terminal-green, #00ff00);
+}
+
+.stat-card.error .stat-value {
+  color: #ff4444;
+}
+
+.stat-card.token .stat-value {
+  color: #00bfff;
+}
+
+.stat-card.pending .stat-value {
+  color: #ffaa00;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(0, 255, 0, 0.7);
+  margin-top: 0.25rem;
+}
+
+.schedule-info {
+  color: var(--terminal-green, #00ff00);
+}
+
+.schedule-info p {
+  margin: 0.5rem 0;
+}
+
+.schedule-note {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.recent-logs {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.no-logs {
+  text-align: center;
+  color: rgba(0, 255, 0, 0.5);
+  padding: 1rem;
+}
+
+.log-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px dashed rgba(0, 255, 0, 0.2);
+  font-size: 0.85rem;
+}
+
+.log-item:last-child {
+  border-bottom: none;
+}
+
+.log-item.sent {
+  color: #00ff00;
+}
+
+.log-item.failed {
+  color: #ff4444;
+}
+
+.log-item.pending {
+  color: #ffaa00;
+}
+
+.log-status {
+  flex-shrink: 0;
+}
+
+.log-from,
+.log-to {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log-arrow {
+  color: rgba(0, 255, 0, 0.5);
+}
+
+.log-time {
+  margin-left: auto;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.refresh-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid var(--terminal-green, #00ff00);
+  color: var(--terminal-green, #00ff00);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: var(--terminal-green, #00ff00);
+  color: #000;
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

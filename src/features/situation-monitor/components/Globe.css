@@ -1,0 +1,109 @@
+/**
+ * 3D 地球样式
+ */
+
+.globe-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  height: 100%;
+}
+
+.globe-canvas {
+  width: 100%;
+  height: 350px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+
+.globe-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.globe-legend {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  flex-wrap: nowrap;
+  padding: var(--spacing-xs) 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+/* 平板适配 */
+@media (max-width: 1024px) {
+  .globe-canvas {
+    height: 300px;
+  }
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .globe-canvas {
+    height: 250px;
+  }
+
+  .globe-legend {
+    gap: var(--spacing-sm);
+    font-size: 0.65rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .legend-text {
+    font-size: 0.65rem;
+  }
+}
+
+/* 小屏手机适配 */
+@media (max-width: 480px) {
+  .globe-canvas {
+    height: 200px;
+  }
+
+  .globe-legend {
+    gap: 0.5rem;
+    font-size: 0.6rem;
+  }
+
+  .legend-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .legend-text {
+    font-size: 0.6rem;
+  }
+}

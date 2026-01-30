@@ -167,7 +167,7 @@ const CyberRabbit: React.FC = React.memo(() => {
       <line x1="90" y1="100" x2="110" y2="100" stroke="#00ff00" strokeWidth="2" filter="url(#glow)"/>
       <rect x="65" y="115" width="70" height="70" rx="5" stroke="#00ff00" strokeWidth="2" fill="rgba(0, 255, 0, 0.03)" filter="url(#glow)"/>
       
-      {/* 红色爱心在胸口 - 往右移 */}
+      {/* 红色爱心在胸口 - 往右移 + 完整心跳动画 */}
       <path d="M 112 132 L 109 129 Q 106 126 103 129 Q 100 132 103 135 L 112 144 L 121 135 Q 124 132 121 129 Q 118 126 115 129 Z" 
             fill="#ff0000" 
             stroke="#ff3333" 
