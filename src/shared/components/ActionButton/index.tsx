@@ -62,7 +62,7 @@ const BUTTON_CONFIG = {
     path: '/alpha',
   },
   'situation-monitor': {
-    icon: '🕸️',
+    icon: '🌐',
     title: 'Ghost Intel',
     titleCn: '幽灵情报站',
     path: '/situation-monitor',
