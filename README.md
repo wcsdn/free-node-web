@@ -99,6 +99,20 @@ workers/                # Cloudflare Workers 后端
 
 ## 快速开始
 
+### 1. 环境配置
+
+复制 `.env.example` 为 `.env` 并填入你的配置：
+
+```bash
+cp .env.example .env
+```
+
+必需的环境变量：
+- `VITE_WALLETCONNECT_PROJECT_ID`: 从 [WalletConnect Cloud](https://cloud.walletconnect.com/) 获取
+- `VITE_TURNSTILE_SITE_KEY`: 从 [Cloudflare Turnstile](https://dash.cloudflare.com/) 获取
+
+### 2. 安装依赖
+
 ```bash
 npm install && npm run dev          # 本地开发
 npm run deploy:prod                 # 部署前端

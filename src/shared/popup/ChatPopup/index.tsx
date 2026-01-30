@@ -31,8 +31,8 @@ const LEVEL_CONFIG = {
 const ORACLE_API =
   import.meta.env.VITE_ORACLE_API || 'https://ghost-oracle.unlocks.workers.dev';
 
-// Turnstile Site Key
-const TURNSTILE_SITE_KEY = '0x4AAAAAACFkDvmJNnbofax2';
+// Turnstile Site Key (从环境变量读取)
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAACFkDvmJNnbofax2';
 
 export const ChatPopup: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);

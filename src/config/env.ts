@@ -40,6 +40,7 @@ declare global {
     readonly VITE_TREASURY_ADDRESS?: string;
     readonly VITE_ENABLE_ANALYTICS?: string;
     readonly VITE_ENABLE_DEBUG?: string;
+    readonly VITE_TURNSTILE_SITE_KEY?: string;
   }
 
   interface ImportMeta {
