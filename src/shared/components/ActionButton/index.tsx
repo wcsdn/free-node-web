@@ -8,7 +8,7 @@ import SettingsPopup from '@/shared/popup/SettingsPopup';
 import '@/styles/common-button.css';
 import './styles.css';
 
-export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges' | 'debug' | 'start' | 'iot' | 'alpha' | 'situation-monitor';
+export type ActionButtonType = 'profile' | 'news' | 'ghost-mail' | 'settings' | 'exchanges' | 'debug' | 'start' | 'iot' | 'alpha' | 'situation-monitor' | 'webgame';
 
 interface ActionButtonProps {
   type: ActionButtonType;
@@ -66,6 +66,12 @@ const BUTTON_CONFIG = {
     title: 'Ghost Intel',
     titleCn: '幽灵情报站',
     path: '/situation-monitor',
+  },
+  webgame: {
+    icon: '🎮',
+    title: 'Strategy Game',
+    titleCn: '策略游戏',
+    path: '/webgame',
   },
 };
 

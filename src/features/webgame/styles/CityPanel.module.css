@@ -1,0 +1,294 @@
+/**
+ * 城市面板样式
+ */
+.container {
+  padding: 16px;
+}
+
+.citySelector {
+  margin-bottom: 20px;
+}
+
+.citySelector h3 {
+  margin: 0 0 12px 0;
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+.cityList {
+  display: flex;
+  gap: 10px;
+}
+
+.cityBtn {
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(0, 255, 65, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cityBtn:hover {
+  border-color: var(--color-primary);
+}
+
+.cityBtn.active {
+  border-color: var(--color-primary);
+  background: rgba(0, 255, 65, 0.2);
+}
+
+.empty {
+  color: #666;
+  font-size: 14px;
+}
+
+/* 资源栏 */
+.resourceBar {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.resourceItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.resourceIcon {
+  font-size: 24px;
+}
+
+.resourceInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.resourceValue {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.resourceRate {
+  font-size: 12px;
+  color: #4CAF50;
+}
+
+.collectBtn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4CAF50, #8BC34A);
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.collectBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* 建筑区域 */
+.buildingSection {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 16px;
+}
+
+.buildBtn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #2196F3, #03A9F4);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.buildBtn:hover {
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.buildingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.buildingCard {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.buildingIcon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+.buildingName {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.buildingLevel {
+  font-size: 12px;
+  color: var(--color-primary);
+}
+
+.constructing {
+  font-size: 11px;
+  color: #FF9800;
+  margin-top: 4px;
+}
+
+.emptyBuilding {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+/* 建造队列 */
+.queueSection {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.queueSection h4 {
+  margin: 0 0 12px 0;
+  color: #FF9800;
+  font-size: 14px;
+}
+
+.queueItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid var(--color-primary);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modalContent h3 {
+  margin: 0 0 20px 0;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.buildingTypes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.typeCard {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.typeCard:hover {
+  border-color: var(--color-primary);
+  background: rgba(0, 255, 65, 0.1);
+}
+
+.typeIcon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.typeName {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.typeDesc {
+  font-size: 11px;
+  color: #999;
+}
+
+.closeBtn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #ccc;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+}

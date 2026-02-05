@@ -49,7 +49,7 @@ const GameControl: React.FC = memo(() => {
       return;
     }
     
-    const unitName = language === 'en' ? unitConfig.nameEn : unitConfig.name;
+    const unitName = language === 'en' ? unitConfig.name : unitConfig.name;
     setError(`${i18n.selectPosition} ${unitName}`);
     // 实际放置逻辑在 GameCanvas 的 onCellClick 中处理
   };
@@ -91,7 +91,7 @@ const GameControl: React.FC = memo(() => {
                 disabled={gold < unit.cost}
               >
                 <div className={styles.shopIcon}>{unit.icon}</div>
-                <div className={styles.shopName}>{language === 'en' ? unit.nameEn : unit.name}</div>
+                <div className={styles.shopName}>{unit.name}</div>
                 <div className={styles.shopStats}>
                   <span>❤️ {unit.hp}</span>
                   <span>⚔️ {unit.attack}</span>

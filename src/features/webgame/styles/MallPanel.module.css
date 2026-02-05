@@ -1,0 +1,273 @@
+/**
+ * 商城面板样式
+ */
+
+.container {
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border-bottom: 1px solid #444;
+}
+
+.header h2 {
+  color: #ffcc00;
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.typeNav {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #333;
+}
+
+.typeBtn {
+  padding: 5px 15px;
+  background: #333;
+  border: 1px solid #444;
+  color: #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.typeBtn:hover {
+  background: #444;
+}
+
+.typeBtn.active {
+  background: linear-gradient(180deg, #ff4444, #cc0000);
+  color: #fff;
+  border-color: #ff4444;
+}
+
+.itemGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.itemCard {
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border: 2px solid #444;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.itemCard:hover {
+  border-color: #666;
+}
+
+.itemCard.selected {
+  border-color: #ff4444;
+  box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+}
+
+.itemIcon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.itemName {
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.itemDesc {
+  color: #888;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.itemPrice {
+  color: #ffcc00;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.itemLimit {
+  color: #ff4444;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.loading, .empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  padding: 50px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid #333;
+}
+
+.selectedInfo {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.buyBtn {
+  padding: 10px 40px;
+  background: linear-gradient(180deg, #ff4444, #cc0000);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.buyBtn:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #2a2a4a;
+  border: 2px solid #ff4444;
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 350px;
+}
+
+.modalContent h3 {
+  color: #ff4444;
+  margin-top: 0;
+  text-align: center;
+}
+
+.buyForm {
+  margin: 20px 0;
+}
+
+.formItem {
+  display: flex;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.formItem label {
+  width: 60px;
+  color: #888;
+}
+
+.formItem span {
+  color: #fff;
+  font-weight: bold;
+}
+
+.countControl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.countControl button {
+  width: 30px;
+  height: 30px;
+  background: #444;
+  border: 1px solid #555;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.countControl input {
+  width: 60px;
+  padding: 5px;
+  text-align: center;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 3px;
+}
+
+.totalPrice {
+  color: #ffcc00 !important;
+  font-size: 18px;
+}
+
+.modalActions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.modalActions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.confirmBtn {
+  background: linear-gradient(180deg, #ff4444, #cc0000);
+  color: #fff;
+}
+
+.cancelBtn {
+  background: #444;
+  color: #fff;
+}

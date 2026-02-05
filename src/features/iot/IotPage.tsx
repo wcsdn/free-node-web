@@ -44,7 +44,7 @@ const IotPage: React.FC = () => {
   };
   
   const { connected, latestData, logs, isOverheat } = useIotWebSocket();
-  const { history, stats, loading, refresh } = useIotHistory();
+  const { history, stats } = useIotHistory();
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [timeSinceUpdate, setTimeSinceUpdate] = useState<string>('--');
   const [currentTime, setCurrentTime] = useState(Date.now()); // 用于触发图表更新
@@ -55,6 +55,16 @@ const IotPage: React.FC = () => {
       setLastUpdateTime(new Date());
     }
   }, [latestData]);
+  
+  // 初始化时间：如果有历史数据，使用最新的历史数据时间
+  useEffect(() => {
+    if (!lastUpdateTime && history.length > 0) {
+      const latestHistory = history[0];
+      if (latestHistory.timestamp) {
+        setLastUpdateTime(new Date(latestHistory.timestamp));
+      }
+    }
+  }, [history, lastUpdateTime]);
 
   // 每分钟更新一次当前时间，让图表时间轴移动
   useEffect(() => {
@@ -98,6 +108,18 @@ const IotPage: React.FC = () => {
     return [latestData, ...history].slice(0, 30);
   }, [history, latestData, currentTime]);
 
+  // 格式化位置名称
+  const getLocationDisplay = (location?: string) => {
+    if (!location) return '未知';
+    const locationMap: Record<string, string> = {
+      'OFFICE': '🏢 公司',
+      'DORM': '🏠 宿舍',
+      'HOME': '🏡 家',
+      'BACKUP': '📡 备用',
+    };
+    return locationMap[location] || location;
+  };
+
   // 如果没有实时数据，使用最新的历史数据
   const displayData = latestData || (history.length > 0 ? history[0] : null);
 
@@ -116,19 +138,28 @@ const IotPage: React.FC = () => {
 
         {/* 状态栏 */}
         <div className="iot-status-bar">
-          <div className="status-left">
+          <div className="status-item">
             <span className={`connection-dot ${connected ? 'online' : 'offline'}`}>●</span>
             <span className="connection-text">
               {connected ? i18n.realTimeConnection : i18n.connectionLost}
             </span>
-            <span className="status-divider">|</span>
+          </div>
+          
+          {displayData?.location && (
+            <div className="status-item">
+              <span className="status-icon">📍</span>
+              <span className="location-text">
+                {getLocationDisplay(displayData.location)}
+              </span>
+            </div>
+          )}
+          
+          <div className="status-item">
+            <span className="status-icon">🕐</span>
             <span className="last-update">
               {i18n.lastSync}: {timeSinceUpdate}
             </span>
           </div>
-          <button className="refresh-btn" onClick={refresh} disabled={loading}>
-            {loading ? i18n.loadingData : i18n.refreshData}
-          </button>
         </div>
 
         {/* 设备信息卡片 */}
@@ -212,7 +243,7 @@ const IotPage: React.FC = () => {
             <span className="section-title">{i18n.tempWaveform}</span>
             <span className="section-subtitle">{i18n.recentRecords}</span>
           </div>
-          <TrendChart data={chartData} isOverheat={isOverheat} isZh={true} currentTime={currentTime} />
+          <TrendChart data={chartData} isOverheat={isOverheat} currentTime={currentTime} />
         </div>
 
         {/* 实时日志终端 */}

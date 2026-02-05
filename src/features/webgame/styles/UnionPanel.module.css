@@ -1,0 +1,612 @@
+/**
+ * 帮派面板样式
+ */
+
+.container {
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border-bottom: 1px solid #444;
+}
+
+.header h2 {
+  color: #ffcc00;
+  margin: 0;
+}
+
+.unionName {
+  background: linear-gradient(180deg, #8844ff, #6622cc);
+  padding: 5px 15px;
+  border-radius: 15px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.closeBtn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.typeNav {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid #333;
+}
+
+.typeBtn {
+  padding: 6px 12px;
+  background: #333;
+  border: 1px solid #444;
+  color: #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.typeBtn:hover:not(:disabled) {
+  background: #444;
+}
+
+.typeBtn.active {
+  background: linear-gradient(180deg, #8844ff, #6622cc);
+  color: #fff;
+  border-color: #8844ff;
+}
+
+.typeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* 我的帮派 */
+.myUnionPanel {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.unionInfo {
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border: 1px solid #8844ff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.unionHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.unionIcon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(180deg, #8844ff, #6622cc);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.unionBasic h3 {
+  color: #ffcc00;
+  margin: 0 0 5px 0;
+  font-size: 20px;
+}
+
+.unionBasic p {
+  color: #888;
+  margin: 0;
+  font-size: 14px;
+}
+
+.unionStats {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.statLabel {
+  color: #888;
+  font-size: 12px;
+}
+
+.statValue {
+  color: #ffcc00;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.unionNotice h4 {
+  color: #888;
+  font-size: 12px;
+  margin: 0 0 10px 0;
+}
+
+.unionNotice p {
+  color: #fff;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.unionActions {
+  display: flex;
+  gap: 10px;
+}
+
+.unionActions button {
+  flex: 1;
+  padding: 12px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.unionActions button:hover {
+  background: #444;
+}
+
+/* 无帮派状态 */
+.noUnion {
+  text-align: center;
+  padding: 50px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border-radius: 10px;
+}
+
+.noUnion p {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.createBtn {
+  padding: 12px 30px;
+  background: linear-gradient(180deg, #8844ff, #6622cc);
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.joinBtn {
+  padding: 12px 30px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* 帮众列表 */
+.memberListPanel {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.memberTitle, .memberItem {
+  display: grid;
+  grid-template-columns: 80px 1fr 80px 100px 100px;
+  gap: 10px;
+  padding: 10px 15px;
+}
+
+.memberTitle {
+  background: rgba(0, 0, 0, 0.3);
+  color: #888;
+  font-size: 12px;
+  border-radius: 5px 5px 0 0;
+}
+
+.memberItem {
+  border-bottom: 1px solid #333;
+}
+
+.memberItem:hover {
+  background: rgba(136, 68, 255, 0.1);
+}
+
+.memberJob {
+  color: #8844ff;
+  font-weight: bold;
+}
+
+.memberName {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  background: #44ff44;
+  border-radius: 50%;
+}
+
+.memberLevel, .memberContribution, .memberStatus {
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* 申请者 */
+.applicantPanel {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.applicantTitle {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffcc00;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.applicantItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border: 1px solid #333;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.applicantInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.applicantName {
+  color: #fff;
+  font-weight: bold;
+}
+
+.applicantLevel {
+  color: #888;
+  font-size: 12px;
+}
+
+.applicantActions {
+  display: flex;
+  gap: 10px;
+}
+
+.applicantActions button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.applicantActions button:first-child {
+  background: #44ff44;
+  color: #000;
+}
+
+.applicantActions button:last-child {
+  background: #ff4444;
+  color: #fff;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  padding: 50px;
+}
+
+/* 帮派列表 */
+.unionListPanel {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.unionListTitle {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffcc00;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.unionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border: 1px solid #333;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.unionItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.unionItemName {
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.unionItemLeader, .unionItemSize {
+  color: #888;
+  font-size: 12px;
+}
+
+.unionItem button {
+  padding: 8px 20px;
+  background: #8844ff;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 聊天面板 */
+.chatPanel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.chatMessage {
+  margin-bottom: 15px;
+}
+
+.msgSender {
+  color: #8844ff;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.msgContent {
+  color: #fff;
+}
+
+.chatInput {
+  display: flex;
+  gap: 10px;
+}
+
+.chatInput input {
+  flex: 1;
+  padding: 10px;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.chatInput button {
+  padding: 10px 20px;
+  background: #8844ff;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 物资面板 */
+.resourcePanel {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.resourceTitle {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffcc00;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.resourceList {
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.resourceItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+
+.resourceItem:last-child {
+  border-bottom: none;
+}
+
+.resourceItem span:first-child {
+  color: #aaa;
+}
+
+.resourceItem span:last-child {
+  color: #ffcc00;
+  font-weight: bold;
+}
+
+.resourceActions {
+  display: flex;
+  gap: 10px;
+}
+
+.resourceActions button {
+  flex: 1;
+  padding: 12px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.resourceActions button:hover {
+  background: #444;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 20px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #2a2a4a;
+  border: 2px solid #8844ff;
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.modalContent h3 {
+  color: #8844ff;
+  margin-top: 0;
+  text-align: center;
+}
+
+.modalContent input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.modalActions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modalActions button:first-child {
+  background: #8844ff;
+  color: #fff;
+}
+
+.modalActions button:last-child {
+  background: #444;
+  color: #fff;
+}
+
+/* 加载状态 */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.loadingText {
+  color: #ffcc00;
+  font-size: 18px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}

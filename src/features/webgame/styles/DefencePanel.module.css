@@ -1,0 +1,159 @@
+/* 城防面板样式 */
+.container {
+  padding: 20px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  color: #fff;
+  font-size: 18px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #4a9eff;
+}
+
+/* 建筑样式 */
+.buildingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.buildingCard {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #FF5722;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.buildingIcon {
+  font-size: 36px;
+}
+
+.buildingInfo h4 {
+  margin: 0 0 8px 0;
+  color: #fff;
+  font-size: 14px;
+}
+
+.buildingStats {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
+.buildingLevel {
+  font-size: 12px;
+  color: #FF5722;
+}
+
+/* 英雄样式 */
+.heroGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.heroCard {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #4a9eff;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.heroCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(74, 158, 255, 0.3);
+}
+
+.heroCard.selected {
+  border-color: #FF9800;
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.4);
+}
+
+.heroInfo h4 {
+  margin: 0 0 8px 0;
+  color: #fff;
+  font-size: 14px;
+}
+
+.heroStats {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: #888;
+}
+
+.deployed {
+  margin-top: 8px;
+  background: rgba(255, 152, 0, 0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #FF9800;
+  display: inline-block;
+}
+
+.heroActions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.deployBtn, .removeBtn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.deployBtn {
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  color: #fff;
+}
+
+.removeBtn {
+  background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+  color: #fff;
+}
+
+.deployBtn:hover, .removeBtn:hover {
+  opacity: 0.9;
+}
+
+.selectTip {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 152, 0, 0.9);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}

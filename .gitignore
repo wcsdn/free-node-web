@@ -36,6 +36,9 @@ memory/
 skills/
 scripts/
 
+# 原版游戏代码（仅供参考，不提交）
+jx/
+
 # misc
 .DS_Store
 .env

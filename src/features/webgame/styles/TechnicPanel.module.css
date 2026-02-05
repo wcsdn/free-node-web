@@ -1,0 +1,149 @@
+/* 科技面板样式 */
+.container {
+  padding: 20px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+.techGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.techCard {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #4a9eff;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.techCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(74, 158, 255, 0.3);
+}
+
+.techHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.techIcon {
+  font-size: 32px;
+}
+
+.techTitle h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+}
+
+.techLevel {
+  font-size: 12px;
+  color: #4a9eff;
+}
+
+.techDesc {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.techEffects {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.effectRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.effectRow:last-child {
+  margin-bottom: 0;
+}
+
+.effectValue {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.effectValueNext {
+  color: #FF9800;
+  font-weight: bold;
+}
+
+.techCost {
+  background: rgba(255, 152, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.costTitle {
+  font-size: 12px;
+  color: #FF9800;
+  margin-bottom: 6px;
+}
+
+.costItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.costItem {
+  font-size: 12px;
+  background: rgba(255, 152, 0, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.require {
+  font-size: 11px;
+  color: #888;
+  margin-top: 6px;
+}
+
+.upgradeBtn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.upgradeBtn:hover {
+  opacity: 0.9;
+}
+
+.upgradeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.maxLevel {
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+}

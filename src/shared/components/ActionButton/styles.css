@@ -4,8 +4,8 @@
   top: 20px;
   z-index: 9;
   /* PC 端：倒序排列，index 越大越靠右（设置在最右边，个人在左边） */
-  /* 最多 9 个按钮（0-8），用 8 - index 实现倒序 */
-  right: calc(20px + (8 - var(--btn-index, 0)) * 55px);
+  /* 最多 10 个按钮（0-9），用 9 - index 实现倒序 */
+  right: calc(20px + (9 - var(--btn-index, 0)) * 55px);
 }
 
 /* 设置菜单样式 */

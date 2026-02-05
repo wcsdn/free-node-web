@@ -6,6 +6,60 @@
   position: relative;
 }
 
+/* 标签页导航 */
+.tabNav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--color-text);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--color-primary);
+}
+
+.tabBtn.active {
+  background: rgba(0, 255, 65, 0.2);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* 敬请期待 */
+.comingSoon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--color-text);
+  font-size: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.comingSoon p {
+  margin: 0;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  border: 1px dashed rgba(0, 255, 65, 0.3);
+}
+
 /* 欢迎屏幕 */
 .welcomeScreen {
   display: flex;

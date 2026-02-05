@@ -1,0 +1,265 @@
+/**
+ * 市场面板样式
+ */
+
+.container {
+  background: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border-bottom: 1px solid #444;
+}
+
+.header h2 {
+  color: #ffcc00;
+  margin: 0;
+}
+
+.backBtn {
+  padding: 8px 16px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.backBtn:hover {
+  background: #444;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.searchBar {
+  display: flex;
+  padding: 15px;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 15px;
+  background: #222;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.searchBtn {
+  padding: 8px 20px;
+  background: #ffcc00;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #000;
+  font-weight: bold;
+}
+
+.typeNav {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 5px;
+  border-bottom: 1px solid #333;
+}
+
+.typeBtn {
+  padding: 5px 15px;
+  background: #333;
+  border: 1px solid #444;
+  color: #aaa;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.typeBtn:hover {
+  background: #444;
+}
+
+.typeBtn.active {
+  background: #ffcc00;
+  color: #000;
+  border-color: #ffcc00;
+}
+
+.itemGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.itemCard {
+  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
+  border: 2px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.itemCard:hover {
+  border-color: #666;
+}
+
+.itemCard.selected {
+  border-color: #ffcc00;
+  box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+}
+
+.itemIcon {
+  width: 48px;
+  height: 48px;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.itemName {
+  color: #fff;
+  font-weight: bold;
+}
+
+.itemPrice {
+  color: #ffcc00;
+  font-size: 14px;
+}
+
+.itemSeller {
+  color: #888;
+  font-size: 12px;
+}
+
+.loading, .empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #888;
+  padding: 50px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid #333;
+}
+
+.pagination button {
+  padding: 5px 15px;
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.footer {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid #333;
+}
+
+.buyBtn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffcc00, #ff9900);
+  border: none;
+  border-radius: 5px;
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.buyBtn:disabled {
+  background: #444;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: #2a2a4a;
+  border: 2px solid #ffcc00;
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.modalContent h3 {
+  color: #ffcc00;
+  margin-top: 0;
+}
+
+.modalContent p {
+  color: #fff;
+  margin: 10px 0;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modalActions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modalActions button:first-child {
+  background: #ffcc00;
+  color: #000;
+}
+
+.modalActions button:last-child {
+  background: #444;
+  color: #fff;
+}

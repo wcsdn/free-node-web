@@ -12,6 +12,7 @@ export interface IotDataPoint {
   humidity: number;
   device_id: string;
   timestamp: string;
+  location?: string; // 新增位置字段
   id?: number;
 }
 
@@ -74,12 +75,13 @@ export function useIotWebSocket() {
 
           // 处理安全传感器数据广播 (从 ghost-iot 发送)
           if (data.type === 'security_alert' && data.data) {
-            const { temp, humidity, timestamp } = data.data;
+            const { temp, humidity, timestamp, location } = data.data;
             const iotData: IotDataPoint = {
               temp,
               humidity,
               device_id: 'GHOST_ROOM_01',
               timestamp: new Date(timestamp * 1000).toISOString(),
+              location: location || undefined,
             };
             const isOverheat = temp > 30;
 
@@ -89,9 +91,10 @@ export function useIotWebSocket() {
               isOverheat,
             }));
 
+            const locationStr = location ? ` @ ${location}` : '';
             addLog(
               isOverheat ? 'alert' : 'data',
-              `接收到来自节点 01 的数据包: ${temp.toFixed(1)}°C / ${humidity.toFixed(1)}%`
+              `接收到来自节点 01 的数据包${locationStr}: ${temp.toFixed(1)}°C / ${humidity.toFixed(1)}%`
             );
 
             if (isOverheat) {
@@ -110,9 +113,10 @@ export function useIotWebSocket() {
               isOverheat,
             }));
 
+            const locationStr = iotData.location ? ` @ ${iotData.location}` : '';
             addLog(
               isOverheat ? 'alert' : 'data',
-              `[${iotData.device_id}] Temp: ${iotData.temp}°C, Humidity: ${iotData.humidity}%`
+              `[${iotData.device_id}]${locationStr} Temp: ${iotData.temp}°C, Humidity: ${iotData.humidity}%`
             );
           }
         } catch {

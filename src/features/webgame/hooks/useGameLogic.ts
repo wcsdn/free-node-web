@@ -2,88 +2,76 @@
  * 游戏逻辑 Hook
  */
 
-import { useEffect, useCallback } from 'react';
-import { useWebGameStore } from '../stores/useWebGameStore';
-import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
-import { API_ENDPOINTS } from '../config';
+import { useCallback } from 'react';
+import { gameApi } from '../services/gameApi';
+import { useToast } from '@/shared/components/Toast/ToastContext';
 
-export function useGameLogic() {
-  const { authHeader } = useWalletAuth();
-  const { 
-    gameStatus, 
-    turn, 
-    units,
-    endTurn,
-    setError,
-  } = useWebGameStore();
+export const useGameLogic = () => {
+  const { showSuccess, showError } = useToast();
 
-  // 自动保存游戏进度
-  const saveGame = useCallback(async () => {
-    if (!authHeader || gameStatus === 'idle') return;
-
-    try {
-      const gameData = {
-        turn,
-        units,
-        timestamp: Date.now(),
-      };
-
-      await fetch(API_ENDPOINTS.SAVE_GAME, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Wallet-Auth': authHeader,
-        },
-        body: JSON.stringify(gameData),
-      });
-    } catch (err) {
-      console.error('Failed to save game:', err);
-    }
-  }, [authHeader, gameStatus, turn, units]);
-
-  // 加载游戏进度
+  /**
+   * 加载游戏进度
+   */
   const loadGame = useCallback(async () => {
-    if (!authHeader) return null;
-
     try {
-      const response = await fetch(API_ENDPOINTS.LOAD_GAME, {
-        headers: {
-          'X-Wallet-Auth': authHeader,
-        },
-      });
-
-      if (response.ok) {
-        return await response.json();
+      const response = await gameApi.getCharacterInfo();
+      
+      if (response.success && response.data) {
+        return response.data;
       }
-    } catch (err) {
-      console.error('Failed to load game:', err);
+      
+      return null;
+    } catch (error) {
+      console.error('Load game error:', error);
+      return null;
     }
+  }, []);
 
-    return null;
-  }, [authHeader]);
-
-  // 每回合结束后自动保存
-  useEffect(() => {
-    if (gameStatus === 'playing') {
-      saveGame();
+  /**
+   * 创建角色
+   */
+  const createCharacter = useCallback(async (name: string) => {
+    try {
+      const response = await gameApi.createCharacter(name);
+      
+      if (response.success) {
+        showSuccess('角色创建成功！');
+        return response.data;
+      } else {
+        showError(response.error || '创建角色失败');
+        return null;
+      }
+    } catch (error) {
+      console.error('Create character error:', error);
+      showError('创建角色失败');
+      return null;
     }
-  }, [turn, gameStatus, saveGame]);
+  }, [showSuccess, showError]);
 
-  // AI 回合逻辑（简单 AI）
-  useEffect(() => {
-    if (gameStatus !== 'playing') return;
-
-    const enemyUnits = units.filter(u => u.owner === 'enemy');
-    const playerUnits = units.filter(u => u.owner === 'player');
-
-    // 简单 AI：敌方单位随机移动和攻击
-    if (enemyUnits.length > 0 && playerUnits.length > 0) {
-      // TODO: 实现 AI 逻辑
+  /**
+   * 收集资源
+   */
+  const collectResources = useCallback(async (cityId: number) => {
+    try {
+      const response = await gameApi.collectResources(cityId);
+      
+      if (response.success && response.data) {
+        showSuccess(`收集成功！金钱+${response.data.money} 粮食+${response.data.food}`);
+        return response.data;
+      } else {
+        showError(response.error || '收集资源失败');
+        return null;
+      }
+    } catch (error) {
+      console.error('Collect resources error:', error);
+      showError('收集资源失败');
+      return null;
     }
-  }, [turn, gameStatus, units]);
+  }, [showSuccess, showError]);
 
   return {
-    saveGame,
     loadGame,
+    createCharacter,
+    collectResources,
   };
-}
+};

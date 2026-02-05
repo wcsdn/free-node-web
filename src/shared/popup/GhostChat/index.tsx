@@ -38,9 +38,9 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
   const { address } = useAccount();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [connected, setConnected] = useState(false);
   const [nickname, setNickname] = useState('');
   const [onlineCount, setOnlineCount] = useState(0);
+  const [, setConnected] = useState(false); // 用于 WebSocket 状态追踪
   
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -121,13 +121,17 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
   }, [messages]);
 
   // 发送消息
-  const sendMessage = () => {
-    if (!input.trim() || !wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+  const sendMessage = useCallback(() => {
+    if (!input.trim()) return;
+    
+    const ws = wsRef.current;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      console.warn('WebSocket 未连接，无法发送消息');
       return;
     }
     
     try {
-      wsRef.current.send(JSON.stringify({
+      ws.send(JSON.stringify({
         type: 'chat',
         content: input.trim(),
       }));
@@ -135,7 +139,7 @@ export const GhostChat: React.FC<GhostChatProps> = ({ isOpen, onClose }) => {
     } catch (err) {
       console.error('发送失败:', err);
     }
-  };
+  }, [input]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

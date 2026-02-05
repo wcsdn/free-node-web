@@ -82,8 +82,8 @@ const HomePage: React.FC = memo(() => {
             <ActionButton type="iot" position={5} />
             <ActionButton type="alpha" position={6} />
             <ActionButton type="situation-monitor" position={7} />
-            {/* <ActionButton type="start" position={5} /> */}
-            <ActionButton type="settings" position={8} />
+            <ActionButton type="webgame" position={8} />
+            <ActionButton type="settings" position={9} />
           </>
         )}
 

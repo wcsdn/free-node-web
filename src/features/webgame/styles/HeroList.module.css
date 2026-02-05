@@ -1,0 +1,157 @@
+/**
+ * 英雄列表样式
+ */
+.container {
+  padding: 16px;
+}
+
+.recruitSection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.recruitBtn {
+  flex: 1;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recruitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.recruitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.recruitBtn.advanced {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.heroCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  border: 2px solid;
+  transition: transform 0.2s;
+}
+
+.heroCard:hover {
+  transform: translateY(-4px);
+}
+
+.heroHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.heroHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+
+.quality {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+.heroStats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+.statRow span:first-child {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.trainingBar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.trainingProgress {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.expBar {
+  margin-top: 12px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.expProgress {
+  height: 100%;
+  background: linear-gradient(90deg, #2196F3, #03A9F4);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.expText {
+  text-align: right;
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+}
+
+.empty {
+  text-align: center;
+  padding: 48px;
+  color: #999;
+  font-size: 16px;
+}
+
+.error {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid #f44336;
+  border-radius: 8px;
+  color: #f44336;
+  text-align: center;
+}

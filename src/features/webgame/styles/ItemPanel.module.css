@@ -1,0 +1,125 @@
+/**
+ * 道具面板样式
+ */
+
+.container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.toolbar {
+  margin-bottom: 16px;
+}
+
+.organizeBtn {
+  padding: 10px 20px;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px dashed #667eea;
+  border-radius: 8px;
+  color: #667eea;
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 8px 16px;
+  background: rgba(30, 30, 45, 0.6);
+  border: 1px solid rgba(100, 100, 120, 0.3);
+  border-radius: 6px;
+  color: #888;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: rgba(102, 126, 234, 0.3);
+  border-color: #667eea;
+  color: #fff;
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.itemCard {
+  background: rgba(30, 30, 45, 0.6);
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid rgba(100, 100, 120, 0.2);
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.itemCount {
+  font-size: 12px;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.2);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.itemDesc {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.itemActions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn,
+.sellBtn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn {
+  background: rgba(74, 222, 128, 0.2);
+  border: 1px solid #4ade80;
+  color: #4ade80;
+}
+
+.sellBtn {
+  background: rgba(255, 170, 50, 0.2);
+  border: 1px solid #ffaa32;
+  color: #ffaa32;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}

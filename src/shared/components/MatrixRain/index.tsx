@@ -5,7 +5,7 @@ interface MatrixRainProps {
   columns?: number;
 }
 
-const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, columns = 50 }) => {
+const MatrixRain: React.FC<MatrixRainProps> = React.memo(({ fontSize = 14, columns: _columns = 50 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameCountRef = useRef(0);
   const fpsRef = useRef(60);

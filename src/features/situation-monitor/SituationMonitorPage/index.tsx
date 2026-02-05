@@ -168,7 +168,7 @@ const SituationMonitorPage: React.FC = () => {
         <aside className="sm-sidebar">
           {/* 3D 地球 */}
           <div className="sm-section">
-            <h3 className="sm-section-title">{isZh ? '🕸️ 全球动态' : '🕸️ Global'}</h3>
+            <h3 className="sm-section-title">{isZh ? ' 🌐 全球动态' : ' 🌐 Global'}</h3>
             <GlobeComponent locations={locations} isZh={isZh} />
           </div>
 

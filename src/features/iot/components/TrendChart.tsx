@@ -19,11 +19,10 @@ import type { IotDataPoint } from '../hooks/useIotWebSocket';
 interface TrendChartProps {
   data: IotDataPoint[];
   isOverheat: boolean;
-  isZh: boolean;
-  currentTime?: number; // 添加当前时间参数，用于触发更新
+  currentTime?: number;
 }
 
-export const TrendChart: React.FC<TrendChartProps> = ({ data, isOverheat, isZh, currentTime }) => {
+export const TrendChart: React.FC<TrendChartProps> = ({ data, isOverheat, currentTime }) => {
   const { t } = useLanguage();
   
   // 一次性提取翻译文本

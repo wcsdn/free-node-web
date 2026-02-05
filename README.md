@@ -119,6 +119,17 @@ npm run deploy:prod                 # 部署前端
 npm run deploy:workers              # 部署所有 Workers
 ```
 
+## Workers 微服务
+
+| 服务 | 域名 | 功能 | 文档 |
+|------|------|------|------|
+| ghost-core | core.free-node.xyz | 用户中心、D1 数据库 | [workers/ghost-core/README.md](./workers/ghost-core/README.md) |
+| ghost-mail | - | 临时邮箱、D1、Email Routing | [workers/ghost-mail/README.md](./workers/ghost-mail/README.md) |
+| ghost-live | - | 聊天室、WebSocket、Durable Objects | [workers/ghost-live/README.md](./workers/ghost-live/README.md) |
+| ghost-oracle | oracle.free-node.xyz | AI 代理、DeepSeek、SSE | [workers/ghost-oracle/README.md](./workers/ghost-oracle/README.md) |
+| ghost-iot | - | IoT 传感器、Hono、Service Binding | [workers/ghost-iot/README.md](./workers/ghost-iot/README.md) |
+| news-server | - | 新闻爬虫、GAP 情报系统 | [workers/news-server/README.md](./workers/news-server/README.md) |
+
 ---
 
 ## License
