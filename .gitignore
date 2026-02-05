@@ -26,6 +26,12 @@ package-lock.json
 
 # Workers 完全忽略（包含敏感配置和代码）
 /workers/
+# 但允许 ghost-game 提交
+!/workers/ghost-game/
+/workers/ghost-game/node_modules/
+/workers/ghost-game/.wrangler/
+/workers/ghost-game/dist/
+/workers/ghost-game/package-lock.json
 
 # Kiro IDE
 /.kiro
