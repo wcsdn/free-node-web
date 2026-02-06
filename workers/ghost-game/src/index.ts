@@ -35,6 +35,7 @@ import corpsMemberRoutes from './routes/corps-member';
 import skillRoutes from './routes/skill';
 import techRoutes from './routes/tech';
 import activityRoutes from './routes/activity';
+import feishuRoutes from './routes/feishu';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -88,6 +89,7 @@ app.route('/api/item/craft', itemCraftRoutes);
 app.route('/api/skill', skillRoutes);
 app.route('/api/tech', techRoutes);
 app.route('/api/activity', activityRoutes);
+app.route('/api/feishu', feishuRoutes);
 
 // 404 处理
 app.notFound((c) => {

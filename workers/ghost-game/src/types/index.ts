@@ -16,6 +16,8 @@ export interface Env {
   KV: KVNamespace;
   JWT_SECRET: string;
   ENVIRONMENT: string;
+  FEISHU_APP_ID: string;
+  FEISHU_APP_SECRET: string;
 }
 
 export interface Character {
