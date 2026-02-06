@@ -12,6 +12,9 @@ const feishuRoutes = new Hono<{ Bindings: Env }>();
 const GATEWAY_URL = 'http://127.0.0.1:18789';
 const GATEWAY_TOKEN = '62612b78da176ac6c9ee21d3c6937547b48fb04a67346857';
 
+// 消息缓存（用于回复）
+const messageCache = new Map<string, { openId: string; content: string; time: number }>();
+
 // 解析飞书消息内容
 function parseFeishuContent(content: string): string {
   try {
@@ -38,7 +41,9 @@ async function sendToOpenClaw(senderId: string, content: string, messageId: stri
     });
     
     if (response.ok) {
-      console.log(`✅ 消息已转发到 OpenClaw: ${messageId}`);
+      // 缓存消息，用于回复
+      messageCache.set(messageId, { openId: senderId, content, time: Date.now() });
+      console.log(`✅ 消息已转发: ${messageId}`);
       return true;
     }
     console.error(`❌ 转发失败: ${response.statusText}`);
@@ -51,7 +56,7 @@ async function sendToOpenClaw(senderId: string, content: string, messageId: stri
 
 // 验证飞书签名
 async function verifySignature(body: string, timestamp: string, signature: string, appSecret: string): Promise<boolean> {
-  if (!appSecret || !signature) return true; // 无密钥时跳过验证
+  if (!appSecret || !signature) return true;
   
   try {
     const encoder = new TextEncoder();
@@ -95,7 +100,7 @@ feishuRoutes.post('/webhook', async (c) => {
     
     // URL 验证
     if (event.type === 'url_verification') {
-      console.log('🔐 飞书 URL 验证');
+      console.log('🔐 URL 验证');
       return c.json({ challenge: event.challenge });
     }
     
@@ -112,6 +117,7 @@ feishuRoutes.post('/webhook', async (c) => {
       const messageContent = messageType === 'text' 
         ? parseFeishuContent(message.content || '')
         : `[${messageType}]`;
+      
       
       console.log('📨 === 收到飞书消息 ===');
       console.log(`   消息ID: ${message.message_id}`);
@@ -195,7 +201,32 @@ feishuRoutes.post('/send', async (c) => {
   }
 });
 
-// 获取飞书用户信息
+// 回复飞书消息（根据消息ID）
+feishuRoutes.post('/reply/:messageId', async (c) => {
+  try {
+    const messageId = c.req.param('messageId');
+    const { content } = await c.req.json();
+    
+    if (!content) {
+      return c.json({ success: false, error: '缺少 content' }, 400);
+    }
+    
+    // 从缓存获取原消息
+    const originalMsg = messageCache.get(messageId);
+    if (!originalMsg) {
+      return c.json({ success: false, error: '消息不存在或已过期' }, 404);
+    }
+    
+    // 发送回复
+    const result = await sendToOpenClaw(originalMsg.openId, `回复: ${content}`, `reply_${messageId}`);
+    
+    return c.json({ success: result, originalMsg });
+  } catch (err) {
+    return c.json({ success: false, error: 'Internal error' }, 500);
+  }
+});
+
+// 获取用户信息
 feishuRoutes.get('/user/:openId', async (c) => {
   try {
     const openId = c.req.param('openId');
@@ -206,7 +237,6 @@ feishuRoutes.get('/user/:openId', async (c) => {
       return c.json({ success: false, error: '飞书配置不完整' }, 500);
     }
     
-    // 获取 token
     const tokenRes = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -218,12 +248,9 @@ feishuRoutes.get('/user/:openId', async (c) => {
       return c.json({ success: false, error: '获取 token 失败' }, 500);
     }
     
-    // 获取用户信息
     const userRes = await fetch(
       `https://open.feishu.cn/open-apis/contact/v3/users/${openId}`,
-      {
-        headers: { 'Authorization': `Bearer ${tokenData.tenant_access_token}` },
-      }
+      { headers: { 'Authorization': `Bearer ${tokenData.tenant_access_token}` } }
     );
     
     const userData: any = await userRes.json();
@@ -236,6 +263,15 @@ feishuRoutes.get('/user/:openId', async (c) => {
   } catch (err) {
     return c.json({ success: false, error: 'Internal error' }, 500);
   }
+});
+
+// 健康检查
+feishuRoutes.get('/health', async (c) => {
+  return c.json({ 
+    status: 'ok', 
+    service: 'feishu-webhook',
+    uptime: Date.now()
+  });
 });
 
 export default feishuRoutes;
