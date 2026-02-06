@@ -1,5 +1,7 @@
 /**
  * 建筑详情面板组件
+ * mode: 'full' - 完整模式（显示操作按钮：升级/拆除）
+ *       'readonly' - 只读模式（仅显示建筑信息，用于右侧树形菜单的"查看详情"）
  */
 import React, { useState } from 'react';
 
@@ -7,8 +9,9 @@ interface BuildingDetailPanelProps {
   building: any;
   cityInfo?: any;
   onClose: () => void;
-  onLevelUp: () => void;
+  onLevelUp?: () => void;
   onDemolish?: () => void;
+  mode?: 'full' | 'readonly';
 }
 
 const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({ 
@@ -16,11 +19,14 @@ const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({
   cityInfo, 
   onClose, 
   onLevelUp, 
-  onDemolish 
+  onDemolish,
+  mode = 'full'
 }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [action, setAction] = useState<'levelup' | 'demolish' | null>(null);
+
+  const isReadonly = mode === 'readonly';
 
   // 计算升级所需资源 - 从后端返回的数据中获取
   const getUpNeedResources = () => {
@@ -80,7 +86,7 @@ const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({
     setLoading(true);
     setMessage('');
     try {
-      if (action === 'levelup') {
+      if (action === 'levelup' && onLevelUp) {
         await onLevelUp();
         setMessage('升级成功！');
       } else if (action === 'demolish' && onDemolish) {
@@ -99,7 +105,7 @@ const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({
 
   return (
     <div style={{ color: '#000', minWidth: '320px' }}>
-      {/* 基本信息 */}
+      {/* 基本信息 - 只读模式和完整模式都显示 */}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '10px' }}>
         <tbody>
           <tr>
@@ -120,8 +126,8 @@ const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({
         </tbody>
       </table>
 
-      {/* 升级所需资源 */}
-      {!isMaxLevel && (
+      {/* 升级所需资源 - 只读模式不显示 */}
+      {!isReadonly && !isMaxLevel && (
         <div style={{ background: '#f8f9fa', border: '1px solid #e9ecef', borderRadius: '4px', padding: '10px', marginBottom: '10px' }}>
           <div style={{ fontWeight: 'bold', color: '#e67e22', marginBottom: '8px', fontSize: '13px' }}>
             ⬆️ 升级所需 (Lv.{buildingLevel} → Lv.{buildingLevel + 1})
@@ -161,68 +167,91 @@ const BuildingDetailPanel: React.FC<BuildingDetailPanelProps> = ({
         </div>
       )}
       
-      {/* 状态提示 */}
-      <div style={{ 
-        padding: '8px 12px', 
-        borderRadius: '4px', 
-        marginBottom: '10px',
-        background: canLevelUp ? '#d4edda' : '#fff3cd',
-        color: canLevelUp ? '#155724' : '#856404',
-        fontSize: '12px',
-        border: canLevelUp ? '1px solid #c3e6cb' : '1px solid #ffeeba'
-      }}>
-        {canLevelUp ? '✓ 资源充足' : levelUpMessage}
-      </div>
+      {/* 状态提示 - 只读模式不显示 */}
+      {!isReadonly && (
+        <div style={{ 
+          padding: '8px 12px', 
+          borderRadius: '4px', 
+          marginBottom: '10px',
+          background: canLevelUp ? '#d4edda' : '#fff3cd',
+          color: canLevelUp ? '#155724' : '#856404',
+          fontSize: '12px',
+          border: canLevelUp ? '1px solid #c3e6cb' : '1px solid #ffeeba'
+        }}>
+          {canLevelUp ? '✓ 资源充足' : levelUpMessage}
+        </div>
+      )}
       
       {message && <p style={{ color: message.includes('成功') ? 'green' : 'red', margin: '10px 0' }}>{message}</p>}
       
-      {/* 操作按钮 */}
-      <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '15px' }}>
-        <button 
-          onClick={() => { setAction('levelup'); handleAction(); }}
-          disabled={loading || isMaxLevel || !canLevelUp}
-          style={{ 
-            padding: '8px 20px', 
-            background: (loading || isMaxLevel || !canLevelUp) ? '#ccc' : '#4CAF50', 
-            color: '#fff',
-            border: 'none',
-            cursor: (loading || isMaxLevel || !canLevelUp) ? 'not-allowed' : 'pointer',
-            borderRadius: '3px'
-          }}
-          title={!canLevelUp && !isMaxLevel ? levelUpMessage : ''}
-        >
-          {loading && action === 'levelup' ? '升级中...' : isMaxLevel ? '已满级' : '升级'}
-        </button>
-        {canDemolish && (
+      {/* 操作按钮 - 只读模式不显示 */}
+      {!isReadonly && (
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '15px' }}>
           <button 
-            onClick={() => { if (confirm('确定要拆除这个建筑吗？')) { setAction('demolish'); handleAction(); }}}
-            disabled={loading}
+            onClick={() => { setAction('levelup'); handleAction(); }}
+            disabled={loading || isMaxLevel || !canLevelUp}
             style={{ 
               padding: '8px 20px', 
-              background: loading ? '#ccc' : '#f44336', 
+              background: (loading || isMaxLevel || !canLevelUp) ? '#ccc' : '#4CAF50', 
               color: '#fff',
               border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
+              cursor: (loading || isMaxLevel || !canLevelUp) ? 'not-allowed' : 'pointer',
+              borderRadius: '3px'
+            }}
+            title={!canLevelUp && !isMaxLevel ? levelUpMessage : ''}
+          >
+            {loading && action === 'levelup' ? '升级中...' : isMaxLevel ? '已满级' : '升级'}
+          </button>
+          {canDemolish && (
+            <button 
+              onClick={() => { if (confirm('确定要拆除这个建筑吗？')) { setAction('demolish'); handleAction(); }}}
+              disabled={loading}
+              style={{ 
+                padding: '8px 20px', 
+                background: loading ? '#ccc' : '#f44336', 
+                color: '#fff',
+                border: 'none',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                borderRadius: '3px'
+              }}
+            >
+              {loading && action === 'demolish' ? '拆除中...' : '拆除'}
+            </button>
+          )}
+          <button 
+            onClick={onClose}
+            style={{ 
+              padding: '8px 20px', 
+              background: '#6c757d', 
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
               borderRadius: '3px'
             }}
           >
-            {loading && action === 'demolish' ? '拆除中...' : '拆除'}
+            关闭
           </button>
-        )}
-        <button 
-          onClick={onClose}
-          style={{ 
-            padding: '8px 20px', 
-            background: '#6c757d', 
-            color: '#fff',
-            border: 'none',
-            cursor: 'pointer',
-            borderRadius: '3px'
-          }}
-        >
-          关闭
-        </button>
-      </div>
+        </div>
+      )}
+
+      {/* 只读模式的关闭按钮 */}
+      {isReadonly && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+          <button 
+            onClick={onClose}
+            style={{ 
+              padding: '8px 30px', 
+              background: '#6c757d', 
+              color: '#fff',
+              border: 'none',
+              cursor: 'pointer',
+              borderRadius: '3px'
+            }}
+          >
+            关闭
+          </button>
+        </div>
+      )}
     </div>
   );
 };

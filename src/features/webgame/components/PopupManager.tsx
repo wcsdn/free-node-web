@@ -935,11 +935,29 @@ export function openPage(pageId: string) {
 }
 
 // 打开建筑详情
+// readonly: true - 只读模式（仅显示建筑信息，用于右侧树形菜单的"查看详情"）
+//           false - 完整模式（显示操作按钮：升级/拆除）
 export function openBuilding(
   building: { id?: number; Name: string; Level: number; Position: number; ConfigID?: number; State?: number; EffectValue?: number; CostMoney?: number; CostFood?: number; CostMen?: number }, 
   cityInfo?: any,
-  onUpdate?: (updatedData: { building?: any; resources?: any }) => void
+  onUpdate?: (updatedData: { building?: any; resources?: any }) => void,
+  readonly: boolean = false
 ) {
+  // 只读模式不执行任何操作
+  if (readonly) {
+    popupManager.show(
+      `building_${building.Position}_readonly`,
+      `【${building.Name}】Lv.${building.Level}`,
+      <BuildingDetailPanel 
+        building={building} 
+        cityInfo={cityInfo}
+        onClose={() => popupManager.hide()}
+        mode="readonly"
+      />
+    );
+    return;
+  }
+
   const handleLevelUp = async () => {
     const buildingId =  building.id || building.Position;
     const res = await fetch(`${getApiBase()}/api/game/building/${buildingId}/upgrade`, {
@@ -1001,6 +1019,7 @@ export function openBuilding(
       onClose={() => popupManager.hide()}
       onLevelUp={handleLevelUp}
       onDemolish={handleDemolish}
+      mode="full"
     />
   );
 }
@@ -1039,22 +1058,84 @@ export function openBuildingSelect(
         />
       );
     } else {
-      alert('该位置暂无可建造的建筑');
+      showMessage('该位置暂无可建造的建筑', 'warning');
     }
   }).catch((err) => {
     console.error('获取可建造建筑失败:', err);
-    alert('获取可建造建筑失败');
+    showMessage('获取可建造建筑失败', 'error');
   });
 }
 
-// 打开商城
-export function openMall() {
-  popupManager.show('mall', '【商城】', <MallPanel />);
+// 消息提示面板组件（替代alert）
+const MessagePanel: React.FC<{ message: string; type?: 'info' | 'warning' | 'success' | 'error'; onClose: () => void }> = ({ 
+  message, 
+  type = 'info',
+  onClose 
+}) => {
+  const bgColors = {
+    info: '#d1ecf1',
+    warning: '#fff3cd',
+    success: '#d4edda',
+    error: '#f8d7da'
+  };
+  const textColors = {
+    info: '#0c5460',
+    warning: '#856404',
+    success: '#155724',
+    error: '#721c24'
+  };
+  const icons = {
+    info: 'ℹ️',
+    warning: '⚠️',
+    success: '✅',
+    error: '❌'
+  };
+
+  return (
+    <div style={{ 
+      color: textColors[type], 
+      textAlign: 'center', 
+      padding: '20px',
+      background: bgColors[type],
+      borderRadius: '4px',
+      border: `1px solid ${textColors[type]}`
+    }}>
+      <div style={{ fontSize: '24px', marginBottom: '10px' }}>{icons[type]}</div>
+      <div style={{ marginBottom: '15px' }}>{message}</div>
+      <button 
+        onClick={onClose}
+        style={{ 
+          padding: '6px 25px', 
+          background: '#6c757d', 
+          color: '#fff', 
+          border: 'none', 
+          cursor: 'pointer',
+          borderRadius: '3px'
+        }}
+      >
+        确定
+      </button>
+    </div>
+  );
+};
+
+// 显示消息提示（替代alert）
+export function showMessage(message: string, type: 'info' | 'warning' | 'success' | 'error' = 'info') {
+  popupManager.show(
+    'message_tip',
+    '【提示】',
+    <MessagePanel message={message} type={type} onClose={() => popupManager.hide()} />
+  );
 }
 
 // 打开武将面板
 export function openHero() {
   popupManager.show('hero', '【武将】', <HeroPanel cityId={1} onClose={() => popupManager.hide()} />);
+}
+
+// 打开商城面板
+export function openMall() {
+  popupManager.show('mall', '【商城】', <MallPanel />);
 }
 
 // 打开帮助面板
@@ -1090,6 +1171,7 @@ if (typeof window !== 'undefined') {
   (window as any).OpenSignin = openSignin;
   (window as any).OpenDaily = openDaily;
   (window as any).OpenNotification = openNotification;
+  (window as any).ShowMessage = showMessage;
 }
 
 // 弹窗组件

@@ -42,6 +42,7 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
   
   // 城池建筑数据
   const [buildings, setBuildings] = useState<any[]>([]);
+  const [expandedBuilding, setExpandedBuilding] = useState<number | null>(null);
   
   // 加载城池建筑数据（提取为独立函数，可以在任何地方调用）
   const loadBuildings = useCallback(async () => {
@@ -655,6 +656,14 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
                     className="node_control" 
                     src="/jx/Web/img/o/2.gif" 
                     alt="展开"
+                    style={{ cursor: 'pointer' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // 切换展开状态
+                      setExpandedBuilding(prev => 
+                        prev === building.position ? null : building.position
+                      );
+                    }}
                   />
                   <img 
                     className="node_icon_1"
@@ -667,7 +676,7 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
                   <span className="node_title_span">{name} Lv.{building.level}</span>
                 </div>
                 {/* 建筑操作列表 */}
-                <ul style={{ display: 'none' }}>
+                <ul style={{ display: expandedBuilding === building.position ? 'block' : 'none' }}>
                   <li>
                     <a 
                       className="node_handle_a"
@@ -682,23 +691,7 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
                             Position: building.position,
                             Level: building.level,
                             ConfigID: building.configId,
-                          }, cityInfo, (updatedData: any) => {
-                            // 更新建筑数据
-                            if (updatedData.building) {
-                              setBuildings(prev => prev.map(b => 
-                                b.position === building.position ? { ...b, level: updatedData.building.Level } : b
-                              ));
-                            } else if (updatedData.building === null) {
-                              // 建筑被拆除
-                              setBuildings(prev => prev.filter(b => b.position !== building.position));
-                            }
-                            
-                            // 更新资源数据
-                            if (updatedData.resources) {
-                              setResources(prev => ({ ...prev, ...updatedData.resources }));
-                              setCityInfo((prev: any) => ({ ...prev, ...updatedData.resources }));
-                            }
-                          });
+                          }, cityInfo, null, true); // 第四个参数 true 表示只读模式（仅显示详情，不显示操作按钮）
                         }
                       }}
                     >
