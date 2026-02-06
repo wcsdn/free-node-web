@@ -1,0 +1,144 @@
+{
+  "Item": [
+    {
+      "Level": 1,
+      "Name": "初窥门径",
+      "AdditionalDefence": 0,
+      "NeedFame": 0,
+      "NeedJadeBook": 0
+    },
+    {
+      "Level": 2,
+      "Name": "童试童生",
+      "AdditionalDefence": 4,
+      "NeedFame": 33,
+      "NeedJadeBook": 3
+    },
+    {
+      "Level": 3,
+      "Name": "登堂入室",
+      "AdditionalDefence": 6,
+      "NeedFame": 80,
+      "NeedJadeBook": 5
+    },
+    {
+      "Level": 4,
+      "Name": "童试秀才",
+      "AdditionalDefence": 8,
+      "NeedFame": 195,
+      "NeedJadeBook": 6
+    },
+    {
+      "Level": 5,
+      "Name": "文采风流",
+      "AdditionalDefence": 10,
+      "NeedFame": 421,
+      "NeedJadeBook": 8
+    },
+    {
+      "Level": 6,
+      "Name": "乡试举人",
+      "AdditionalDefence": 12,
+      "NeedFame": 812,
+      "NeedJadeBook": 9
+    },
+    {
+      "Level": 7,
+      "Name": "才高八斗",
+      "AdditionalDefence": 14,
+      "NeedFame": 1426,
+      "NeedJadeBook": 11
+    },
+    {
+      "Level": 8,
+      "Name": "乡试解元",
+      "AdditionalDefence": 16,
+      "NeedFame": 2332,
+      "NeedJadeBook": 12
+    },
+    {
+      "Level": 9,
+      "Name": "学富五车",
+      "AdditionalDefence": 18,
+      "NeedFame": 3606,
+      "NeedJadeBook": 14
+    },
+    {
+      "Level": 10,
+      "Name": "会试贡生",
+      "AdditionalDefence": 20,
+      "NeedFame": 5329,
+      "NeedJadeBook": 15
+    },
+    {
+      "Level": 11,
+      "Name": "汗牛充栋",
+      "AdditionalDefence": 23,
+      "NeedFame": 7592,
+      "NeedJadeBook": 33
+    },
+    {
+      "Level": 12,
+      "Name": "会试会元",
+      "AdditionalDefence": 26,
+      "NeedFame": 10490,
+      "NeedJadeBook": 36
+    },
+    {
+      "Level": 13,
+      "Name": "谈笑鸿儒",
+      "AdditionalDefence": 29,
+      "NeedFame": 14127,
+      "NeedJadeBook": 39
+    },
+    {
+      "Level": 14,
+      "Name": "殿试进士",
+      "AdditionalDefence": 32,
+      "NeedFame": 18612,
+      "NeedJadeBook": 42
+    },
+    {
+      "Level": 15,
+      "Name": "妙笔生花",
+      "AdditionalDefence": 35,
+      "NeedFame": 24060,
+      "NeedJadeBook": 45
+    },
+    {
+      "Level": 16,
+      "Name": "殿试探花",
+      "AdditionalDefence": 45,
+      "NeedFame": 30594,
+      "NeedJadeBook": 60
+    },
+    {
+      "Level": 17,
+      "Name": "殿试榜眼",
+      "AdditionalDefence": 60,
+      "NeedFame": 38340,
+      "NeedJadeBook": 75
+    },
+    {
+      "Level": 18,
+      "Name": "殿试状元",
+      "AdditionalDefence": 75,
+      "NeedFame": 47432,
+      "NeedJadeBook": 100
+    },
+    {
+      "Level": 19,
+      "Name": "千古绝唱",
+      "AdditionalDefence": 100,
+      "NeedFame": 58011,
+      "NeedJadeBook": 200
+    },
+    {
+      "Level": 20,
+      "Name": "万世师表",
+      "AdditionalDefence": 150,
+      "NeedFame": 70220,
+      "NeedJadeBook": 400
+    }
+  ]
+}

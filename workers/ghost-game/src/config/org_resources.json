@@ -1,0 +1,164 @@
+{
+  "GetResMap": [
+    {
+      "ActionID": 1,
+      "ActionLevel": 1,
+      "ItemID": 1,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 2,
+      "ItemID": 1,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 3,
+      "ItemID": 2,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 4,
+      "ItemID": 2,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 5,
+      "ItemID": 3,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 6,
+      "ItemID": 3,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 7,
+      "ItemID": 4,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 8,
+      "ItemID": 4,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 9,
+      "ItemID": 5,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 1,
+      "ActionLevel": 10,
+      "ItemID": 5,
+      "FallingRates": 5000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 1,
+      "ItemID": 1,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 2,
+      "ItemID": 1,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 2
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 3,
+      "ItemID": 2,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 4,
+      "ItemID": 2,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 2
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 5,
+      "ItemID": 3,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 6,
+      "ItemID": 3,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 2
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 7,
+      "ItemID": 4,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 8,
+      "ItemID": 4,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 2
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 9,
+      "ItemID": 5,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 1
+    },
+    {
+      "ActionID": 2,
+      "ActionLevel": 10,
+      "ItemID": 5,
+      "FallingRates": 100000,
+      "MinNumber": 1,
+      "MaxNumber": 2
+    }
+  ]
+}

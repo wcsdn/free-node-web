@@ -1,0 +1,39 @@
+{
+  "ResMap": [
+    {
+      "ResID": 1,
+      "Fame": 10,
+      "Gold": 100
+    },
+    {
+      "ResID": 2,
+      "Fame": 20,
+      "Gold": 200
+    },
+    {
+      "ResID": 3,
+      "Fame": 30,
+      "Gold": 400
+    },
+    {
+      "ResID": 4,
+      "Prestige": 20,
+      "Gold": 600
+    },
+    {
+      "ResID": 5,
+      "Prestige": 40,
+      "Gold": 1200
+    },
+    {
+      "ResID": 6,
+      "Prestige": 15,
+      "Gold": 200
+    },
+    {
+      "ResID": 7,
+      "Fame": 20,
+      "Gold": 200
+    }
+  ]
+}

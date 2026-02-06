@@ -1,0 +1,20 @@
+name = "ghost-game"
+main = "dist/index.js"
+compatibility_date = "2024-12-02"
+
+# 开发服务器配置
+[dev]
+port = 8788
+local_protocol = "http"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ghost-game-db"
+database_id = "dd1e2677-5330-4681-ae87-b915e6631341"
+
+[[routes]]
+pattern = "game.free-node.xyz/*"
+zone_name = "free-node.xyz"

@@ -65,17 +65,30 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
     noCities: language === 'en' ? 'No cities' : '暂无城市',
   };
 
-  // 获取城市列表
+  // 获取城市列表 - 使用 game API 以支持自动注册
   const fetchCities = async () => {
     try {
-      const res = await fetch(`${getApiBase()}/api/city/list`, {
+      // 使用 /api/game/user-info 来触发自动注册并获取城市列表
+      const res = await fetch(`${getApiBase()}/api/game/user-info`, {
+        method: 'POST',
         headers: { 'X-Wallet-Auth': walletAddress || '' },
       });
       const data = await res.json();
-      if (data.success) {
-        setCities(data.data);
-        if (data.data.length > 0 && !selectedCityId) {
-          setSelectedCityId(data.data[0].id);
+      if (data.success && data.data.CityList && data.data.CityList.length > 0) {
+        // 从 user-info 返回的城市列表
+        const citiesFromUser = data.data.CityList.map((c: any) => ({
+          id: c.ID,
+          name: c.Name,
+          money: 0,
+          food: 0,
+          population: 0,
+          money_rate: 0,
+          food_rate: 0,
+          population_rate: 0,
+        }));
+        setCities(citiesFromUser);
+        if (!selectedCityId) {
+          setSelectedCityId(citiesFromUser[0].id);
         }
       }
     } catch (err) {
@@ -85,18 +98,64 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
     }
   };
 
-  // 获取城市详情
+  // 获取城市详情 - 使用 game API 以支持自动注册
   const fetchCityDetail = async (id: number) => {
     try {
-      const res = await fetch(`${getApiBase()}/api/city/${id}`, {
+      const res = await fetch(`${getApiBase()}/api/game/city/interior/${id}`, {
+        method: 'POST',
         headers: { 'X-Wallet-Auth': walletAddress || '' },
       });
       const data = await res.json();
       if (data.success) {
-        setCityData(data.data);
+        // 转换为 CityPanel 期望的格式
+        const cityInfo = data.data;
+        setCityData({
+          id: cityInfo.cityId,
+          name: cityInfo.userName,
+          money: cityInfo.money,
+          food: cityInfo.food,
+          population: cityInfo.population,
+          money_rate: cityInfo.moneyRate,
+          food_rate: cityInfo.foodRate,
+          population_rate: cityInfo.populationRate,
+          buildings: [],
+          events: [],
+        });
+
+        // 同时获取建筑列表
+        fetchBuildings(id);
+      } else {
+        console.error('Failed to load city:', data.error);
       }
     } catch (err) {
       console.error('Failed to load city:', err);
+    }
+  };
+
+  // 获取建筑列表
+  const fetchBuildings = async (cityId: number) => {
+    try {
+      const res = await fetch(`${getApiBase()}/api/game/city/building-list/${cityId}`, {
+        method: 'POST',
+        headers: { 'X-Wallet-Auth': walletAddress || '' },
+      });
+      const data = await res.json();
+      if (data.success) {
+        // 更新 cityData 中的建筑列表
+        setCityData(prev => prev ? {
+          ...prev,
+          buildings: data.data.buildings.map((b: any) => ({
+            id: b.id,
+            type: b.type,
+            level: b.level,
+            position: b.position,
+            state: b.state,
+            config_id: b.configId,
+          }))
+        } : null);
+      }
+    } catch (err) {
+      console.error('Failed to load buildings:', err);
     }
   };
 

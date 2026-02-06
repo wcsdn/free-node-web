@@ -1,0 +1,21 @@
+{
+  "Init": {
+    "Gold": 0,
+    "Money": 450,
+    "Men": 45,
+    "Food": 450,
+    "MoneySpeed": 50,
+    "MenSpeed": 5,
+    "FoodSpeed": 50,
+    "MoneyRoom": 500,
+    "MenRoom": 50,
+    "FoodRoom": 500,
+    "InteriorBuildingQueueNum": 1,
+    "DefanceBuildingQueueNum": 5,
+    "EventTimePercent": 100,
+    "DegradeNeedResPercent": 33,
+    "DegradeNeedTimePercent": 33,
+    "FastUpDateNeedTimePercent": 25,
+    "EventBreakReturnResPercent": 33
+  }
+}

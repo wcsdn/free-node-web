@@ -1,0 +1,315 @@
+{
+  "Item": [
+    {
+      "ID": 1,
+      "Name": "名望宝箱",
+      "ItemID": 1144,
+      "GetItem": [
+        {
+          "OddsType": 2,
+          "ItemOdds": 40000,
+          "GetItem1": 1,
+          "ItemNum1": 12,
+          "Odds1": 96000,
+          "GetItem2": 1,
+          "ItemNum2": 13,
+          "Odds2": 3000,
+          "GetItem3": 1,
+          "ItemNum3": 14,
+          "Odds3": 1000
+        },
+        {
+          "OddsType": 2,
+          "ItemOdds": 32000,
+          "GetItem1": 2,
+          "ItemNum1": 6,
+          "Odds1": 97000,
+          "GetItem2": 2,
+          "ItemNum2": 7,
+          "Odds2": 2000,
+          "GetItem3": 2,
+          "ItemNum3": 8,
+          "Odds3": 1000
+        },
+        {
+          "OddsType": 2,
+          "ItemOdds": 28000,
+          "GetItem1": 3,
+          "ItemNum1": 3,
+          "Odds1": 98000,
+          "GetItem2": 3,
+          "ItemNum2": 4,
+          "Odds2": 1200,
+          "GetItem3": 3,
+          "ItemNum3": 5,
+          "Odds3": 800
+        }
+      ]
+    },
+    {
+      "ID": 2,
+      "Name": "声望宝箱",
+      "ItemID": 1145,
+      "GetItem": [
+        {
+          "OddsType": 2,
+          "ItemOdds": 60000,
+          "GetItem1": 4,
+          "ItemNum1": 2,
+          "Odds1": 99000,
+          "GetItem2": 4,
+          "ItemNum2": 3,
+          "Odds2": 1000
+        },
+        {
+          "OddsType": 2,
+          "ItemOdds": 40000,
+          "GetItem1": 5,
+          "ItemNum1": 1,
+          "Odds1": 99000,
+          "GetItem2": 5,
+          "ItemNum2": 2,
+          "Odds2": 1000
+        }
+      ]
+    },
+    {
+      "ID": 3,
+      "Name": "青色水晶宝箱",
+      "ItemID": 1146,
+      "GetItem": [
+        {
+          "OddsType": 1,
+          "ItemOdds": 30000,
+          "GetItem1": 1061,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 40000,
+          "GetItem1": 1062,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 20000,
+          "GetItem1": 1063,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 4500,
+          "GetItem1": 1064,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 2100,
+          "GetItem1": 1065,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 1500,
+          "GetItem1": 1066,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 900,
+          "GetItem1": 1067,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 600,
+          "GetItem1": 1068,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 300,
+          "GetItem1": 1069,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 100,
+          "GetItem1": 1070,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        }
+      ]
+    },
+    {
+      "ID": 4,
+      "Name": "蓝色水晶宝箱",
+      "ItemID": 1147,
+      "GetItem": [
+        {
+          "OddsType": 1,
+          "ItemOdds": 30000,
+          "GetItem1": 826,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 45000,
+          "GetItem1": 827,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 21000,
+          "GetItem1": 828,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 2400,
+          "GetItem1": 829,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 800,
+          "GetItem1": 830,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 500,
+          "GetItem1": 831,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 200,
+          "GetItem1": 832,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 60,
+          "GetItem1": 833,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 30,
+          "GetItem1": 834,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 10,
+          "GetItem1": 835,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        }
+      ]
+    },
+    {
+      "ID": 5,
+      "Name": "端阳宝箱",
+      "ItemID": 1153,
+      "GetItem": [
+        {
+          "OddsType": 1,
+          "ItemOdds": 60000,
+          "GetItem1": 1155,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 20500,
+          "GetItem1": 1156,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 15000,
+          "GetItem1": 1157,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 4000,
+          "GetItem1": 1158,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 500,
+          "GetItem1": 1159,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        }
+      ]
+    },
+    {
+      "ID": 6,
+      "Name": "重午宝箱",
+      "ItemID": 1154,
+      "GetItem": [
+        {
+          "OddsType": 1,
+          "ItemOdds": 60000,
+          "GetItem1": 1160,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 28000,
+          "GetItem1": 1161,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 8000,
+          "GetItem1": 1162,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 3500,
+          "GetItem1": 1163,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        },
+        {
+          "OddsType": 1,
+          "ItemOdds": 500,
+          "GetItem1": 1164,
+          "ItemNum1": 1,
+          "Odds1": 100000
+        }
+      ]
+    }
+  ]
+}

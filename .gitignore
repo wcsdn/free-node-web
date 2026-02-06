@@ -24,9 +24,8 @@ package-lock.json
 /workers/*/.wrangler
 .wrangler/
 
-# Workers 完全忽略（包含敏感配置和代码）
-/workers/
-# 但允许 ghost-game 提交
+# Workers 目录（排除 ghost-game）
+/workers/*
 !/workers/ghost-game/
 /workers/ghost-game/node_modules/
 /workers/ghost-game/.wrangler/

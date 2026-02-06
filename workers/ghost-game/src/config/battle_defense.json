@@ -1,0 +1,9104 @@
+{
+  "Unit": [
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 456,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 457,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 458,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 459,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 460,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 463,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 464,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 467,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 468,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 469,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 471,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 472,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 473,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 474,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 475,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 486,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 505,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 516,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 535,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 546,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 547,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 548,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 563,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 564,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 565,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 459,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 460,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 463,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 464,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 467,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 468,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 469,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 471,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 472,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 473,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 486,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 505,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 516,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 535,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 546,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 547,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 548,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 563,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 564,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 565,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 460,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 463,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 464,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 467,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 468,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 469,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 471,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 516,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 535,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 546,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 547,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 548,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 563,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 564,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 565,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 460,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 463,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 464,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 467,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 468,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 469,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 471,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 548,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 563,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 564,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 463,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 464,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 467,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 468,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 469,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 461,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 462,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 465,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 466,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 470,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 490,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 494,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 495,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 496,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 497,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 501,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 520,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 521,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 530,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 531,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 523,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 524,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 527,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 528,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 552,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 553,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 555,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 556,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 558,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 559,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 549,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 562,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 579,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 581,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 592,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 582,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 584,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 587,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 589,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 590,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 609,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 610,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 622,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 639,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 652,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 611,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 620,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 621,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 640,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 651,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 614,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 617,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 644,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 647,
+      "DefenceIndex": 4
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 670,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 672,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 673,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 678,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 679,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 681,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 2
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 701,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 702,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 708,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 709,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 710,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 703,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 732,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 733,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 738,
+      "DefenceIndex": 5
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 739,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 3
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 762,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 763,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 768,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 798,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 799,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 769,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 792,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 793,
+      "DefenceIndex": 6
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 795,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 1,
+      "DefenceID": 1,
+      "Pos": 796,
+      "DefenceIndex": 1
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 20,
+      "Level": 20,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 19,
+      "Level": 19,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 18,
+      "Level": 18,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 17,
+      "Level": 17,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 16,
+      "Level": 16,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 15,
+      "Level": 15,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 14,
+      "Level": 14,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 13,
+      "Level": 13,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 12,
+      "Level": 12,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 11,
+      "Level": 11,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 10,
+      "Level": 10,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 9,
+      "Level": 9,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 8,
+      "Level": 8,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 7,
+      "Level": 7,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 6,
+      "Level": 6,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 5,
+      "Level": 5,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 4,
+      "Level": 4,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 3,
+      "Level": 3,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 2,
+      "Level": 2,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 674
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 677
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 705
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 707
+    },
+    {
+      "Index": 1,
+      "Level": 1,
+      "Type": 2,
+      "DefenceID": 1,
+      "Pos": 736
+    }
+  ]
+}

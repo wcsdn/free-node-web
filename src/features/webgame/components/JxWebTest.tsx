@@ -392,13 +392,50 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
       <div id="contentarea">
         <div id="mainnav">
           <ul>
-            <li id="nav_1"><a id="p_1" className="nav_a_1" href="#"></a></li>
-            <li id="nav_2"><a id="p_2" className="nav_a_2" href="#"></a></li>
-            <li id="nav_3"><a id="p_3" className="nav_a_3" href="#"></a></li>
-            <li id="nav_4"><a id="p_4" className="nav_a_4" href="#"></a></li>
-            <li id="nav_5"><a id="p_5" className="nav_a_5" href="#"></a></li>
-            <li id="nav_6"><a id="p_6" className="nav_a_6" href="#"></a></li>
-            <li id="nav_7"><a id="p_7" className="nav_a_7" href="#"></a></li>
+            <li id="nav_1"><a id="p_1" className="nav_a_1" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_1');
+              }
+            }}></a></li>
+            <li id="nav_2"><a id="p_2" className="nav_a_2" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_2');
+              }
+            }}></a></li>
+            <li id="nav_3"><a id="p_3" className="nav_a_3" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_3');
+              }
+            }}></a></li>
+            <li id="nav_4"><a id="p_4" className="nav_a_4" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_4');
+              }
+            }}></a></li>
+            <li id="nav_5">
+              <a id="p_5" className="nav_a_5" href="#" onClick={(e) => {
+                e.preventDefault();
+                if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                  (window as any).OpenPage('p_5');
+                }
+              }}></a>
+            </li>
+            <li id="nav_6"><a id="p_6" className="nav_a_6" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_6');
+              }
+            }}></a></li>
+            <li id="nav_7"><a id="p_7" className="nav_a_7" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_7');
+              }
+            }}></a></li>
           </ul>
         </div>
         
@@ -555,13 +592,48 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
           <img alt="" id="new_mail" src="/jx/Web/img/o/33.GIF" style={{display:'none', zIndex: 1, right: '195px', position: 'absolute', top: '16px'}} />
           <img alt="" id="task_sgin" src="/jx/Web/img/1/10a.GIF" style={{zIndex: 1, right: '102px', position: 'absolute', top: '16px'}} />
           <ul id="chalink">
-            <li><a id="p_12" className="nav_a_12" href="#">竞技</a></li>
-            <li><a className="nav_a_13" style={{color:'Red'}} href="#">商城</a></li>
-            <li><a id="p_8" className="nav_a_8" href="#">消息</a></li>
-            <li><a id="p_9" className="nav_a_9" href="#">市场</a></li>
-            <li><a id="p_10" className="nav_a_10" href="#">任务</a></li>
-            <li><a id="p_11" className="nav_a_11" href="#">排行</a></li>
-            <li><a href="#" target="_blank">帮助</a></li>
+            <li><a id="p_12" className="nav_a_12" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_12');
+              }
+            }}>竞技</a></li>
+            <li><a className="nav_a_13" style={{color:'Red'}} href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenMall) {
+                (window as any).OpenMall();
+              }
+            }}>商城</a></li>
+            <li><a id="p_8" className="nav_a_8" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_8');
+              }
+            }}>消息</a></li>
+            <li><a id="p_9" className="nav_a_9" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_9');
+              }
+            }}>市场</a></li>
+            <li><a id="p_10" className="nav_a_10" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_10');
+              }
+            }}>任务</a></li>
+            <li><a id="p_11" className="nav_a_11" href="#" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenPage) {
+                (window as any).OpenPage('p_11');
+              }
+            }}>排行</a></li>
+            <li><a href="#" target="_blank" onClick={(e) => {
+              e.preventDefault();
+              if (typeof window !== 'undefined' && (window as any).OpenHelp) {
+                (window as any).OpenHelp();
+              }
+            }}>帮助</a></li>
           </ul>
           <div id="gamenews">
             <div className="gonggao">欢迎来到剑侠情缘 Web 版！</div>

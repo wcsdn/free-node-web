@@ -1,0 +1,124 @@
+{
+  "EffectGroup": [
+    {
+      "ID": 1,
+      "MainEffectType": 1,
+      "EffectType": 1,
+      "Name": "升级为VIP用户（7天）",
+      "Des": "VIP用户",
+      "Image": "o/42.gif",
+      "PersistTime": 604800,
+      "Gold": 55,
+      "EffectID1": 1,
+      "EffectID2": 2,
+      "EffectID3": 3,
+      "EffectID4": 4,
+      "EffectID5": 5,
+      "EffectID6": 6
+    },
+    {
+      "ID": 2,
+      "MainEffectType": 1,
+      "EffectType": 2,
+      "Name": "升级为VIP用户（30天）",
+      "Des": "VIP用户",
+      "Image": "o/42.gif",
+      "PersistTime": 2592000,
+      "Gold": 200,
+      "EffectID1": 1,
+      "EffectID2": 2,
+      "EffectID3": 3,
+      "EffectID4": 4,
+      "EffectID5": 5,
+      "EffectID6": 6
+    },
+    {
+      "ID": 3,
+      "MainEffectType": 2,
+      "EffectType": 1,
+      "Name": "使用召集令",
+      "Des": "正在使用召集令",
+      "Image": "o/47.gif",
+      "PersistTime": 604800,
+      "Gold": 25,
+      "EffectID1": 8
+    },
+    {
+      "ID": 4,
+      "MainEffectType": 3,
+      "EffectType": 1,
+      "Name": "聘请账房先生",
+      "Des": "正在聘用账房先生",
+      "Image": "o/45.gif",
+      "PersistTime": 604800,
+      "Gold": 25,
+      "EffectID1": 10
+    },
+    {
+      "ID": 5,
+      "MainEffectType": 4,
+      "EffectType": 1,
+      "Name": "购买农具",
+      "Des": "正在使用农具",
+      "Image": "o/46.gif",
+      "PersistTime": 604800,
+      "Gold": 25,
+      "EffectID1": 9
+    },
+    {
+      "ID": 6,
+      "MainEffectType": 5,
+      "EffectType": 1,
+      "Name": "白驹丸",
+      "Des": "正在使用白驹丸",
+      "Image": "o/44.gif",
+      "PersistTime": 14400,
+      "Gold": 20,
+      "EffectID1": 11
+    },
+    {
+      "ID": 7,
+      "MainEffectType": 6,
+      "EffectType": 1,
+      "Name": "与世无争（8小时）",
+      "Des": "与世无争状态",
+      "Image": "o/43.gif",
+      "PersistTime": 28800,
+      "Gold": 40,
+      "EffectID1": 7
+    },
+    {
+      "ID": 8,
+      "MainEffectType": 6,
+      "EffectType": 2,
+      "Name": "与世无争（2天）",
+      "Des": "与世无争状态",
+      "Image": "o/43.gif",
+      "PersistTime": 172800,
+      "Gold": 100,
+      "EffectID1": 7
+    },
+    {
+      "ID": 9,
+      "MainEffectType": 6,
+      "EffectType": 3,
+      "Name": "与世无争（7天）",
+      "Des": "与世无争状态",
+      "Image": "o/43.gif",
+      "PersistTime": 604800,
+      "Gold": 240,
+      "EffectID1": 7
+    },
+    {
+      "ID": 10,
+      "MainEffectType": 7,
+      "EffectType": 1,
+      "Name": "兵贵神速",
+      "Des": "兵贵神速",
+      "Image": "o/71.gif",
+      "PersistTime": 14400,
+      "Gold": 20,
+      "EffectID1": 12
+    }
+  ]
+}

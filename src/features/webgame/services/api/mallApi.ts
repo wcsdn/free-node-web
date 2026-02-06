@@ -73,14 +73,13 @@ export const mallApi = {
    */
   async getItems(type: MallItemType = 1): Promise<MallListResponse> {
     try {
-      const res = await fetch(`${getApiBase()}/api/mall/list?type=${type}`, {
+      const res = await fetch(`${getApiBase()}/api/shop/list?type=${type}`, {  // ⚠️ 修正: 后端路由是 /api/shop/*
         method: 'GET',
         headers: getAuthHeaders(),
       });
       return res.json();
     } catch (err) {
       console.error('Failed to fetch mall items:', err);
-      // 返回模拟数据
       return getMockItems(type);
     }
   },
@@ -90,13 +89,13 @@ export const mallApi = {
    */
   async buy(request: BuyRequest): Promise<BuyResponse> {
     try {
-      const res = await fetch(`${getApiBase()}/api/mall/buy`, {
+      const res = await fetch(`${getApiBase()}/api/shop/buy`, {  // ⚠️ 修正: 后端路由是 /api/shop/*
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...getAuthHeaders(),
         },
-        body: JSON.stringify(request),
+        body: JSON.stringify({ shop_id: request.itemId, count: request.count }),
       });
       return res.json();
     } catch (err) {

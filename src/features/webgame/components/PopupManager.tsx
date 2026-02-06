@@ -11,6 +11,8 @@ import HelpPanel from './HelpPanel';
 import SigninPanel from './SigninPanel';
 import DailyPanel from './DailyPanel';
 import NotificationPanel from './NotificationPanel';
+import HeroPanel from './HeroPanel';
+// TaskListPanel 和 MessageListPanel 使用内联定义
 import BuildingDetailPanel from './popups/BuildingDetailPanel';
 import BuildingSelectPanel from './popups/BuildingSelectPanel';
 import { getApiBase, getAuthHeaders } from '../utils/api';
@@ -826,8 +828,8 @@ export const PAGE_NAMES: Record<string, string> = {
   'p_2': '军事',
   'p_3': '副本',
   'p_4': '城防',
-  'p_5': '战斗',
-  'p_6': '副本2',
+  'p_5': '武将',
+  'p_6': '军械',
   'p_7': '其他',
   'p_8': '消息',
   'p_9': '市场',
@@ -861,12 +863,13 @@ export function openPage(pageId: string) {
     case 'defense':
       content = <DefensePanel walletAddress="" cityId={1} cityMoney={3000} onClose={() => popupManager.hide()} />;
       break;
-    case 'p_5': // 战斗
+    case 'p_5': // 武将
     case 'battle':
-      content = <BattlePanel walletAddress="" cityId={1} onClose={() => popupManager.hide()} />;
+    case 'hero':
+      content = <HeroPanel cityId={1} onClose={() => popupManager.hide()} />;
       break;
-    case 'p_6': // 其他1
-    case 'p_7': // 其他2
+    case 'p_6': // 军械
+    case 'p_7': // 其他
     case 'other':
       content = <OtherPanel />;
       break;
@@ -1049,6 +1052,11 @@ export function openMall() {
   popupManager.show('mall', '【商城】', <MallPanel />);
 }
 
+// 打开武将面板
+export function openHero() {
+  popupManager.show('hero', '【武将】', <HeroPanel cityId={1} onClose={() => popupManager.hide()} />);
+}
+
 // 打开帮助面板
 export function openHelp() {
   popupManager.show('help', '【帮助中心】', <HelpPanel onClose={() => popupManager.hide()} />);
@@ -1077,6 +1085,7 @@ if (typeof window !== 'undefined') {
   (window as any).OpenBuilding = openBuilding;
   (window as any).OpenBuildingSelect = openBuildingSelect;
   (window as any).OpenMall = openMall;
+  (window as any).OpenHero = openHero;
   (window as any).OpenHelp = openHelp;
   (window as any).OpenSignin = openSignin;
   (window as any).OpenDaily = openDaily;

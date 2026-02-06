@@ -1,0 +1,144 @@
+{
+  "Item": [
+    {
+      "Level": 1,
+      "Name": "无名小辈",
+      "AdditionalAttack": 0,
+      "NeedPrestige": 0,
+      "NeedJadeBook": 0
+    },
+    {
+      "Level": 2,
+      "Name": "江湖虾米",
+      "AdditionalAttack": 4,
+      "NeedPrestige": 33,
+      "NeedJadeBook": 3
+    },
+    {
+      "Level": 3,
+      "Name": "初出江湖",
+      "AdditionalAttack": 6,
+      "NeedPrestige": 80,
+      "NeedJadeBook": 5
+    },
+    {
+      "Level": 4,
+      "Name": "籍籍无名",
+      "AdditionalAttack": 8,
+      "NeedPrestige": 195,
+      "NeedJadeBook": 6
+    },
+    {
+      "Level": 5,
+      "Name": "江湖新秀",
+      "AdditionalAttack": 10,
+      "NeedPrestige": 421,
+      "NeedJadeBook": 8
+    },
+    {
+      "Level": 6,
+      "Name": "初显锋芒",
+      "AdditionalAttack": 12,
+      "NeedPrestige": 812,
+      "NeedJadeBook": 9
+    },
+    {
+      "Level": 7,
+      "Name": "略有所成",
+      "AdditionalAttack": 14,
+      "NeedPrestige": 1426,
+      "NeedJadeBook": 11
+    },
+    {
+      "Level": 8,
+      "Name": "薄有微名",
+      "AdditionalAttack": 16,
+      "NeedPrestige": 2332,
+      "NeedJadeBook": 12
+    },
+    {
+      "Level": 9,
+      "Name": "江湖侠少",
+      "AdditionalAttack": 18,
+      "NeedPrestige": 3606,
+      "NeedJadeBook": 14
+    },
+    {
+      "Level": 10,
+      "Name": "后起之秀",
+      "AdditionalAttack": 20,
+      "NeedPrestige": 5329,
+      "NeedJadeBook": 15
+    },
+    {
+      "Level": 11,
+      "Name": "武林俊杰",
+      "AdditionalAttack": 23,
+      "NeedPrestige": 7592,
+      "NeedJadeBook": 33
+    },
+    {
+      "Level": 12,
+      "Name": "声名鹊起",
+      "AdditionalAttack": 26,
+      "NeedPrestige": 10490,
+      "NeedJadeBook": 36
+    },
+    {
+      "Level": 13,
+      "Name": "锋芒毕露",
+      "AdditionalAttack": 29,
+      "NeedPrestige": 14127,
+      "NeedJadeBook": 39
+    },
+    {
+      "Level": 14,
+      "Name": "江湖大侠",
+      "AdditionalAttack": 32,
+      "NeedPrestige": 18612,
+      "NeedJadeBook": 42
+    },
+    {
+      "Level": 15,
+      "Name": "声名显赫",
+      "AdditionalAttack": 35,
+      "NeedPrestige": 24060,
+      "NeedJadeBook": 45
+    },
+    {
+      "Level": 16,
+      "Name": "名动一方",
+      "AdditionalAttack": 45,
+      "NeedPrestige": 30594,
+      "NeedJadeBook": 60
+    },
+    {
+      "Level": 17,
+      "Name": "侠名远播",
+      "AdditionalAttack": 60,
+      "NeedPrestige": 38340,
+      "NeedJadeBook": 75
+    },
+    {
+      "Level": 18,
+      "Name": "江湖豪侠",
+      "AdditionalAttack": 75,
+      "NeedPrestige": 47432,
+      "NeedJadeBook": 100
+    },
+    {
+      "Level": 19,
+      "Name": "德高望重",
+      "AdditionalAttack": 100,
+      "NeedPrestige": 58011,
+      "NeedJadeBook": 200
+    },
+    {
+      "Level": 20,
+      "Name": "威镇九州",
+      "AdditionalAttack": 150,
+      "NeedPrestige": 70220,
+      "NeedJadeBook": 400
+    }
+  ]
+}

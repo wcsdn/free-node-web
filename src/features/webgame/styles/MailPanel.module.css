@@ -1,246 +1,266 @@
-/**
- * 邮件面板样式
- */
-
+/* 邮件面板样式 */
 .container {
-  background: #1a1a2e;
-  min-height: 100vh;
+  width: 750px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
+  background: #E9E9E9;
+  border: 1px solid #B0B0B0;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  background: linear-gradient(180deg, #2a2a4a, #1a1a2e);
-  border-bottom: 1px solid #444;
+  padding: 10px 15px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #B0B0B0;
 }
 
 .header h2 {
-  color: #ffcc00;
   margin: 0;
-}
-
-.headerRight {
+  font-size: 16px;
+  color: #000;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
 }
 
 .unreadBadge {
-  background: #ff4444;
+  background: #f44336;
   color: #fff;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 12px;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 10px;
 }
 
 .closeBtn {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 28px;
+  font-size: 24px;
   cursor: pointer;
+  color: #666;
+  line-height: 1;
+  padding: 0 5px;
 }
 
-.mainContent {
+.closeBtn:hover {
+  color: #333;
+}
+
+.message {
+  margin: 10px 15px;
+  padding: 8px 12px;
+  background: #d4edda;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+  color: #155724;
+  font-size: 13px;
+}
+
+.typeFilter {
+  display: flex;
+  gap: 5px;
+  padding: 8px 15px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+}
+
+.typeBtn {
+  padding: 5px 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.typeBtn:hover {
+  background: #e9e9e9;
+}
+
+.typeBtn.active {
+  background: #1976d2;
+  color: #fff;
+  border-color: #1976d2;
+}
+
+.content {
   flex: 1;
   display: flex;
   overflow: hidden;
 }
 
-/* 左侧邮件列表 */
-.mailListPanel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #333;
-}
-
-.typeNav {
-  display: flex;
-  padding: 10px;
-  gap: 5px;
-  background: rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid #333;
-}
-
-.typeBtn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  background: #333;
-  border: 1px solid #444;
-  color: #aaa;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.typeBtn:hover {
-  background: #444;
-}
-
-.typeBtn.active {
-  background: #ffcc00;
-  color: #000;
-  border-color: #ffcc00;
-}
-
-.mailTitle {
-  display: flex;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border-bottom: 1px solid #333;
-  font-size: 12px;
-  color: #888;
-}
-
 .mailList {
-  flex: 1;
+  width: 280px;
+  border-right: 1px solid #ddd;
   overflow-y: auto;
 }
 
+.loading, .empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
 .mailItem {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #333;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .mailItem:hover {
-  background: rgba(255, 204, 0, 0.1);
-}
-
-.mailItem.selected {
-  background: rgba(255, 204, 0, 0.2);
-  border-left: 3px solid #ffcc00;
+  background: #f5f5f5;
 }
 
 .mailItem.unread {
-  background: rgba(255, 68, 68, 0.1);
+  background: #e3f2fd;
 }
 
-.colCheck { width: 30px; }
-.colIcon { width: 40px; text-align: center; }
-.colSender { width: 80px; color: #aaa; }
-.colTitle { flex: 1; color: #fff; }
-.colTime { width: 100px; color: #888; font-size: 12px; }
-
-.unreadDot {
-  color: #ff4444;
-  margin-right: 5px;
+.mailItem.unread:hover {
+  background: #bbdefb;
 }
 
-.loading, .empty, .noMailSelected {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  color: #888;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  border-top: 1px solid #333;
-}
-
-.pagination button {
-  padding: 5px 15px;
-  background: #333;
-  border: 1px solid #444;
+.mailItem.selected {
+  background: #1976d2;
   color: #fff;
-  border-radius: 3px;
-  cursor: pointer;
 }
 
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.mailItem.selected .mailDate,
+.mailItem.selected .mailFrom {
+  color: rgba(255,255,255,0.8);
 }
 
-/* 右侧邮件内容 */
-.mailContentPanel {
-  width: 400px;
+.mailInfo {
   display: flex;
-  flex-direction: column;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.mailHeader {
-  padding: 20px;
-  border-bottom: 1px solid #333;
-}
-
-.mailHeader h3 {
-  color: #ffcc00;
-  margin: 0 0 10px 0;
-}
-
-.mailMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 12px;
-  color: #888;
-}
-
-.mailBody {
-  flex: 1;
-  padding: 20px;
-  color: #fff;
-  line-height: 1.6;
-  overflow-y: auto;
-}
-
-.attachment {
-  margin-top: 20px;
-  padding: 15px;
-  background: rgba(255, 204, 0, 0.1);
-  border: 1px solid #ffcc00;
-  border-radius: 5px;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  margin-bottom: 4px;
 }
 
-.getAttachBtn {
-  padding: 5px 15px;
-  background: #ffcc00;
-  border: none;
-  border-radius: 3px;
-  color: #000;
-  cursor: pointer;
+.mailType {
   font-weight: bold;
 }
 
-.mailActions {
-  padding: 15px;
-  border-top: 1px solid #333;
-  display: flex;
-  gap: 10px;
-}
-
-.mailActions button {
+.mailFrom {
   flex: 1;
-  padding: 10px;
-  background: #333;
-  border: 1px solid #444;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mailActions button:hover {
-  background: #444;
+.mailDate {
+  color: #999;
+  font-size: 10px;
+}
+
+.mailTitle {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachmentIcon {
+  margin-left: 5px;
+}
+
+.mailDetail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.noSelection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.detailHeader .mailTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.detailInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.detailContent {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+.attachment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.claimBtn {
+  padding: 6px 15px;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.claimBtn:hover {
+  background: #45a049;
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.deleteBtn {
+  padding: 6px 15px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.deleteBtn:hover {
+  background: #da190b;
 }
