@@ -1,39 +1,113 @@
-{
-  "ResMap": [
-    {
-      "ResID": 1,
-      "Fame": 10,
-      "Gold": 100
-    },
-    {
-      "ResID": 2,
-      "Fame": 20,
-      "Gold": 200
-    },
-    {
-      "ResID": 3,
-      "Fame": 30,
-      "Gold": 400
-    },
-    {
-      "ResID": 4,
-      "Prestige": 20,
-      "Gold": 600
-    },
-    {
-      "ResID": 5,
-      "Prestige": 40,
-      "Gold": 1200
-    },
-    {
-      "ResID": 6,
-      "Prestige": 15,
-      "Gold": 200
-    },
-    {
-      "ResID": 7,
-      "Fame": 20,
-      "Gold": 200
-    }
-  ]
+/**
+ * 帮派效果配置
+ * 
+ * 数据来源: StaticDataAccess.GetOrgnizeEffectDate()
+ * 用途: 帮派系统 - 帮派等级效果加成
+ */
+
+export interface OrgEffect {
+  level: number;              // 帮派等级
+  memberShipNum: number;       // 成员数量上限
+  officialNum: number;        // 官职数量
+  additionalMoney: number;     // 金钱产量加成 (%)
+  additionalGrain: number;     // 粮草产量加成 (%)
+  additionalMen: number;       // 人口产量加成 (%)
+  needPearl: number;          // 升级需要珍珠
+  needCrystal: number;        // 升级需要水晶
+  needAgate: number;          // 升级需要玛瑙
+  needWBowlder: number;       // 升级需要白玉石
+  needBBowlder: number;       // 升级需要黑玉石
+  needJadeBook: number;       // 升级需要玉书
+}
+
+export const orgEffects: OrgEffect[] = [
+  {
+    level: 1,
+    memberShipNum: 20,
+    officialNum: 5,
+    additionalMoney: 5,
+    additionalGrain: 5,
+    additionalMen: 5,
+    needPearl: 0,
+    needCrystal: 0,
+    needAgate: 0,
+    needWBowlder: 0,
+    needBBowlder: 0,
+    needJadeBook: 0,
+  },
+  {
+    level: 2,
+    memberShipNum: 30,
+    officialNum: 7,
+    additionalMoney: 10,
+    additionalGrain: 10,
+    additionalMen: 10,
+    needPearl: 50,
+    needCrystal: 30,
+    needAgate: 20,
+    needWBowlder: 0,
+    needBBowlder: 0,
+    needJadeBook: 0,
+  },
+  {
+    level: 3,
+    memberShipNum: 40,
+    officialNum: 10,
+    additionalMoney: 15,
+    additionalGrain: 15,
+    additionalMen: 15,
+    needPearl: 100,
+    needCrystal: 60,
+    needAgate: 40,
+    needWBowlder: 20,
+    needBBowlder: 0,
+    needJadeBook: 0,
+  },
+  {
+    level: 4,
+    memberShipNum: 50,
+    officialNum: 12,
+    additionalMoney: 20,
+    additionalGrain: 20,
+    additionalMen: 20,
+    needPearl: 200,
+    needCrystal: 120,
+    needAgate: 80,
+    needWBowlder: 40,
+    needBBowlder: 20,
+    needJadeBook: 0,
+  },
+  {
+    level: 5,
+    memberShipNum: 60,
+    officialNum: 15,
+    additionalMoney: 25,
+    additionalGrain: 25,
+    additionalMen: 25,
+    needPearl: 400,
+    needCrystal: 240,
+    needAgate: 160,
+    needWBowlder: 80,
+    needBBowlder: 40,
+    needJadeBook: 10,
+  },
+];
+
+export const maxOrgLevel = orgEffects.length;
+
+/**
+ * 根据等级获取帮派效果
+ */
+export function getOrgEffectByLevel(level: number): OrgEffect | null {
+  if (level < 1 || level > maxOrgLevel) {
+    return null;
+  }
+  return orgEffects[level - 1];
+}
+
+/**
+ * 获取所有帮派效果
+ */
+export function getAllOrgEffects(): OrgEffect[] {
+  return orgEffects;
 }

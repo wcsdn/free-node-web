@@ -8,6 +8,24 @@ import { verifyWalletAuth } from '../utils/auth';
 import worldNpcs from '../config/world_npcs.json';
 import landforms from '../config/landforms.json';
 
+// 类型定义
+interface WorldNPC {
+  Pos: number;
+  Level: number;
+  Name: string;
+  PicIndex: number;
+}
+
+interface Landform {
+  Pos: number;
+  Type: number;
+  PicIndex: number;
+}
+
+// 重新定义，避免类型冲突
+const worldNpcsData = (worldNpcs as any).CityInfo || [];
+const landformsData = (landforms as any).Unit || [];
+
 const app = new Hono<{ Bindings: Env }>();
 
 function success(c: any, data: any) {
@@ -93,7 +111,7 @@ app.get('/area/:x/:y', async (c) => {
     ).all();
 
     // 获取范围内的NPC
-    const npcs = (worldNpcs as any[]).filter(npc => {
+    const npcs = (worldNpcsData).filter(npc => {
       const pos = npc.Pos || npc.pos || 0;
       const npcX = pos % 400;
       const npcY = Math.floor(pos / 400);
@@ -101,7 +119,7 @@ app.get('/area/:x/:y', async (c) => {
     });
 
     // 获取地形数据
-    const terrains = (landforms as any[]).filter(l => {
+    const terrains = (landformsData).filter(l => {
       const pos = l.Pos || l.pos || 0;
       const lx = pos % 400;
       const ly = Math.floor(pos / 400);
@@ -161,7 +179,7 @@ app.get('/position/:pos', async (c) => {
     }
 
     // 检查是否NPC
-    const npc = (worldNpcs as any[]).find(n => (n.Pos || n.pos) === pos);
+    const npc = (worldNpcsData).find(n => (n.Pos || n.pos) === pos);
     if (npc) {
       return success(c, {
         position: pos,
@@ -173,7 +191,7 @@ app.get('/position/:pos', async (c) => {
     }
 
     // 地形
-    const terrain = (landforms as any[]).find(l => (l.Pos || l.pos) === pos);
+    const terrain = (landformsData).find(l => (l.Pos || l.pos) === pos);
     if (terrain) {
       return success(c, {
         position: pos,
@@ -259,7 +277,7 @@ app.post('/explore', async (c) => {
     }
 
     // 获取地形
-    const terrain = (landforms as any[]).find(l => (l.Pos || l.pos) === targetPosition);
+    const terrain = (landformsData).find(l => (l.Pos || l.pos) === targetPosition);
 
     return success(c, {
       position: targetPosition,
@@ -417,7 +435,7 @@ app.post('/movement/cancel', async (c) => {
 app.get('/npcs', async (c) => {
   const { level } = c.req.query();
   
-  let npcs = worldNpcs as any[];
+  let npcs = (worldNpcsData);
   
   if (level) {
     const lvl = parseInt(level);

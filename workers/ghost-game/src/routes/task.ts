@@ -552,8 +552,8 @@ app.get('/stats', async (c) => {
     }
 
     const taskStates = taskProgress.task_states ? JSON.parse(taskProgress.task_states) : [];
-    const completedCount = taskStates.filter(s => s === TASK_STATUS.CLAIMED).length;
-    const inProgressCount = taskStates.filter(s => s === TASK_STATUS.IN_PROGRESS).length;
+    const completedCount = (taskStates as number[]).filter((s: number) => s === TASK_STATUS.CLAIMED).length;
+    const inProgressCount = (taskStates as number[]).filter((s: number) => s === TASK_STATUS.IN_PROGRESS).length;
 
     return success(c, {
       started: true,
