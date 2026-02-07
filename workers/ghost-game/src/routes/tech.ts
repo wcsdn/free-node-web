@@ -195,13 +195,15 @@ app.post('/research', async (c) => {
       }
     }
 
-    if (nextLevelData.DependTechnicID && nextLevelData.DependTechnicLevel) {
+    // 检查科技前置条件
+    const dependTechnicId = (nextLevelData as any).DependTechnicID;
+    if (dependTechnicId && dependTechnicId > 0) {
       const preTech: any = await db.prepare(`
         SELECT technic_level FROM technics WHERE user_name = ? AND static_index = ?
-      `).bind(walletAddress, (nextLevelData as any).DependTechnicID).first();
+      `).bind(walletAddress, dependTechnicId).first();
 
-      if (!preTech || preTech.technic_level < (nextLevelData as any).DependTechnicLevel) {
-        return error(c, `Need technic ${(nextLevelData as any).DependTechnicID} at level ${(nextLevelData as any).DependTechnicLevel}`);
+      if (!preTech || preTech.technic_level < 1) {
+        return error(c, `Need technic ${dependTechnicId} at level 1`);
       }
     }
 

@@ -40,6 +40,7 @@ import eventRoutes from './routes/event';
 import persistEffectRoutes from './routes/persist-effect';
 import festivalRoutes from './routes/festival';
 import mapRoutes from './routes/map';
+import cityInteriorRoutes from './routes/city-interior';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -98,6 +99,7 @@ app.route('/api/event', eventRoutes);
 app.route('/api/effect', persistEffectRoutes);
 app.route('/api/festival', festivalRoutes);
 app.route('/api/map', mapRoutes);
+app.route('/api/interior', cityInteriorRoutes);
 
 // 404 处理
 app.notFound((c) => {

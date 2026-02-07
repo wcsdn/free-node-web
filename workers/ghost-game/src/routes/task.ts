@@ -213,11 +213,11 @@ app.post('/start', async (c) => {
 
     if (existing) {
       // 获取下一个任务
-      let taskIds = existing.task_ids ? JSON.parse(existing.task_ids) : [];
-      let taskStates = existing.task_states ? JSON.parse(existing.task_states) : [];
+      const currentTaskIds = existing.task_ids ? JSON.parse(existing.task_ids) : [];
+      const currentTaskStates = existing.task_states ? JSON.parse(existing.task_states) : [];
 
       // 检查是否所有任务都完成
-      const allCompleted = taskStates.every(s => s >= TASK_STATUS.COMPLETED);
+      const allCompleted = (currentTaskStates as number[]).every((s: number) => s >= TASK_STATUS.COMPLETED);
       
       if (allCompleted) {
         // 进入下一章
@@ -227,6 +227,12 @@ app.post('/start', async (c) => {
         taskStates = [];
         taskProgress = [];
       } else {
+        // 继续当前章节
+        mainId = existing.main_id;
+        mainIndex = existing.main_index;
+        taskIds = [...currentTaskIds];
+        taskStates = [...currentTaskStates];
+        taskProgress = [...taskProgress];
         mainId = existing.main_id;
         mainIndex = existing.main_index;
         taskIds = taskIds;
