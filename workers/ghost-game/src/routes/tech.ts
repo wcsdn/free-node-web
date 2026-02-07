@@ -198,10 +198,10 @@ app.post('/research', async (c) => {
     if (nextLevelData.DependTechnicID && nextLevelData.DependTechnicLevel) {
       const preTech: any = await db.prepare(`
         SELECT technic_level FROM technics WHERE user_name = ? AND static_index = ?
-      `).bind(walletAddress, nextLevelData.DependTechnicID).first();
+      `).bind(walletAddress, (nextLevelData as any).DependTechnicID).first();
 
-      if (!preTech || preTech.technic_level < nextLevelData.DependTechnicLevel) {
-        return error(c, `Need technic ${nextLevelData.DependTechnicID} at level ${nextLevelData.DependTechnicLevel}`);
+      if (!preTech || preTech.technic_level < (nextLevelData as any).DependTechnicLevel) {
+        return error(c, `Need technic ${(nextLevelData as any).DependTechnicID} at level ${(nextLevelData as any).DependTechnicLevel}`);
       }
     }
 
