@@ -214,7 +214,7 @@ app.post('/batch-progress', async (c) => {
         (wallet_address, task_id, date, current_value, status, updated_at)
         VALUES (?, ?, ?, ?, ?, datetime('now'))
       `).bind(walletAddress, config.id, today, newValue, 
-        newValue >= targetValue ? TASK_STATUS.COMPLETED : TASK_STATUS.IN_PROGRESS).run());
+        newValue >= targetValue ? TASK_STATUS.COMPLETED : TASK_STATUS.IN_PROGRESS).run();
 
       results.push({
         task_key: update.task_key,

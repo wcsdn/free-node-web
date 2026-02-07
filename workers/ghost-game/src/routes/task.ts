@@ -213,8 +213,8 @@ app.post('/start', async (c) => {
 
     if (existing) {
       // 获取下一个任务
-      const taskIds = existing.task_ids ? JSON.parse(existing.task_ids) : [];
-      const taskStates = existing.task_states ? JSON.parse(existing.task_states) : [];
+      let taskIds = existing.task_ids ? JSON.parse(existing.task_ids) : [];
+      let taskStates = existing.task_states ? JSON.parse(existing.task_states) : [];
 
       // 检查是否所有任务都完成
       const allCompleted = taskStates.every(s => s >= TASK_STATUS.COMPLETED);

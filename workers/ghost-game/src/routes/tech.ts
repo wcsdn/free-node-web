@@ -195,13 +195,13 @@ app.post('/research', async (c) => {
       }
     }
 
-    if (nextLevelData.NeedTechnicID && nextLevelData.NeedTechnicLevel) {
+    if (nextLevelData.DependTechnicID && nextLevelData.DependTechnicLevel) {
       const preTech: any = await db.prepare(`
         SELECT technic_level FROM technics WHERE user_name = ? AND static_index = ?
-      `).bind(walletAddress, nextLevelData.NeedTechnicID).first();
+      `).bind(walletAddress, nextLevelData.DependTechnicID).first();
 
-      if (!preTech || preTech.technic_level < nextLevelData.NeedTechnicLevel) {
-        return error(c, `Need technic ${nextLevelData.NeedTechnicID} at level ${nextLevelData.NeedTechnicLevel}`);
+      if (!preTech || preTech.technic_level < nextLevelData.DependTechnicLevel) {
+        return error(c, `Need technic ${nextLevelData.DependTechnicID} at level ${nextLevelData.DependTechnicLevel}`);
       }
     }
 
