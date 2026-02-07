@@ -1,9 +1,13 @@
 /**
- * 战斗路由 - D1数据库版本
+ * 战斗路由 - 完整版 (使用 src/config/ 配置文件)
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
+import heroConfigs from '../config/heroes.json';
+import skillConfigs from '../config/skills.json';
+import battleDefense from '../config/battle_defense.json';
+import battleTerrains from '../config/battle_terrains.json';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -15,7 +19,17 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 根路径 - 获取战斗记录
+// 战斗配置
+const BATTLE_CONFIG = {
+  MAX_ROUNDS: 10,
+  BASE_DAMAGE: 100,
+  DAMAGE_VARIANCE: 0.2,
+  CRITICAL_RATE: 0.15,
+  CRITICAL_DAMAGE: 1.5,
+  EXP_BASE: 100,
+};
+
+// 获取战斗记录列表
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -25,8 +39,9 @@ app.get('/', async (c) => {
 
   try {
     const battles = await db.prepare(`
-      SELECT * FROM battles WHERE attacker_address = ? ORDER BY created_at DESC LIMIT 20
-    `).bind(walletAddress).all();
+      SELECT * FROM battles WHERE attacker_address = ? OR defender_address = ?
+      ORDER BY created_at DESC LIMIT 50
+    `).bind(walletAddress, walletAddress).all();
 
     return success(c, battles.results || []);
   } catch (err: any) {
@@ -34,40 +49,7 @@ app.get('/', async (c) => {
   }
 });
 
-// 发起战斗
-app.post('/attack', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { defender_address, battle_type } = await c.req.json();
-  if (!defender_address) return error(c, 'Missing defender_address');
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 模拟战斗结果
-    const win = Math.random() > 0.4;
-    const report = {
-      attacker: walletAddress.substring(0, 8),
-      defender: defender_address.substring(0, 8),
-      result: win ? 'victory' : 'defeat',
-      rounds: Math.floor(Math.random() * 5) + 1,
-      exp: win ? 50 : 10,
-    };
-
-    await db.prepare(`
-      INSERT INTO battles (attacker_address, defender_address, battle_type, result, report)
-      VALUES (?, ?, ?, ?, ?)
-    `).bind(walletAddress, defender_address, battle_type || 'pvp', win ? 'win' : 'loss', JSON.stringify(report)).run();
-
-    return success(c, { ...report, message: win ? 'Victory!' : 'Defeated' });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// 获取战斗报告
+// 获取战斗报告详情
 app.get('/:id', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -78,10 +60,14 @@ app.get('/:id', async (c) => {
 
   try {
     const battle = await db.prepare(`
-      SELECT * FROM battles WHERE id = ? AND attacker_address = ?
-    `).bind(battleId, walletAddress).first();
+      SELECT * FROM battles WHERE id = ? AND (attacker_address = ? OR defender_address = ?)
+    `).bind(battleId, walletAddress, walletAddress).first();
 
-    if (!battle) return error(c, 'Battle not found');
+    if (!battle) return error(c, 'Battle not found', 404);
+
+    if (battle.report && typeof battle.report === 'string') {
+      battle.report = JSON.parse(battle.report);
+    }
 
     return success(c, battle);
   } catch (err: any) {
@@ -99,19 +85,432 @@ app.get('/power', async (c) => {
 
   try {
     const heroes = await db.prepare(`
-      SELECT SUM(attack + defense + hp) as total FROM heroes WHERE wallet_address = ?
-    `).bind(walletAddress).first();
+      SELECT * FROM heroes WHERE wallet_address = ? AND state IN (0, 1)
+    `).bind(walletAddress).all();
 
-    const power = (heroes as any)?.total || 0;
+    let totalPower = 0;
+    const heroDetails: any[] = [];
 
-    return success(c, { 
-      power, 
-      heroCount: 0,
-      message: 'Battle power calculated' 
+    for (const hero of (heroes.results || [])) {
+      const portrait = (heroConfigs.Portrait || []).find((p: any) => p.Index === hero.config_id);
+      const ability = (heroConfigs.Ability || []).find((a: any) => a.Index === portrait?.AbilityIndex);
+      
+      if (ability) {
+        // 计算武将战力 (注意: Defence 是英式拼写)
+        const baseAttack = ability.Attack || 10;
+        const baseDefence = ability.Defence || 8;
+        const baseHp = (ability as any).MaxHp || (ability as any).MaxPrenticeNum || 100;
+        
+        const qualityBonus = 1 + ((hero as any).quality - 1) * 0.2;
+        const levelBonus = 1 + ((hero as any).level - 1) * 0.1;
+        
+        const attack = Math.floor(baseAttack * qualityBonus * levelBonus);
+        const defense = Math.floor(baseDefence * qualityBonus * levelBonus);
+        const hp = Math.floor(baseHp * qualityBonus * levelBonus);
+        
+        const power = Math.floor((attack + defense + hp / 10) * qualityBonus);
+        totalPower += power;
+        
+        heroDetails.push({
+          id: hero.id,
+          name: hero.name,
+          level: hero.level,
+          quality: hero.quality,
+          stats: { attack, defense, hp, maxHp: hp },
+          power,
+          portrait: portrait?.Icon || '',
+        });
+      }
+    }
+
+    return success(c, {
+      totalPower,
+      heroCount: heroDetails.length,
+      heroDetails,
+      message: `战斗力 ${totalPower}`,
     });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
+
+// 获取竞技场对手列表
+app.get('/arena/opponents', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const myPower = await calculatePower(db, walletAddress);
+    
+    const opponents = [];
+    const opponentNames = ['无名侠客', '江湖散人', '绿林好汉', '流浪剑客', '隐士高人'];
+    
+    for (let i = 0; i < 5; i++) {
+      const powerVariation = 0.7 + Math.random() * 0.6;
+      const opponentPower = Math.floor(myPower * powerVariation);
+      
+      opponents.push({
+        id: `arena_${i}_${Date.now()}`,
+        name: opponentNames[i],
+        power: opponentPower,
+        level: Math.floor(opponentPower / 50) + 1,
+        reward: Math.floor(opponentPower / 10),
+        winRate: calculateWinRate(myPower, opponentPower),
+      });
+    }
+
+    return success(c, {
+      myPower,
+      opponents,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 发起竞技场挑战
+app.post('/arena/fight', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { opponent_id, opponent_power, opponent_name } = await c.req.json();
+  if (!opponent_id) return error(c, 'Missing opponent_id');
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const heroes = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? AND state IN (0, 1) ORDER BY (attack + defense + hp) DESC LIMIT 3
+    `).bind(walletAddress).all();
+
+    if (!(heroes.results && heroes.results.length > 0)) {
+      return error(c, 'No heroes available for battle');
+    }
+
+    const myPower = await calculatePower(db, walletAddress);
+    const enemyPower = opponent_power || myPower;
+
+    // 计算胜率
+    const winRate = calculateWinRate(myPower, enemyPower);
+    const isWin = Math.random() < winRate;
+
+    // 生成战报
+    const rounds = generateBattleRounds(heroes.results, null, enemyPower, isWin);
+
+    // 奖励计算
+    let exp = 0;
+    let gold = 0;
+
+    if (isWin) {
+      exp = Math.floor(BATTLE_CONFIG.EXP_BASE * (1 + enemyPower / 1000));
+      gold = Math.floor(enemyPower / 100);
+    } else {
+      exp = Math.floor(BATTLE_CONFIG.EXP_BASE * 0.3);
+    }
+
+    // 记录战斗
+    const battleResult = await db.prepare(`
+      INSERT INTO battles (attacker_address, defender_address, battle_type, result, report)
+      VALUES (?, ?, 'arena', ?, ?)
+    `).bind(walletAddress, opponent_id, isWin ? 'win' : 'loss', JSON.stringify({
+      rounds,
+      myPower,
+      enemyPower,
+      exp,
+      gold,
+      opponentName: opponent_name || '未知',
+    })).run();
+
+    // 更新经验
+    if (exp > 0) {
+      await db.prepare(`
+        UPDATE characters SET exp = exp + ? WHERE wallet_address = ?
+      `).bind(exp, walletAddress).run();
+
+      for (const hero of (heroes.results || [])) {
+        await db.prepare(`
+          UPDATE heroes SET exp = exp + ? WHERE id = ?
+        `).bind(Math.floor(exp / 3), hero.id).run();
+      }
+    }
+
+    return success(c, {
+      battleId: battleResult.meta.last_row_id,
+      result: isWin ? 'win' : 'loss',
+      winRate,
+      rounds,
+      rewards: {
+        exp,
+        gold,
+        message: isWin ? `胜利！获得 ${exp} 经验和 ${gold} 金币` : `失败，获得 ${exp} 经验`,
+      },
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 发起 PVE 战斗
+app.post('/pve/fight', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { dungeon_id, stage_id } = await c.req.json();
+  if (!dungeon_id) return error(c, 'Missing dungeon_id');
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const heroes = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? AND state = 0
+    `).bind(walletAddress).all();
+
+    const myPower = await calculatePower(db, walletAddress);
+    
+    // 关卡难度
+    const stageMultiplier = (dungeon_id - 1) * 0.5 + (stage_id || 1) * 0.1;
+    const enemyPower = Math.floor(500 * stageMultiplier);
+    const enemyLevel = Math.floor(dungeon_id * 2 + (stage_id || 1));
+
+    // 胜率
+    const winRate = calculateWinRate(myPower, enemyPower);
+    const isWin = Math.random() < winRate;
+
+    // 生成战报
+    const rounds = generateBattleRounds(heroes.results, null, enemyPower, isWin);
+
+    // 奖励
+    let exp = 0;
+    let gold = 0;
+    let items: any[] = [];
+
+    if (isWin) {
+      exp = Math.floor(50 * stageMultiplier);
+      gold = Math.floor(100 * stageMultiplier);
+      
+      if (Math.random() < 0.3) {
+        items.push({ id: 1, name: '经验丹', type: 'consumable', count: 1 });
+      }
+    }
+
+    await db.prepare(`
+      INSERT INTO battles (attacker_address, defender_address, battle_type, result, report)
+      VALUES (?, ?, 'pve', ?, ?)
+    `).bind(walletAddress, `dungeon_${dungeon_id}_${stage_id}`, isWin ? 'win' : 'loss', JSON.stringify({
+      dungeonId: dungeon_id,
+      stageId: stage_id,
+      rounds,
+      myPower,
+      enemyPower,
+      enemyLevel,
+      exp,
+      gold,
+      items,
+    })).run();
+
+    if (exp > 0) {
+      await db.prepare(`
+        UPDATE characters SET exp = exp + ? WHERE wallet_address = ?
+      `).bind(exp, walletAddress).run();
+
+      for (const hero of (heroes.results || [])) {
+        await db.prepare(`
+          UPDATE heroes SET exp = exp + ? WHERE id = ?
+        `).bind(Math.floor(exp / 2), hero.id).run();
+      }
+    }
+
+    return success(c, {
+      result: isWin ? 'win' : 'loss',
+      dungeonId: dungeon_id,
+      stageId: stage_id,
+      winRate,
+      rounds,
+      rewards: {
+        exp,
+        gold,
+        items,
+        message: isWin ? `通关成功！` : `挑战失败`,
+      },
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 发起 PVP 战斗
+app.post('/pvp/fight', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { defender_address } = await c.req.json();
+  if (!defender_address) return error(c, 'Missing defender_address');
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const defender = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(defender_address).first();
+
+    if (!defender) return error(c, 'Defender not found');
+
+    const attackers = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? AND state = 0
+    `).bind(walletAddress).all();
+
+    const defenders = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? AND state = 1
+    `).bind(defender_address).all();
+
+    const attackerPower = await calculatePower(db, walletAddress);
+    const defenderPower = await calculatePower(db, defender_address);
+
+    const winRate = calculateWinRate(attackerPower, defenderPower);
+    const isWin = Math.random() < winRate;
+
+    const rounds = generateBattleRounds(
+      attackers.results, 
+      defenders.results, 
+      defenderPower, 
+      isWin
+    );
+
+    let exp = 0;
+    let gold = 0;
+
+    if (isWin) {
+      exp = Math.floor(BATTLE_CONFIG.EXP_BASE * (1 + defenderPower / 2000));
+      gold = Math.floor(defenderPower / 50);
+    } else {
+      exp = Math.floor(BATTLE_CONFIG.EXP_BASE * 0.5);
+    }
+
+    await db.prepare(`
+      INSERT INTO battles (attacker_address, defender_address, battle_type, result, report)
+      VALUES (?, ?, 'pvp', ?, ?)
+    `).bind(walletAddress, defender_address, isWin ? 'win' : 'loss', JSON.stringify({
+      rounds,
+      attackerPower,
+      defenderPower,
+      exp,
+      gold,
+    })).run();
+
+    if (exp > 0) {
+      await db.prepare(`
+        UPDATE characters SET exp = exp + ? WHERE wallet_address = ?
+      `).bind(exp, walletAddress).run();
+
+      for (const hero of (attackers.results || [])) {
+        await db.prepare(`
+          UPDATE heroes SET exp = exp + ? WHERE id = ?
+        `).bind(Math.floor(exp / 2), hero.id).run();
+      }
+    }
+
+    return success(c, {
+      result: isWin ? 'win' : 'loss',
+      defender: defender_address.substring(0, 8) + '...',
+      winRate,
+      rounds,
+      rewards: {
+        exp,
+        gold,
+        message: isWin ? `胜利！` : `战败`,
+      },
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 辅助函数：计算战斗力
+async function calculatePower(db: any, walletAddress: string): Promise<number> {
+  const heroes = await db.prepare(`
+    SELECT * FROM heroes WHERE wallet_address = ? AND state IN (0, 1)
+  `).bind(walletAddress).all();
+
+  let totalPower = 0;
+
+  for (const hero of (heroes.results || [])) {
+    const portrait = (heroConfigs.Portrait || []).find((p: any) => p.Index === hero.config_id);
+    const ability = (heroConfigs.Ability || []).find((a: any) => a.Index === portrait?.AbilityIndex);
+    
+    if (ability) {
+      const qualityBonus = 1 + ((hero as any).quality - 1) * 0.2;
+      const levelBonus = 1 + ((hero as any).level - 1) * 0.1;
+      const hp = (ability as any).MaxHp || (ability as any).MaxPrenticeNum || 100;
+      const power = Math.floor((ability.Attack + ability.Defence + hp / 10) * qualityBonus * levelBonus);
+      totalPower += power;
+    }
+  }
+
+  return totalPower;
+}
+
+// 辅助函数：计算胜率
+function calculateWinRate(attackerPower: number, defenderPower: number): number {
+  if (attackerPower === 0) return 0.3;
+  const ratio = attackerPower / defenderPower;
+  return Math.min(0.85, Math.max(0.15, 0.5 + (ratio - 1) * 0.3));
+}
+
+// 辅助函数：生成战斗回合
+function generateBattleRounds(
+  attackers: any[], 
+  defenders: any[] | null, 
+  enemyPower: number, 
+  win: boolean
+): any[] {
+  const rounds = [];
+  const maxRounds = BATTLE_CONFIG.MAX_ROUNDS;
+  let myTotalDamage = 0;
+  let enemyTotalDamage = 0;
+
+  for (let i = 0; i < maxRounds; i++) {
+    const isAttackerTurn = i % 2 === 0;
+    
+    if (isAttackerTurn) {
+      const damage = Math.floor(Math.random() * 30 + 20 + (attackers?.reduce((s: number, h: any) => s + h.attack, 0) || 100) * 0.1);
+      enemyTotalDamage += damage;
+      rounds.push({
+        round: i + 1,
+        attacker: '我方',
+        defender: '敌方',
+        damage,
+        description: `造成 ${damage} 点伤害`,
+      });
+    } else {
+      const damage = Math.floor(Math.random() * 25 + 15 + enemyPower * 0.05);
+      myTotalDamage += damage;
+      rounds.push({
+        round: i + 1,
+        attacker: '敌方',
+        defender: '我方',
+        damage,
+        description: `受到 ${damage} 点伤害`,
+      });
+    }
+
+    // 一方血量归零提前结束
+    if (enemyTotalDamage > enemyPower * 10) {
+      rounds.push({ round: i + 2, note: '敌方溃败' });
+      break;
+    }
+    if (myTotalDamage > (attackers?.reduce((s: number, h: any) => s + h.hp, 0) || 500)) {
+      rounds.push({ round: i + 2, note: '我方溃败' });
+      break;
+    }
+  }
+
+  return rounds;
+}
 
 export default app;

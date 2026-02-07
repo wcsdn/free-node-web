@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "skills": {
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1770355529296
+    },
+    "imap-smtp-email": {
+      "version": "0.0.2",
+      "installedAt": 1770355533392
+    },
+    "proactive-agent-1-2-4": {
+      "version": "1.0.0",
+      "installedAt": 1770355537920
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1770355541731
+    }
+  }
+}

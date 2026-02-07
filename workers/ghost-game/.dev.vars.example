@@ -1,0 +1,8 @@
+# JWT密钥
+JWT_SECRET=your-secret-key-change-in-production
+
+# 加密轮次
+SALT_ROUNDS=10
+
+# 环境
+ENVIRONMENT=development

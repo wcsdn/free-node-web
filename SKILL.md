@@ -184,6 +184,11 @@ export interface BuildingListResponse {
   };
 }
 ```
+### 配置相关!
+//
+// workers/ghost-game/src/config/*.json  是使用free-node-web/scripts/xml2json.py'导出的free-node-web/jx/Web/App_Data/CN/的配置文件
+//workers/ghost-game/src/routes/*.ts 文件中使用配置文件时要引入对的配置 而不是写一堆测试配置假数据
+
 
 ### 后端必须做字段映射!
 

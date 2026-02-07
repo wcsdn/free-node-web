@@ -36,6 +36,10 @@ import skillRoutes from './routes/skill';
 import techRoutes from './routes/tech';
 import activityRoutes from './routes/activity';
 import feishuRoutes from './routes/feishu';
+import eventRoutes from './routes/event';
+import persistEffectRoutes from './routes/persist-effect';
+import festivalRoutes from './routes/festival';
+import mapRoutes from './routes/map';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -90,6 +94,10 @@ app.route('/api/skill', skillRoutes);
 app.route('/api/tech', techRoutes);
 app.route('/api/activity', activityRoutes);
 app.route('/api/feishu', feishuRoutes);
+app.route('/api/event', eventRoutes);
+app.route('/api/effect', persistEffectRoutes);
+app.route('/api/festival', festivalRoutes);
+app.route('/api/map', mapRoutes);
 
 // 404 处理
 app.notFound((c) => {

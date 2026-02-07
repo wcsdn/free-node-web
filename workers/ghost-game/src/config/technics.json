@@ -1,0 +1,2996 @@
+[
+  {
+    "ID": 1,
+    "Name": "移山填海",
+    "DependPos": 1,
+    "DependBuildingID": 1,
+    "DependTechnicID": 0,
+    "DependArea": 290,
+    "Icon": "/2/f/1.gif",
+    "Des": "移山填海是一种提高村镇面积上限的技术，高级移山填海能够提供更高的村镇面积。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 1,
+        "EffValue": 300,
+        "CostMoney": 0,
+        "CostFood": 0,
+        "CostGold": 0,
+        "CostTime": 0,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 290
+      },
+      {
+        "Level": 2,
+        "EffType": 1,
+        "EffValue": 340,
+        "CostMoney": 150000,
+        "CostFood": 150000,
+        "CostGold": 0,
+        "CostTime": 44000,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 290
+      },
+      {
+        "Level": 3,
+        "EffType": 1,
+        "EffValue": 360,
+        "CostMoney": 160000,
+        "CostFood": 160000,
+        "CostGold": 5,
+        "CostTime": 47600,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 320
+      },
+      {
+        "Level": 4,
+        "EffType": 1,
+        "EffValue": 380,
+        "CostMoney": 170000,
+        "CostFood": 170000,
+        "CostGold": 10,
+        "CostTime": 51200,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 340
+      },
+      {
+        "Level": 5,
+        "EffType": 1,
+        "EffValue": 400,
+        "CostMoney": 180000,
+        "CostFood": 180000,
+        "CostGold": 15,
+        "CostTime": 54800,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 360
+      },
+      {
+        "Level": 6,
+        "EffType": 1,
+        "EffValue": 420,
+        "CostMoney": 190000,
+        "CostFood": 190000,
+        "CostGold": 20,
+        "CostTime": 58400,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 380
+      },
+      {
+        "Level": 7,
+        "EffType": 1,
+        "EffValue": 440,
+        "CostMoney": 200000,
+        "CostFood": 200000,
+        "CostGold": 25,
+        "CostTime": 62000,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 400
+      },
+      {
+        "Level": 8,
+        "EffType": 1,
+        "EffValue": 460,
+        "CostMoney": 210000,
+        "CostFood": 210000,
+        "CostGold": 30,
+        "CostTime": 65600,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 420
+      },
+      {
+        "Level": 9,
+        "EffType": 1,
+        "EffValue": 480,
+        "CostMoney": 220000,
+        "CostFood": 220000,
+        "CostGold": 35,
+        "CostTime": 69200,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 440
+      },
+      {
+        "Level": 10,
+        "EffType": 1,
+        "EffValue": 500,
+        "CostMoney": 230000,
+        "CostFood": 230000,
+        "CostGold": 40,
+        "CostTime": 72800,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 460
+      },
+      {
+        "Level": 11,
+        "EffType": 1,
+        "EffValue": 525,
+        "CostMoney": 300000,
+        "CostFood": 300000,
+        "CostTime": 85075,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 485
+      },
+      {
+        "Level": 12,
+        "EffType": 1,
+        "EffValue": 550,
+        "CostMoney": 320000,
+        "CostFood": 320000,
+        "CostTime": 91839,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 510
+      },
+      {
+        "Level": 13,
+        "EffType": 1,
+        "EffValue": 575,
+        "CostMoney": 340000,
+        "CostFood": 340000,
+        "CostTime": 99144,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 535
+      },
+      {
+        "Level": 14,
+        "EffType": 1,
+        "EffValue": 600,
+        "CostMoney": 360000,
+        "CostFood": 360000,
+        "CostTime": 107033,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 560
+      },
+      {
+        "Level": 15,
+        "EffType": 1,
+        "EffValue": 625,
+        "CostMoney": 380000,
+        "CostFood": 380000,
+        "CostTime": 115554,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 585
+      },
+      {
+        "Level": 16,
+        "EffType": 1,
+        "EffValue": 650,
+        "CostMoney": 400000,
+        "CostFood": 400000,
+        "CostTime": 124756,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 610
+      },
+      {
+        "Level": 17,
+        "EffType": 1,
+        "EffValue": 675,
+        "CostMoney": 420000,
+        "CostFood": 420000,
+        "CostTime": 134695,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 635
+      },
+      {
+        "Level": 18,
+        "EffType": 1,
+        "EffValue": 700,
+        "CostMoney": 440000,
+        "CostFood": 440000,
+        "CostTime": 145428,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 660
+      },
+      {
+        "Level": 19,
+        "EffType": 1,
+        "EffValue": 725,
+        "CostMoney": 460000,
+        "CostFood": 460000,
+        "CostTime": 157020,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 685
+      },
+      {
+        "Level": 20,
+        "EffType": 1,
+        "EffValue": 750,
+        "CostMoney": 480000,
+        "CostFood": 480000,
+        "CostTime": 169540,
+        "NeedBuildingID": 1,
+        "NeedBuildingLevel": 1,
+        "NeedArea": 710
+      }
+    ]
+  },
+  {
+    "ID": 2,
+    "Name": "土木技术",
+    "DependPos": 10,
+    "DependBuildingID": 10,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/2.gif",
+    "Des": "土木技术是一种提升聚义厅级别上限的技术。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 2,
+        "EffValue": 1,
+        "CostMoney": 21050,
+        "CostFood": 19760,
+        "CostTime": 22000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 2,
+        "EffType": 2,
+        "EffValue": 2,
+        "CostMoney": 30130,
+        "CostFood": 28295,
+        "CostTime": 25600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 3,
+        "EffType": 2,
+        "EffValue": 3,
+        "CostMoney": 42600,
+        "CostFood": 40030,
+        "CostTime": 29200,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 4,
+        "EffType": 2,
+        "EffValue": 4,
+        "CostMoney": 59765,
+        "CostFood": 56160,
+        "CostTime": 32800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 5,
+        "EffType": 2,
+        "EffValue": 5,
+        "CostMoney": 82500,
+        "CostFood": 77540,
+        "CostTime": 36400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 6,
+        "EffType": 2,
+        "EffValue": 6,
+        "CostMoney": 92400,
+        "CostFood": 88300,
+        "CostTime": 40000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 7,
+        "EffType": 2,
+        "EffValue": 7,
+        "CostMoney": 103400,
+        "CostFood": 100600,
+        "CostTime": 43600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 8,
+        "EffType": 2,
+        "EffValue": 8,
+        "CostMoney": 115800,
+        "CostFood": 114600,
+        "CostTime": 47200,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 9,
+        "EffType": 2,
+        "EffValue": 9,
+        "CostMoney": 129600,
+        "CostFood": 130600,
+        "CostTime": 50800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 10,
+        "EffType": 2,
+        "EffValue": 10,
+        "CostMoney": 145100,
+        "CostFood": 148800,
+        "CostTime": 54400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 11,
+        "EffType": 2,
+        "EffValue": 11,
+        "CostMoney": 162500,
+        "CostFood": 169600,
+        "CostTime": 58000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      },
+      {
+        "Level": 12,
+        "EffType": 2,
+        "EffValue": 12,
+        "CostMoney": 182000,
+        "CostFood": 193300,
+        "CostTime": 61600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      },
+      {
+        "Level": 13,
+        "EffType": 2,
+        "EffValue": 13,
+        "CostMoney": 203800,
+        "CostFood": 220300,
+        "CostTime": 65200,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      },
+      {
+        "Level": 14,
+        "EffType": 2,
+        "EffValue": 14,
+        "CostMoney": 228200,
+        "CostFood": 251100,
+        "CostTime": 68800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      },
+      {
+        "Level": 15,
+        "EffType": 2,
+        "EffValue": 15,
+        "CostMoney": 255500,
+        "CostFood": 286200,
+        "CostTime": 72400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 3,
+    "Name": "招贤纳士",
+    "DependPos": 10,
+    "DependBuildingID": 10,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/3.gif",
+    "Des": "招贤纳士能够提高村镇所雇佣的侠客数量上限。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 3,
+        "EffValue": 1,
+        "CostMoney": 1965,
+        "CostFood": 1820,
+        "CostTime": 8800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 3,
+        "EffValue": 2,
+        "CostMoney": 4300,
+        "CostFood": 3980,
+        "CostTime": 9160,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 3,
+        "EffValue": 3,
+        "CostMoney": 6370,
+        "CostFood": 5900,
+        "CostTime": 9520,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 3,
+        "EffValue": 4,
+        "CostMoney": 9420,
+        "CostFood": 8730,
+        "CostTime": 9880,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 3,
+        "EffValue": 5,
+        "CostMoney": 13950,
+        "CostFood": 12920,
+        "CostTime": 10240,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 3,
+        "EffValue": 6,
+        "CostMoney": 20650,
+        "CostFood": 19120,
+        "CostTime": 10600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 3,
+        "EffValue": 7,
+        "CostMoney": 30560,
+        "CostFood": 28300,
+        "CostTime": 10960,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 3,
+        "EffValue": 8,
+        "CostMoney": 45230,
+        "CostFood": 41890,
+        "CostTime": 11320,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 3,
+        "EffValue": 9,
+        "CostMoney": 66000,
+        "CostFood": 62000,
+        "CostTime": 11680,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 9
+      }
+    ]
+  },
+  {
+    "ID": 4,
+    "Name": "计量技术",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/4.gif",
+    "Des": "计量技术能够提高城防单位的数量上限，高级的计量技术能够提供更多的城防单位。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 4,
+        "EffValue": 5,
+        "CostMoney": 720,
+        "CostFood": 700,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 4,
+        "EffValue": 9,
+        "CostMoney": 1210,
+        "CostFood": 1180,
+        "CostTime": 2560,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 4,
+        "EffValue": 13,
+        "CostMoney": 1580,
+        "CostFood": 1530,
+        "CostTime": 2920,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 4,
+        "EffValue": 17,
+        "CostMoney": 2050,
+        "CostFood": 1990,
+        "CostTime": 3280,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 4,
+        "EffValue": 21,
+        "CostMoney": 2670,
+        "CostFood": 2590,
+        "CostTime": 3640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 4,
+        "EffValue": 24,
+        "CostMoney": 3470,
+        "CostFood": 3370,
+        "CostTime": 4000,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 4,
+        "EffValue": 27,
+        "CostMoney": 4510,
+        "CostFood": 4390,
+        "CostTime": 4360,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 4,
+        "EffValue": 30,
+        "CostMoney": 5870,
+        "CostFood": 5710,
+        "CostTime": 4720,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 4,
+        "EffValue": 33,
+        "CostMoney": 7630,
+        "CostFood": 7420,
+        "CostTime": 5080,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 4,
+        "EffValue": 36,
+        "CostMoney": 9900,
+        "CostFood": 9600,
+        "CostTime": 5440,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 4,
+        "EffValue": 38,
+        "CostMoney": 12900,
+        "CostFood": 12500,
+        "CostTime": 5800,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 4,
+        "EffValue": 40,
+        "CostMoney": 16700,
+        "CostFood": 16300,
+        "CostTime": 6160,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 4,
+        "EffValue": 42,
+        "CostMoney": 21800,
+        "CostFood": 21200,
+        "CostTime": 6520,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 4,
+        "EffValue": 44,
+        "CostMoney": 28300,
+        "CostFood": 27500,
+        "CostTime": 6880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 4,
+        "EffValue": 45,
+        "CostMoney": 36800,
+        "CostFood": 35800,
+        "CostTime": 7240,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 4,
+        "EffValue": 46,
+        "CostMoney": 47900,
+        "CostFood": 46500,
+        "CostTime": 7600,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 4,
+        "EffValue": 47,
+        "CostMoney": 62200,
+        "CostFood": 60500,
+        "CostTime": 7960,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 4,
+        "EffValue": 48,
+        "CostMoney": 80900,
+        "CostFood": 78700,
+        "CostTime": 8320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 4,
+        "EffValue": 49,
+        "CostMoney": 105200,
+        "CostFood": 102300,
+        "CostTime": 8680,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 4,
+        "EffValue": 50,
+        "CostMoney": 136800,
+        "CostFood": 133000,
+        "CostTime": 9040,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 5,
+    "Name": "城墙升级",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/5.gif",
+    "Des": "提升城墙等级，增加城墙耐久度。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 5,
+        "EffValue": 1,
+        "CostMoney": 300,
+        "CostFood": 280,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 5,
+        "EffValue": 2,
+        "CostMoney": 500,
+        "CostFood": 470,
+        "CostTime": 2590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 5,
+        "EffValue": 3,
+        "CostMoney": 650,
+        "CostFood": 610,
+        "CostTime": 3050,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 5,
+        "EffValue": 4,
+        "CostMoney": 850,
+        "CostFood": 790,
+        "CostTime": 3590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 5,
+        "EffValue": 5,
+        "CostMoney": 1110,
+        "CostFood": 1030,
+        "CostTime": 4230,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 5,
+        "EffValue": 6,
+        "CostMoney": 1440,
+        "CostFood": 1350,
+        "CostTime": 4990,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 5,
+        "EffValue": 7,
+        "CostMoney": 1880,
+        "CostFood": 1750,
+        "CostTime": 5880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 5,
+        "EffValue": 8,
+        "CostMoney": 2440,
+        "CostFood": 2280,
+        "CostTime": 6930,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 5,
+        "EffValue": 9,
+        "CostMoney": 3180,
+        "CostFood": 2960,
+        "CostTime": 8170,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 5,
+        "EffValue": 10,
+        "CostMoney": 4100,
+        "CostFood": 3800,
+        "CostTime": 9640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 5,
+        "EffValue": 11,
+        "CostMoney": 5300,
+        "CostFood": 5000,
+        "CostTime": 11370,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 5,
+        "EffValue": 12,
+        "CostMoney": 6900,
+        "CostFood": 6500,
+        "CostTime": 13410,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 5,
+        "EffValue": 13,
+        "CostMoney": 9000,
+        "CostFood": 8400,
+        "CostTime": 15820,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 5,
+        "EffValue": 14,
+        "CostMoney": 11800,
+        "CostFood": 11000,
+        "CostTime": 18660,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 5,
+        "EffValue": 15,
+        "CostMoney": 15300,
+        "CostFood": 14300,
+        "CostTime": 22010,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 5,
+        "EffValue": 16,
+        "CostMoney": 19900,
+        "CostFood": 18600,
+        "CostTime": 25970,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 5,
+        "EffValue": 17,
+        "CostMoney": 25900,
+        "CostFood": 24200,
+        "CostTime": 30640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 5,
+        "EffValue": 18,
+        "CostMoney": 33700,
+        "CostFood": 31400,
+        "CostTime": 36150,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 5,
+        "EffValue": 19,
+        "CostMoney": 43800,
+        "CostFood": 40900,
+        "CostTime": 42650,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 5,
+        "EffValue": 20,
+        "CostMoney": 57000,
+        "CostFood": 53200,
+        "CostTime": 50320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 6,
+    "Name": "箭塔升级",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/6.gif",
+    "Des": "提升箭塔等级，增加箭塔攻击力。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 6,
+        "EffValue": 1,
+        "CostMoney": 360,
+        "CostFood": 240,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 6,
+        "EffValue": 2,
+        "CostMoney": 580,
+        "CostFood": 380,
+        "CostTime": 2590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 6,
+        "EffValue": 3,
+        "CostMoney": 730,
+        "CostFood": 490,
+        "CostTime": 3050,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 6,
+        "EffValue": 4,
+        "CostMoney": 930,
+        "CostFood": 620,
+        "CostTime": 3590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 6,
+        "EffValue": 5,
+        "CostMoney": 1180,
+        "CostFood": 790,
+        "CostTime": 4230,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 6,
+        "EffValue": 6,
+        "CostMoney": 1510,
+        "CostFood": 1000,
+        "CostTime": 4990,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 6,
+        "EffValue": 7,
+        "CostMoney": 1910,
+        "CostFood": 1270,
+        "CostTime": 5880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 6,
+        "EffValue": 8,
+        "CostMoney": 2430,
+        "CostFood": 1620,
+        "CostTime": 6930,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 6,
+        "EffValue": 9,
+        "CostMoney": 3090,
+        "CostFood": 2060,
+        "CostTime": 8170,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 6,
+        "EffValue": 10,
+        "CostMoney": 3900,
+        "CostFood": 2600,
+        "CostTime": 9640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 6,
+        "EffValue": 11,
+        "CostMoney": 4900,
+        "CostFood": 3300,
+        "CostTime": 11370,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 6,
+        "EffValue": 12,
+        "CostMoney": 6300,
+        "CostFood": 4200,
+        "CostTime": 13410,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 6,
+        "EffValue": 13,
+        "CostMoney": 8000,
+        "CostFood": 5300,
+        "CostTime": 15820,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 6,
+        "EffValue": 14,
+        "CostMoney": 10200,
+        "CostFood": 6800,
+        "CostTime": 18660,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 6,
+        "EffValue": 15,
+        "CostMoney": 12900,
+        "CostFood": 8600,
+        "CostTime": 22010,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 6,
+        "EffValue": 16,
+        "CostMoney": 16400,
+        "CostFood": 10900,
+        "CostTime": 25970,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 6,
+        "EffValue": 17,
+        "CostMoney": 20900,
+        "CostFood": 13900,
+        "CostTime": 30640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 6,
+        "EffValue": 18,
+        "CostMoney": 26500,
+        "CostFood": 17700,
+        "CostTime": 36150,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 6,
+        "EffValue": 19,
+        "CostMoney": 33700,
+        "CostFood": 22500,
+        "CostTime": 42650,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 6,
+        "EffValue": 20,
+        "CostMoney": 42800,
+        "CostFood": 28500,
+        "CostTime": 50320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 7,
+    "Name": "陷阱升级",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/7.gif",
+    "Des": "提升陷阱等级，增加陷阱伤害值。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 7,
+        "EffValue": 1,
+        "CostMoney": 260,
+        "CostFood": 340,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 7,
+        "EffValue": 2,
+        "CostMoney": 410,
+        "CostFood": 540,
+        "CostTime": 2590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 7,
+        "EffValue": 3,
+        "CostMoney": 530,
+        "CostFood": 690,
+        "CostTime": 3050,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 7,
+        "EffValue": 4,
+        "CostMoney": 670,
+        "CostFood": 880,
+        "CostTime": 3590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 7,
+        "EffValue": 5,
+        "CostMoney": 850,
+        "CostFood": 1120,
+        "CostTime": 4230,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 7,
+        "EffValue": 6,
+        "CostMoney": 1090,
+        "CostFood": 1420,
+        "CostTime": 4990,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 7,
+        "EffValue": 7,
+        "CostMoney": 1380,
+        "CostFood": 1810,
+        "CostTime": 5880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 7,
+        "EffValue": 8,
+        "CostMoney": 1750,
+        "CostFood": 2300,
+        "CostTime": 6930,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 7,
+        "EffValue": 9,
+        "CostMoney": 2230,
+        "CostFood": 2920,
+        "CostTime": 8170,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 7,
+        "EffValue": 10,
+        "CostMoney": 2800,
+        "CostFood": 3700,
+        "CostTime": 9640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 7,
+        "EffValue": 11,
+        "CostMoney": 3600,
+        "CostFood": 4700,
+        "CostTime": 11370,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 7,
+        "EffValue": 12,
+        "CostMoney": 4500,
+        "CostFood": 5900,
+        "CostTime": 13410,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 7,
+        "EffValue": 13,
+        "CostMoney": 5800,
+        "CostFood": 7600,
+        "CostTime": 15820,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 7,
+        "EffValue": 14,
+        "CostMoney": 7300,
+        "CostFood": 9600,
+        "CostTime": 18660,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 7,
+        "EffValue": 15,
+        "CostMoney": 9300,
+        "CostFood": 12200,
+        "CostTime": 22010,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 7,
+        "EffValue": 16,
+        "CostMoney": 11900,
+        "CostFood": 15500,
+        "CostTime": 25970,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 7,
+        "EffValue": 17,
+        "CostMoney": 15100,
+        "CostFood": 19700,
+        "CostTime": 30640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 7,
+        "EffValue": 18,
+        "CostMoney": 19200,
+        "CostFood": 25100,
+        "CostTime": 36150,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 7,
+        "EffValue": 19,
+        "CostMoney": 24300,
+        "CostFood": 31800,
+        "CostTime": 42650,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 7,
+        "EffValue": 20,
+        "CostMoney": 30900,
+        "CostFood": 40500,
+        "CostTime": 50320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 8,
+    "Name": "滚木升级",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/8.gif",
+    "Des": "提升滚木等级，增加滚木伤害值。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 8,
+        "EffValue": 1,
+        "CostMoney": 280,
+        "CostFood": 350,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 8,
+        "EffValue": 2,
+        "CostMoney": 450,
+        "CostFood": 560,
+        "CostTime": 2590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 8,
+        "EffValue": 3,
+        "CostMoney": 570,
+        "CostFood": 710,
+        "CostTime": 3050,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 8,
+        "EffValue": 4,
+        "CostMoney": 720,
+        "CostFood": 910,
+        "CostTime": 3590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 8,
+        "EffValue": 5,
+        "CostMoney": 920,
+        "CostFood": 1150,
+        "CostTime": 4230,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 8,
+        "EffValue": 6,
+        "CostMoney": 1170,
+        "CostFood": 1460,
+        "CostTime": 4990,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 8,
+        "EffValue": 7,
+        "CostMoney": 1490,
+        "CostFood": 1860,
+        "CostTime": 5880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 8,
+        "EffValue": 8,
+        "CostMoney": 1890,
+        "CostFood": 2360,
+        "CostTime": 6930,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 8,
+        "EffValue": 9,
+        "CostMoney": 2400,
+        "CostFood": 3000,
+        "CostTime": 8170,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 8,
+        "EffValue": 10,
+        "CostMoney": 3000,
+        "CostFood": 3800,
+        "CostTime": 9640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 8,
+        "EffValue": 11,
+        "CostMoney": 3800,
+        "CostFood": 4800,
+        "CostTime": 11370,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 8,
+        "EffValue": 12,
+        "CostMoney": 4900,
+        "CostFood": 6100,
+        "CostTime": 13410,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 8,
+        "EffValue": 13,
+        "CostMoney": 6200,
+        "CostFood": 7800,
+        "CostTime": 15820,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 8,
+        "EffValue": 14,
+        "CostMoney": 7900,
+        "CostFood": 9900,
+        "CostTime": 18660,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 8,
+        "EffValue": 15,
+        "CostMoney": 10000,
+        "CostFood": 12600,
+        "CostTime": 22010,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 8,
+        "EffValue": 16,
+        "CostMoney": 12800,
+        "CostFood": 16000,
+        "CostTime": 25970,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 8,
+        "EffValue": 17,
+        "CostMoney": 16200,
+        "CostFood": 20300,
+        "CostTime": 30640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 8,
+        "EffValue": 18,
+        "CostMoney": 20600,
+        "CostFood": 25800,
+        "CostTime": 36150,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 8,
+        "EffValue": 19,
+        "CostMoney": 26200,
+        "CostFood": 32800,
+        "CostTime": 42650,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 8,
+        "EffValue": 20,
+        "CostMoney": 33300,
+        "CostFood": 41700,
+        "CostTime": 50320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 9,
+    "Name": "礌石升级",
+    "DependPos": 9,
+    "DependBuildingID": 9,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/9.gif",
+    "Des": "提升礌石等级，增加礌石伤害值。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 9,
+        "EffValue": 1,
+        "CostMoney": 300,
+        "CostFood": 350,
+        "CostTime": 2200,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 9,
+        "EffValue": 2,
+        "CostMoney": 480,
+        "CostFood": 560,
+        "CostTime": 2590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 9,
+        "EffValue": 3,
+        "CostMoney": 610,
+        "CostFood": 710,
+        "CostTime": 3050,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 9,
+        "EffValue": 4,
+        "CostMoney": 780,
+        "CostFood": 910,
+        "CostTime": 3590,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 9,
+        "EffValue": 5,
+        "CostMoney": 990,
+        "CostFood": 1150,
+        "CostTime": 4230,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 9,
+        "EffValue": 6,
+        "CostMoney": 1250,
+        "CostFood": 1460,
+        "CostTime": 4990,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 9,
+        "EffValue": 7,
+        "CostMoney": 1590,
+        "CostFood": 1860,
+        "CostTime": 5880,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 9,
+        "EffValue": 8,
+        "CostMoney": 2030,
+        "CostFood": 2360,
+        "CostTime": 6930,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 9,
+        "EffValue": 9,
+        "CostMoney": 2570,
+        "CostFood": 3000,
+        "CostTime": 8170,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 9,
+        "EffValue": 10,
+        "CostMoney": 3200,
+        "CostFood": 3800,
+        "CostTime": 9640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 9,
+        "EffValue": 11,
+        "CostMoney": 4100,
+        "CostFood": 4800,
+        "CostTime": 11370,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 9,
+        "EffValue": 12,
+        "CostMoney": 5200,
+        "CostFood": 6100,
+        "CostTime": 13410,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 9,
+        "EffValue": 13,
+        "CostMoney": 6700,
+        "CostFood": 7800,
+        "CostTime": 15820,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 9,
+        "EffValue": 14,
+        "CostMoney": 8500,
+        "CostFood": 9900,
+        "CostTime": 18660,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 9,
+        "EffValue": 15,
+        "CostMoney": 10800,
+        "CostFood": 12600,
+        "CostTime": 22010,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 9,
+        "EffValue": 16,
+        "CostMoney": 13700,
+        "CostFood": 16000,
+        "CostTime": 25970,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 9,
+        "EffValue": 17,
+        "CostMoney": 17400,
+        "CostFood": 20300,
+        "CostTime": 30640,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 9,
+        "EffValue": 18,
+        "CostMoney": 22100,
+        "CostFood": 25800,
+        "CostTime": 36150,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 9,
+        "EffValue": 19,
+        "CostMoney": 28100,
+        "CostFood": 32800,
+        "CostTime": 42650,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 9,
+        "EffValue": 20,
+        "CostMoney": 35700,
+        "CostFood": 41700,
+        "CostTime": 50320,
+        "NeedBuildingID": 9,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 10,
+    "Name": "厉兵秣马",
+    "DependPos": 11,
+    "DependBuildingID": 11,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/10.gif",
+    "Des": "厉兵秣马可以缩短村镇中的侠客招募弟子的时间。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 10,
+        "EffValue": 97,
+        "CostMoney": 420,
+        "CostFood": 380,
+        "CostTime": 2930,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 10,
+        "EffValue": 94,
+        "CostMoney": 670,
+        "CostFood": 610,
+        "CostTime": 3290,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 10,
+        "EffValue": 91,
+        "CostMoney": 860,
+        "CostFood": 770,
+        "CostTime": 3650,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 10,
+        "EffValue": 88,
+        "CostMoney": 1090,
+        "CostFood": 980,
+        "CostTime": 4010,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 10,
+        "EffValue": 85,
+        "CostMoney": 1380,
+        "CostFood": 1250,
+        "CostTime": 4370,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 10,
+        "EffValue": 82,
+        "CostMoney": 1760,
+        "CostFood": 1590,
+        "CostTime": 4730,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 10,
+        "EffValue": 79,
+        "CostMoney": 2230,
+        "CostFood": 2020,
+        "CostTime": 5090,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 10,
+        "EffValue": 76,
+        "CostMoney": 2840,
+        "CostFood": 2570,
+        "CostTime": 5450,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 10,
+        "EffValue": 73,
+        "CostMoney": 3600,
+        "CostFood": 3260,
+        "CostTime": 5810,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 10,
+        "EffValue": 70,
+        "CostMoney": 4500,
+        "CostFood": 4100,
+        "CostTime": 6170,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 10,
+        "EffValue": 68,
+        "CostMoney": 5800,
+        "CostFood": 5200,
+        "CostTime": 6530,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 10,
+        "EffValue": 66,
+        "CostMoney": 7300,
+        "CostFood": 6600,
+        "CostTime": 6890,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 10,
+        "EffValue": 64,
+        "CostMoney": 9300,
+        "CostFood": 8400,
+        "CostTime": 7250,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 10,
+        "EffValue": 62,
+        "CostMoney": 11900,
+        "CostFood": 10700,
+        "CostTime": 7610,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 10,
+        "EffValue": 60,
+        "CostMoney": 15100,
+        "CostFood": 13700,
+        "CostTime": 7970,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 10,
+        "EffValue": 58,
+        "CostMoney": 19200,
+        "CostFood": 17400,
+        "CostTime": 8330,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 10,
+        "EffValue": 56,
+        "CostMoney": 24400,
+        "CostFood": 22100,
+        "CostTime": 8690,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 10,
+        "EffValue": 54,
+        "CostMoney": 31000,
+        "CostFood": 28000,
+        "CostTime": 9050,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 10,
+        "EffValue": 52,
+        "CostMoney": 39400,
+        "CostFood": 35600,
+        "CostTime": 9410,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 10,
+        "EffValue": 50,
+        "CostMoney": 50000,
+        "CostFood": 45200,
+        "CostTime": 9770,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 11,
+    "Name": "犒劳三军",
+    "DependPos": 11,
+    "DependBuildingID": 11,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/11.gif",
+    "Des": "犒劳三军可以增加村镇中侠客训练弟子的效果。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 11,
+        "EffValue": 2,
+        "CostMoney": 580,
+        "CostFood": 420,
+        "CostTime": 4400,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 11,
+        "EffValue": 5,
+        "CostMoney": 930,
+        "CostFood": 670,
+        "CostTime": 5600,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 11,
+        "EffValue": 8,
+        "CostMoney": 1180,
+        "CostFood": 860,
+        "CostTime": 6800,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 11,
+        "EffValue": 11,
+        "CostMoney": 1500,
+        "CostFood": 1090,
+        "CostTime": 8000,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 11,
+        "EffValue": 14,
+        "CostMoney": 1910,
+        "CostFood": 1380,
+        "CostTime": 9200,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 11,
+        "EffValue": 16,
+        "CostMoney": 2430,
+        "CostFood": 1760,
+        "CostTime": 10400,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 11,
+        "EffValue": 19,
+        "CostMoney": 3090,
+        "CostFood": 2230,
+        "CostTime": 11600,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 11,
+        "EffValue": 22,
+        "CostMoney": 3920,
+        "CostFood": 2840,
+        "CostTime": 12800,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 11,
+        "EffValue": 25,
+        "CostMoney": 4980,
+        "CostFood": 3600,
+        "CostTime": 14000,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 11,
+        "EffValue": 28,
+        "CostMoney": 6300,
+        "CostFood": 4500,
+        "CostTime": 15200,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 11,
+        "EffValue": 31,
+        "CostMoney": 8000,
+        "CostFood": 5800,
+        "CostTime": 16400,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 11,
+        "EffValue": 36,
+        "CostMoney": 10200,
+        "CostFood": 7300,
+        "CostTime": 17600,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 11,
+        "EffValue": 41,
+        "CostMoney": 12900,
+        "CostFood": 9300,
+        "CostTime": 18800,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 11,
+        "EffValue": 46,
+        "CostMoney": 16400,
+        "CostFood": 11900,
+        "CostTime": 20000,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 11,
+        "EffValue": 51,
+        "CostMoney": 20900,
+        "CostFood": 15100,
+        "CostTime": 21200,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 11,
+        "EffValue": 56,
+        "CostMoney": 26500,
+        "CostFood": 19200,
+        "CostTime": 22400,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 11,
+        "EffValue": 61,
+        "CostMoney": 33700,
+        "CostFood": 24400,
+        "CostTime": 23600,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 11,
+        "EffValue": 66,
+        "CostMoney": 42800,
+        "CostFood": 31000,
+        "CostTime": 24800,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 11,
+        "EffValue": 71,
+        "CostMoney": 54400,
+        "CostFood": 39400,
+        "CostTime": 26000,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 11,
+        "EffValue": 86,
+        "CostMoney": 69100,
+        "CostFood": 50000,
+        "CostTime": 27200,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 12,
+    "Name": "枕戈待旦",
+    "DependPos": 11,
+    "DependBuildingID": 11,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/12.gif",
+    "Des": "枕戈待旦可以缩短村镇中侠客训练弟子的时间。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 12,
+        "EffValue": 97,
+        "CostMoney": 440,
+        "CostFood": 360,
+        "CostTime": 3140,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 12,
+        "EffValue": 94,
+        "CostMoney": 700,
+        "CostFood": 580,
+        "CostTime": 3500,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 12,
+        "EffValue": 91,
+        "CostMoney": 900,
+        "CostFood": 730,
+        "CostTime": 3860,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 12,
+        "EffValue": 88,
+        "CostMoney": 1140,
+        "CostFood": 930,
+        "CostTime": 4220,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 12,
+        "EffValue": 85,
+        "CostMoney": 1450,
+        "CostFood": 1180,
+        "CostTime": 4580,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 12,
+        "EffValue": 82,
+        "CostMoney": 1840,
+        "CostFood": 1510,
+        "CostTime": 4940,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 12,
+        "EffValue": 79,
+        "CostMoney": 2340,
+        "CostFood": 1910,
+        "CostTime": 5300,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 12,
+        "EffValue": 76,
+        "CostMoney": 2970,
+        "CostFood": 2430,
+        "CostTime": 5660,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 12,
+        "EffValue": 73,
+        "CostMoney": 3780,
+        "CostFood": 3090,
+        "CostTime": 6020,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 9
+      },
+      {
+        "Level": 10,
+        "EffType": 12,
+        "EffValue": 70,
+        "CostMoney": 4800,
+        "CostFood": 3900,
+        "CostTime": 6380,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 12,
+        "EffValue": 68,
+        "CostMoney": 6000,
+        "CostFood": 4900,
+        "CostTime": 6740,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 12,
+        "EffValue": 66,
+        "CostMoney": 7700,
+        "CostFood": 6300,
+        "CostTime": 7100,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 12,
+        "EffValue": 64,
+        "CostMoney": 9800,
+        "CostFood": 8000,
+        "CostTime": 7460,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 12,
+        "EffValue": 62,
+        "CostMoney": 12400,
+        "CostFood": 10200,
+        "CostTime": 7820,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 12,
+        "EffValue": 60,
+        "CostMoney": 15800,
+        "CostFood": 12900,
+        "CostTime": 8180,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 12,
+        "EffValue": 58,
+        "CostMoney": 20100,
+        "CostFood": 16400,
+        "CostTime": 8540,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 12,
+        "EffValue": 56,
+        "CostMoney": 25500,
+        "CostFood": 20900,
+        "CostTime": 8900,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 12,
+        "EffValue": 54,
+        "CostMoney": 32500,
+        "CostFood": 26500,
+        "CostTime": 9260,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 12,
+        "EffValue": 52,
+        "CostMoney": 41200,
+        "CostFood": 33700,
+        "CostTime": 9620,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 12,
+        "EffValue": 50,
+        "CostMoney": 52400,
+        "CostFood": 42800,
+        "CostTime": 9980,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 13,
+    "Name": "仓库扩容",
+    "DependPos": 10,
+    "DependBuildingID": 10,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/13.gif",
+    "Des": "仓库扩容可以增加村镇中的物品储存数量。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 13,
+        "EffValue": 50,
+        "CostMoney": 500,
+        "CostFood": 500,
+        "CostTime": 4400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 1
+      },
+      {
+        "Level": 2,
+        "EffType": 13,
+        "EffValue": 52,
+        "CostMoney": 1000,
+        "CostFood": 1000,
+        "CostTime": 5600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 2
+      },
+      {
+        "Level": 3,
+        "EffType": 13,
+        "EffValue": 54,
+        "CostMoney": 1500,
+        "CostFood": 1500,
+        "CostTime": 6800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 3
+      },
+      {
+        "Level": 4,
+        "EffType": 13,
+        "EffValue": 56,
+        "CostMoney": 2000,
+        "CostFood": 2000,
+        "CostTime": 8000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 4
+      },
+      {
+        "Level": 5,
+        "EffType": 13,
+        "EffValue": 58,
+        "CostMoney": 2500,
+        "CostFood": 2500,
+        "CostTime": 9200,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 5
+      },
+      {
+        "Level": 6,
+        "EffType": 13,
+        "EffValue": 60,
+        "CostMoney": 3000,
+        "CostFood": 3000,
+        "CostTime": 10400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 6
+      },
+      {
+        "Level": 7,
+        "EffType": 13,
+        "EffValue": 62,
+        "CostMoney": 3500,
+        "CostFood": 3500,
+        "CostTime": 11600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 7
+      },
+      {
+        "Level": 8,
+        "EffType": 13,
+        "EffValue": 64,
+        "CostMoney": 4000,
+        "CostFood": 4000,
+        "CostTime": 12800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 8
+      },
+      {
+        "Level": 9,
+        "EffType": 13,
+        "EffValue": 66,
+        "CostMoney": 4500,
+        "CostFood": 4500,
+        "CostTime": 14000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 10,
+        "EffType": 13,
+        "EffValue": 70,
+        "CostMoney": 5000,
+        "CostFood": 5000,
+        "CostTime": 15200,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 11,
+        "EffType": 13,
+        "EffValue": 76,
+        "CostMoney": 31000,
+        "CostFood": 31000,
+        "CostGold": 5,
+        "CostTime": 16400,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 12,
+        "EffType": 13,
+        "EffValue": 84,
+        "CostMoney": 48000,
+        "CostFood": 48000,
+        "CostGold": 10,
+        "CostTime": 17600,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 13,
+        "EffType": 13,
+        "EffValue": 92,
+        "CostMoney": 76000,
+        "CostFood": 76000,
+        "CostGold": 15,
+        "CostTime": 18800,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 14,
+        "EffType": 13,
+        "EffValue": 100,
+        "CostMoney": 114000,
+        "CostFood": 114000,
+        "CostGold": 20,
+        "CostTime": 20000,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 14,
+    "Name": "器械应用",
+    "DependPos": 10,
+    "DependBuildingID": 10,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/14.gif",
+    "Des": "器械应用能有效解放劳动力，缩短村镇中建筑物的建造时间。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 14,
+        "EffValue": 100,
+        "CostMoney": 20588,
+        "CostFood": 15045,
+        "CostTime": 14722,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 2,
+        "EffType": 14,
+        "EffValue": 99,
+        "CostMoney": 38351,
+        "CostFood": 32790,
+        "CostTime": 16306,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 3,
+        "EffType": 14,
+        "EffValue": 98,
+        "CostMoney": 56291,
+        "CostFood": 50535,
+        "CostTime": 18064,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 4,
+        "EffType": 14,
+        "EffValue": 97,
+        "CostMoney": 74411,
+        "CostFood": 68280,
+        "CostTime": 20016,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 5,
+        "EffType": 14,
+        "EffValue": 96,
+        "CostMoney": 92709,
+        "CostFood": 86025,
+        "CostTime": 22182,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 6,
+        "EffType": 14,
+        "EffValue": 95,
+        "CostMoney": 111190,
+        "CostFood": 103770,
+        "CostTime": 24587,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 7,
+        "EffType": 14,
+        "EffValue": 94,
+        "CostMoney": 129852,
+        "CostFood": 121515,
+        "CostTime": 27256,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 8,
+        "EffType": 14,
+        "EffValue": 93,
+        "CostMoney": 148699,
+        "CostFood": 139260,
+        "CostTime": 30219,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 9,
+        "EffType": 14,
+        "EffValue": 92,
+        "CostMoney": 167731,
+        "CostFood": 157005,
+        "CostTime": 33507,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 10,
+        "EffType": 14,
+        "EffValue": 91,
+        "CostMoney": 186950,
+        "CostFood": 174750,
+        "CostTime": 37158,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 14,
+        "EffValue": 90,
+        "CostMoney": 206356,
+        "CostFood": 192495,
+        "CostTime": 41210,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 14,
+        "EffValue": 89,
+        "CostMoney": 225952,
+        "CostFood": 210240,
+        "CostTime": 45707,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 14,
+        "EffValue": 88,
+        "CostMoney": 245739,
+        "CostFood": 227985,
+        "CostTime": 50700,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 14,
+        "EffValue": 87,
+        "CostMoney": 265719,
+        "CostFood": 245730,
+        "CostTime": 56241,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 14,
+        "EffValue": 85,
+        "CostMoney": 285892,
+        "CostFood": 263475,
+        "CostTime": 62392,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 14,
+        "EffValue": 83,
+        "CostMoney": 306260,
+        "CostFood": 281220,
+        "CostTime": 69220,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 14,
+        "EffValue": 81,
+        "CostMoney": 326825,
+        "CostFood": 298965,
+        "CostTime": 76799,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 14,
+        "EffValue": 78,
+        "CostMoney": 347588,
+        "CostFood": 316710,
+        "CostTime": 85211,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 14,
+        "EffValue": 75,
+        "CostMoney": 368550,
+        "CostFood": 334455,
+        "CostTime": 94549,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 14,
+        "EffValue": 70,
+        "CostMoney": 389713,
+        "CostFood": 352200,
+        "CostTime": 104914,
+        "NeedBuildingID": 10,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  },
+  {
+    "ID": 15,
+    "Name": "令行禁止",
+    "DependPos": 11,
+    "DependBuildingID": 11,
+    "DependTechnicID": 0,
+    "DependArea": 0,
+    "Icon": "/2/f/15.gif",
+    "Des": "令行禁止能强化侠客弟子的协同能力，提升出征队列的行军速度。",
+    "InteriorData": [
+      {
+        "Level": 1,
+        "EffType": 15,
+        "EffValue": 100,
+        "CostMoney": 20728,
+        "CostFood": 17658,
+        "CostTime": 21922,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 2,
+        "EffType": 15,
+        "EffValue": 99,
+        "CostMoney": 38916,
+        "CostFood": 35633,
+        "CostTime": 23866,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 3,
+        "EffType": 15,
+        "EffValue": 98,
+        "CostMoney": 57574,
+        "CostFood": 53930,
+        "CostTime": 25985,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 4,
+        "EffType": 15,
+        "EffValue": 97,
+        "CostMoney": 76712,
+        "CostFood": 72554,
+        "CostTime": 28295,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 5,
+        "EffType": 15,
+        "EffValue": 96,
+        "CostMoney": 96337,
+        "CostFood": 91509,
+        "CostTime": 30812,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 6,
+        "EffType": 15,
+        "EffValue": 95,
+        "CostMoney": 116461,
+        "CostFood": 110799,
+        "CostTime": 33556,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 7,
+        "EffType": 15,
+        "EffValue": 94,
+        "CostMoney": 137092,
+        "CostFood": 130429,
+        "CostTime": 36547,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 8,
+        "EffType": 15,
+        "EffValue": 93,
+        "CostMoney": 158240,
+        "CostFood": 150403,
+        "CostTime": 39808,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 9,
+        "EffType": 15,
+        "EffValue": 92,
+        "CostMoney": 179915,
+        "CostFood": 170727,
+        "CostTime": 43361,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 10,
+        "EffType": 15,
+        "EffValue": 91,
+        "CostMoney": 202128,
+        "CostFood": 191403,
+        "CostTime": 47235,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 10
+      },
+      {
+        "Level": 11,
+        "EffType": 15,
+        "EffValue": 90,
+        "CostMoney": 224888,
+        "CostFood": 212439,
+        "CostTime": 51457,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 11
+      },
+      {
+        "Level": 12,
+        "EffType": 15,
+        "EffValue": 89,
+        "CostMoney": 248207,
+        "CostFood": 233837,
+        "CostTime": 56059,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 12
+      },
+      {
+        "Level": 13,
+        "EffType": 15,
+        "EffValue": 88,
+        "CostMoney": 272094,
+        "CostFood": 255603,
+        "CostTime": 61076,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 13
+      },
+      {
+        "Level": 14,
+        "EffType": 15,
+        "EffValue": 87,
+        "CostMoney": 296561,
+        "CostFood": 277743,
+        "CostTime": 66543,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 14
+      },
+      {
+        "Level": 15,
+        "EffType": 15,
+        "EffValue": 86,
+        "CostMoney": 321618,
+        "CostFood": 300260,
+        "CostTime": 72503,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 15
+      },
+      {
+        "Level": 16,
+        "EffType": 15,
+        "EffValue": 85,
+        "CostMoney": 347278,
+        "CostFood": 323159,
+        "CostTime": 79000,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 16
+      },
+      {
+        "Level": 17,
+        "EffType": 15,
+        "EffValue": 84,
+        "CostMoney": 373551,
+        "CostFood": 346447,
+        "CostTime": 86081,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 17
+      },
+      {
+        "Level": 18,
+        "EffType": 15,
+        "EffValue": 83,
+        "CostMoney": 400448,
+        "CostFood": 370128,
+        "CostTime": 93799,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 18
+      },
+      {
+        "Level": 19,
+        "EffType": 15,
+        "EffValue": 82,
+        "CostMoney": 427983,
+        "CostFood": 394207,
+        "CostTime": 102212,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 19
+      },
+      {
+        "Level": 20,
+        "EffType": 15,
+        "EffValue": 80,
+        "CostMoney": 456166,
+        "CostFood": 418689,
+        "CostTime": 111382,
+        "NeedBuildingID": 11,
+        "NeedBuildingLevel": 20
+      }
+    ]
+  }
+]
