@@ -48,3 +48,7 @@ export { default as MilitaryPanel } from './MilitaryPanel';
 export { default as BattlePanel } from './BattlePanel';
 export { default as ChatPanel } from './ChatPanel';
 export { default as MailPanel } from './MailPanel';
+export { default as RankingPanel } from './RankingPanel';
+export { default as TaskPanel } from './TaskPanel';
+export { default as DungeonPanel } from './DungeonPanel';
+export { default as DefensePanel } from './DefensePanel';
