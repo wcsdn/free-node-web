@@ -23,6 +23,7 @@ const AlphaTerminal = lazy(() => import('@/features/alpha/AlphaTerminal'));
 const SituationMonitorPage = lazy(() => import('@/features/situation-monitor/SituationMonitorPage'));
 const WebGame = lazy(() => import('@/features/webgame'));
 const JxWeb = lazy(() => import('@/features/webgame/components/JxWeb'));
+const GameUIPreview = lazy(() => import('@/features/webgame/pages/GameUIPreview'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -190,6 +191,14 @@ export const routes: RouteObject[] = [
         element: (
           <PageWrapper>
             <JxWeb />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'jxweb-preview',
+        element: (
+          <PageWrapper>
+            <GameUIPreview />
           </PageWrapper>
         ),
       },
