@@ -21,8 +21,8 @@
   },
   "passives": {
     "201": { "id": 201, "name": "反击", "type": "counter", "value": 0.3, "description": "受到攻击时30%几率反击" },
-    "202": { "id": 202, "name": "吸血", "type": "lifesteal", "value": 0.1, "description": "攻击造成伤害的10%恢复生命"": { "id },
-    "203": 203, "name": "连击", "type": "combo", "value": 0.2, "description": "20%几率造成双倍伤害" },
+    "202": { "id": 202, "name": "吸血", "type": "lifesteal", "value": 0.1, "description": "攻击造成伤害的10%恢复生命" },
+    "203": { "id": 203, "name": "连击", "type": "combo", "value": 0.2, "description": "20%几率造成双倍伤害" },
     "204": { "id": 204, "name": "先制", "type": "firstStrike", "value": 1, "description": "战斗开始时先手攻击" },
     "205": { "id": 205, "name": "护盾", "type": "shield", "value": 0.2, "description": "生命值低于30%时获得20%护盾" }
   }

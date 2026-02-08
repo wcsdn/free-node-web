@@ -17,6 +17,7 @@ function error(c: any, message: string, status = 400) {
 
 // 根路径 - 获取游戏状态
 app.get('/', async (c) => {
+  console.log('🔧 [DEBUG] Game status endpoint hit');
   return success(c, {
     status: 'online',
     version: '1.0.0',
@@ -97,7 +98,7 @@ app.get('/user-info', async (c) => {
         population: 300,
       }];
 
-      // 同时创建初始建筑
+      // 创建初始建筑 (1个)
       await db.prepare(`
         INSERT INTO buildings (city_id, type, level, position, state, config_id)
         VALUES (?, 'interior', 1, 10, 0, 1)
@@ -172,31 +173,77 @@ async function handleInterior(c: any) {
   try {
     let selectedCityId: number | null = null;
 
-    // 如果传递了 cityId，检查是否属于用户
+    // 1. 确保角色存在
+    let character: any = await db.prepare(`
+      SELECT * FROM characters WHERE LOWER(wallet_address) = ?
+    `).bind(walletAddress.toLowerCase()).first();
+
+    if (!character) {
+      // 自动创建角色
+      const charName = `玩家_${walletAddress.substring(2, 8)}`;
+      await db.prepare(`
+        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
+        VALUES (?, ?, 1, 0, 1000, 0)
+      `).bind(walletAddress, charName).run();
+    }
+
+    // 2. 如果传递了 cityId，检查是否属于用户
     if (cityId && !isNaN(cityId)) {
       const city: any = await db.prepare(`
         SELECT * FROM cities WHERE id = ? AND LOWER(wallet_address) = ?
       `).bind(cityId, walletAddress.toLowerCase()).first();
 
       if (city) {
-        // 城市属于用户，使用它
         selectedCityId = cityId;
       }
     }
 
-    // 如果没有找到有效的城市，自动获取用户的第一个城市
+    // 3. 如果没有找到有效的城市，自动获取或创建用户的第一个城市
     if (!selectedCityId) {
       const firstCity: any = await db.prepare(`
         SELECT id FROM cities WHERE LOWER(wallet_address) = ? ORDER BY id ASC LIMIT 1
       `).bind(walletAddress.toLowerCase()).first();
 
       if (!firstCity) {
-        return success(c, {
-          hasCity: false,
-          message: 'No city found, please create one'
-        });
+        // 自动创建城市
+        const cityName = '主城';
+        const position = Math.floor(Math.random() * 100) + 1;
+        
+        const result = await db.prepare(`
+          INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population)
+          VALUES (?, ?, ?, 100, 3000, 3000, 300)
+        `).bind(walletAddress, cityName, position).run();
+
+        selectedCityId = result.meta.last_row_id;
+
+        // 创建初始建筑
+        await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 1, 10, 0, 1)
+        `).bind(selectedCityId).run();
+        
+        await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 3, 2, 0, 2)
+        `).bind(selectedCityId).run();
+        
+        await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 4, 3, 0, 3)
+        `).bind(selectedCityId).run();
+        
+        await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 2, 4, 0, 4)
+        `).bind(selectedCityId).run();
+        
+        await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 1, 5, 0, 5)
+        `).bind(selectedCityId).run();
+      } else {
+        selectedCityId = firstCity.id;
       }
-      selectedCityId = firstCity.id;
     }
 
     // 获取城市详情
@@ -235,6 +282,7 @@ async function handleInterior(c: any) {
       heroCount: (heroes as any).results?.length || 0,
     });
   } catch (err: any) {
+    console.error('handleInterior error:', err);
     return error(c, err.message);
   }
 }
@@ -256,7 +304,20 @@ async function handleBuildingList(c: any) {
   try {
     let selectedCityId: number | null = null;
 
-    // 如果传递了 cityId，检查是否属于用户
+    // 1. 确保角色存在
+    let character: any = await db.prepare(`
+      SELECT * FROM characters WHERE LOWER(wallet_address) = ?
+    `).bind(walletAddress.toLowerCase()).first();
+
+    if (!character) {
+      const charName = `玩家_${walletAddress.substring(2, 8)}`;
+      await db.prepare(`
+        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
+        VALUES (?, ?, 1, 0, 1000, 0)
+      `).bind(walletAddress, charName).run();
+    }
+
+    // 2. 如果传递了 cityId，检查是否属于用户
     if (cityId && !isNaN(cityId)) {
       const city: any = await db.prepare(`
         SELECT id FROM cities WHERE id = ? AND LOWER(wallet_address) = ?
@@ -267,19 +328,37 @@ async function handleBuildingList(c: any) {
       }
     }
 
-    // 自动获取用户的第一个城市
+    // 3. 自动获取或创建用户的第一个城市
     if (!selectedCityId) {
       const firstCity: any = await db.prepare(`
         SELECT id FROM cities WHERE LOWER(wallet_address) = ? ORDER BY id ASC LIMIT 1
       `).bind(walletAddress.toLowerCase()).first();
 
       if (!firstCity) {
-        return success(c, {
-          hasCity: false,
-          message: 'No city found'
-        });
+        // 自动创建城市
+        const cityName = '主城';
+        const position = Math.floor(Math.random() * 100) + 1;
+        
+        const result = await db.prepare(`
+          INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population)
+          VALUES (?, ?, ?, 100, 3000, 3000, 300)
+        `).bind(walletAddress, cityName, position).run();
+
+        selectedCityId = result.meta.last_row_id;
+
+        // 创建初始建筑
+        const positions = [10, 2, 3, 4, 5];
+        const levels = [1, 3, 4, 2, 1];
+        const configIds = [1, 2, 3, 4, 5];
+        for (let i = 0; i < 5; i++) {
+          await db.prepare(`
+            INSERT INTO buildings (city_id, type, level, position, state, config_id)
+            VALUES (?, 'interior', ?, ?, 0, ?)
+          `).bind(selectedCityId, levels[i], positions[i], configIds[i]).run();
+        }
+      } else {
+        selectedCityId = firstCity.id;
       }
-      selectedCityId = firstCity.id;
     }
 
     const buildings = await db.prepare(`
@@ -292,6 +371,7 @@ async function handleBuildingList(c: any) {
       count: (buildings as any).results?.length || 0
     });
   } catch (err: any) {
+    console.error('handleBuildingList error:', err);
     return error(c, err.message);
   }
 }

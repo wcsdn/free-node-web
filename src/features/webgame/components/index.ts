@@ -24,7 +24,7 @@ export { default as MallPanel } from './MallPanel';
 export { default as UnionPanel } from './UnionPanel';
 export { default as ArenaPanel } from './ArenaPanel';
 export { default as SkillPanel } from './SkillPanel';
-export { default as JxGame } from './JxGame';
+export { default as JxWeb } from './JxWeb';
 export { default as JxModules } from './JxModules';
 export { default as LeftPanel } from './LeftPanel';
 export { default as ContentArea } from './ContentArea';

@@ -8,7 +8,7 @@ import { useWebGameStore } from './stores/useWebGameStore';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
 import { useToast } from '@/shared/components/Toast/ToastContext';
 import PageLayout from '@/shared/layouts/PageLayout';
-import JxGame from './components/JxGame';
+import JxWeb from './components/JxWeb';
 import styles from './styles/game.module.css';
 
 const WebGame: React.FC = memo(() => {
@@ -86,7 +86,7 @@ const WebGame: React.FC = memo(() => {
   }
 
   // 已认证时显示剑侠情缘游戏主界面
-  return <JxGame walletAddress={walletAddress || ''} />;
+  return <JxWeb walletAddress={walletAddress || ''} />;
 });
 
 WebGame.displayName = 'WebGame';

@@ -17,12 +17,12 @@ interface ChatMessage {
   time?: string;
 }
 
-interface JxWebTestProps {
+interface JxWebProps {
   walletAddress?: string;
   onLogout?: () => void;
 }
 
-const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress }) => {
+const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
   const walletAddress = propWalletAddress || localStorage.getItem('wallet-address') || '';
   const [loading, setLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState('');
@@ -737,4 +737,4 @@ const JxWebTest: React.FC<JxWebTestProps> = ({ walletAddress: propWalletAddress 
   );
 };
 
-export default JxWebTest;
+export default JxWeb;

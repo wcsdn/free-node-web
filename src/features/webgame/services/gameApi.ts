@@ -288,7 +288,7 @@ export const gameApi = {
   },
 
   async getCity(cityId: number): Promise<ApiResponse<City>> {
-    const res = await fetch(`${getApiBase()}/api/city/${cityId}`, {
+    const res = await fetch(`${getApiBase()}/api/building/city/${cityId}`, {
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -328,7 +328,8 @@ export const gameApi = {
   },
 
   async upgradeHero(heroId: number): Promise<ApiResponse<Hero>> {
-    const res = await fetch(`${getApiBase()}/api/hero/${heroId}/upgrade`, {
+    // 使用训练接口升级英雄（与后端一致）
+    const res = await fetch(`${getApiBase()}/api/hero/${heroId}/train`, {
       method: 'POST',
       headers: getAuthHeaders(),
     });
@@ -337,7 +338,7 @@ export const gameApi = {
 
   // 战斗相关
   async startPveBattle(stageId: number, heroIds: number[]): Promise<ApiResponse<any>> {
-    const res = await fetch(`${getApiBase()}/api/battle/pve`, {
+    const res = await fetch(`${getApiBase()}/api/battle/pve/dungeon`, {
       method: 'POST',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ stage_id: stageId, hero_ids: heroIds }),
@@ -346,15 +347,15 @@ export const gameApi = {
   },
 
   async getBattleHistory(): Promise<ApiResponse<any[]>> {
-    const res = await fetch(`${getApiBase()}/api/battle/history`, {
+    const res = await fetch(`${getApiBase()}/api/battle`, {
       headers: getAuthHeaders(),
     });
     return res.json();
   },
 
   // 建筑相关
-  async getBuildingList(cityId: number): Promise<ApiResponse<Building[]>> {
-    const res = await fetch(`${getApiBase()}/api/building/list/${cityId}`, {
+  async getBuildingList(cityId: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/building/city/${cityId}`, {
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -454,8 +455,10 @@ export const gameApi = {
   },
 
   // 邮件相关
-  async getMailList(type?: number): Promise<ApiResponse<Mail[]>> {
-    const url = type !== undefined ? `${getApiBase()}/api/mail/list?type=${type}` : `${getApiBase()}/api/mail/list`;
+  async getMailList(type?: number): Promise<ApiResponse<any>> {
+    const url = type !== undefined 
+      ? `${getApiBase()}/api/mail?type=${type}` 
+      : `${getApiBase()}/api/mail`;
     const res = await fetch(url, {
       headers: getAuthHeaders(),
     });
@@ -529,15 +532,15 @@ export const gameApi = {
   },
 
   // 排行榜相关
-  async getRankList(rankType: string): Promise<ApiResponse<RankItem[]>> {
-    const res = await fetch(`${getApiBase()}/api/rank/${rankType}`, {
+  async getRankList(rankType: string): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/rank/`, {
       headers: getAuthHeaders(),
     });
     return res.json();
   },
 
-  async getMyRank(rankType: string): Promise<ApiResponse<RankItem>> {
-    const res = await fetch(`${getApiBase()}/api/rank/?type=${rankType}`, {
+  async getMyRank(rankType: string): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/rank/my-rank`, {
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -750,7 +753,7 @@ export const gameApi = {
   },
 
   async getSkillConfig(): Promise<ApiResponse<any[]>> {
-    const res = await fetch(`${getApiBase()}/api/skill/config`, {
+    const res = await fetch(`${getApiBase()}/api/skill/configs`, {
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -766,8 +769,8 @@ export const gameApi = {
   },
 
   async unequipSkill(heroId: number, slot: number): Promise<ApiResponse<any>> {
-    const res = await fetch(`${getApiBase()}/api/skill/equip`, {
-      method: 'DELETE',
+    const res = await fetch(`${getApiBase()}/api/skill/unequip`, {
+      method: 'POST',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ hero_id: heroId, slot }),
     });
@@ -775,7 +778,7 @@ export const gameApi = {
   },
 
   async getHeroSkills(heroId: number): Promise<ApiResponse<any[]>> {
-    const res = await fetch(`${getApiBase()}/api/skill/hero/${heroId}`, {
+    const res = await fetch(`${getApiBase()}/api/skill/equipped/${heroId}`, {
       headers: getAuthHeaders(),
     });
     return res.json();

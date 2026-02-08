@@ -94,6 +94,27 @@ app.get('/list', async (c) => {
   }
 });
 
+// 获取城市建筑 (别名: /building-list/:id)
+app.get('/building-list/:id', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const cityId = parseInt(c.req.param('id'));
+
+  try {
+    const buildings = await db.prepare(`
+      SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+    `).bind(cityId).all();
+
+    return success(c, buildings.results || []);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取城市建筑
 app.get('/buildings', async (c) => {
   const walletAddress = await verifyWalletAuth(c);

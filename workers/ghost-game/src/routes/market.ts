@@ -160,7 +160,46 @@ app.post('/sell', async (c) => {
   }
 });
 
-// 获取市场价格历史 (模拟)
+// 获取市场价格历史
+app.get('/history', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { item_id } = c.req.query();
+  
+  // 获取所有商品的历史记录
+  const allCommodities = (commodityConfigs as any).Commodity || [];
+  
+  const history = allCommodities.map((item: any) => {
+    const basePrice = item.Gold || item.BuyPrice || 100;
+    const fluctuations = [];
+    for (let i = 0; i < 24; i++) {
+      const fluctuation = 0.9 + Math.random() * 0.2;
+      fluctuations.push({
+        time: new Date(Date.now() - i * 3600000).toISOString(),
+        price: Math.floor(basePrice * fluctuation),
+      });
+    }
+    return {
+      itemId: item.Id || item.ID,
+      name: item.TypeName || item.Name,
+      history: fluctuations.reverse(),
+    };
+  });
+
+  // 如果指定了 item_id，只返回该商品的历史
+  if (item_id) {
+    const filtered = history.find((h: any) => h.itemId === parseInt(item_id));
+    return success(c, filtered || { itemId: parseInt(item_id), history: [] });
+  }
+
+  return success(c, {
+    history,
+    total: history.length,
+  });
+});
+
+// 获取市场价格历史 (itemId param version)
 app.get('/history/:itemId', async (c) => {
   const itemId = c.req.param('itemId');
   

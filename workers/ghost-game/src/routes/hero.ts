@@ -58,9 +58,46 @@ app.get('/', async (c) => {
   }
 });
 
-// 获取武将列表 (兼容旧路径)
+// 获取武将列表 (兼容旧路径 - 返回完整JSON)
 app.get('/list', async (c) => {
-  return c.redirect('/api/hero');
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return c.json({ success: false, error: 'Unauthorized' }, 401);
+
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
+
+  try {
+    const heroes = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? ORDER BY created_at DESC
+    `).bind(walletAddress).all();
+
+    const transformedHeroes = (heroes.results || []).map((hero: any) => ({
+      id: hero.id,
+      name: hero.name,
+      level: hero.level,
+      exp: hero.exp,
+      attack: hero.attack,
+      defense: hero.defense,
+      hp: hero.hp,
+      maxHp: hero.max_hp,
+      quality: hero.quality,
+      state: hero.state,
+      configId: hero.config_id,
+      portrait: `hero_${hero.config_id}.png`,
+    }));
+
+    return c.json({
+      success: true,
+      data: transformedHeroes,
+      count: transformedHeroes.length
+    });
+  } catch (err: any) {
+    console.error('Get hero list error:', err);
+    return c.json({
+      success: false,
+      error: err.message || '获取武将列表失败'
+    }, 500);
+  }
 });
 
 // 招募武将

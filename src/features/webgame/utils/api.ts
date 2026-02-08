@@ -5,18 +5,21 @@
 
 // 根据环境自动选择 API 地址
 function getApiBase(): string {
-  if (typeof import.meta === 'undefined') {
-    // Node 环境（如测试）
-    return process.env.API_BASE || 'http://localhost:8788';
+  // 1. 检查 URL 参数 dev=1
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('dev') === '1') {
+      return 'http://localhost:8788';
+    }
   }
-  // 浏览器环境
-  // 优先使用环境变量配置的地址
-  if (import.meta.env.VITE_API_BASE) {
-    return import.meta.env.VITE_API_BASE;
+  
+  // 2. 检查环境变量
+  if (import.meta.env.VITE_API_BASE_DEV) {
+    return import.meta.env.VITE_API_BASE_DEV;
   }
-  return import.meta.env.PROD
-    ? 'https://game.free-node.xyz'
-    : 'http://localhost:8788';
+  
+  // 3. 默认使用生产环境
+  return 'https://game.free-node.xyz';
 }
 
 // 获取认证头

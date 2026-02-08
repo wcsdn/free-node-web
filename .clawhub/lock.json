@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "skills": {
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1770355529296
+    },
+    "imap-smtp-email": {
+      "version": "0.0.2",
+      "installedAt": 1770355533392
+    },
+    "proactive-agent-1-2-4": {
+      "version": "1.0.0",
+      "installedAt": 1770355537920
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1770355541731
+    },
+    "cursor-agent": {
+      "version": "2.1.0",
+      "installedAt": 1770560396180
+    },
+    "toughcoding": {
+      "version": "1.0.2",
+      "installedAt": 1770560408491
+    },
+    "agent-ui": {
+      "version": "0.1.1",
+      "installedAt": 1770560428709
+    },
+    "autonomous-agent": {
+      "version": "2.0.0",
+      "installedAt": 1770560455117
+    }
+  }
+}

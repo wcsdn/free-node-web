@@ -16,6 +16,36 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
+// 获取商城物品列表
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { type = '1' } = c.req.query();
+  const typeNum = parseInt(type);
+  
+  // shop.json 是对象格式 { "1": {...}, "2": {...} }
+  const items = Object.entries(shopConfigs as Record<string, any>).map(([id, item]) => ({
+    id: parseInt(id),
+    name: item.Name || item.name,
+    type: item.Type || item.type,
+    price: item.Price || item.price,
+    description: item.Description || item.description || '',
+    icon: item.Image || item.Icon,
+  }));
+
+  // 按类型筛选
+  const filteredItems = type 
+    ? items.filter(item => item.type === typeNum)
+    : items;
+
+  return success(c, {
+    items: filteredItems,
+    total: filteredItems.length,
+    type: typeNum,
+  });
+});
+
 // 根路径 - 获取商城物品
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -64,9 +94,9 @@ app.post('/buy', async (c) => {
     `).bind(price, walletAddress).run();
 
     await db.prepare(`
-      INSERT OR REPLACE INTO inventory (wallet_address, item_id, count)
-      VALUES (?, ?, COALESCE((SELECT count FROM inventory WHERE wallet_address = ? AND item_id = ?) + ?, ?))
-    `).bind(walletAddress, item_id, walletAddress, item_id, count || 1, count || 1).run();
+      INSERT OR REPLACE INTO items (wallet_address, config_id, count, source)
+      VALUES (?, ?, ?, 'shop')
+    `).bind(walletAddress, item_id, count || 1).run();
 
     return success(c, { 
       itemId: item_id, 
@@ -92,7 +122,7 @@ app.post('/use', async (c) => {
 
   try {
     const inv = await db.prepare(`
-      SELECT * FROM inventory WHERE wallet_address = ? AND item_id = ?
+      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
     `).bind(walletAddress, item_id).first();
 
     if (!inv || (inv as any).count < (count || 1)) {
@@ -100,7 +130,7 @@ app.post('/use', async (c) => {
     }
 
     await db.prepare(`
-      UPDATE inventory SET count = count - ? WHERE wallet_address = ? AND item_id = ?
+      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
     `).bind(count || 1, walletAddress, item_id).run();
 
     return success(c, { itemId: item_id, count: count || 1, message: 'Item used' });
@@ -122,7 +152,7 @@ app.post('/sell', async (c) => {
 
   try {
     const inv = await db.prepare(`
-      SELECT * FROM inventory WHERE wallet_address = ? AND item_id = ?
+      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
     `).bind(walletAddress, item_id).first();
 
     if (!inv || (inv as any).count < (count || 1)) {
@@ -133,7 +163,7 @@ app.post('/sell', async (c) => {
     const sellPrice = Math.floor((item.Price || item.price) * 0.5) * (count || 1);
 
     await db.prepare(`
-      UPDATE inventory SET count = count - ? WHERE wallet_address = ? AND item_id = ?
+      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
     `).bind(count || 1, walletAddress, item_id).run();
 
     await db.prepare(`

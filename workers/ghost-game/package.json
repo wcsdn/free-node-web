@@ -10,8 +10,12 @@
     "db:create": "wrangler d1 create ghost-game-db",
     "db:init": "wrangler d1 execute ghost-game-db --remote --file=schema.sql",
     "db:init:local": "wrangler d1 execute ghost-game-db --local --file=schema.sql",
+    "db:seed": "wrangler d1 execute ghost-game-db --local --file=seed-comprehensive.sql",
+    "db:seed:remote": "wrangler d1 execute ghost-game-db --remote --file=seed-comprehensive.sql",
     "db:query": "wrangler d1 execute ghost-game-db --remote --command",
-    "db:studio": "wrangler d1 studio ghost-game-db"
+    "db:studio": "wrangler d1 studio ghost-game-db",
+    "test": "node test-quick.js",
+    "test:full": "node test-endpoints.js"
   },
   "dependencies": {
     "hono": "^4.0.0"

@@ -103,9 +103,62 @@ app.post('/', async (c) => {
   }
 });
 
-// 获取角色信息 (兼容旧路径)
+// 获取角色信息 (兼容旧路径 - 返回完整JSON响应)
 app.get('/info', async (c) => {
-  return c.redirect('/api/character');
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!character) {
+      // 自动注册新角色并返回完整信息
+      const charName = `玩家_${walletAddress.substring(2, 8)}`;
+      await db.prepare(`
+        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
+        VALUES (?, ?, 1, 0, 1000, 0)
+      `).bind(walletAddress, charName).run();
+
+      return c.json({
+        success: true,
+        data: {
+          walletAddress,
+          name: charName,
+          level: 1,
+          exp: 0,
+          gold: 1000,
+          vipLevel: 0,
+          autoCreated: true,
+          message: '自动创建角色成功'
+        }
+      });
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        walletAddress: character.wallet_address,
+        name: character.name,
+        level: character.level,
+        exp: character.exp,
+        gold: character.gold,
+        vipLevel: character.vip_level,
+        createdAt: character.created_at,
+        lastLogin: character.last_login
+      }
+    });
+  } catch (err: any) {
+    console.error('Get character info error:', err);
+    return c.json({
+      success: false,
+      error: err.message || '获取角色信息失败'
+    }, 500);
+  }
 });
 
 // 更新登录时间
