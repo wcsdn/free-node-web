@@ -1,0 +1,238 @@
+/* ShopPanel - 新版商城面板样式 */
+
+/* 容器 */
+.container {
+  position: relative;
+  min-height: 100vh;
+  background: #000;
+  padding: 20px;
+}
+
+/* 标题 */
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.glitch {
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 32px;
+  font-weight: bold;
+  color: #00FF00;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  text-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.8),
+    0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+/* 加载 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  color: #00FF00;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 24px;
+  letter-spacing: 4px;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.3; }
+}
+
+/* 资产卡片 */
+.assets {
+  margin-bottom: 30px !important;
+}
+
+.assetRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+}
+
+.assetIcon {
+  font-size: 24px;
+}
+
+.assetLabel {
+  color: rgba(0, 255, 0, 0.6);
+  flex: 1;
+}
+
+.assetValue {
+  font-size: 24px;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* 分类筛选 */
+.categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.categoryBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 8px;
+  color: rgba(0, 255, 0, 0.6);
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.categoryBtn:hover {
+  border-color: #00FF00;
+  color: #00FF00;
+}
+
+.categoryBtn.active {
+  background: rgba(0, 255, 0, 0.1);
+  border-color: #00FF00;
+  color: #00FF00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+}
+
+.categoryBtn span {
+  text-transform: uppercase;
+}
+
+/* 商品网格 */
+.itemGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+/* 商品卡片 */
+.itemCard {
+  position: relative;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.itemCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #FFD700,
+    transparent
+  );
+}
+
+.itemCard:hover {
+  border-color: #FFD700;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.itemIcon {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.itemInfo {
+  margin-bottom: 15px;
+}
+
+.itemName {
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 16px;
+  color: #00FF00;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.itemDesc {
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: rgba(0, 255, 0, 0.5);
+}
+
+.itemPrice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.priceIcon {
+  font-size: 18px;
+}
+
+.priceValue {
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* 空状态 */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(0, 255, 0, 0.6);
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+}
+
+.empty p {
+  font-size: 18px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .categories {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 10px;
+  }
+  
+  .categoryBtn {
+    flex-shrink: 0;
+  }
+  
+  .itemGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .itemCard {
+    padding: 15px;
+  }
+  
+  .itemIcon {
+    font-size: 32px;
+  }
+  
+  .glitch {
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+}

@@ -43,3 +43,4 @@ export { default as NotificationPanel } from './NotificationPanel';
 export { default as CityView } from './CityView';
 export { default as HeroPanel } from './HeroPanel';
 export { default as BuildingPanel } from './BuildingPanel';
+export { default as ShopPanel } from './ShopPanel';

@@ -1,155 +1,173 @@
 /**
- * 商城面板组件
+ * ShopPanel - 新版商城面板
+ * 赛博朋克风格
  */
-import React, { useEffect, useState } from 'react';
-import { gameApi } from '../services/gameApi';
-import styles from '../styles/jxMain.module.css';
-import { getApiBase, getAuthHeaders } from '../utils/api';
+import React, { useState, useEffect } from 'react';
+import { GameCard, GameButton } from '@/shared/components/game';
+import styles from './ShopPanel.module.css';
 
 interface ShopItem {
   id: number;
   name: string;
   type: number;
   price: number;
-  icon: string;
-  desc: string;
-  effect_value?: number;
+  description: string;
+  icon?: string;
 }
 
 interface ShopPanelProps {
-  onClose: () => void;
+  walletAddress: string;
 }
 
-// 获取API基础URL
-//   return import.meta.env.PROD ? 'https://game.free-node.xyz' : 'http://localhost:8787';
-// };
-
-// 获取认证头
-//   const auth = localStorage.getItem('wallet-auth');
-//   return auth ? { 'X-Wallet-Auth': auth } : {};
-// };
-
-const ShopPanel: React.FC<ShopPanelProps> = ({ onClose }) => {
-  const [resourceItems, setResourceItems] = useState<ShopItem[]>([]);
-  const [itemItems, setItemItems] = useState<ShopItem[]>([]);
-  const [recruitItems, setRecruitItems] = useState<ShopItem[]>([]);
-  const [inventory, setInventory] = useState<any[]>([]);
+export const ShopPanel: React.FC<ShopPanelProps> = ({ walletAddress }) => {
+  const [items, setItems] = useState<ShopItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [buying, setBuying] = useState<number | null>(null);
-  const [message, setMessage] = useState('');
-  const [gold, setGold] = useState(0);
+  const [filterType, setFilterType] = useState<number>(1);
+  const [gold, setGold] = useState(1000);
 
+  // 加载商品数据
   useEffect(() => {
-    loadShopData();
-  }, []);
-
-  const loadShopData = async () => {
-    setLoading(true);
-    try {
-      // 获取商城列表
-      const shopRes = await fetch(`${getApiBase()}/api/shop/list`, {
-        headers: getAuthHeaders(),
-      });
-      const shopData = await shopRes.json();
-      
-      if (shopData.success && shopData.data) {
-        setResourceItems(shopData.data[1] || []);
-        setItemItems(shopData.data[2] || []);
-        setRecruitItems(shopData.data[3] || []);
+    const loadShopItems = async () => {
+      try {
+        const res = await fetch('http://localhost:8788/api/shop/list?type=1', {
+          method: 'GET',
+          headers: { 'X-Wallet-Auth': walletAddress || '' },
+        });
+        const data = await res.json();
+        
+        if (data.success && data.data?.items) {
+          setItems(data.data.items);
+        }
+      } catch (err) {
+        console.error('Failed to load shop items:', err);
+      } finally {
+        setLoading(false);
       }
+    };
+    
+    loadShopItems();
+  }, [walletAddress]);
 
-      // 获取角色信息(金币)
-      const charRes = await fetch(`${getApiBase()}/api/character/info`, {
-        headers: getAuthHeaders(),
-      });
-      const charData = await charRes.json();
-      if (charData.success) {
-        setGold(charData.data?.gold || 0);
-      }
-    } catch (err) {
-      console.error('Failed to load shop:', err);
-    }
-    setLoading(false);
+  // 获取类型名称
+  const getTypeName = (type: number): string => {
+    const names: Record<number, string> = {
+      1: '消耗品',
+      2: '材料',
+      3: '装备',
+      4: '其他',
+    };
+    return names[type] || '未知';
   };
 
+  // 获取类型图标
+  const getTypeIcon = (type: number): string => {
+    const icons: Record<number, string> = {
+      1: '🧪',
+      2: '📦',
+      3: '⚔️',
+      4: '🎁',
+    };
+    return icons[type] || '📦';
+  };
+
+  // 购买商品
   const handleBuy = async (item: ShopItem) => {
-    setBuying(item.id);
-    setMessage('');
     try {
-      const res = await fetch(`${getApiBase()}/api/shop/buy`, {
+      const res = await fetch('http://localhost:8788/api/shop/buy', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          ...getAuthHeaders()
+          'X-Wallet-Auth': walletAddress || '',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ item_id: item.id, quantity: 1 }),
+        body: JSON.stringify({ item_id: item.id, count: 1 }),
       });
       const data = await res.json();
+      
       if (data.success) {
-        setMessage(`购买 ${item.name} 成功! 剩余金币: ${data.data?.remaining_gold || 0}`);
-        setGold(data.data?.remaining_gold || 0);
+        setGold(gold - item.price);
+        alert(`购买了 ${item.name}！`);
       } else {
-        setMessage(data.error || '购买失败');
+        alert(data.error || '购买失败');
       }
     } catch (err) {
-      setMessage('购买失败');
+      console.error('Buy failed:', err);
     }
-    setBuying(null);
   };
 
-  const renderItem = (item: ShopItem) => (
-    <div key={item.id} className={styles.shopItem}>
-      <img src={item.icon} alt={item.name} className={styles.shopItemIcon} />
-      <div className={styles.shopItemInfo}>
-        <div className={styles.shopItemName}>{item.name}</div>
-        <div className={styles.shopItemDesc}>{item.desc}</div>
-      </div>
-      <div className={styles.shopItemPrice}>
-        <span className={styles.priceGold}>{item.price}</span>
-        <button 
-          onClick={() => handleBuy(item)}
-          disabled={buying === item.id || gold < item.price}
-          className={styles.buyBtn}
-        >
-          {buying === item.id ? '购买中...' : '购买'}
-        </button>
-      </div>
-    </div>
+  // 筛选商品
+  const filteredItems = items.filter(item => 
+    filterType === 0 || item.type === filterType
   );
 
-  const renderSection = (title: string, items: ShopItem[], icon: string) => (
-    <div className={styles.shopSection}>
-      <h4>{icon} {title}</h4>
-      {items.length === 0 ? (
-        <div className={styles.empty}>暂无商品</div>
-      ) : (
-        <div className={styles.shopGrid}>
-          {items.map(renderItem)}
-        </div>
-      )}
-    </div>
-  );
+  if (loading) {
+    return <div className={styles.loading}>LOADING...</div>;
+  }
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
-        <span>商城 (金币: {gold})</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+    <div className={styles.container}>
+      {/* 标题 */}
+      <h1 className={styles.title}>
+        <span className={styles.glitch} data-text="SHOP">SHOP</span>
+      </h1>
+
+      {/* 用户资产 */}
+      <GameCard title="我的资产" className={styles.assets}>
+        <div className={styles.assetRow}>
+          <span className={styles.assetIcon}>🪙</span>
+          <span className={styles.assetLabel}>金币</span>
+          <span className={styles.assetValue}>{gold.toLocaleString()}</span>
+        </div>
+      </GameCard>
+
+      {/* 分类筛选 */}
+      <div className={styles.categories}>
+        {[0, 1, 2, 3, 4].map((type) => (
+          <button
+            key={type}
+            className={[styles.categoryBtn, filterType === type ? styles.active : ''].join(' ')}
+            onClick={() => setFilterType(type)}
+          >
+            {type === 0 ? '全部' : getTypeIcon(type)}
+            <span>{type === 0 ? 'ALL' : getTypeName(type)}</span>
+          </button>
+        ))}
       </div>
-      
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
-        
-        {loading ? (
-          <div className={styles.loading}>加载中...</div>
-        ) : (
-          <>
-            {renderSection('资源道具', resourceItems, '💰')}
-            {renderSection('实用道具', itemItems, '🎁')}
-            {renderSection('招募道具', recruitItems, '🎫')}
-          </>
-        )}
+
+      {/* 商品列表 */}
+      <div className={styles.itemGrid}>
+        {filteredItems.map((item) => (
+          <div key={item.id} className={styles.itemCard}>
+            <div className={styles.itemIcon}>
+              {getTypeIcon(item.type)}
+            </div>
+            
+            <div className={styles.itemInfo}>
+              <div className={styles.itemName}>{item.name}</div>
+              <div className={styles.itemDesc}>{item.description}</div>
+            </div>
+            
+            <div className={styles.itemPrice}>
+              <span className={styles.priceIcon}>🪙</span>
+              <span className={styles.priceValue}>{item.price}</span>
+            </div>
+            
+            <GameButton 
+              size="small" 
+              onClick={() => handleBuy(item)}
+              disabled={gold < item.price}
+            >
+              购买
+            </GameButton>
+          </div>
+        ))}
       </div>
+
+      {/* 空状态 */}
+      {filteredItems.length === 0 && (
+        <div className={styles.empty}>
+          <p>暂无商品</p>
+        </div>
+      )}
     </div>
   );
 };
