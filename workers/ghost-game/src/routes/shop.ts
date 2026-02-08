@@ -1,5 +1,5 @@
 /**
- * 商城路由 - D1数据库版本
+ * Shop Route - 商城路由 (重构版)
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
@@ -21,10 +21,9 @@ app.get('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { type = '1' } = c.req.query();
+  const type = c.req.query('type') || '1';
   const typeNum = parseInt(type);
-  
-  // shop.json 是对象格式 { "1": {...}, "2": {...} }
+
   const items = Object.entries(shopConfigs as Record<string, any>).map(([id, item]) => ({
     id: parseInt(id),
     name: item.Name || item.name,
@@ -34,33 +33,9 @@ app.get('/list', async (c) => {
     icon: item.Image || item.Icon,
   }));
 
-  // 按类型筛选
-  const filteredItems = type 
-    ? items.filter(item => item.type === typeNum)
-    : items;
+  const filtered = type ? items.filter(i => i.type === typeNum) : items;
 
-  return success(c, {
-    items: filteredItems,
-    total: filteredItems.length,
-    type: typeNum,
-  });
-});
-
-// 根路径 - 获取商城物品
-app.get('/', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  // shop.json 是对象格式 { "1": {...}, "2": {...} }
-  const items = Object.entries(shopConfigs as Record<string, any>).map(([id, item]) => ({
-    id: parseInt(id),
-    name: item.Name || item.name,
-    type: item.Type || item.type,
-    price: item.Price || item.price,
-    description: item.Description || item.description || '',
-  }));
-
-  return success(c, items);
+  return success(c, { items: filtered, total: filtered.length, type: typeNum });
 });
 
 // 购买物品
@@ -68,7 +43,7 @@ app.post('/buy', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { item_id, count } = await c.req.json();
+  const { item_id, count = 1 } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
 
   const db = c.env.DB;
@@ -78,64 +53,22 @@ app.post('/buy', async (c) => {
     const item = (shopConfigs as Record<string, any>)[item_id];
     if (!item) return error(c, 'Item not found');
 
-    const price = (item.Price || item.price) * (count || 1);
+    const price = (item.Price || item.price) * count;
 
-    // 扣钱并添加到背包
-    const charResult = await db.prepare(`
-      SELECT gold FROM characters WHERE wallet_address = ?
-    `).bind(walletAddress).first();
-
-    if (!charResult || (charResult as any).gold < price) {
-      return error(c, 'Not enough gold');
-    }
-
+    // 扣钱
     await db.prepare(`
       UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
     `).bind(price, walletAddress).run();
 
+    // 添加物品
     await db.prepare(`
-      INSERT OR REPLACE INTO items (wallet_address, config_id, count, source)
+      INSERT INTO items (wallet_address, config_id, count, source)
       VALUES (?, ?, ?, 'shop')
-    `).bind(walletAddress, item_id, count || 1).run();
+    `).bind(walletAddress, item_id, count).run();
 
-    return success(c, { 
-      itemId: item_id, 
-      count: count || 1,
-      price,
-      message: 'Item purchased' 
-    });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// 使用物品
-app.post('/use', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { item_id, count } = await c.req.json();
-  if (!item_id) return error(c, 'Missing item_id');
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    const inv = await db.prepare(`
-      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, item_id).first();
-
-    if (!inv || (inv as any).count < (count || 1)) {
-      return error(c, 'Not enough items');
-    }
-
-    await db.prepare(`
-      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
-    `).bind(count || 1, walletAddress, item_id).run();
-
-    return success(c, { itemId: item_id, count: count || 1, message: 'Item used' });
-  } catch (err: any) {
-    return error(c, err.message);
+    return success(c, { itemId: item_id, count, price, message: 'Purchased' });
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 
@@ -144,35 +77,27 @@ app.post('/sell', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { item_id, count } = await c.req.json();
+  const { item_id, count = 1 } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    const inv = await db.prepare(`
-      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, item_id).first();
-
-    if (!inv || (inv as any).count < (count || 1)) {
-      return error(c, 'Not enough items');
-    }
-
     const item = (shopConfigs as Record<string, any>)[item_id];
-    const sellPrice = Math.floor((item.Price || item.price) * 0.5) * (count || 1);
+    const sellPrice = Math.floor((item.Price || item.price) * 0.5) * count;
 
     await db.prepare(`
       UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
-    `).bind(count || 1, walletAddress, item_id).run();
+    `).bind(count, walletAddress, item_id).run();
 
     await db.prepare(`
       UPDATE characters SET gold = gold + ? WHERE wallet_address = ?
     `).bind(sellPrice, walletAddress).run();
 
-    return success(c, { itemId: item_id, count: count || 1, price: sellPrice, message: 'Item sold' });
-  } catch (err: any) {
-    return error(c, err.message);
+    return success(c, { itemId: item_id, count, price: sellPrice, message: 'Sold' });
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 

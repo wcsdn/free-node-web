@@ -1,5 +1,5 @@
 /**
- * 聊天路由 - D1数据库版本
+ * Chat Route - 聊天路由 (重构版)
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
@@ -21,77 +21,19 @@ app.get('/list', async (c) => {
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
   const { channel = 'global', limit = '50' } = c.req.query();
-  const limitNum = parseInt(limit) || 50;
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
-  
+
   try {
     const messages = await db.prepare(`
       SELECT * FROM chat_messages 
       WHERE channel = ? OR ? = 'global'
       ORDER BY created_at DESC LIMIT ?
-    `).bind(channel, channel, limitNum).all();
+    `).bind(channel, channel, parseInt(limit) || 50).all();
 
-    return success(c, {
-      channel,
-      messages: (messages.results || []).reverse(),
-      total: messages.results?.length || 0,
-    });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// 获取对话列表
-app.get('/conversations', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 获取最近的私信对话
-    const conversations = await db.prepare(`
-      SELECT 
-        CASE 
-          WHEN sender = ? THEN receiver 
-          ELSE sender 
-        END as other_user,
-        MAX(created_at) as last_time,
-        COUNT(*) as message_count,
-        (SELECT content FROM chat_messages 
-         WHERE (sender = ? AND receiver = other_user) OR (sender = other_user AND receiver = ?)
-         ORDER BY created_at DESC LIMIT 1) as last_message
-      FROM chat_messages
-      WHERE sender = ? OR receiver = ?
-      GROUP BY other_user
-      ORDER BY last_time DESC
-      LIMIT 20
-    `).bind(walletAddress, walletAddress, walletAddress, walletAddress, walletAddress).all();
-
-    return success(c, conversations.results || []);
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// 根路径 - 获取消息
-app.get('/', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    const messages = await db.prepare(`
-      SELECT * FROM chat_messages ORDER BY created_at DESC LIMIT 50
-    `).all();
-
-    return success(c, (messages.results || []).reverse());
-  } catch (err: any) {
-    return error(c, err.message);
+    return success(c, { channel, messages: (messages.results || []).reverse() });
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 
@@ -100,7 +42,7 @@ app.post('/send', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { content, type } = await c.req.json();
+  const { content, channel = 'global' } = await c.req.json();
   if (!content) return error(c, 'Missing content');
 
   const db = c.env.DB;
@@ -112,13 +54,13 @@ app.post('/send', async (c) => {
     `).bind(walletAddress).first();
 
     await db.prepare(`
-      INSERT INTO chat_messages (sender, sender_name, content, type)
+      INSERT INTO chat_messages (sender, sender_name, content, channel)
       VALUES (?, ?, ?, ?)
-    `).bind(walletAddress, (char as any)?.name || '玩家', content, type || 0).run();
+    `).bind(walletAddress, (char as any)?.name || '玩家', content, channel).run();
 
-    return success(c, { message: 'Message sent' });
-  } catch (err: any) {
-    return error(c, err.message);
+    return success(c, { message: 'Sent' });
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 

@@ -1,14 +1,14 @@
 /**
- * 角色路由 - D1数据库版本
+ * Character Route - 角色路由
+ * 原则：只处理 HTTP 请求/响应，业务逻辑委托给 Service 层
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
+import { characterService } from '../services';
 
-const app = new Hono<{ Bindings: Env }>();
-
-// 辅助函数
-function success(c: any, data: any) {
+// ============ Helpers ============
+function success(c: any, data: unknown) {
   return c.json({ success: true, data });
 }
 
@@ -16,7 +16,9 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 根路径 - 获取角色信息
+// ============ Routes ============
+
+// GET /api/character - 获取角色信息
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -24,48 +26,23 @@ app.get('/', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  try {
-    const character = await db.prepare(`
-      SELECT * FROM characters WHERE wallet_address = ?
-    `).bind(walletAddress).first();
+  const result = await characterService.getInfo(db, walletAddress);
+  if (!result.ok) return error(c, result.error, result.status);
 
-    if (!character) {
-      // 自动注册新角色
-      const charName = `玩家_${walletAddress.substring(2, 8)}`;
-      await db.prepare(`
-        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
-        VALUES (?, ?, 1, 0, 1000, 0)
-      `).bind(walletAddress, charName).run();
-
-      return success(c, {
-        walletAddress,
-        name: charName,
-        level: 1,
-        exp: 0,
-        gold: 1000,
-        vipLevel: 0,
-        autoCreated: true,
-        message: '自动创建角色成功'
-      });
-    }
-
-    return success(c, {
-      walletAddress: character.wallet_address,
-      name: character.name,
-      level: character.level,
-      exp: character.exp,
-      gold: character.gold,
-      vipLevel: character.vip_level,
-      createdAt: character.created_at,
-      lastLogin: character.last_login
-    });
-  } catch (err: any) {
-    console.error('Get character error:', err);
-    return error(c, err.message || '获取角色失败');
-  }
+  const ch = result.data;
+  return success(c, {
+    walletAddress: ch.wallet_address,
+    name: ch.name,
+    level: ch.level,
+    exp: ch.exp,
+    gold: ch.gold,
+    vipLevel: ch.vip_level,
+    createdAt: ch.created_at,
+    lastLogin: ch.last_login,
+  });
 });
 
-// 创建角色 (如果需要手动创建)
+// POST /api/character - 创建角色 (手动)
 app.post('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -78,32 +55,24 @@ app.post('/', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
+  // 检查是否已存在
+  const exists = await characterService.exists(db, walletAddress);
+  if (exists) return error(c, 'Character already exists');
+
+  // 简单创建 (实际应该用 characterService.create)
   try {
-    const existing = await db.prepare(`
-      SELECT * FROM characters WHERE wallet_address = ?
-    `).bind(walletAddress).first();
-
-    if (existing) return error(c, 'Character already exists');
-
     await db.prepare(`
       INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
       VALUES (?, ?, 1, 0, 1000, 0)
     `).bind(walletAddress, name).run();
 
-    return success(c, {
-      walletAddress,
-      name,
-      level: 1,
-      gold: 1000,
-      message: 'Character created successfully'
-    });
-  } catch (err: any) {
-    console.error('Create character error:', err);
-    return error(c, err.message || '创建角色失败');
+    return success(c, { walletAddress, name, level: 1, gold: 1000 });
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 
-// 获取角色信息 (兼容旧路径 - 返回完整JSON响应)
+// GET /api/character/info - 获取角色信息 (兼容旧版)
 app.get('/info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -111,57 +80,28 @@ app.get('/info', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  try {
-    const character = await db.prepare(`
-      SELECT * FROM characters WHERE wallet_address = ?
-    `).bind(walletAddress).first();
+  const result = await characterService.getOrCreate(db, walletAddress);
 
-    if (!character) {
-      // 自动注册新角色并返回完整信息
-      const charName = `玩家_${walletAddress.substring(2, 8)}`;
-      await db.prepare(`
-        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
-        VALUES (?, ?, 1, 0, 1000, 0)
-      `).bind(walletAddress, charName).run();
-
-      return c.json({
-        success: true,
-        data: {
-          walletAddress,
-          name: charName,
-          level: 1,
-          exp: 0,
-          gold: 1000,
-          vipLevel: 0,
-          autoCreated: true,
-          message: '自动创建角色成功'
-        }
-      });
-    }
-
-    return c.json({
-      success: true,
-      data: {
-        walletAddress: character.wallet_address,
-        name: character.name,
-        level: character.level,
-        exp: character.exp,
-        gold: character.gold,
-        vipLevel: character.vip_level,
-        createdAt: character.created_at,
-        lastLogin: character.last_login
-      }
-    });
-  } catch (err: any) {
-    console.error('Get character info error:', err);
-    return c.json({
-      success: false,
-      error: err.message || '获取角色信息失败'
-    }, 500);
+  if (!result.ok) {
+    return c.json({ success: false, error: result.error }, result.status);
   }
+
+  const { character, isNew } = result.data;
+  return c.json({
+    success: true,
+    data: {
+      walletAddress: character?.wallet_address,
+      name: character?.name,
+      level: character?.level,
+      exp: character?.exp,
+      gold: character?.gold,
+      vipLevel: character?.vip_level,
+      autoCreated: isNew,
+    },
+  });
 });
 
-// 更新登录时间
+// POST /api/character/login - 更新登录时间
 app.post('/login', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -171,12 +111,13 @@ app.post('/login', async (c) => {
 
   try {
     await db.prepare(`
-      UPDATE characters SET last_login = CURRENT_TIMESTAMP WHERE wallet_address = ?
+      UPDATE characters SET last_login = CURRENT_TIMESTAMP
+      WHERE wallet_address = ?
     `).bind(walletAddress).run();
 
     return success(c, { message: 'Login recorded' });
-  } catch (err: any) {
-    return error(c, err.message);
+  } catch (err) {
+    return error(c, (err as Error).message);
   }
 });
 
