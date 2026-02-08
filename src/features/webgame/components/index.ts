@@ -44,3 +44,7 @@ export { default as CityView } from './CityView';
 export { default as HeroPanel } from './HeroPanel';
 export { default as BuildingPanel } from './BuildingPanel';
 export { default as ShopPanel } from './ShopPanel';
+export { default as MilitaryPanel } from './MilitaryPanel';
+export { default as BattlePanel } from './BattlePanel';
+export { default as ChatPanel } from './ChatPanel';
+export { default as MailPanel } from './MailPanel';

@@ -1,0 +1,32 @@
+/* MailPanel - 新版邮件面板样式 */
+.container { position: relative; min-height: 100vh; background: #000; padding: 20px; }
+.title { text-align: center; margin-bottom: 20px; }
+.glitch { font-family: 'Courier New', Monaco, monospace; font-size: 32px; font-weight: bold; color: #AA00FF; text-transform: uppercase; letter-spacing: 8px; text-shadow: 0 0 10px rgba(170, 0, 255, 0.8); }
+.statsCard { margin-bottom: 20px !important; }
+.stats { display: flex; justify-content: space-around; gap: 20px; }
+.statItem { text-align: center; }
+.statValue { display: block; font-family: 'Courier New', Monaco, monospace; font-size: 28px; font-weight: bold; color: #AA00FF; text-shadow: 0 0 15px rgba(170, 0, 255, 0.5); }
+.statLabel { font-family: 'Courier New', Monaco, monospace; font-size: 12px; color: rgba(170, 0, 255, 0.6); text-transform: uppercase; }
+.mailList { display: flex; flex-direction: column; gap: 10px; }
+.mailItem { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(170, 0, 255, 0.2); border-radius: 10px; cursor: pointer; transition: all 0.3s ease; position: relative; }
+.mailItem:hover { border-color: rgba(170, 0, 255, 0.5); box-shadow: 0 0 20px rgba(170, 0, 255, 0.1); }
+.mailItem.read { opacity: 0.6; }
+.mailItem.hasAttachment { border-left: 3px solid #FFD700; }
+.mailIcon { font-size: 28px; }
+.mailInfo { flex: 1; }
+.mailHeader { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.sender { font-family: 'Courier New', Monaco, monospace; font-size: 14px; font-weight: bold; color: #AA00FF; }
+.time { font-family: 'Courier New', Monaco, monospace; font-size: 11px; color: rgba(170, 0, 255, 0.4); }
+.mailTitle { font-family: 'Courier New', Monaco, monospace; font-size: 14px; color: #00FF00; }
+.unreadDot { width: 8px; height: 8px; background: #FFD700; border-radius: 50%; position: absolute; top: 10px; right: 10px; animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+.empty { text-align: center; padding: 60px 20px; color: rgba(170, 0, 255, 0.6); font-family: 'Courier New', Monaco, monospace; }
+.detailContent { text-align: left; }
+.detailHeader { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(170, 0, 255, 0.2); }
+.detailIcon { font-size: 32px; }
+.detailInfo h3 { font-family: 'Courier New', Monaco, monospace; font-size: 18px; color: #AA00FF; margin: 0 0 5px; }
+.detailInfo p { font-family: 'Courier New', Monaco, monospace; font-size: 12px; color: rgba(170, 0, 255, 0.6); margin: 0; }
+.detailBody { font-family: 'Courier New', Monaco, monospace; font-size: 14px; color: #00FF00; line-height: 1.8; padding: 15px 0; border-bottom: 1px solid rgba(170, 0, 255, 0.1); margin-bottom: 15px; }
+.attachment { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; margin-bottom: 15px; font-family: 'Courier New', Monaco, monospace; color: #FFD700; }
+.detailActions { margin-top: 20px; }
+@media (max-width: 768px) { .glitch { font-size: 24px; } .mailItem { padding: 12px; } }
