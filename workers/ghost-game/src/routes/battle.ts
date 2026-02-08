@@ -120,9 +120,9 @@ app.get('/power', async (c) => {
         level: hero.level,
         quality: hero.quality,
         stats: {
-          attack: Math.floor((ability?.Attack || 10) * qualityBonus * levelBonus),
-          defense: Math.floor((ability?.Defence || 8) * qualityBonus * levelBonus),
-          hp: Math.floor((ability?.MaxHp || 100) * qualityBonus * levelBonus),
+          attack: Math.floor(((ability as any)?.Attack || 10) * qualityBonus * levelBonus),
+          defense: Math.floor(((ability as any)?.Defence || 8) * qualityBonus * levelBonus),
+          hp: Math.floor(((ability as any)?.MaxHp || 100) * qualityBonus * levelBonus),
         },
         portrait: portrait?.Icon || '',
       };

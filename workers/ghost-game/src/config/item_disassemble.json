@@ -1,77 +1,26 @@
-/**
- * 物品分解配置
- * 
- * 数据来源: StaticDataAccess.GetItemDisassemble()
- * 用途: 物品系统 - 装备分解为材料
- */
-
-export interface ItemDisassemble {
-  itemId: number;        // 物品ID
-  itemName: string;       // 物品名称
-  disassemblyId: number;  // 分解后获得的物品ID
-  disassemblyNum: number;  // 分解获得的数量
-}
-
-export const itemDisassembles: ItemDisassemble[] = [
-  // 武器分解
-  { itemId: 1001, itemName: "短剑", disassemblyId: 2001, disassemblyNum: 2 },
-  { itemId: 1002, itemName: "长剑", disassemblyId: 2001, disassemblyNum: 4 },
-  { itemId: 1003, itemName: "大刀", disassemblyId: 2001, disassemblyNum: 6 },
-  
-  // 防具分解
-  { itemId: 1101, itemName: "皮甲", disassemblyId: 2002, disassemblyNum: 2 },
-  { itemId: 1102, itemName: "铁甲", disassemblyId: 2002, disassemblyNum: 4 },
-  { itemId: 1103, itemName: "钢甲", disassemblyId: 2002, disassemblyNum: 6 },
-  
-  // 头盔分解
-  { itemId: 1201, itemName: "皮帽", disassemblyId: 2003, disassemblyNum: 2 },
-  { itemId: 1202, itemName: "铁帽", disassemblyId: 2003, disassemblyNum: 4 },
-  { itemId: 1203, itemName: "钢帽", disassemblyId: 2003, disassemblyNum: 6 },
-  
-  // 靴子分解
-  { itemId: 1301, itemName: "布鞋", disassemblyId: 2004, disassemblyNum: 2 },
-  { itemId: 1302, itemName: "皮靴", disassemblyId: 2004, disassemblyNum: 4 },
-  { itemId: 1303, itemName: "铁靴", disassemblyId: 2004, disassemblyNum: 6 },
-  
-  // 饰品分解
-  { itemId: 1401, itemName: "戒指", disassemblyId: 2005, disassemblyNum: 1 },
-  { itemId: 1402, itemName: "项链", disassemblyId: 2005, disassemblyNum: 2 },
-  { itemId: 1403, itemName: "玉佩", disassemblyId: 2005, disassemblyNum: 3 },
-];
-
-export const materialIds: Record<string, number> = {
-  iron: 2001,
-  hide: 2002,
-  cloth: 2003,
-  leather: 2004,
-  gem: 2005,
-};
-
-/**
- * 根据物品ID获取分解配置
- */
-export function getDisassembleByItemId(itemId: number): ItemDisassemble | null {
-  return itemDisassembles.find(d => d.itemId === itemId) || null;
-}
-
-/**
- * 获取所有分解配置
- */
-export function getAllDisassembles(): ItemDisassemble[] {
-  return itemDisassembles;
-}
-
-/**
- * 分解物品
- */
-export function disassembleItem(itemId: number): { itemId: number; num: number } | null {
-  const config = getDisassembleByItemId(itemId);
-  if (!config) {
-    return null;
+{
+  "items": [
+    { "itemId": 1001, "itemName": "短剑", "disassemblyId": 2001, "disassemblyNum": 2 },
+    { "itemId": 1002, "itemName": "长剑", "disassemblyId": 2001, "disassemblyNum": 4 },
+    { "itemId": 1003, "itemName": "大刀", "disassemblyId": 2001, "disassemblyNum": 6 },
+    { "itemId": 1101, "itemName": "皮甲", "disassemblyId": 2002, "disassemblyNum": 2 },
+    { "itemId": 1102, "itemName": "铁甲", "disassemblyId": 2002, "disassemblyNum": 4 },
+    { "itemId": 1103, "itemName": "钢甲", "disassemblyId": 2002, "disassemblyNum": 6 },
+    { "itemId": 1201, "itemName": "皮帽", "disassemblyId": 2003, "disassemblyNum": 2 },
+    { "itemId": 1202, "itemName": "铁帽", "disassemblyId": 2003, "disassemblyNum": 4 },
+    { "itemId": 1203, "itemName": "钢帽", "disassemblyId": 2003, "disassemblyNum": 6 },
+    { "itemId": 1301, "itemName": "布鞋", "disassemblyId": 2004, "disassemblyNum": 2 },
+    { "itemId": 1302, "itemName": "皮靴", "disassemblyId": 2004, "disassemblyNum": 4 },
+    { "itemId": 1303, "itemName": "铁靴", "disassemblyId": 2004, "disassemblyNum": 6 },
+    { "itemId": 1401, "itemName": "戒指", "disassemblyId": 2005, "disassemblyNum": 1 },
+    { "itemId": 1402, "itemName": "项链", "disassemblyId": 2005, "disassemblyNum": 2 },
+    { "itemId": 1403, "itemName": "玉佩", "disassemblyId": 2005, "disassemblyNum": 3 }
+  ],
+  "materialIds": {
+    "iron": 2001,
+    "hide": 2002,
+    "cloth": 2003,
+    "leather": 2004,
+    "gem": 2005
   }
-  
-  return {
-    itemId: config.disassemblyId,
-    num: config.disassemblyNum,
-  };
 }

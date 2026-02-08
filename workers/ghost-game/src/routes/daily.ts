@@ -298,12 +298,14 @@ app.post('/claim-all', async (c) => {
 
   try {
     // 获取所有已完成但未领取的任务
-    const completedTasks: any[] = await db.prepare(`
+    const completedTasksResult = await db.prepare(`
       SELECT p.*, c.reward_exp, c.reward_gold
       FROM daily_task_progress p
       JOIN daily_task_configs c ON p.task_id = c.id
       WHERE p.wallet_address = ? AND p.date = ? AND p.status = ?
     `).bind(walletAddress, today, TASK_STATUS.COMPLETED).all();
+    
+    const completedTasks: any[] = completedTasksResult.results || [];
 
     if (completedTasks.length === 0) {
       return success(c, { 

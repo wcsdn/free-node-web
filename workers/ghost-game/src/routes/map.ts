@@ -111,7 +111,7 @@ app.get('/area/:x/:y', async (c) => {
     ).all();
 
     // 获取范围内的NPC
-    const npcs = (worldNpcsData).filter(npc => {
+    const npcs = (worldNpcsData).filter((npc: any) => {
       const pos = npc.Pos || npc.pos || 0;
       const npcX = pos % 400;
       const npcY = Math.floor(pos / 400);
@@ -119,7 +119,7 @@ app.get('/area/:x/:y', async (c) => {
     });
 
     // 获取地形数据
-    const terrains = (landformsData).filter(l => {
+    const terrains = (landformsData).filter((l: any) => {
       const pos = l.Pos || l.pos || 0;
       const lx = pos % 400;
       const ly = Math.floor(pos / 400);
@@ -439,7 +439,7 @@ app.get('/npcs', async (c) => {
   
   if (level) {
     const lvl = parseInt(level);
-    npcs = npcs.filter(n => (n.Level || n.level) === lvl);
+    npcs = npcs.filter((npc: any) => (npc.Level || npc.level) === lvl);
   }
 
   return success(c, {
