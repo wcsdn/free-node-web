@@ -10,6 +10,11 @@ local_protocol = "http"
 [env.production]
 vars = { ENVIRONMENT = "production" }
 
+# 飞书应用配置
+[vars]
+FEISHU_APP_ID = "cli_a90f138b1123dcb1"
+FEISHU_APP_SECRET = "wuVKbbDbwdd5OBs96X3cCeGFlfgEICXb"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "ghost-game-db"

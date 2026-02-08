@@ -137,6 +137,87 @@ export interface RankItem {
   level: number;
 }
 
+// ==================== 繁荣度系统类型 ====================
+
+export interface ProsperityLevel {
+  level: number;
+  name: string;
+  prosperityRequired: number;
+}
+
+export interface InteriorInfo {
+  cityId: number;
+  cityName: string;
+  prosperity: number;
+  level: number;
+  levelName: string;
+  nextLevelThreshold: number;
+  thresholds: number[];
+  names: string[];
+}
+
+export interface InteriorBonuses {
+  prosperity: number;
+  level: number;
+  levelName: string;
+  bonuses: {
+    resourceLimits: {
+      money: number;
+      food: number;
+      population: number;
+    };
+    growthRates: {
+      moneyRate: number;
+      foodRate: number;
+      populationRate: number;
+    };
+    taxBonus: number;
+    defenseBonus: number;
+    recruitmentBonus: number;
+  };
+}
+
+export interface NextLevelInfo {
+  currentLevel: number;
+  currentProsperity: number;
+  nextLevel: number;
+  nextProsperity: number;
+  prosperityNeeded: number;
+  progress: number;
+}
+
+// ==================== 物品锻造系统类型 ====================
+
+export interface CraftRecipe {
+  id: number;
+  category: string;
+  name: string;
+  type?: string;
+  level?: number;
+  baseStats?: Record<string, number>;
+  inputs: Record<number, number>;
+  output: {
+    itemId: number;
+    count: number;
+  };
+  outputGold: number;
+  canCraft?: boolean;
+  playerMaterials?: Record<number, number>;
+}
+
+export interface CraftResult {
+  message: string;
+  category: string;
+  recipeId: number;
+  output: {
+    itemId: number;
+    name: string;
+    count: number;
+  };
+}
+
+// ==================== 技能系统类型补充 ====================
+
 export interface ChatMessage {
   id: number;
   channel: string;
@@ -784,6 +865,86 @@ export const gameApi = {
   async getTechnicEffects(): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/technic/effects`, {
       headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ==================== 繁荣度系统 (City Interior) ====================
+
+  async getInteriorInfo(cityId: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/interior/info?city_id=${cityId}`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getInteriorLevel(): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/interior/level`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getInteriorLevels(): Promise<ApiResponse<any[]>> {
+    const res = await fetch(`${getApiBase()}/api/interior/levels`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getInteriorBonuses(cityId?: number): Promise<ApiResponse<any>> {
+    const url = cityId 
+      ? `${getApiBase()}/api/interior/bonuses?city_id=${cityId}`
+      : `${getApiBase()}/api/interior/bonuses`;
+    const res = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getInteriorNextLevel(cityId?: number): Promise<ApiResponse<any>> {
+    const url = cityId 
+      ? `${getApiBase()}/api/interior/next-level?city_id=${cityId}`
+      : `${getApiBase()}/api/interior/next-level`;
+    const res = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ==================== 物品锻造系统 (Item Craft) ====================
+
+  async getCraftRecipes(type?: string): Promise<ApiResponse<any[]>> {
+    const url = type 
+      ? `${getApiBase()}/api/item/craft?type=${type}`
+      : `${getApiBase()}/api/item/craft`;
+    const res = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getCraftRecipeDetail(category: string, recipeId: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/item/craft/${category}/${recipeId}`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async craftItem(category: string, recipeId: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/item/craft/craft`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category, recipe_id: recipeId }),
+    });
+    return res.json();
+  },
+
+  async craftItemBatch(category: string, recipeId: number, count: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/item/craft/craft-batch`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category, recipe_id: recipeId, count }),
     });
     return res.json();
   }

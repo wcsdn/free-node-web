@@ -211,11 +211,26 @@ app.post('/pve/dungeon', async (c) => {
     const winRate = calculateWinRate(attackerPower, defenderPower);
     const isWin = Math.random() < winRate;
 
+    // 转换武将数据为 BattleUnit[]
+    const attackerUnits = (heroes.results || []).map((h: any) => ({
+      id: h.id,
+      configId: h.config_id || h.hero_id,
+      name: h.name,
+      attack: h.attack || 100,
+      defense: h.defense || 50,
+      hp: h.hp || h.current_hp || 1000,
+      maxHp: h.max_hp || 1000,
+      speed: h.speed || 10,
+      critRate: h.crit_rate || 0.15,
+      critDamage: h.crit_damage || 1.5,
+      skill: h.skills ? JSON.parse(h.skills) : [],
+    }));
+
     const rounds = generateBattleRounds(
-      heroes.results || [],
+      attackerUnits,
       [], // PVE 不需要防守方武将数据
-      defenderPower,
-      isWin
+      0, // terrainBonus
+      DEFAULT_CONFIG
     );
 
     let exp = 0;
@@ -317,12 +332,41 @@ app.post('/pvp/fight', async (c) => {
     const winRate = calculateWinRate(attackerPower, defenderPower);
     const isWin = Math.random() < winRate;
 
+    // 转换武将数据为 BattleUnit[]
+    const attackerUnits = (attackers.results || []).map((h: any) => ({
+      id: h.id,
+      configId: h.config_id || h.hero_id,
+      name: h.name,
+      attack: h.attack || 100,
+      defense: h.defense || 50,
+      hp: h.hp || h.current_hp || 1000,
+      maxHp: h.max_hp || 1000,
+      speed: h.speed || 10,
+      critRate: h.crit_rate || 0.15,
+      critDamage: h.crit_damage || 1.5,
+      skill: h.skills ? JSON.parse(h.skills) : [],
+    }));
+
+    const defenderUnits = (defenders.results || []).map((h: any) => ({
+      id: h.id,
+      configId: h.config_id || h.hero_id,
+      name: h.name,
+      attack: h.attack || 100,
+      defense: h.defense || 50,
+      hp: h.hp || h.current_hp || 1000,
+      maxHp: h.max_hp || 1000,
+      speed: h.speed || 10,
+      critRate: h.crit_rate || 0.15,
+      critDamage: h.crit_damage || 1.5,
+      skill: h.skills ? JSON.parse(h.skills) : [],
+    }));
+
     // 生成战斗回合
     const rounds = generateBattleRounds(
-      attackers.results || [],
-      defenders.results || [],
-      defenderPower,
-      isWin
+      attackerUnits,
+      defenderUnits,
+      0, // terrainBonus
+      DEFAULT_CONFIG
     );
 
     // 计算奖励

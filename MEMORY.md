@@ -198,8 +198,10 @@ npm run build                  # 构建前端
 
 ### 2026-02-08
 - 用户强调：**只做本地迁移开发，不部署到现网**
+- **重要规则：不再主动提交git更新** - 只有用户明确要求时才提交
 - 清理重复任务文件（EXECUTION_REPORT.md, TODO.md）
 - 精简 MIGRATION_LOG.md，只保留关键里程碑
+- 删除过时文档：PROJECT_STATUS.md, TASK_CHAIN.md
 - MIGRATION_TASKS.md 作为唯一任务追踪源
 
 ### 2026-02-05

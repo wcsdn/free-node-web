@@ -249,4 +249,94 @@ export async function getUserLevel(db: any, walletAddress: string): Promise<numb
   return prosperityToLevel(prosperity);
 }
 
+// ==================== 繁荣度加成 API ====================
+
+// 获取繁荣度加成信息
+app.get('/bonuses', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id } = c.req.query();
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    let prosperity: number;
+    let level: number;
+
+    if (city_id) {
+      const city = await db.prepare(`
+        SELECT prosperity FROM cities WHERE id = ? AND wallet_address = ?
+      `).bind(parseInt(city_id), walletAddress).first();
+
+      if (!city) return error(c, 'City not found', 404);
+      prosperity = (city as any).prosperity || 0;
+      level = prosperityToLevel(prosperity);
+    } else {
+      prosperity = await getTotalProsperity(db, walletAddress);
+      level = prosperityToLevel(prosperity);
+    }
+
+    // 计算加成
+    const limits = calculateResourceLimits(level);
+    const rates = calculateGrowthRates(prosperity);
+
+    return success(c, {
+      prosperity,
+      level,
+      levelName: getLevelName(level),
+      bonuses: {
+        resourceLimits: limits,
+        growthRates: rates,
+        taxBonus: Math.floor(level * 5), // 税收加成
+        defenseBonus: Math.floor(level * 10), // 防御加成
+        recruitmentBonus: Math.floor(level * 3), // 招募加成
+      },
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 计算繁荣度需求（升级到下一级）
+app.get('/next-level', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id } = c.req.query();
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    let prosperity: number;
+
+    if (city_id) {
+      const city = await db.prepare(`
+        SELECT prosperity FROM cities WHERE id = ? AND wallet_address = ?
+      `).bind(parseInt(city_id), walletAddress).first();
+
+      if (!city) return error(c, 'City not found', 404);
+      prosperity = (city as any).prosperity || 0;
+    } else {
+      prosperity = await getTotalProsperity(db, walletAddress);
+    }
+
+    const currentLevel = prosperityToLevel(prosperity);
+    const currentThreshold = levelToProsperityThreshold(currentLevel);
+    const nextThreshold = levelToProsperityThreshold(currentLevel + 1);
+    const needed = nextThreshold - prosperity;
+
+    return success(c, {
+      currentLevel,
+      currentProsperity: prosperity,
+      nextLevel: currentLevel + 1,
+      nextProsperity: nextThreshold,
+      prosperityNeeded: Math.max(0, needed),
+      progress: Math.floor((prosperity - currentThreshold) / (nextThreshold - currentThreshold) * 100),
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

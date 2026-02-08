@@ -8,10 +8,6 @@ import type { Env } from '../types';
 
 const feishuRoutes = new Hono<{ Bindings: Env }>();
 
-// 配置
-const GATEWAY_URL = 'http://127.0.0.1:18789';
-const GATEWAY_TOKEN = '62612b78da176ac6c9ee21d3c6937547b48fb04a67346857';
-
 // 消息缓存（用于回复）
 const messageCache = new Map<string, { openId: string; content: string; time: number }>();
 
@@ -27,7 +23,10 @@ function parseFeishuContent(content: string): string {
 }
 
 // 发送消息到 OpenClaw 主会话
-async function sendToOpenClaw(senderId: string, content: string, messageId: string): Promise<boolean> {
+async function sendToOpenClaw(c: any, senderId: string, content: string, messageId: string): Promise<boolean> {
+  const GATEWAY_URL = c.env.GATEWAY_URL || 'http://127.0.0.1:18789';
+  const GATEWAY_TOKEN = c.env.GATEWAY_TOKEN || '62612b78da176ac6c9ee21d3c6937547b48fb04a67346857';
+  
   try {
     const response = await fetch(`${GATEWAY_URL}/api/v1/sessions/main/messages`, {
       method: 'POST',
@@ -90,23 +89,23 @@ feishuRoutes.post('/webhook', async (c) => {
     const signature = c.req.header('X-Lark-Signature') || '';
     const appSecret = c.env.FEISHU_APP_SECRET || '';
     
-    // 验证签名
-    if (!await verifySignature(body, timestamp, signature, appSecret)) {
-      console.log('⚠️ 签名验证失败');
-      return c.json({ success: false, error: 'Invalid signature' }, 401);
-    }
-    
     const event = JSON.parse(body);
     
-    // URL 验证
+    // URL 验证（无需签名）
     if (event.type === 'url_verification') {
       console.log('🔐 URL 验证');
       return c.json({ challenge: event.challenge });
     }
     
-    // 心跳
+    // 心跳（无需签名）
     if (event.type === 'ping') {
       return c.json({ success: true });
+    }
+    
+    // 消息事件需要签名验证
+    if (!await verifySignature(body, timestamp, signature, appSecret)) {
+      console.log('⚠️ 签名验证失败');
+      return c.json({ success: false, error: 'Invalid signature' }, 401);
     }
     
     // 消息事件
@@ -127,7 +126,7 @@ feishuRoutes.post('/webhook', async (c) => {
       console.log(`   耗时: ${Date.now() - startTime}ms`);
       
       // 转发到 OpenClaw
-      await sendToOpenClaw(senderId, messageContent, message.message_id);
+      await sendToOpenClaw(c, senderId, messageContent, message.message_id);
       
       return c.json({ success: true, messageId: message.message_id });
     }
@@ -218,7 +217,7 @@ feishuRoutes.post('/reply/:messageId', async (c) => {
     }
     
     // 发送回复
-    const result = await sendToOpenClaw(originalMsg.openId, `回复: ${content}`, `reply_${messageId}`);
+    const result = await sendToOpenClaw(c, originalMsg.openId, `回复: ${content}`, `reply_${messageId}`);
     
     return c.json({ success: result, originalMsg });
   } catch (err) {

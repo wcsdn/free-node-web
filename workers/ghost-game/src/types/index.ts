@@ -16,8 +16,12 @@ export interface Env {
   KV: KVNamespace;
   JWT_SECRET: string;
   ENVIRONMENT: string;
+  // 飞书应用配置
   FEISHU_APP_ID: string;
   FEISHU_APP_SECRET: string;
+  // OpenClaw Gateway 配置
+  GATEWAY_URL: string;
+  GATEWAY_TOKEN: string;
 }
 
 export interface Character {
