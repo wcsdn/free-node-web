@@ -1,199 +1,213 @@
 /**
- * 武将面板组件
+ * HeroPanel - 新版武将面板
+ * 赛博朋克风格
  */
-import React, { useEffect, useState } from 'react';
-import { gameApi, type Hero } from '../services/gameApi';
-import styles from '../styles/jxMain.module.css';
+import React, { useState, useEffect } from 'react';
+import { GameCard, GameButton, GameModal } from '@/shared/components/game';
+import styles from './HeroPanel.module.css';
 
-interface HeroPanelProps {
-  cityId: number;
-  onClose: () => void;
+interface Hero {
+  id: number;
+  name: string;
+  level: number;
+  hp: number;
+  maxHp: number;
+  atk: number;
+  def: number;
+  quality: number;
+  skill?: string;
 }
 
-const HeroPanel: React.FC<HeroPanelProps> = ({ cityId, onClose }) => {
-  const [heroes, setHeroes] = useState<Hero[]>([]);
+interface HeroPanelProps {
+  walletAddress: string;
+}
+
+export const HeroPanel: React.FC<HeroPanelProps> = ({ walletAddress }) => {
   const [loading, setLoading] = useState(true);
-  const [recruiting, setRecruiting] = useState(false);
+  const [heroes, setHeroes] = useState<Hero[]>([]);
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
-  const [message, setMessage] = useState('');
+  const [showHeroModal, setShowHeroModal] = useState(false);
 
+  // 加载武将数据
   useEffect(() => {
+    const loadHeroes = async () => {
+      try {
+        const res = await fetch('http://localhost:8788/api/hero/list', {
+          method: 'POST',
+          headers: { 'X-Wallet-Auth': walletAddress || '' },
+        });
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          setHeroes(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to load heroes:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     loadHeroes();
-  }, [cityId]);
+  }, [walletAddress]);
 
-  const loadHeroes = async () => {
-    setLoading(true);
-    try {
-      const res = await gameApi.getHeroList();
-      if (res.success) {
-        setHeroes(res.data || []);
-      }
-    } catch (err) {
-      console.error('Failed to load heroes:', err);
-    }
-    setLoading(false);
+  // 获取品质颜色
+  const getQualityColor = (quality: number): string => {
+    const colors: Record<number, string> = {
+      1: '#888888', // 白色
+      2: '#00FF00', // 绿色
+      3: '#00AAFF', // 蓝色
+      4: '#FF00FF', // 紫色
+      5: '#FFD700', // 金色
+    };
+    return colors[quality] || '#888888';
   };
 
-  const handleRecruit = async (type: 'normal' | 'advanced') => {
-    setRecruiting(true);
-    setMessage('');
-    try {
-      const count = type === 'advanced' ? 10 : 1;
-      const res = await gameApi.recruitHero(cityId, count);
-      if (res.success) {
-        setMessage(`获得武将: ${res.data?.name} (品质${res.data?.quality})`);
-        loadHeroes();
-      } else {
-        setMessage(res.error || '招募失败');
-      }
-    } catch (err) {
-      setMessage('招募失败');
-    }
-    setRecruiting(false);
+  // 获取品质名称
+  const getQualityName = (quality: number): string => {
+    const names: Record<number, string> = {
+      1: '普通',
+      2: '精良',
+      3: '优秀',
+      4: '史诗',
+      5: '传说',
+    };
+    return names[quality] || '未知';
   };
 
-  const handleTrain = async (hero: Hero) => {
-    try {
-      const res = await gameApi.trainHero(hero.id);
-      if (res.success) {
-        setMessage(`训练成功! 经验增加`);
-        loadHeroes();
-      } else {
-        setMessage(res.error || '训练失败');
-      }
-    } catch (err) {
-      setMessage('训练失败');
-    }
+  // 点击武将
+  const handleHeroClick = (hero: Hero) => {
+    setSelectedHero(hero);
+    setShowHeroModal(true);
   };
 
-  const handleUpgrade = async (hero: Hero) => {
-    try {
-      const res = await gameApi.upgradeHero(hero.id);
-      if (res.success) {
-        setMessage(`突破成功! 等级${hero.level} → ${res.data?.level}`);
-        loadHeroes();
-      } else {
-        setMessage(res.error || '突破失败');
-      }
-    } catch (err) {
-      setMessage('突破失败');
-    }
-  };
-
-  const getQualityColor = (quality: number) => {
-    switch (quality) {
-      case 4: return '#ff6b6b'; // 传说 - 红色
-      case 3: return '#9c27b0'; // 史诗 - 紫色
-      case 2: return '#2196f3'; // 稀有 - 蓝色
-      default: return '#4caf50'; // 普通 - 绿色
-    }
-  };
-
-  const getQualityName = (quality: number) => {
-    switch (quality) {
-      case 4: return '传说';
-      case 3: return '史诗';
-      case 2: return '稀有';
-      default: return '普通';
-    }
-  };
+  if (loading) {
+    return <div className={styles.loading}>LOADING...</div>;
+  }
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
-        <span>武将系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
-      </div>
-      
-      <div className={styles.popupContent}>
-        {/* 招募区域 */}
-        <div className={styles.recruitArea}>
-          <h4>招募武将</h4>
-          <div className={styles.recruitBtns}>
-            <button 
-              onClick={() => handleRecruit('normal')}
-              disabled={recruiting}
-              className={styles.recruitBtn}
-            >
-              普通招募 (免费)
-            </button>
-            <button 
-              onClick={() => handleRecruit('advanced')}
-              disabled={recruiting}
-              className={styles.recruitBtnAdvanced}
-            >
-              高级招募 (消耗金币)
-            </button>
-          </div>
-          {message && <div className={styles.message}>{message}</div>}
-        </div>
+    <div className={styles.container}>
+      {/* 标题 */}
+      <h1 className={styles.title}>
+        <span className={styles.glitch} data-text="HEROES">HEROES</span>
+      </h1>
 
-        {/* 武将列表 */}
-        <div className={styles.heroList}>
-          <h4>我的武将 ({heroes.length})</h4>
-          {loading ? (
-            <div className={styles.loading}>加载中...</div>
-          ) : heroes.length === 0 ? (
-            <div className={styles.empty}>暂无武将</div>
-          ) : (
-            <div className={styles.heroGrid}>
-              {heroes.map(hero => (
-                <div 
-                  key={hero.id} 
-                  className={`${styles.heroCard} ${selectedHero?.id === hero.id ? styles.selected : ''}`}
-                  onClick={() => setSelectedHero(hero)}
-                >
-                  <div 
-                    className={styles.heroQuality}
-                    style={{ backgroundColor: getQualityColor(hero.quality) }}
-                  >
-                    {getQualityName(hero.quality)}
-                  </div>
-                  <div className={styles.heroName}>{hero.name}</div>
-                  <div className={styles.heroStats}>
-                    <div>等级: {hero.level}</div>
-                    <div>攻: {hero.attack}</div>
-                    <div>防: {hero.defense}</div>
-                    <div>血: {hero.hp}/{hero.max_hp}</div>
-                  </div>
-                  <div className={styles.heroState}>
-                    {hero.state === 0 ? '空闲' : hero.state === 1 ? '守城' : '训练中'}
-                  </div>
-                </div>
-              ))}
+      {/* 武将列表 */}
+      <div className={styles.heroGrid}>
+        {heroes.map((hero) => (
+          <div
+            key={hero.id}
+            className={styles.heroCard}
+            onClick={() => handleHeroClick(hero)}
+            style={{ borderColor: getQualityColor(hero.quality) }}
+          >
+            <div className={styles.heroAvatar}>
+              <div 
+                className={styles.avatarBg}
+                style={{ background: `linear-gradient(135deg, ${getQualityColor(hero.quality)}33, transparent)` }}
+              />
+              <span className={styles.heroIcon}>⚔️</span>
             </div>
-          )}
-        </div>
+            
+            <div className={styles.heroInfo}>
+              <div 
+                className={styles.heroName}
+                style={{ color: getQualityColor(hero.quality) }}
+              >
+                {hero.name}
+              </div>
+              <div className={styles.heroQuality}>
+                <span 
+                  className={styles.qualityBadge}
+                  style={{ 
+                    background: getQualityColor(hero.quality),
+                    boxShadow: `0 0 10px ${getQualityColor(hero.quality)}`
+                  }}
+                >
+                  {getQualityName(hero.quality)}
+                </span>
+                <span className={styles.heroLevel}>Lv.{hero.level}</span>
+              </div>
+              
+              <div className={styles.heroStats}>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>HP</span>
+                  <div className={styles.statBar}>
+                    <div 
+                      className={styles.statFill}
+                      style={{ width: `${(hero.hp / hero.maxHp) * 100}%` }}
+                    />
+                  </div>
+                  <span className={styles.statValue}>{hero.hp}/{hero.maxHp}</span>
+                </div>
+              </div>
+              
+              <div className={styles.heroAttrs}>
+                <span>⚔️{hero.atk}</span>
+                <span>🛡️{hero.def}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        {/* 武将详情 */}
+      {/* 空状态 */}
+      {heroes.length === 0 && (
+        <div className={styles.empty}>
+          <p>暂无武将</p>
+          <GameButton>招募武将</GameButton>
+        </div>
+      )}
+
+      {/* 武将详情弹窗 */}
+      <GameModal
+        isOpen={showHeroModal}
+        onClose={() => setShowHeroModal(false)}
+        title={selectedHero?.name || '武将详情'}
+        size="medium"
+      >
         {selectedHero && (
           <div className={styles.heroDetail}>
-            <h4>{selectedHero.name} - 详情</h4>
-            <div className={styles.heroDetailStats}>
-              <div>等级: {selectedHero.level}</div>
-              <div>经验: {selectedHero.exp}/{selectedHero.level * 500}</div>
-              <div>攻击力: {selectedHero.attack}</div>
-              <div>防御力: {selectedHero.defense}</div>
-              <div>生命值: {selectedHero.hp}/{selectedHero.max_hp}</div>
-              <div>突破次数: {selectedHero.level - 1}</div>
+            <div className={styles.detailHeader}>
+              <div className={styles.detailAvatar}>
+                ⚔️
+              </div>
+              <div className={styles.detailInfo}>
+                <h3 style={{ color: getQualityColor(selectedHero.quality) }}>
+                  {selectedHero.name}
+                </h3>
+                <p>{getQualityName(selectedHero.quality)} · Lv.{selectedHero.level}</p>
+              </div>
             </div>
-            <div className={styles.heroActions}>
-              <button 
-                onClick={() => handleTrain(selectedHero)}
-                className={styles.actionBtn}
-              >
-                训练 (+经验)
-              </button>
-              <button 
-                onClick={() => handleUpgrade(selectedHero)}
-                className={styles.actionBtn}
-              >
-                突破 (消耗{selectedHero.level * 100}金币)
-              </button>
+            
+            <div className={styles.detailStats}>
+              <div className={styles.detailRow}>
+                <span>生命值</span>
+                <span>{selectedHero.hp} / {selectedHero.maxHp}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <span>攻击力</span>
+                <span>{selectedHero.atk}</span>
+              </div>
+              <div className={styles.detailRow}>
+                <span>防御力</span>
+                <span>{selectedHero.def}</span>
+              </div>
+              {selectedHero.skill && (
+                <div className={styles.detailRow}>
+                  <span>技能</span>
+                  <span>{selectedHero.skill}</span>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.detailActions}>
+              <GameButton fullWidth>升级</GameButton>
+              <GameButton variant="secondary" fullWidth>委任</GameButton>
             </div>
           </div>
         )}
-      </div>
+      </GameModal>
     </div>
   );
 };

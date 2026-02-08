@@ -41,3 +41,5 @@ export { default as NotificationPanel } from './NotificationPanel';
 
 // 新版主城界面 (重构)
 export { default as CityView } from './CityView';
+export { default as HeroPanel } from './HeroPanel';
+export { default as BuildingPanel } from './BuildingPanel';
