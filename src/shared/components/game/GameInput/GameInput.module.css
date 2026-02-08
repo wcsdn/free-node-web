@@ -1,0 +1,58 @@
+/* GameInput - 赛博朋克风格输入框 */
+
+.container {
+  margin-bottom: 15px;
+}
+
+.label {
+  display: block;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 14px;
+  color: #00FF00;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 16px;
+  color: #00FF00;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: rgba(0, 255, 0, 0.4);
+}
+
+.input:focus {
+  border-color: #00FF00;
+  box-shadow: 
+    0 0 10px rgba(0, 255, 0, 0.3),
+    inset 0 0 20px rgba(0, 255, 0, 0.05);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .label {
+    font-size: 12px;
+  }
+  
+  .input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}

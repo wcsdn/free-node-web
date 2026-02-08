@@ -1,0 +1,110 @@
+/* ResourceBar - 游戏资源栏 */
+
+/* 基础样式 */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+}
+
+.resources {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.resource {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.name {
+  color: rgba(0, 255, 0, 0.7);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.value {
+  color: #00FF00;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.limit {
+  color: rgba(0, 255, 0, 0.5);
+  font-size: 14px;
+}
+
+.rate {
+  color: rgba(0, 255, 0, 0.6);
+  font-size: 12px;
+}
+
+/* 收集按钮 */
+.collectBtn {
+  background: transparent;
+  border: 1px solid #00FF00;
+  color: #00FF00;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 14px;
+  padding: 8px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.collectBtn:hover {
+  background: rgba(0, 255, 0, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .bar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .resources {
+    gap: 15px;
+    justify-content: center;
+  }
+  
+  .resource {
+    gap: 5px;
+  }
+  
+  .icon {
+    font-size: 16px;
+  }
+  
+  .name {
+    font-size: 10px;
+  }
+  
+  .value {
+    font-size: 14px;
+  }
+  
+  .collectBtn {
+    width: 100%;
+    padding: 10px;
+  }
+}

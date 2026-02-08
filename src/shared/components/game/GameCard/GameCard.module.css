@@ -1,0 +1,64 @@
+/* GameCard - 赛博朋克风格卡片 */
+
+.card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.5),
+    transparent
+  );
+}
+
+.title {
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+  font-size: 18px;
+  color: #00FF00;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.content {
+  color: #00FF00;
+  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
+}
+
+/* 可点击状态 */
+.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clickable:hover {
+  border-color: rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 25px rgba(0, 255, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .card {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 14px;
+  }
+}

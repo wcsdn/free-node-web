@@ -185,6 +185,14 @@ export const routes: RouteObject[] = [
           </PageWrapper>
         ),
       },
+      {
+        path: 'jxweb/city',
+        element: (
+          <PageWrapper>
+            <JxWeb />
+          </PageWrapper>
+        ),
+      },
     ],
   },
 ];

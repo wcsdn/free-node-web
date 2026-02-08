@@ -38,3 +38,6 @@ export { default as HelpPanel } from './HelpPanel';
 export { default as SigninPanel } from './SigninPanel';
 export { default as DailyPanel } from './DailyPanel';
 export { default as NotificationPanel } from './NotificationPanel';
+
+// 新版主城界面 (重构)
+export { default as CityView } from './CityView';
