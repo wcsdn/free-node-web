@@ -196,6 +196,12 @@ npm run build                  # 构建前端
 
 ## 更新日志
 
+### 2026-02-08
+- 用户强调：**只做本地迁移开发，不部署到现网**
+- 清理重复任务文件（EXECUTION_REPORT.md, TODO.md）
+- 精简 MIGRATION_LOG.md，只保留关键里程碑
+- MIGRATION_TASKS.md 作为唯一任务追踪源
+
 ### 2026-02-05
 - 创建 SKILL.md (迁移技能完整指南)
 - 创建 QUICKREF.md (开发速查卡)
