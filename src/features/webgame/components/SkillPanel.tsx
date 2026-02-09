@@ -51,3 +51,5 @@ export const SkillPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default SkillPanel;

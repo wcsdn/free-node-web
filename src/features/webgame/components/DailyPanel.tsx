@@ -60,3 +60,5 @@ export const DailyPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default DailyPanel;

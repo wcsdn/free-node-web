@@ -72,7 +72,7 @@ export const cityApi = {
   },
 
   /** 获取建筑列表 */
-  async getBuildings(cityId: number): Promise<ApiResponse<Building[]>> {
+  async getBuildings(cityId: number): Promise<ApiResponse<{ buildings: Building[] }>> {
     return fetchApi(`/api/game/city/building-list/${cityId}`, {
       method: 'POST',
     });

@@ -14,7 +14,7 @@ export const characterRepo = {
     const result = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
-    return result as Character | null;
+    return result as unknown as Character | null;
   },
 
   /**

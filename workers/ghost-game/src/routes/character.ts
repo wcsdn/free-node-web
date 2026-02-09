@@ -1,22 +1,26 @@
 /**
  * Character Route - 角色路由
- * 原则：只处理 HTTP 请求/响应，业务逻辑委托给 Service 层
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
+import type { Character, ServiceResult } from '../models';
 import { verifyWalletAuth } from '../utils/auth';
 import { characterService } from '../services';
 
-// ============ Helpers ============
-function success(c: any, data: unknown) {
+const app = new Hono<{ Bindings: Env }>();
+
+function success(c: any, data: any) {
   return c.json({ success: true, data });
 }
 
-function error(c: any, message: string, status = 400) {
-  return c.json({ success: false, error: message }, status);
+function error(c: any, message: string, status?: number) {
+  return c.json({ success: false, error: message }, status as number);
 }
 
-// ============ Routes ============
+// 类型守卫：检查是否是错误结果
+function isErrorResult<T>(result: ServiceResult<T>): result is { ok: false; error: string; status?: number } {
+  return !result.ok;
+}
 
 // GET /api/character - 获取角色信息
 app.get('/', async (c) => {
@@ -27,7 +31,7 @@ app.get('/', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await characterService.getInfo(db, walletAddress);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   const ch = result.data;
   return success(c, {
@@ -55,11 +59,9 @@ app.post('/', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  // 检查是否已存在
   const exists = await characterService.exists(db, walletAddress);
   if (exists) return error(c, 'Character already exists');
 
-  // 简单创建 (实际应该用 characterService.create)
   try {
     await db.prepare(`
       INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
@@ -81,21 +83,18 @@ app.get('/info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await characterService.getOrCreate(db, walletAddress);
-
-  if (!result.ok) {
-    return c.json({ success: false, error: result.error }, result.status);
-  }
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   const { character, isNew } = result.data;
   return c.json({
     success: true,
     data: {
-      walletAddress: character?.wallet_address,
-      name: character?.name,
-      level: character?.level,
-      exp: character?.exp,
-      gold: character?.gold,
-      vipLevel: character?.vip_level,
+      walletAddress: character.wallet_address,
+      name: character.name,
+      level: character.level,
+      exp: character.exp,
+      gold: character.gold,
+      vipLevel: character.vip_level,
       autoCreated: isNew,
     },
   });

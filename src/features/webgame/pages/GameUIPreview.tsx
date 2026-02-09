@@ -6,6 +6,8 @@
 import React, { useState } from 'react';
 import {
   GameButton, GameCard, GameModal, GameInput, ResourceBar,
+} from '@/shared/components/game';
+import {
   CityView, HeroPanel, BuildingPanel, ShopPanel,
   MilitaryPanel, BattlePanel, ChatPanel, MailPanel,
   RankingPanel, TaskPanel, DungeonPanel, DefensePanel

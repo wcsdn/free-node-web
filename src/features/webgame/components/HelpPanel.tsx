@@ -62,3 +62,5 @@ export const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default HelpPanel;

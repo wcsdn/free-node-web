@@ -11,5 +11,4 @@ interface GameCardProps {
   onClick?: () => void;
 }
 
-export { GameCard } from './GameCard';
 export { default as GameCard } from './GameCard';

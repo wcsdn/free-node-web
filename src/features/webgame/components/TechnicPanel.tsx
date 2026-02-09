@@ -53,3 +53,5 @@ export const TechnicPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => 
     </GameCard>
   );
 };
+
+export default TechnicPanel;

@@ -14,7 +14,7 @@ export const buildingRepo = {
     const result = await db.prepare(`
       SELECT * FROM buildings WHERE id = ?
     `).bind(buildingId).first();
-    return result as Building | null;
+    return result as unknown as Building | null;
   },
 
   /**
@@ -24,7 +24,7 @@ export const buildingRepo = {
     const result = await db.prepare(`
       SELECT * FROM buildings WHERE city_id = ? ORDER BY position
     `).bind(cityId).all();
-    return (result.results || []) as Building[];
+    return (result.results || []) as unknown as Building[];
   },
 
   /**
@@ -69,7 +69,7 @@ export const buildingRepo = {
       now
     ).run();
 
-    return this.findById(db, (await this.getLastInsertId(db)) as Promise<Building>;
+    return this.findById(db, await this.getLastInsertId(db)) as Building;
   },
 
   /**
@@ -117,7 +117,7 @@ export const buildingRepo = {
   /**
    * 获取最后插入 ID (辅助方法)
    */
-  private async getLastInsertId(db: D1Database): Promise<number> {
+  async getLastInsertId(db: D1Database): Promise<number> {
     const result = await db.prepare(`
       SELECT last_insert_rowid() as id
     `).first() as { id: number };

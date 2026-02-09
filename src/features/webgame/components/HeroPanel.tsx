@@ -76,3 +76,5 @@ export const HeroPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default HeroPanel;

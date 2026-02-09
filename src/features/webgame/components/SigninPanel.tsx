@@ -49,3 +49,5 @@ export const SigninPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default SigninPanel;

@@ -39,3 +39,5 @@ export const ChatPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default ChatPanel;

@@ -23,3 +23,5 @@ export const RightPanel: React.FC = () => {
     </div>
   );
 };
+
+export default RightPanel;

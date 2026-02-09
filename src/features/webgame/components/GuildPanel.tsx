@@ -62,3 +62,5 @@ export const GuildPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default GuildPanel;

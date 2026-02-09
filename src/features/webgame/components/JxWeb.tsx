@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { ResourceBar, GameCard, GameButton } from '@/shared/components/game';
-import { popupManager } from './PopupManager';
+import { popupManager, PopupManager } from './PopupManager';
 import { useCity } from '../hooks/useCity';
 import { useChat } from '../hooks/useChat';
 import { getApiBase, getAuthHeaders } from '../utils/api';

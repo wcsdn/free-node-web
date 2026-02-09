@@ -1,22 +1,26 @@
 /**
  * City Route - 城市路由
- * 原则：只处理 HTTP 请求/响应，业务逻辑委托给 Service 层
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
+import type { City, ServiceResult } from '../models';
 import { verifyWalletAuth } from '../utils/auth';
 import { cityService } from '../services';
 
-// ============ Helpers ============
-function success(c: any, data: unknown) {
+const app = new Hono<{ Bindings: Env }>();
+
+function success(c: any, data: any) {
   return c.json({ success: true, data });
 }
 
-function error(c: any, message: string, status = 400) {
-  return c.json({ success: false, error: message }, status);
+function error(c: any, message: string, status?: number) {
+  return c.json({ success: false, error: message }, status as number);
 }
 
-// ============ Routes ============
+// 类型守卫：检查是否是错误结果
+function isErrorResult<T>(result: ServiceResult<T>): result is { ok: false; error: string; status?: number } {
+  return !result.ok;
+}
 
 // GET /api/game/city - 获取城市信息 (自动创建)
 app.get('/', async (c) => {
@@ -27,8 +31,7 @@ app.get('/', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await cityService.getOrCreate(db, walletAddress);
-
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   const { city, buildings, isNew } = result.data;
 
@@ -46,7 +49,7 @@ app.get('/', async (c) => {
     buildings: buildings.map(b => ({
       id: b.id,
       configId: b.config_id,
-      name: '', // TODO: 从配置获取
+      name: '',
       type: b.type,
       level: b.level,
       position: b.position,
@@ -65,7 +68,7 @@ app.get('/list', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await cityService.getList(db, walletAddress);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   return success(c, result.data.map(city => ({
     ID: city.id,
@@ -91,12 +94,13 @@ app.post('/', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await cityService.create(db, walletAddress, name);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
+  const city = result.data;
   return success(c, {
-    id: result.data.id,
-    name: result.data.name,
-    position: result.data.position,
+    id: city.id,
+    name: city.name,
+    position: city.position,
   });
 });
 
@@ -110,7 +114,7 @@ app.post('/:id/collect', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await cityService.collect(db, walletAddress, cityId);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   return success(c, {
     collected: result.data.collected,
@@ -118,7 +122,7 @@ app.post('/:id/collect', async (c) => {
   });
 });
 
-// POST /api/game/city/interior/:id - 获取城市内政信息 (含建筑)
+// POST /api/game/city/interior/:id - 获取城市内政信息
 app.post('/interior/:id', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -128,7 +132,7 @@ app.post('/interior/:id', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await cityService.getDetail(db, walletAddress, cityId);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   const { city, buildings } = result.data;
   return success(c, {

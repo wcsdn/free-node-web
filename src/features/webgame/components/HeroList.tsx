@@ -67,3 +67,5 @@ export const HeroList: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default HeroList;

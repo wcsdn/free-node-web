@@ -3,6 +3,7 @@
  */
 import { Hono } from 'hono';
 import type { Env } from '../types';
+import type { ServiceResult } from '../models';
 import { verifyWalletAuth } from '../utils/auth';
 import { heroService } from '../services';
 
@@ -12,8 +13,13 @@ function success(c: any, data: any) {
   return c.json({ success: true, data });
 }
 
-function error(c: any, message: string, status = 400) {
-  return c.json({ success: false, error: message }, status);
+function error(c: any, message: string, status?: number) {
+  return c.json({ success: false, error: message }, status as number);
+}
+
+// 类型守卫：检查是否是错误结果
+function isErrorResult<T>(result: ServiceResult<T>): result is { ok: false; error: string; status?: number } {
+  return !result.ok;
 }
 
 // GET /api/hero - 获取武将列表
@@ -25,7 +31,7 @@ app.get('/', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await heroService.getList(db, walletAddress);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   return success(c, result.data);
 });
@@ -39,7 +45,7 @@ app.get('/list', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await heroService.getList(db, walletAddress);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   return c.json({
     success: true,
@@ -58,7 +64,7 @@ app.post('/:id/levelup', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const result = await heroService.levelUp(db, heroId);
-  if (!result.ok) return error(c, result.error, result.status);
+  if (isErrorResult(result)) return error(c, result.error, result.status);
 
   return success(c, result.data);
 });

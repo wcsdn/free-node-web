@@ -3,7 +3,7 @@
  * 原则：只负责 SQL 操作，不包含业务逻辑
  */
 import type { D1Database } from '@cloudflare/workers-types';
-import type { City, CityCreate } from '../models';
+import type { City, CityCreate, Building } from '../models';
 
 // ============ Base Operations ============
 export const cityRepo = {
@@ -14,7 +14,7 @@ export const cityRepo = {
     const result = await db.prepare(`
       SELECT * FROM cities WHERE id = ?
     `).bind(cityId).first();
-    return result as City | null;
+    return result as unknown as City | null;
   },
 
   /**
@@ -24,7 +24,7 @@ export const cityRepo = {
     const result = await db.prepare(`
       SELECT * FROM cities WHERE wallet_address = ? ORDER BY id ASC
     `).bind(walletAddress).all();
-    return (result.results || []) as City[];
+    return (result.results || []) as unknown as City[];
   },
 
   /**
@@ -34,7 +34,7 @@ export const cityRepo = {
     const result = await db.prepare(`
       SELECT * FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
     `).bind(walletAddress).first();
-    return result as City | null;
+    return result as unknown as City | null;
   },
 
   /**
@@ -155,5 +155,15 @@ export const cityRepo = {
       SELECT COUNT(*) as count FROM cities WHERE wallet_address = ?
     `).bind(walletAddress).first() as { count: number };
     return result.count;
+  },
+
+  /**
+   * 根据城市 ID 获取建筑列表
+   */
+  async findByCity(db: D1Database, cityId: number): Promise<Building[]> {
+    const result = await db.prepare(`
+      SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+    `).bind(cityId).all();
+    return (result.results || []) as unknown as Building[];
   },
 };

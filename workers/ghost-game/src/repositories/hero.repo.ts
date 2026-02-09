@@ -10,7 +10,7 @@ export const heroRepo = {
     const result = await db.prepare(`
       SELECT * FROM heroes WHERE id = ?
     `).bind(heroId).first();
-    return result as Hero | null;
+    return result as unknown as Hero | null;
   },
 
   /** 根据钱包地址获取武将列表 */
@@ -18,7 +18,7 @@ export const heroRepo = {
     const result = await db.prepare(`
       SELECT * FROM heroes WHERE wallet_address = ? ORDER BY id
     `).bind(walletAddress).all();
-    return (result.results || []) as Hero[];
+    return (result.results || []) as unknown as Hero[];
   },
 
   /** 根据城市获取武将列表 */
@@ -26,7 +26,7 @@ export const heroRepo = {
     const result = await db.prepare(`
       SELECT * FROM heroes WHERE city_id = ? ORDER BY id
     `).bind(cityId).all();
-    return (result.results || []) as Hero[];
+    return (result.results || []) as unknown as Hero[];
   },
 
   /** 创建武将 */
@@ -65,7 +65,8 @@ export const heroRepo = {
     return result.success;
   },
 
-  private async getLastInsertId(db: D1Database): Promise<number> {
+  /** 获取最后插入 ID */
+  async getLastInsertId(db: D1Database): Promise<number> {
     const r = await db.prepare('SELECT last_insert_rowid() as id').first() as { id: number };
     return r.id;
   },

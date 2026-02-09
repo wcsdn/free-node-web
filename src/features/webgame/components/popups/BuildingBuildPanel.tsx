@@ -3,7 +3,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { GameCard, GameButton } from '@/shared/components/game';
-import { getApiBase, getAuthHeaders } from '../utils/api';
+import { getApiBase, getAuthHeaders } from '../../utils/api';
 
 interface Building {
   id: number;

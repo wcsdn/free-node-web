@@ -14,5 +14,4 @@ interface GameButtonProps {
   fullWidth?: boolean;
 }
 
-export { GameButton } from './GameButton';
 export { default as GameButton } from './GameButton';

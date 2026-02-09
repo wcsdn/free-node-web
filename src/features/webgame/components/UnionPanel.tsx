@@ -57,3 +57,5 @@ export const UnionPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     </GameCard>
   );
 };
+
+export default UnionPanel;
