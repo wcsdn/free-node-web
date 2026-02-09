@@ -62,6 +62,42 @@ app.get('/config', async (c) => {
   });
 });
 
+// 根路径 - 获取地图概览
+app.get('/', async (c) => {
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 获取地图基本信息和世界数据
+    const npcs = (worldNpcsData || []).map((npc: any) => ({
+      pos: npc.Pos,
+      level: npc.Level,
+      name: npc.Name,
+      picIndex: npc.PicIndex,
+    }));
+
+    const terrains = (landformsData || []).map((t: any) => ({
+      pos: t.Pos,
+      type: t.Type,
+      picIndex: t.PicIndex,
+    }));
+
+    return success(c, {
+      config: {
+        width: MAP_CONFIG.WIDTH,
+        height: MAP_CONFIG.HEIGHT,
+        worldSize: MAP_CONFIG.WORLD_SIZE,
+        terrainTypes: TERRAIN_TYPES,
+      },
+      npcs: npcs,
+      terrains: terrains,
+      message: '地图数据加载成功',
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取玩家位置
 app.get('/position', async (c) => {
   const walletAddress = await verifyWalletAuth(c);

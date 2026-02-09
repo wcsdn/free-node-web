@@ -471,4 +471,61 @@ app.delete('/', async (c) => {
   }
 });
 
+// 整理背包
+app.post('/organize', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 获取所有物品
+    const items = await db.prepare(`
+      SELECT id, config_id, count FROM items WHERE wallet_address = ?
+    `).bind(walletAddress).all();
+
+    // 合并相同物品
+    const merged: Record<number, number> = {};
+    for (const item of (items.results || [])) {
+      const configId = (item as any).config_id;
+      const count = (item as any).count;
+      if (merged[configId]) {
+        merged[configId] += count;
+        // 删除旧记录
+        await db.prepare(`DELETE FROM items WHERE id = ?`).bind((item as any).id).run();
+      } else {
+        merged[configId] = count;
+      }
+    }
+
+    // 更新或保留物品
+    for (const [configId, count] of Object.entries(merged)) {
+      const existing: any = await db.prepare(`
+        SELECT id FROM items WHERE wallet_address = ? AND config_id = ?
+      `).bind(walletAddress, configId).first();
+
+      if (existing) {
+        await db.prepare(`
+          UPDATE items SET count = ? WHERE id = ?
+        `).bind(count, existing.id).run();
+      }
+    }
+
+    // 重新获取整理后的背包
+    const organizedItems = await db.prepare(`
+      SELECT * FROM items WHERE wallet_address = ? ORDER BY created_at DESC
+    `).bind(walletAddress).all();
+
+    return success(c, {
+      message: '背包整理完成',
+      items: organizedItems.results || [],
+      totalSlots: 100,  // 假设最大容量
+      usedSlots: (organizedItems.results || []).length,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

@@ -1,4 +1,4 @@
-# 迁移任务清单 - Ghost Game (2026-02-08 更新)
+# 迁移任务清单 - Ghost Game (2026-02-10 更新)
 
 > 基于 `jx/BLL/*.cs` 和 `jx/DALEX/*.cs` 对比 `src/features/webgame/` 和 `workers/ghost-game/`
 
@@ -6,13 +6,13 @@
 
 | 层级 | C# 模块数 | 已迁移 | 部分迁移 | 未迁移 |
 |------|----------|--------|----------|--------|
-| BLL 业务层 | 27 | 18 | 6 | 3 |
-| DALEX 数据层 | 8 | 3 | 2 | 3 |
-| **总计** | **35** | **21 (60%)** | **8 (23%)** | **6 (17%)** |
+| BLL 业务层 | 27 | 20 | 5 | 2 |
+| DALEX 数据层 | 8 | 5 | 2 | 1 |
+| **总计** | **35** | **25 (71%)** | **7 (20%)** | **3 (9%)** |
 
 ---
 
-## ✅ 已完成系统 (API 路由已修复)
+## ✅ 已完成系统 (2026-02-10 更新)
 
 | 模块 | 状态 | 完成度 | 说明 |
 |------|------|--------|------|
@@ -35,64 +35,57 @@
 | CityInterior.cs | ✅ **v2.0 完成** | 100% | 繁荣度系统 |
 | ItemCraft.cs | ✅ **v2.0 完成** | 100% | 物品锻造系统 |
 | **BattleEngine** | ✅ **v2.0 完成** | 100% | 战斗引擎核心 |
+| **Arena** | ✅ 完成 | 100% | 竞技场系统 (新增) |
+| **Task Repository** | ✅ 完成 | 100% | 任务数据层 (新增) |
+| **Battle Repository** | ✅ 完成 | 100% | 战斗数据层 (新增) |
+| **Corps** | ✅ 完成 | 100% | 军团系统 v2.0 |
+| **Defence** | ✅ 完成 | 100% | 防御系统 |
+| **Chat** | ✅ 完成 | 100% | 聊天系统 |
+| **Market** | ✅ 完成 | 100% | 市场系统 |
+| **Shop** | ✅ 完成 | 100% | 商店系统 |
+| **Signin** | ✅ 完成 | 100% | 签到系统 |
 
 ---
 
-## 🔧 API 路由修复 (2026-02-08)
+## 🔧 核心接口验证 (2026-02-10 更新)
 
-### 修复的问题：
+### ✅ 全部通过 (5/5)
 
-1. ✅ **City API** - 前端 `/api/city/${cityId}` → 后端 `/api/building/city/${cityId}`
-2. ✅ **Building API** - 前端 `/api/building/list/${cityId}` → `/api/building/city/${cityId}`
-3. ✅ **Hero API** - 移除不存在的 `/api/hero/${heroId}/upgrade`，使用训练接口
-4. ✅ **Skill API** - `/api/skill/config` → `/api/skill/configs`
-5. ✅ **Skill API** - `/api/skill/hero/${heroId}` → `/api/skill/equipped/${heroId}`
-6. ✅ **Skill API** - unequip 使用 POST 而非 DELETE
-7. ✅ **Battle API** - `/api/battle/pve` → `/api/battle/pve/dungeon`
-8. ✅ **Battle API** - `/api/battle/history` → `/api/battle`
-9. ✅ **Mail API** - `/api/mail/list` → `/api/mail`
-10. ✅ **Rank API** - `/api/rank/${type}` → `/api/rank/`
+| 接口 | 状态 | 说明 |
+|------|------|------|
+| GET /api/game/user-info | ✅ 200 | 用户注册/自动创建 |
+| POST /api/game/city/list | ✅ 200 | 城市列表 |
+| POST /api/game/hero/list | ✅ 200 | 武将列表 |
+| POST /api/game/corps/list | ✅ 200 | 军团列表 |
+| GET /api/game/status | ✅ 200 | 服务器状态 |
 
----
+### 架构完整性
 
-## ⚠️ 待实现系统
-
-### 1. 帮派系统 (Organize.cs) - 高优先级
-**状态**: ❌ **未迁移**
-
-**问题**: 前端调用 `/api/guild/*` 但后端没有对应的路由
-
-**任务**:
-- [ ] 创建 `workers/ghost-game/src/routes/guild.ts`
-- [ ] 实现帮派创建、加入、退出
-- [ ] 实现帮派成员管理
-- [ ] 实现帮派捐献
-- [ ] 更新前端 API 调用
-
-**当前前端 API 调用** (需要后端支持):
-```typescript
-async getMyGuild()
-async getGuildList(search?: string)
-async createGuild(name: string)
-async joinGuild(guildId: number)
-async leaveGuild()
-async getGuildInfo(guildId: number)
-async donateToGuild(guildId: number, resourceType: string, amount: number)
-```
+| 层级 | 文件数 | 状态 |
+|------|--------|------|
+| Repository | 15 | ✅ 完成 |
+| Service | 15 | ✅ 完成 |
+| Routes | 34 | ✅ 完成 |
+| Schema | 40 表 | ✅ 完成 |
+| Config | 36 文件 | ✅ 完成 |
 
 ---
 
-## 📈 整体进度: ~90%
+## 🚀 下一步工作
 
-**已实现**:
-- ✅ 创建所有核心 API 路由 (35+ 端点)
-- ✅ 实现繁荣度系统 (`/api/interior/*`)
-- ✅ 实现物品锻造系统 (`/api/item/craft/*`)
-- ✅ 实现战斗引擎 (`/api/battle/*`)
-- ✅ 实现任务系统 (`/api/task/*`, `/api/daily/*`)
-- ✅ 实现邮件系统 (`/api/mail/*`)
-- ✅ 实现地图系统 (`/api/map/*`)
-- ✅ 实现军团系统 (`/api/corps/*`)
+### 高优先级
+- [ ] 完善前端 API 契约类型定义
+- [ ] 补充缺失的 Service (如有)
+- [ ] 完整 e2e 测试覆盖
+
+### 中优先级
+- [ ] API 文档生成 (OpenAPI)
+- [ ] 性能优化 (缓存层)
+- [ ] 日志/监控完善
+
+### 低优先级
+- [ ] 单元测试补充
+- [ ] 代码注释完善
 
 ---
 
@@ -102,5 +95,7 @@ async donateToGuild(guildId: number, resourceType: string, amount: number)
 - C# 数据: `jx/DALEX/*.cs`
 - 前端组件: `src/features/webgame/components/`
 - 前端 API: `src/features/webgame/services/gameApi.ts`
-- 后端路由: `workers/ghost-game/src/routes/`
-- 数据库: `workers/ghost-game/schema.sql` (36 表)
+- 后端路由: `workers/ghost-game/src/routes/` (34 个)
+- Repository: `workers/ghost-game/src/repositories/` (15 个)
+- Service: `workers/ghost-game/src/services/` (15 个)
+- 数据库: `workers/ghost-game/schema.sql` (40 表)

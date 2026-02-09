@@ -96,6 +96,47 @@ export function getLevelName(level: number): string {
 
 // ==================== API 端点 ====================
 
+// 根路径 - 获取繁荣度概览
+app.get('/', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 获取用户的城市
+    const city: any = await db.prepare(`
+      SELECT id, name, prosperity FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) {
+      return success(c, {
+        hasCity: false,
+        message: '请先创建城市',
+        levels: PROSPERITY_LEVEL_THRESHOLDS,
+        names: PROSPERITY_LEVEL_NAMES,
+      });
+    }
+
+    const prosperity = city.prosperity || 0;
+    const level = prosperityToLevel(prosperity);
+
+    return success(c, {
+      hasCity: true,
+      cityId: city.id,
+      cityName: city.name,
+      prosperity,
+      level,
+      levelName: getLevelName(level),
+      thresholds: PROSPERITY_LEVEL_THRESHOLDS,
+      names: PROSPERITY_LEVEL_NAMES,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取繁荣度信息
 app.get('/info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);

@@ -66,9 +66,10 @@ app.get('/health', (c) => {
 });
 
 // API 路由
-app.route('/api/character', characterRoutes);
-app.route('/api/user', characterRoutes);
-app.route('/api/city', cityRoutes);
+app.route('/api/game', gameRoutes);
+app.route('/api/game/city', cityRoutes);
+app.route('/api/game/hero', heroRoutes);
+app.route('/api/game/corps', corpsRoutes);
 app.route('/api/battle', battleRoutes);
 app.route('/api/hero', heroRoutes);
 app.route('/api/building', buildingRoutes);
@@ -82,7 +83,6 @@ app.route('/api/dungeon', dungeonRoutes);
 app.route('/api/defense', defenseRoutes);
 app.route('/api/item', itemRoutes);
 app.route('/api/arena', arenaRoutes);
-app.route('/api/game', gameRoutes);
 app.route('/api/chat', chatRoutes);
 app.route('/api/help', helpRoutes);
 app.route('/api/signin', signinRoutes);

@@ -40,6 +40,89 @@ function error(c: any, message: string, status = 400) {
 
 // ==================== 基础功能 ====================
 
+// 获取战斗统计 (必须在 /:id 之前)
+app.get('/stats', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const stats = await db.prepare(`
+      SELECT 
+        COUNT(*) as total_battles,
+        SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
+        SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
+        SUM(CASE WHEN battle_type = 'pvp' THEN 1 ELSE 0 END) as pvp_battles,
+        SUM(CASE WHEN battle_type = 'pve' THEN 1 ELSE 0 END) as pve_battles
+      FROM battles 
+      WHERE attacker_address = ?
+    `).bind(walletAddress).first();
+
+    const total = (stats?.total_battles as number) || 0;
+    const wins = (stats?.wins as number) || 0;
+
+    return success(c, {
+      totalBattles: total,
+      wins,
+      losses: total - wins,
+      winRate: total > 0 ? Math.floor((wins / total) * 100) : 0,
+      pvpBattles: stats?.pvp_battles || 0,
+      pveBattles: stats?.pve_battles || 0,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 获取战斗力 (必须在 /:id 之前)
+app.get('/power', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const heroes = await db.prepare(`
+      SELECT * FROM heroes WHERE wallet_address = ? AND state IN (0, 1)
+    `).bind(walletAddress).all();
+
+    const totalPower = calculatePowerFromHeroes(heroes.results || [], heroConfigs);
+    
+    const heroDetails = (heroes.results || []).map((hero: any) => {
+      const portrait = (heroConfigs.Portrait || []).find((p: any) => p.Index === hero.config_id);
+      const ability = (heroConfigs.Ability || []).find((a: any) => a.Index === portrait?.AbilityIndex);
+      
+      const qualityBonus = 1 + (hero.quality - 1) * 0.2;
+      const levelBonus = 1 + (hero.level - 1) * 0.1;
+      
+      return {
+        id: hero.id,
+        name: hero.name,
+        level: hero.level,
+        quality: hero.quality,
+        stats: {
+          attack: Math.floor(((ability as any)?.Attack || 10) * qualityBonus * levelBonus),
+          defense: Math.floor(((ability as any)?.Defence || 8) * qualityBonus * levelBonus),
+          hp: Math.floor(((ability as any)?.MaxHp || 100) * qualityBonus * levelBonus),
+        },
+        portrait: portrait?.Icon || '',
+      };
+    });
+
+    return success(c, {
+      totalPower,
+      heroCount: heroDetails.length,
+      heroDetails,
+      message: `战斗力 ${totalPower}`,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取战斗记录列表
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -465,44 +548,6 @@ app.get('/replay/:id', async (c) => {
         defenderPower: report.defenderPower,
         rewards: report.rewards,
       },
-    });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// ==================== 战斗统计 ====================
-
-// 获取战斗统计
-app.get('/stats', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    const stats = await db.prepare(`
-      SELECT 
-        COUNT(*) as total_battles,
-        SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
-        SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
-        SUM(CASE WHEN battle_type = 'pvp' THEN 1 ELSE 0 END) as pvp_battles,
-        SUM(CASE WHEN battle_type = 'pve' THEN 1 ELSE 0 END) as pve_battles
-      FROM battles 
-      WHERE attacker_address = ?
-    `).bind(walletAddress).first();
-
-    const total = (stats?.total_battles as number) || 0;
-    const wins = (stats?.wins as number) || 0;
-
-    return success(c, {
-      totalBattles: total,
-      wins,
-      losses: total - wins,
-      winRate: total > 0 ? Math.floor((wins / total) * 100) : 0,
-      pvpBattles: stats?.pvp_battles || 0,
-      pveBattles: stats?.pve_battles || 0,
     });
   } catch (err: any) {
     return error(c, err.message);

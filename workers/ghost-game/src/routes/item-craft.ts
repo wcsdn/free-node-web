@@ -95,6 +95,53 @@ const ITEM_RECIPES: Record<number, {
 
 // ==================== API 端点 ====================
 
+// 获取配方详情 (必须在根路径之前)
+app.get('/:category/:id', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { category, id } = c.req.param();
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  let recipe: any = null;
+  const recipeId = parseInt(id);
+
+  if (category === 'potion') {
+    recipe = POTION_RECIPES[recipeId];
+  } else if (category === 'equipment') {
+    recipe = EQUIP_RECIPES[recipeId];
+  } else if (category === 'item') {
+    recipe = ITEM_RECIPES[recipeId];
+  } else {
+    return error(c, 'Invalid category', 400);
+  }
+
+  if (!recipe) return error(c, 'Recipe not found', 404);
+
+  // 检查玩家材料是否足够
+  const materialIds = Object.keys(recipe.inputs).map(Number);
+  const materials = await db.prepare(`
+    SELECT item_id, quantity FROM items 
+    WHERE wallet_address = ? AND item_id IN (${materialIds.join(',')})
+  `).bind(walletAddress).all();
+
+  const playerMaterials: Record<number, number> = {};
+  for (const mat of (materials.results || [])) {
+    playerMaterials[(mat as any).item_id] = (mat as any).quantity;
+  }
+
+  const canCraft = materialIds.every(id => (playerMaterials[id] || 0) >= (recipe.inputs[id] || 0));
+
+  return success(c, {
+    category,
+    id: recipeId,
+    ...recipe,
+    canCraft,
+    playerMaterials,
+  });
+});
+
 // 获取所有配方
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -129,51 +176,6 @@ app.get('/', async (c) => {
   }
 
   return success(c, { recipes, total: recipes.length });
-});
-
-// 获取配方详情
-app.get('/:category/:id', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { category, id } = c.req.param();
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  let recipe: any = null;
-  const recipeId = parseInt(id);
-
-  if (category === 'potion') {
-    recipe = POTION_RECIPES[recipeId];
-  } else if (category === 'equipment') {
-    recipe = EQUIP_RECIPES[recipeId];
-  } else if (category === 'item') {
-    recipe = ITEM_RECIPES[recipeId];
-  }
-
-  if (!recipe) return error(c, 'Recipe not found', 404);
-
-  // 检查玩家材料是否足够
-  const materialIds = Object.keys(recipe.inputs).map(Number);
-  const materials = await db.prepare(`
-    SELECT item_id, quantity FROM items 
-    WHERE wallet_address = ? AND item_id IN (${materialIds.join(',')})
-  `).bind(walletAddress).all();
-
-  const playerMaterials: Record<number, number> = {};
-  for (const mat of (materials.results || [])) {
-    playerMaterials[(mat as any).item_id] = (mat as any).quantity;
-  }
-
-  const canCraft = materialIds.every(id => (playerMaterials[id] || 0) >= (recipe.inputs[id] || 0));
-
-  return success(c, {
-    category,
-    id: recipeId,
-    ...recipe,
-    canCraft,
-    playerMaterials,
-  });
 });
 
 // 执行合成

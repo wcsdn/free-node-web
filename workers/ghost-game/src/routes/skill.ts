@@ -43,6 +43,66 @@ app.get('/configs', async (c) => {
   });
 });
 
+// 获取技能列表 (兼容 /list)
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const skills = await db.prepare(`
+      SELECT * FROM skills WHERE wallet_address = ? ORDER BY static_index
+    `).bind(walletAddress).all();
+
+    const skillsWithConfig = (skills.results || []).map((skill: any) => {
+      const config = (skillConfigs as Record<string, any>)[skill.static_index];
+      
+      if (config) {
+        const levelMultiplier = 1 + (skill.skill_level - 1) * 0.1;
+        const currentEffect = Math.floor(config.effectValue * levelMultiplier);
+        const currentProb = Math.min(100, config.probability + (skill.skill_level - 1) * config.upProbability);
+
+        const nextMultiplier = 1 + skill.skill_level * 0.1;
+        const nextEffect = Math.floor(config.effectValue * nextMultiplier);
+
+        return {
+          ...skill,
+          name: config.name,
+          union: config.union,
+          unionName: config.unionName,
+          type: config.type,
+          typeText: config.typeText,
+          description: config.description,
+          effectId: config.effID,
+          effectValue: currentEffect,
+          probability: currentProb,
+          effectRange: config.effectRange,
+          needItemType: config.needItemType,
+          icon: config.icon,
+          levelInfo: {
+            currentLevel: skill.skill_level,
+            maxLevel: 10,
+            currentEffect,
+            nextEffect,
+            exp: skill.exp,
+            expToNext: getLevelUpExp(skill.skill_level),
+          },
+        };
+      }
+      return skill;
+    });
+
+    return success(c, {
+      skills: skillsWithConfig,
+      total: skillsWithConfig.length,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取技能列表 (玩家拥有的技能)
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
