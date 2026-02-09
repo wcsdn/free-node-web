@@ -16,3 +16,4 @@ export { fightService } from './fight.svc';
 export { eventService } from './event.svc';
 export { arenaService } from './arena.svc';
 export { dungeonService } from './dungeon.svc';
+export { AppendantNPCService } from './appendant-npc.svc';

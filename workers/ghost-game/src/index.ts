@@ -42,6 +42,7 @@ import festivalRoutes from './routes/festival';
 import mapRoutes from './routes/map';
 import cityInteriorRoutes from './routes/city-interior';
 import guildRoutes from './routes/guild';
+import appendantNpcRoutes from './routes/appendant-npc';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -104,6 +105,7 @@ app.route('/api/festival', festivalRoutes);
 app.route('/api/map', mapRoutes);
 app.route('/api/interior', cityInteriorRoutes);
 app.route('/api/guild', guildRoutes);
+app.route('/api/appendant-npc', appendantNpcRoutes);
 
 // 404 处理
 app.notFound((c) => {

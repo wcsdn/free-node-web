@@ -1064,3 +1064,212 @@ export interface FeishuNotifyResponse {
   success: boolean;
   messageId?: string;
 }
+
+// ==================== 附属 NPC 相关 ====================
+
+export interface AppendantNPC {
+  id: number;
+  walletAddress: string;
+  npcPos: number;
+  npcName: string;
+  beginTime: string;
+  endTime: string;
+  needGold: number;
+  needInsignia: number;
+}
+
+export interface AppendantNPCInfo {
+  npcPos: number;
+  npcName: string;
+  needGold: number;
+  needInsignia: number;
+  occupied: boolean;
+  occupier?: string;
+  endTime?: string;
+}
+
+export interface AppendantListResponse {
+  npcs: AppendantNPCInfo[];
+  total: number;
+  myNPC?: AppendantNPC;
+}
+
+export interface OccupyNPCResponse {
+  result: 'success' | 'failed';
+  npc: AppendantNPC;
+  cost: {
+    gold: number;
+    insignia: number;
+  };
+  message: string;
+}
+
+// ==================== 帮会/军团扩展相关 ====================
+
+export interface Organize {
+  id: number;
+  name: string;
+  intro: string;
+  leader: string;
+  level: number;
+  exp: number;
+  memberCount: number;
+  maxMembers: number;
+  notice: string;
+  createTime: string;
+}
+
+export interface OrganizeMember {
+  id: number;
+  walletAddress: string;
+  name: string;
+  role: 'leader' | 'deputy' | 'officer' | 'member';
+  contribution: number;
+  joinedAt: string;
+  state: 'active' | 'pending' | 'offline';
+}
+
+export interface OrganizeEvent {
+  id: number;
+  orgName: string;
+  content: string;
+  time: string;
+  type: 1 | 2 | 3 | 4 | 5 | 6; // 1:创建 2:加入 3:任命 4:罢免 5:踢出 6:退出
+}
+
+export interface OrganizeResource {
+  pearl: number;      // 珍珠
+  crystal: number;   // 水晶
+  agate: number;     // 玛瑙
+  wbBowlder: number;  // 白玉石
+  bbBowlder: number; // 黑玉石
+  jadeBook: number;  // 玉诀
+  crusade: number;   // 十字军
+}
+
+export interface OrganizeDetailResponse {
+  organize: Organize;
+  members: OrganizeMember[];
+  resources: OrganizeResource;
+  events: OrganizeEvent[];
+}
+
+export interface OrganizeListResponse {
+  organizes: Organize[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface OrganizeApplication {
+  id: number;
+  applicant: string;
+  orgName: string;
+  applyTime: string;
+  state: 'pending' | 'approved' | 'rejected';
+}
+
+export interface OrganizeApplicationListResponse {
+  applications: OrganizeApplication[];
+  total: number;
+}
+
+// ==================== 战报相关 ====================
+
+export interface FightSummary {
+  id: number;
+  battleId: string;
+  attacker: string;
+  defender: string;
+  result: 'win' | 'loss' | 'draw';
+  fightTime: string;
+  attackPower: number;
+  defensePower: number;
+  summary: string; // 编码后的战报字符串
+}
+
+export interface FightSummaryDetail {
+  attackCity: {
+    name: string;
+    position: number;
+    power: number;
+    powerAfter: number;
+  };
+  defenseCity: {
+    name: string;
+    position: number;
+    power: number;
+    powerAfter: number;
+  };
+  attackArmy: FightSummaryArmy[];
+  defenseArmy: FightSummaryArmy[];
+  defenseBuilds: FightSummaryDefense[];
+  resources: {
+    money: number;
+    food: number;
+    men: number;
+  };
+  insignia: {
+    attack: number;
+    defense: number;
+    plunder: number;
+  };
+}
+
+export interface FightSummaryArmy {
+  heroId: number;
+  heroName: string;
+  quality: number;
+  state: number;
+  childrenCount: number;
+  childrenLoss: number;
+  trainingCount: number;
+  trainingLoss: number;
+  gainExp: number;
+}
+
+export interface FightSummaryDefense {
+  index: number;
+  count: number;
+  loss: number;
+}
+
+export interface FightSummaryListResponse {
+  summaries: FightSummary[];
+  total: number;
+}
+
+// ==================== 用户数据相关 ====================
+
+export interface UserData {
+  walletAddress: string;
+  lastLogin: string;
+  totalOnlineTime: number;
+  totalRecharge: number;
+  vipExpire?: string;
+  settings: UserSettings;
+}
+
+export interface UserSettings {
+  soundEnabled: boolean;
+  musicEnabled: boolean;
+  autoAcceptFriend: boolean;
+  language: string;
+}
+
+export interface UserDataResponse {
+  data: UserData;
+  message: string;
+}
+
+// ==================== 错误码相关 ====================
+
+export interface ErrorCode {
+  code: number;
+  message: string;
+  category: 'auth' | 'game' | 'resource' | 'corps' | 'system';
+}
+
+export interface ErrorCodeListResponse {
+  codes: ErrorCode[];
+}

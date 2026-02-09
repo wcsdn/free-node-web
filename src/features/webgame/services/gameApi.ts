@@ -950,6 +950,46 @@ export const gameApi = {
       body: JSON.stringify({ category, recipe_id: recipeId, count }),
     });
     return res.json();
+  },
+
+  // ==================== 附属 NPC 占领系统 (Appendant NPC) ====================
+
+  async getNPCList(): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/appendant-npc/npc-list`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getMyNPC(): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/appendant-npc/my-npc`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async occupyNPC(npcPos: number, useGold?: boolean, useInsignia?: boolean): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/appendant-npc/occupy`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ npc_pos: npcPos, use_gold: useGold, use_insignia: useInsignia }),
+    });
+    return res.json();
+  },
+
+  async abandonNPC(): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/appendant-npc/abandon`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async getOccupationBenefits(npcPos: number): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/appendant-npc/benefits/${npcPos}`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
   }
 };
 
