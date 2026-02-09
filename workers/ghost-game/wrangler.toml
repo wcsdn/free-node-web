@@ -12,8 +12,8 @@ vars = { ENVIRONMENT = "production" }
 
 # 飞书应用配置
 [vars]
-FEISHU_APP_ID = "cli_a90f138b1123dcb1"
-FEISHU_APP_SECRET = "wuVKbbDbwdd5OBs96X3cCeGFlfgEICXb"
+FEISHU_APP_ID = "cli_a903eb45f3fa5cc4"
+FEISHU_APP_SECRET = "UrZlXqbBzJOjZzeRT1dpLhbTk4MSAVjh"
 
 [[d1_databases]]
 binding = "DB"

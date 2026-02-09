@@ -2,7 +2,7 @@
  * useChat - 聊天状态 Hook
  */
 import { useState, useCallback, useEffect } from 'react';
-import type { ChatMessage, ApiResponse } from '../types/game.types';
+import type { ChatMessage } from '../types/game.types';
 import { chatApi } from '../services/game.api';
 
 interface ChatState {
@@ -24,7 +24,7 @@ export function useChat(channel = 'global') {
     try {
       const result = await chatApi.getMessages(channel);
       if (result.success && result.data) {
-        setState({ messages: result.data.messages, loading: false, error: null });
+        setState({ messages: result.data as ChatMessage[], loading: false, error: null });
       } else {
         setState(prev => ({ ...prev, loading: false, error: result.error || 'Failed to load' }));
       }

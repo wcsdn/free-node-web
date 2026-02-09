@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { mallApi, MallItem, MallItemType, MALL_ITEM_TYPES } from '../services/api/mallApi';
+import { mallApi, MallItem, MallItemType } from '../services/api/mallApi';
 
 // 商城 Hook
 export function useMall(initialType: MallItemType = 1) {

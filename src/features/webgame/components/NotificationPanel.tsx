@@ -13,7 +13,11 @@ interface Notification {
   read: boolean;
 }
 
-export const NotificationPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface NotificationPanelProps {
+  onClose?: () => void;
+}
+
+export const NotificationPanel: React.FC<NotificationPanelProps> = ({ onClose }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 

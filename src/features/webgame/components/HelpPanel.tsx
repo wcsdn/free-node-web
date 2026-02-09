@@ -21,7 +21,11 @@ const HELP_ARTICLES: Record<number, Array<{ id: number; title: string; content: 
   ],
 };
 
-export const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface HelpPanelProps {
+  onClose?: () => void;
+}
+
+export const HelpPanel: React.FC<HelpPanelProps> = ({ onClose }) => {
   const [category, setCategory] = useState<number | null>(null);
 
   return (

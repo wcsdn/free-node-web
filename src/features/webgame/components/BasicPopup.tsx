@@ -1,7 +1,7 @@
 /**
  * 基础弹窗组件
  */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 interface PopupProps {
   id: string;

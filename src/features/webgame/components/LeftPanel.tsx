@@ -1,82 +1,85 @@
 /**
  * 左面板组件
- * 完全参照原版 Main.aspx leftpanel 部分
+ * 原则：移动端优先，简洁设计
  */
 import React, { memo } from 'react';
-import styles from '../styles/jxMain.module.css';
+import { GameCard } from '@/shared/components/game';
 
 interface LeftPanelProps {
-  walletAddress: string;
-  onNavigate: (module: string) => void;
+  walletAddress?: string;
+  onNavigate?: (module: string) => void;
 }
 
 const LeftPanel: React.FC<LeftPanelProps> = memo(() => {
   return (
-    <div id="leftpanel" className={styles.leftPanel}>
-      <div id="logo" className={styles.logo} onClick={() => window.location.reload()}></div>
-
-      <div id="info_user" className={styles.infoUser}>
-        <div id="userlevel" className={styles.userLevel}>
-          <span>
-            <a id="userName" className="font_bold" href="#">
-              {'玩家'}
-            </a>
-          </span>
-          <div id="vipeffect" className={styles.vipEffect}></div>
-          <div>
-            <span className="font_bold" id="userState"></span>
-          </div>
-          <ul>
-            <li>
-              官位:<a id="userLevel" href="#" target="_blank">0</a>
-            </li>
-            <li>帮派:<span id="userUnit">{'无'}</span></li>
-            <li>
-              战勋:<span id="userIns">0</span>
-            </li>
-          </ul>
-        </div>
-
-        <div id="usercity" className={styles.userCity}></div>
-
-        <div id="info_out" className={styles.infoOut}>
-          <ul>
-            <li>
-              <a id="to_main" href="#" target="_blank">首页</a>
-            </li>
-            <li>
-              <a id="to_account" href="#">账户设置</a>
-            </li>
-            <li>
-              <a id="to_gold" href="#" style={{ color: 'green' }}>充值元宝</a>
-            </li>
-            <li>
-              <a id="to_gift" href="#">礼品领取</a>
-            </li>
-            <li>
-              <a id="to_extend" href="#">没资源点我</a>
-            </li>
-            <li>
-              <a id="to_forum" href="#">论坛</a>
-            </li>
-            <li>
-              <a id="exit_4" href="#">退出</a>
-            </li>
-          </ul>
-        </div>
-
-        <div id="info_sever" className={styles.infoServer}>
-          <ul>
-            <li>服务器名称</li>
-            <li><span id="serverName" className="font_bold">{'默认'}</span></li>
-            <li>在线玩家:<span id="onlineNum">0</span></li>
-            <li>服务器时间</li>
-            <li id="serverTime">{'00:00:00'}</li>
-            <li>服务器速度:<span id="percent">10</span></li>
-            <li>经验倍率:<span id="expPer">1倍</span></li>
-          </ul>
-        </div>
+    <div id="leftpanel" className="space-y-4 p-4">
+      {/* Logo */}
+      <div className="text-center py-4">
+        <div className="text-3xl font-bold text-emerald-400">剑侠情缘</div>
+        <div className="text-sm text-slate-500 mt-1">Web 版</div>
       </div>
+
+      {/* 用户信息 */}
+      <GameCard title="玩家信息">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">玩家</span>
+            <span className="font-bold text-emerald-400">玩家</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-500">官位:</span>
+            <a href="#" className="text-emerald-400 hover:underline">0</a>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-500">帮派:</span>
+            <span className="text-slate-300">无</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-500">战勋:</span>
+            <span className="text-amber-400">0</span>
+          </div>
+        </div>
+      </GameCard>
+
+      {/* 服务器信息 */}
+      <GameCard title="服务器">
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">服务器:</span>
+            <span className="text-slate-300">默认</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">在线:</span>
+            <span className="text-emerald-400">0 人</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">时间:</span>
+            <span className="text-slate-300 font-mono">00:00:00</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-slate-500">经验:</span>
+            <span className="text-amber-400">1倍</span>
+          </div>
+        </div>
+      </GameCard>
+
+      {/* 快捷链接 */}
+      <GameCard>
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <a href="#" className="p-2 text-center bg-slate-800/50 rounded text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all">
+            首页
+          </a>
+          <a href="#" className="p-2 text-center bg-slate-800/50 rounded text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all">
+            账户
+          </a>
+          <a href="#" className="p-2 text-center bg-slate-800/50 rounded text-green-400 hover:text-green-300 hover:bg-slate-800 transition-all">
+            充值
+          </a>
+          <a href="#" className="p-2 text-center bg-slate-800/50 rounded text-slate-400 hover:text-emerald-400 hover:bg-slate-800 transition-all">
+            论坛
+          </a>
+        </div>
+      </GameCard>
     </div>
   );
 });

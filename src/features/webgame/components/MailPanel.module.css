@@ -1,32 +1,266 @@
-/* MailPanel - 新版邮件面板样式 */
-.container { position: relative; min-height: 100vh; background: #000; padding: 20px; }
-.title { text-align: center; margin-bottom: 20px; }
-.glitch { font-family: 'Courier New', Monaco, monospace; font-size: 32px; font-weight: bold; color: #AA00FF; text-transform: uppercase; letter-spacing: 8px; text-shadow: 0 0 10px rgba(170, 0, 255, 0.8); }
-.statsCard { margin-bottom: 20px !important; }
-.stats { display: flex; justify-content: space-around; gap: 20px; }
-.statItem { text-align: center; }
-.statValue { display: block; font-family: 'Courier New', Monaco, monospace; font-size: 28px; font-weight: bold; color: #AA00FF; text-shadow: 0 0 15px rgba(170, 0, 255, 0.5); }
-.statLabel { font-family: 'Courier New', Monaco, monospace; font-size: 12px; color: rgba(170, 0, 255, 0.6); text-transform: uppercase; }
-.mailList { display: flex; flex-direction: column; gap: 10px; }
-.mailItem { display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(170, 0, 255, 0.2); border-radius: 10px; cursor: pointer; transition: all 0.3s ease; position: relative; }
-.mailItem:hover { border-color: rgba(170, 0, 255, 0.5); box-shadow: 0 0 20px rgba(170, 0, 255, 0.1); }
-.mailItem.read { opacity: 0.6; }
-.mailItem.hasAttachment { border-left: 3px solid #FFD700; }
-.mailIcon { font-size: 28px; }
-.mailInfo { flex: 1; }
-.mailHeader { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.sender { font-family: 'Courier New', Monaco, monospace; font-size: 14px; font-weight: bold; color: #AA00FF; }
-.time { font-family: 'Courier New', Monaco, monospace; font-size: 11px; color: rgba(170, 0, 255, 0.4); }
-.mailTitle { font-family: 'Courier New', Monaco, monospace; font-size: 14px; color: #00FF00; }
-.unreadDot { width: 8px; height: 8px; background: #FFD700; border-radius: 50%; position: absolute; top: 10px; right: 10px; animation: pulse-dot 2s infinite; }
-@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
-.empty { text-align: center; padding: 60px 20px; color: rgba(170, 0, 255, 0.6); font-family: 'Courier New', Monaco, monospace; }
-.detailContent { text-align: left; }
-.detailHeader { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(170, 0, 255, 0.2); }
-.detailIcon { font-size: 32px; }
-.detailInfo h3 { font-family: 'Courier New', Monaco, monospace; font-size: 18px; color: #AA00FF; margin: 0 0 5px; }
-.detailInfo p { font-family: 'Courier New', Monaco, monospace; font-size: 12px; color: rgba(170, 0, 255, 0.6); margin: 0; }
-.detailBody { font-family: 'Courier New', Monaco, monospace; font-size: 14px; color: #00FF00; line-height: 1.8; padding: 15px 0; border-bottom: 1px solid rgba(170, 0, 255, 0.1); margin-bottom: 15px; }
-.attachment { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 8px; margin-bottom: 15px; font-family: 'Courier New', Monaco, monospace; color: #FFD700; }
-.detailActions { margin-top: 20px; }
-@media (max-width: 768px) { .glitch { font-size: 24px; } .mailItem { padding: 12px; } }
+/**
+ * MailPanel - 邮件面板样式
+ */
+.container {
+  position: relative;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: var(--spacing-md);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: var(--spacing-lg);
+  }
+}
+
+.title {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.glitch {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+  position: relative;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .glitch {
+    font-size: 2rem;
+  }
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 #ff00c1;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 #00fff9;
+  clip: rect(44px, 450px, 56px, 0);
+  animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { clip: rect(30px, 9999px, 10px, 0); }
+  20% { clip: rect(80px, 9999px, 90px, 0); }
+  40% { clip: rect(10px, 9999px, 50px, 0); }
+  60% { clip: rect(60px, 9999px, 20px, 0); }
+  80% { clip: rect(40px, 9999px, 80px, 0); }
+  100% { clip: rect(70px, 9999px, 30px, 0); }
+}
+
+@keyframes glitch-anim2 {
+  0% { clip: rect(10px, 9999px, 80px, 0); }
+  20% { clip: rect(50px, 9999px, 30px, 0); }
+  40% { clip: rect(20px, 9999px, 60px, 0); }
+  60% { clip: rect(80px, 9999px, 10px, 0); }
+  80% { clip: rect(60px, 9999px, 50px, 0); }
+  100% { clip: rect(30px, 9999px, 70px, 0); }
+}
+
+.statsCard {
+  margin-bottom: var(--spacing-xl) !important;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.statItem {
+  text-align: center;
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: var(--spacing-xs);
+}
+
+.mailList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.mailItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.mailItem:not(.read) {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border-primary);
+}
+
+.mailItem:not(.read):hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+.mailItem.read {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-secondary);
+  opacity: 0.75;
+}
+
+.mailItem.hasAttachment {
+  border-left: 2px solid var(--color-primary);
+}
+
+.mailIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.mailInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.mailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.sender {
+  font-weight: 500;
+}
+
+.mailItem:not(.read) .sender {
+  color: var(--text-primary);
+}
+
+.mailItem.read .sender {
+  color: var(--text-secondary);
+}
+
+.time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.mailTitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.unreadDot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-muted);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+}
+
+/* 弹窗样式 */
+.detailContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.detailIcon {
+  font-size: 2.5rem;
+}
+
+.detailInfo h3 {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.detailInfo p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.detailBody {
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.attachment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.attachment span {
+  color: var(--text-secondary);
+}
+
+.detailActions {
+  margin-top: var(--spacing-md);
+}

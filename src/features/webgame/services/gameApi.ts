@@ -532,14 +532,14 @@ export const gameApi = {
   },
 
   // 排行榜相关
-  async getRankList(rankType: string): Promise<ApiResponse<any>> {
+  async getRankList(_rankType: string): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/rank/`, {
       headers: getAuthHeaders(),
     });
     return res.json();
   },
 
-  async getMyRank(rankType: string): Promise<ApiResponse<any>> {
+  async getMyRank(_rankType: string): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/rank/my-rank`, {
       headers: getAuthHeaders(),
     });

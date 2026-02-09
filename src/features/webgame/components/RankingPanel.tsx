@@ -1,10 +1,9 @@
 /**
- * RankingPanel - 新版排行榜面板
- * 赛博朋克风格
+ * RankingPanel - 排行榜面板
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState } from 'react';
-import { GameCard, GameButton } from '@/shared/components/game';
-import styles from './RankingPanel.module.css';
+import { GameCard } from '@/shared/components/game';
 
 interface RankItem {
   rank: number;
@@ -17,8 +16,10 @@ interface RankingPanelProps {
   walletAddress: string;
 }
 
-export const RankingPanel: React.FC<RankingPanelProps> = ({ walletAddress }) => {
-  const [tab, setTab] = useState<'level' | 'power' | 'wealth'>('power');
+type TabType = 'level' | 'power' | 'wealth';
+
+export const RankingPanel: React.FC<RankingPanelProps> = () => {
+  const [tab, setTab] = useState<TabType>('power');
   
   const rankings: RankItem[] = [
     { rank: 1, name: '玩家_A', value: 10000, level: 50 },
@@ -28,56 +29,97 @@ export const RankingPanel: React.FC<RankingPanelProps> = ({ walletAddress }) => 
     { rank: 5, name: '我', value: 5000, level: 25 },
   ];
 
-  const getTabIcon = (t: string) => ({ level: '⚔️', power: '💪', wealth: '🪙' }[t] || '🏆');
-  const getTabName = (t: string) => ({ level: '等级榜', power: '战力榜', wealth: '财富榜' }[t] || '排行榜');
+  const getTabIcon = (t: TabType) => ({ level: '⚔️', power: '💪', wealth: '🪙' }[t]);
+  const getTabName = (t: TabType) => ({ level: '等级榜', power: '战力榜', wealth: '财富榜' }[t]);
+
+  const getRankBadge = (rank: number) => {
+    if (rank === 1) return '🥇';
+    if (rank === 2) return '🥈';
+    if (rank === 3) return '🥉';
+    return `#${rank}`;
+  };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>
-        <span className={styles.glitch} data-text="RANKING">RANKING</span>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题 */}
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 text-emerald-400 
+                     tracking-wider uppercase">
+        RANKING
       </h1>
 
       {/* 分类切换 */}
-      <div className={styles.tabs}>
-        {(['level', 'power', 'wealth'] as const).map((t) => (
+      <div className="grid grid-cols-3 gap-2 mb-6">
+        {(['level', 'power', 'wealth'] as TabType[]).map((t) => (
           <button
             key={t}
-            className={[styles.tab, tab === t ? styles.active : ''].join(' ')}
             onClick={() => setTab(t)}
+            className={`
+              flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all duration-200
+              ${tab === t 
+                ? 'border-emerald-500 bg-emerald-500/10' 
+                : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+              }
+            `}
           >
-            <span className={styles.tabIcon}>{getTabIcon(t)}</span>
-            <span>{getTabName(t)}</span>
+            <span className="text-xl">{getTabIcon(t)}</span>
+            <span className={`text-xs font-medium ${tab === t ? 'text-emerald-400' : 'text-slate-400'}`}>
+              {getTabName(t)}
+            </span>
           </button>
         ))}
       </div>
 
       {/* 我的排名 */}
-      <GameCard title="我的排名" className={styles.myRank}>
-        <div className={styles.myInfo}>
-          <div className={styles.myAvatar}>⚔️</div>
-          <div className={styles.myDetails}>
-            <div className={styles.myName}>我</div>
-            <div className={styles.myStats}>排名 #{5} · 战力 5000</div>
+      <GameCard title="我的排名" className="mb-6">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center text-2xl">
+            ⚔️
           </div>
-          <div className={styles.myPosition}>#5</div>
+          <div className="flex-1">
+            <div className="text-emerald-400 font-semibold">我</div>
+            <div className="text-slate-500 text-sm">
+              排名 #{5} · 战力 5000
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-emerald-500">#5</div>
         </div>
       </GameCard>
 
       {/* 排行榜列表 */}
-      <div className={styles.rankList}>
+      <div className="space-y-2">
         {rankings.map((item) => (
           <div
             key={item.rank}
-            className={[styles.rankItem, item.rank <= 3 ? styles.topThree : '']}
+            className={`
+              flex items-center gap-3 p-3 rounded-lg transition-all duration-200
+              ${item.rank <= 3 
+                ? 'bg-gradient-to-r from-emerald-500/10 to-transparent border border-emerald-500/30' 
+                : 'bg-slate-800/40 border border-slate-700/50'
+              }
+            `}
           >
-            <div className={styles.rankBadge}>
-              {item.rank <= 3 ? ['🥇', '🥈', '🥉'][item.rank - 1] : `#${item.rank}`}
+            {/* 排名徽章 */}
+            <div className={`
+              w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+              ${item.rank <= 3 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}
+            `}>
+              {getRankBadge(item.rank)}
             </div>
-            <div className={styles.rankInfo}>
-              <div className={styles.rankName}>{item.name}</div>
-              <div className={styles.rankLevel}>Lv.{item.level}</div>
+
+            {/* 玩家信息 */}
+            <div className="flex-1 min-w-0">
+              <div className="text-emerald-400 font-medium truncate">
+                {item.name}
+              </div>
+              <div className="text-xs text-slate-500">
+                Lv.{item.level}
+              </div>
             </div>
-            <div className={styles.rankValue}>{item.value.toLocaleString()}</div>
+
+            {/* 数值 */}
+            <div className="text-lg font-bold text-amber-400">
+              {item.value.toLocaleString()}
+            </div>
           </div>
         ))}
       </div>

@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { resourceService, ResourceRate, Resources, ProductionResult } from '../services/api/resourceProduction';
-import { cityApi, CityInfo } from '../services/api/cityApi';
+import { cityApi } from '../services/api/cityApi';
 
 // 资源状态 Hook
 export function useResources(cityId: number = 1) {

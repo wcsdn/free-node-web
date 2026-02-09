@@ -1,9 +1,11 @@
 /**
  * 竞技场面板组件
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
 import { gameApi } from '../services/gameApi';
-import styles from '../styles/ArenaPanel.module.css';
+import { GameCard } from '@/shared/components/game';
+import { getApiBase } from '../utils/api';
 
 interface ArenaOpponent {
   wallet_address: string;
@@ -24,12 +26,12 @@ interface BattleLogItem {
 
 interface ArenaPanelProps {
   walletAddress: string;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
-const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) => {
-  const [myRank, setMyRank] = useState(0);
-  const [myPower, setMyPower] = useState(0);
+const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress }) => {
+  const [myRank] = useState(0);
+  const [myPower] = useState(0);
   const [opponents, setOpponents] = useState<ArenaOpponent[]>([]);
   const [battleLog, setBattleLog] = useState<BattleLogItem[]>([]);
   const [challenging, setChallenging] = useState(false);
@@ -64,32 +66,27 @@ const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) 
     setChallenging(true);
     setMessage('');
     try {
-      // 获取第一个城市ID
-      const cityRes = await gameApi.getCityList();
-      const cities = cityRes.data || [];
-      if (cities.length === 0) {
-        setMessage('没有城市无法挑战');
-        setChallenging(false);
-        return;
-      }
-      const cityId = cities[0].id;
-
-      const res = await gameApi.challengeArena(opponent.wallet_address);
-      if (res.success) {
-        const result = res.data?.win ? '胜利' : '失败';
-        const exp = res.data?.rewards?.exp || 0;
-        const gold = res.data?.rewards?.gold || 0;
-        const reward = res.data?.win ? `经验+${exp} 金币+${gold}` : `经验+${Math.floor(exp/3)}`;
+      const res = await fetch(`${getApiBase()}/api/arena/challenge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ opponent_id: opponent.wallet_address }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        const result = data.data?.win ? '胜利' : '失败';
+        const exp = data.data?.rewards?.exp || 0;
+        const gold = data.data?.rewards?.gold || 0;
+        const reward = data.data?.win ? `经验+${exp} 金币+${gold}` : `经验+${Math.floor(exp/3)}`;
         const logItem: BattleLogItem = {
           result,
           reward,
-          opponent: res.data?.report?.opponent || opponent.name,
+          opponent: data.data?.report?.opponent || opponent.name,
           time: new Date().toLocaleString(),
         };
         setBattleLog([logItem, ...battleLog].slice(0, 10));
         setMessage(`${result}！${reward}`);
       } else {
-        setMessage(res.error || '挑战失败');
+        setMessage(data.error || '挑战失败');
       }
     } catch (err) {
       setMessage('挑战失败');
@@ -99,62 +96,114 @@ const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) 
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2>竞技场</h2>
-        <div className={styles.myInfo}>
-          <span>排名: #{myRank}</span>
-          <span>战力: {myPower}</span>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题 */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-emerald-400 tracking-wider uppercase">
+          竞技场
+        </h1>
+        <div className="flex gap-4 text-sm">
+          <span className="px-3 py-1 bg-slate-800 rounded-full text-slate-300">
+            排名: <span className="text-emerald-400 font-bold">#{myRank}</span>
+          </span>
+          <span className="px-3 py-1 bg-slate-800 rounded-full text-slate-300">
+            战力: <span className="text-amber-400 font-bold">{myPower}</span>
+          </span>
         </div>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.content}>
-        {/* 对手列表 */}
-        <div className={styles.opponentPanel}>
-          <h3>挑战对手</h3>
-          <div className={styles.opponentList}>
-            {opponents.map((opponent) => (
-              <div key={opponent.wallet_address} className={styles.opponentCard}>
-                <div className={styles.opponentRank}>{opponent.isAi ? 'AI' : '#?'}</div>
-                <div className={styles.opponentInfo}>
-                  <span className={styles.opponentName}>{opponent.name}</span>
-                  <span className={styles.opponentLevel}>等级 {opponent.level}</span>
-                  <span className={styles.opponentPower}>胜场 {opponent.win_count || 0}</span>
-                </div>
-                <div className={styles.opponentStats}>
-                  <span className={styles.winRate}>{opponent.isAi ? 'AI对手' : '玩家'}</span>
-                </div>
-                <button 
-                  className={styles.challengeBtn}
-                  onClick={() => handleChallenge(opponent)}
-                  disabled={challenging}
-                >
-                  挑战
-                </button>
-              </div>
-            ))}
-          </div>
+      {/* 消息提示 */}
+      {message && (
+        <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium ${
+          message.includes('胜利') ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+        }`}>
+          {message}
         </div>
+      )}
+
+      {/* 内容区域 */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* 对手列表 */}
+        <GameCard title="挑战对手" className="lg:sticky lg:top-4 h-fit">
+          {opponents.length === 0 ? (
+            <div className="text-center py-8 text-slate-500">
+              暂无对手
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {opponents.map((opponent) => (
+                <div
+                  key={opponent.wallet_address}
+                  className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-emerald-500/30 transition-all"
+                >
+                  {/* 排名/AI标识 */}
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                    opponent.isAi ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
+                  }`}>
+                    {opponent.isAi ? 'AI' : '#?'}
+                  </div>
+
+                  {/* 对手信息 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-emerald-400 truncate">{opponent.name}</span>
+                      <span className="text-xs px-2 py-0.5 bg-slate-700 rounded text-slate-400">
+                        Lv.{opponent.level}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                      <span>⚔️ {opponent.win_count || 0} 胜场</span>
+                    </div>
+                  </div>
+
+                  {/* 挑战按钮 */}
+                  <button
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      challenging
+                        ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                        : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500/30'
+                    }`}
+                    onClick={() => handleChallenge(opponent)}
+                    disabled={challenging}
+                  >
+                    {challenging ? '挑战中...' : '挑战'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </GameCard>
 
         {/* 战斗记录 */}
-        <div className={styles.logPanel}>
-          <h3>战斗记录</h3>
-          <div className={styles.battleLog}>
-            {battleLog.length === 0 ? (
-              <div className={styles.emptyLog}>暂无战斗记录</div>
-            ) : (
-              battleLog.map((log, idx) => (
-                <div key={idx} className={styles.logItem}>
-                  <span className={log.result === '胜利' ? styles.winText : styles.loseText}>
+        <GameCard title="战斗记录">
+          {battleLog.length === 0 ? (
+            <div className="text-center py-12 text-slate-500">
+              <div className="text-4xl mb-2">⚔️</div>
+              <p>暂无战斗记录</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {battleLog.map((log, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg"
+                >
+                  <span className={`font-bold text-sm ${
+                    log.result === '胜利' ? 'text-emerald-400' : 'text-red-400'
+                  }`}>
                     {log.result}
                   </span>
-                  <span className={styles.logReward}>{log.reward}</span>
+                  <span className="flex-1 text-slate-400 text-sm truncate">
+                    vs {log.opponent}
+                  </span>
+                  <span className="text-xs text-amber-400">
+                    {log.reward}
+                  </span>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
+              ))}
+            </div>
+          )}
+        </GameCard>
       </div>
     </div>
   );

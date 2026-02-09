@@ -1,5 +1,6 @@
 /**
- * GameCard - 赛博朋克风格卡片
+ * GameCard - 通用卡片组件
+ * 原则：简洁可复用
  */
 import React from 'react';
 import styles from './GameCard.module.css';
@@ -11,22 +12,28 @@ interface GameCardProps {
   onClick?: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({
+export const GameCard: React.FC<GameCardProps> = ({
   children,
   title,
   className = '',
   onClick
 }) => {
-  const classes = [
+  const cardClasses = [
     styles.card,
     onClick ? styles.clickable : '',
     className
   ].filter(Boolean).join(' ');
 
   return (
-    <div className={classes} onClick={onClick}>
-      {title && <div className={styles.title}>{title}</div>}
-      <div className={styles.content}>{children}</div>
+    <div className={cardClasses} onClick={onClick}>
+      {title && (
+        <div className={styles.title}>
+          <h3>{title}</h3>
+        </div>
+      )}
+      <div className={styles.content}>
+        {children}
+      </div>
     </div>
   );
 };

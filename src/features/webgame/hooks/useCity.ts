@@ -86,13 +86,15 @@ export function useCity(cityId?: number) {
 
     try {
       const result = await cityApi.collectResources(state.city.id);
-      if (result.success && result.data) {
+      const data = result.data as { total?: { money?: number; food?: number } } | undefined;
+      const total = data?.total;
+      if (result.success && total) {
         setState(prev => ({
           ...prev,
           city: prev.city ? {
             ...prev.city,
-            money: result.data.total.money,
-            food: result.data.total.food,
+            money: total.money ?? prev.city.money,
+            food: total.food ?? prev.city.food,
           } : null,
         }));
         return true;

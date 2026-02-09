@@ -12,12 +12,13 @@ function getApiBase(): string {
       return 'http://localhost:8788';
     }
   }
-  
-  // 2. 检查环境变量
-  if (import.meta.env.VITE_API_BASE_DEV) {
-    return import.meta.env.VITE_API_BASE_DEV;
+
+  // 2. 检查环境变量 (使用 any 类型避免 Vite 类型检查问题)
+  const env = import.meta.env as any;
+  if (env?.VITE_API_BASE_DEV) {
+    return env.VITE_API_BASE_DEV;
   }
-  
+
   // 3. 默认使用生产环境
   return 'https://game.free-node.xyz';
 }

@@ -5,7 +5,11 @@ import React, { useState, useEffect } from 'react';
 import { GameCard, GameButton } from '@/shared/components/game';
 import { getApiBase, getAuthHeaders } from '../utils/api';
 
-export const SigninPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface SigninPanelProps {
+  onClose?: () => void;
+}
+
+export const SigninPanel: React.FC<SigninPanelProps> = ({ onClose }) => {
   const [signedIn, setSignedIn] = useState(false);
   const [days, setDays] = useState(0);
 

@@ -17,12 +17,15 @@ export default defineConfig({
   define: {
     global: 'globalThis', // 修复 Web3 库的关键配置
   },
+  optimizeDeps: {
+    exclude: ['jx/Web/*.html'], // 排除 jx/Web 下的 HTML 文件
+  },
   server: {
     host: true, // 监听所有网络接口
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8788',
+        target: 'http://127.0.0.1:8788',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
       },

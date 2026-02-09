@@ -3,6 +3,18 @@
  */
 import type { D1Database } from '@cloudflare/workers-types';
 
+export interface Item {
+  id: number;
+  wallet_address: string;
+  hero_id?: number;
+  type: number;
+  config_id: number;
+  count: number;
+  equipped: boolean;
+  source: string;
+  created_at: string;
+}
+
 export const itemRepo = {
   /** 根据 ID 查找物品 */
   async findById(db: D1Database, itemId: number): Promise<any | null> {

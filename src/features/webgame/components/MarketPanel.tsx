@@ -1,9 +1,10 @@
 /**
  * 市场面板组件 - 资源交易
+ * 原则：移动端优先，简洁设计
  */
 import React, { useEffect, useState } from 'react';
 import { gameApi } from '../services/gameApi';
-import styles from '../styles/jxMain.module.css';
+import { GameButton } from '@/shared/components/game';
 
 interface MarketItem {
   id: number;
@@ -88,26 +89,38 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
   };
 
   const currentCity = cities.find(c => c.id === selectedCity);
+  const totalPrice = (amount * (selectedItem?.price || 0));
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
-        <span>市场交易</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
-      </div>
-      
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
-        
-        {/* 城市选择 */}
-        <div className={styles.marketCitySelect}>
-          <label>选择城市: </label>
-          <select 
-            value={selectedCity} 
-            onChange={(e) => setSelectedCity(parseInt(e.target.value))}
-            className={styles.citySelect}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-700 shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
+        {/* 标题栏 */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+          <h2 className="text-xl font-bold text-emerald-400">🏪 市场交易</h2>
+          <button
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+            onClick={onClose}
           >
-            {cities.map(city => (
+            ×
+          </button>
+        </div>
+
+        {/* 消息提示 */}
+        {message && (
+          <div className="mx-4 mt-4 px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg text-sm border border-emerald-500/30">
+            {message}
+          </div>
+        )}
+
+        {/* 城市选择 */}
+        <div className="p-4 border-b border-slate-700">
+          <label className="block text-sm text-slate-400 mb-2">选择城市</label>
+          <select
+            value={selectedCity || ''}
+            onChange={(e) => setSelectedCity(parseInt(e.target.value))}
+            className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none"
+          >
+            {cities.map((city) => (
               <option key={city.id} value={city.id}>
                 {city.name} (银:{city.money} 粮:{city.food} 人:{city.population})
               </option>
@@ -116,80 +129,110 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
         </div>
 
         {/* 买卖切换 */}
-        <div className={styles.marketActions}>
-          <button 
-            className={`${styles.actionTab} ${action === 'buy' ? styles.active : ''}`}
-            onClick={() => setAction('buy')}
-          >
-            买入资源
-          </button>
-          <button 
-            className={`${styles.actionTab} ${action === 'sell' ? styles.active : ''}`}
-            onClick={() => setAction('sell')}
-          >
-            卖出资源
-          </button>
+        <div className="flex border-b border-slate-700">
+          {(['buy', 'sell'] as const).map((tab) => (
+            <button
+              key={tab}
+              className={`flex-1 py-3 font-medium transition-all ${
+                action === tab
+                  ? 'text-emerald-400 border-b-2 border-emerald-400 bg-emerald-500/10'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+              onClick={() => setAction(tab)}
+            >
+              {tab === 'buy' ? '买入资源' : '卖出资源'}
+            </button>
+          ))}
         </div>
 
         {/* 资源列表 */}
-        {loading ? (
-          <div className={styles.loading}>加载中...</div>
-        ) : (
-          <div className={styles.marketItems}>
-            {items.map(item => (
-              <div 
-                key={item.id}
-                className={`${styles.marketItem} ${selectedItem?.id === item.id ? styles.selected : ''}`}
-                onClick={() => setSelectedItem(item)}
-              >
-                <img src={item.icon} alt={item.resource_name} className={styles.itemIcon} />
-                <div className={styles.itemInfo}>
-                  <div className={styles.itemName}>{item.resource_name}</div>
-                  <div className={styles.itemPrice}>
-                    单价: <span className={action === 'buy' ? styles.sellPrice : styles.buyPrice}>
-                      {item.price} 金币
-                    </span>
+        <div className="flex-1 overflow-y-auto p-4">
+          {loading ? (
+            <div className="flex items-center justify-center py-20 text-slate-500">
+              <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+              <span className="ml-2">加载中...</span>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  className={`p-4 rounded-lg border transition-all text-left ${
+                    selectedItem?.id === item.id
+                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      : 'bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/30'
+                  }`}
+                  onClick={() => setSelectedItem(item)}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">📦</span>
+                    <div>
+                      <div className="font-medium text-emerald-400">{item.resource_name}</div>
+                      <div className={`text-sm ${action === 'buy' ? 'text-red-400' : 'text-emerald-400'}`}>
+                        {item.price} 金币
+                      </div>
+                    </div>
                   </div>
-                  <div className={styles.itemRange}>
+                  <div className="text-xs text-slate-500">
                     数量: {item.min_amount}-{item.max_amount}
                   </div>
-                </div>
-                {currentCity && (
-                  <div className={styles.itemStock}>
-                    拥有: {currentCity[item.resource_type as keyof typeof currentCity] || 0}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+                  {currentCity && (
+                    <div className="text-xs text-slate-500 mt-1">
+                      拥有: {currentCity[item.resource_type as keyof typeof currentCity] || 0}
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* 交易区域 */}
         {selectedItem && (
-          <div className={styles.tradeArea}>
-            <div className={styles.tradeForm}>
-              <label>数量: </label>
-              <input 
-                type="number" 
-                value={amount}
-                onChange={(e) => setAmount(Math.max(selectedItem.min_amount, Math.min(selectedItem.max_amount, parseInt(e.target.value) || 0)))}
-                min={selectedItem.min_amount}
-                max={selectedItem.max_amount}
-                className={styles.amountInput}
-              />
-              <button 
+          <div className="p-4 border-t border-slate-700 bg-slate-800/30">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400 mb-2">
+                  数量 (范围: {selectedItem.min_amount}-{selectedItem.max_amount})
+                </label>
+                <div className="flex items-center gap-3">
+                  <button
+                    className="w-10 h-10 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+                    onClick={() => setAmount(Math.max(selectedItem.min_amount, amount - 10))}
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(Math.max(selectedItem.min_amount, Math.min(selectedItem.max_amount, parseInt(e.target.value) || 0)))}
+                    min={selectedItem.min_amount}
+                    max={selectedItem.max_amount}
+                    className="flex-1 px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white text-center focus:border-emerald-500 focus:outline-none"
+                  />
+                  <button
+                    className="w-10 h-10 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+                    onClick={() => setAmount(Math.min(selectedItem.max_amount, amount + 10))}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                <span className="text-slate-400">总价</span>
+                <span className={`text-xl font-bold ${action === 'buy' ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {totalPrice} 金币
+                </span>
+              </div>
+
+              <GameButton
+                fullWidth
+                variant={action === 'buy' ? 'red' : 'emerald'}
                 onClick={handleTrade}
-                className={action === 'buy' ? styles.buyBtn : styles.sellBtn}
               >
-                {action === 'buy' ? '买入' : '卖出'} 
-                ({(amount * selectedItem.price)} 金币)
-              </button>
-            </div>
-            <div className={styles.tradeTips}>
-              {action === 'buy' 
-                ? `买入 ${amount} ${selectedItem.resource_name} 需要 ${amount * selectedItem.price} 金币`
-                : `卖出 ${amount} ${selectedItem.resource_name} 将获得 ${amount * selectedItem.price} 金币`
-              }
+                {action === 'buy' ? '买入' : '卖出'} {selectedItem.resource_name}
+              </GameButton>
             </div>
           </div>
         )}

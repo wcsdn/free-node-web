@@ -14,6 +14,7 @@ export interface City {
   population: number;
   moneyRate: number;
   foodRate: number;
+  level?: number;
   lastCollect?: string;
 }
 
@@ -92,6 +93,10 @@ export interface ShopItem {
   price: number;
   description: string;
   icon?: string;
+  stock?: number;
+  dailyLimit?: number;
+  dailyPurchased?: number;
+  canBuy?: boolean;
 }
 
 // ============ Battle ============

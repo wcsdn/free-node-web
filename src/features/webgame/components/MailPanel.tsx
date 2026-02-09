@@ -1,10 +1,9 @@
 /**
- * MailPanel - 新版邮件面板
- * 赛博朋克风格
+ * MailPanel - 邮件面板
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState } from 'react';
 import { GameCard, GameButton, GameModal } from '@/shared/components/game';
-import styles from './MailPanel.module.css';
 
 interface Mail {
   id: number;
@@ -20,11 +19,14 @@ interface MailPanelProps {
   walletAddress: string;
 }
 
-export const MailPanel: React.FC<MailPanelProps> = ({ walletAddress }) => {
-  const [mails, setMails] = useState<Mail[]>([
-    { id: 1, sender: '系统', title: '欢迎加入', content: '欢迎来到剑侠情缘！', time: '2026-02-08', read: false, hasAttachment: true },
-    { id: 2, sender: '系统', title: '每日奖励', content: '您的每日登录奖励已发放。', time: '2026-02-07', read: true, hasAttachment: false },
-  ]);
+// 模拟数据
+const MOCK_MAILS: Mail[] = [
+  { id: 1, sender: '系统', title: '欢迎加入', content: '欢迎来到剑侠情缘！', time: '2026-02-08', read: false, hasAttachment: true },
+  { id: 2, sender: '系统', title: '每日奖励', content: '您的每日登录奖励已发放。', time: '2026-02-07', read: true, hasAttachment: false },
+];
+
+export const MailPanel: React.FC<MailPanelProps> = () => {
+  const [mails, setMails] = useState<Mail[]>(MOCK_MAILS);
   const [selectedMail, setSelectedMail] = useState<Mail | null>(null);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -44,57 +46,83 @@ export const MailPanel: React.FC<MailPanelProps> = ({ walletAddress }) => {
     setSelectedMail(null);
   };
 
-  const receiveAttachment = (id: number) => {
+  const receiveAttachment = (_id: number) => {
     alert('领取附件成功！');
   };
 
+  const stats = {
+    total: mails.length,
+    unread: mails.filter(m => !m.read).length,
+  };
+
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>
-        <span className={styles.glitch} data-text="MAIL">MAIL</span>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题 */}
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 text-emerald-400 
+                     tracking-wider uppercase">
+        MAIL
       </h1>
 
       {/* 邮件统计 */}
-      <GameCard title="邮件箱" className={styles.statsCard}>
-        <div className={styles.stats}>
-          <div className={styles.statItem}>
-            <span className={styles.statValue}>{mails.length}</span>
-            <span className={styles.statLabel}>总数</span>
+      <GameCard title="邮件箱" className="mb-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-3 bg-slate-800/50 rounded-lg">
+            <div className="text-2xl font-bold text-emerald-400">{stats.total}</div>
+            <div className="text-xs text-slate-500 uppercase mt-1">总数</div>
           </div>
-          <div className={styles.statItem}>
-            <span className={styles.statValue}>{mails.filter(m => !m.read).length}</span>
-            <span className={styles.statLabel}>未读</span>
+          <div className="text-center p-3 bg-slate-800/50 rounded-lg">
+            <div className="text-2xl font-bold text-amber-400">{stats.unread}</div>
+            <div className="text-xs text-slate-500 uppercase mt-1">未读</div>
           </div>
         </div>
       </GameCard>
 
       {/* 邮件列表 */}
-      <div className={styles.mailList}>
-        {mails.map((mail) => (
-          <div
-            key={mail.id}
-            className={[styles.mailItem, mail.read ? styles.read : '', mail.hasAttachment ? styles.hasAttachment : ''].join(' ')}
-            onClick={() => openMail(mail)}
-          >
-            <div className={styles.mailIcon}>
-              {mail.hasAttachment ? '📎' : '📧'}
-            </div>
-            <div className={styles.mailInfo}>
-              <div className={styles.mailHeader}>
-                <span className={styles.sender}>{mail.sender}</span>
-                <span className={styles.time}>{mail.time}</span>
+      {mails.length > 0 ? (
+        <div className="space-y-2">
+          {mails.map((mail) => (
+            <div
+              key={mail.id}
+              onClick={() => openMail(mail)}
+              className={`
+                flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all duration-200
+                ${mail.read 
+                  ? 'bg-slate-800/30 border border-slate-700/50' 
+                  : 'bg-slate-800/60 border border-slate-700 hover:border-emerald-500/50'
+                }
+                ${mail.hasAttachment ? 'border-l-2 border-l-emerald-500' : ''}
+              `}
+            >
+              {/* 图标 */}
+              <div className="text-2xl flex-shrink-0">
+                {mail.hasAttachment ? '📎' : '📧'}
               </div>
-              <div className={styles.mailTitle}>{mail.title}</div>
-            </div>
-            {!mail.read && <div className={styles.unreadDot}></div>}
-          </div>
-        ))}
-      </div>
 
-      {/* 空状态 */}
-      {mails.length === 0 && (
-        <div className={styles.empty}>
-          <p>暂无邮件</p>
+              {/* 邮件信息 */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`font-medium truncate ${mail.read ? 'text-slate-400' : 'text-emerald-400'}`}>
+                    {mail.title}
+                  </span>
+                  <span className="text-xs text-slate-500 flex-shrink-0">{mail.time}</span>
+                </div>
+                <div className="text-sm text-slate-500 truncate mt-0.5">
+                  {mail.sender}
+                </div>
+              </div>
+
+              {/* 未读标记 */}
+              {!mail.read && (
+                <div className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" />
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* 空状态 */
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">📭</div>
+          <p className="text-slate-500">暂无邮件</p>
         </div>
       )}
 
@@ -106,30 +134,41 @@ export const MailPanel: React.FC<MailPanelProps> = ({ walletAddress }) => {
         size="small"
       >
         {selectedMail && (
-          <div className={styles.detailContent}>
-            <div className={styles.detailHeader}>
-              <span className={styles.detailIcon}>📧</span>
-              <div className={styles.detailInfo}>
-                <h3>{selectedMail.title}</h3>
-                <p>来自: {selectedMail.sender} · {selectedMail.time}</p>
+          <div className="space-y-4">
+            {/* 头部 */}
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-700">
+              <span className="text-3xl">{selectedMail.hasAttachment ? '📎' : '📧'}</span>
+              <div>
+                <h3 className="text-emerald-400 font-semibold">{selectedMail.title}</h3>
+                <p className="text-slate-500 text-sm">
+                  来自: {selectedMail.sender} · {selectedMail.time}
+                </p>
               </div>
             </div>
-            <div className={styles.detailBody}>
+
+            {/* 内容 */}
+            <div className="p-3 bg-slate-800/50 rounded-lg text-slate-300 text-sm">
               {selectedMail.content}
             </div>
+
+            {/* 附件 */}
             {selectedMail.hasAttachment && (
-              <div className={styles.attachment}>
-                <span>📎 附件</span>
+              <div className="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg">
+                <span className="text-slate-400">📎 附件</span>
                 <GameButton size="small" onClick={() => receiveAttachment(selectedMail.id)}>
                   领取
                 </GameButton>
               </div>
             )}
-            <div className={styles.detailActions}>
-              <GameButton variant="danger" fullWidth onClick={() => deleteMail(selectedMail.id)}>
-                删除邮件
-              </GameButton>
-            </div>
+
+            {/* 操作 */}
+            <GameButton 
+              variant="danger" 
+              fullWidth 
+              onClick={() => deleteMail(selectedMail.id)}
+            >
+              删除邮件
+            </GameButton>
           </div>
         )}
       </GameModal>

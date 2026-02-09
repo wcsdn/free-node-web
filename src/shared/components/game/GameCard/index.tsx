@@ -1,14 +1,4 @@
 /**
- * GameCard - 赛博朋克风格卡片
+ * GameCard - 通用卡片组件
  */
-import React from 'react';
-import styles from './GameCard.module.css';
-
-interface GameCardProps {
-  children: React.ReactNode;
-  title?: string;
-  className?: string;
-  onClick?: () => void;
-}
-
-export { default as GameCard } from './GameCard';
+export { GameCard } from './GameCard';

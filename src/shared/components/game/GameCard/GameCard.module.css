@@ -1,64 +1,42 @@
-/* GameCard - 赛博朋克风格卡片 */
-
+/**
+ * GameCard - 通用卡片组件样式
+ */
 .card {
-  position: relative;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(0, 255, 0, 0.2);
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-  padding: 20px;
-  overflow: hidden;
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 0, 0.5),
-    transparent
-  );
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:active {
+  transform: scale(0.98);
 }
 
 .title {
-  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
-  font-size: 18px;
-  color: #00FF00;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.title h3 {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 15px;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  letter-spacing: 0.1em;
+  margin: 0;
 }
 
 .content {
-  color: #00FF00;
-  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
-}
-
-/* 可点击状态 */
-.clickable {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.clickable:hover {
-  border-color: rgba(0, 255, 0, 0.5);
-  box-shadow: 0 0 25px rgba(0, 255, 0, 0.2);
-  transform: translateY(-2px);
-}
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .card {
-    padding: 12px;
-  }
-  
-  .title {
-    font-size: 14px;
-  }
+  padding: var(--spacing-md);
 }

@@ -1,16 +1,14 @@
 /**
- * BattlePanel - 新版战斗面板
- * 赛博朋克风格
+ * BattlePanel - 战斗面板
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState } from 'react';
 import { GameCard, GameButton } from '@/shared/components/game';
-import styles from './BattlePanel.module.css';
 
 interface BattlePanelProps {
-  walletAddress: string;
 }
 
-export const BattlePanel: React.FC<BattlePanelProps> = ({ walletAddress }) => {
+export const BattlePanel: React.FC<BattlePanelProps> = () => {
   const [battleType, setBattleType] = useState<'pve' | 'pvp'>('pve');
   const [battleLog, setBattleLog] = useState<string[]>([]);
 
@@ -25,84 +23,115 @@ export const BattlePanel: React.FC<BattlePanelProps> = ({ walletAddress }) => {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>
-        <span className={styles.glitch} data-text="BATTLE">BATTLE</span>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题 */}
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 text-emerald-400 
+                     tracking-wider uppercase">
+        BATTLE
       </h1>
 
       {/* 战斗类型选择 */}
-      <div className={styles.battleTypes}>
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <button
-          className={[styles.typeBtn, battleType === 'pve' ? styles.active : ''].join(' ')}
           onClick={() => setBattleType('pve')}
+          className={`
+            p-4 rounded-lg border-2 transition-all duration-200
+            ${battleType === 'pve' 
+              ? 'border-emerald-500 bg-emerald-500/10' 
+              : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+            }
+          `}
         >
-          🏰 PVE
-          <span>副本挑战</span>
+          <div className="text-3xl mb-2">🏰</div>
+          <div className={`font-bold ${battleType === 'pve' ? 'text-emerald-400' : 'text-slate-400'}`}>
+            PVE
+          </div>
+          <div className="text-xs text-slate-500 mt-1">副本挑战</div>
         </button>
+        
         <button
-          className={[styles.typeBtn, battleType === 'pvp' ? styles.active : ''].join(' ')}
           onClick={() => setBattleType('pvp')}
+          className={`
+            p-4 rounded-lg border-2 transition-all duration-200
+            ${battleType === 'pvp' 
+              ? 'border-red-500 bg-red-500/10' 
+              : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+            }
+          `}
         >
-          ⚔️ PVP
-          <span>竞技挑战</span>
+          <div className="text-3xl mb-2">⚔️</div>
+          <div className={`font-bold ${battleType === 'pvp' ? 'text-red-400' : 'text-slate-400'}`}>
+            PVP
+          </div>
+          <div className="text-xs text-slate-500 mt-1">竞技挑战</div>
         </button>
       </div>
 
-      {/* 战斗信息 */}
-      <GameCard title={battleType === 'pve' ? '副本挑战' : '竞技场'} className={styles.battleInfo}>
-        <div className={styles.battleStats}>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>胜利</span>
-            <span className={styles.statValue}>0</span>
+      {/* 战斗统计 */}
+      <GameCard title={battleType === 'pve' ? '副本挑战' : '竞技场'} className="mb-6">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-3 bg-slate-800/50 rounded-lg">
+            <div className="text-2xl font-bold text-emerald-400">0</div>
+            <div className="text-xs text-slate-500 uppercase mt-1">胜利</div>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>失败</span>
-            <span className={styles.statValue}>0</span>
+          <div className="text-center p-3 bg-slate-800/50 rounded-lg">
+            <div className="text-2xl font-bold text-red-400">0</div>
+            <div className="text-xs text-slate-500 uppercase mt-1">失败</div>
           </div>
-          <div className={styles.stat}>
-            <span className={styles.statLabel}>连胜</span>
-            <span className={styles.statValue}>0</span>
+          <div className="text-center p-3 bg-slate-800/50 rounded-lg">
+            <div className="text-2xl font-bold text-amber-400">0</div>
+            <div className="text-xs text-slate-500 uppercase mt-1">连胜</div>
           </div>
         </div>
       </GameCard>
 
       {/* 挑战按钮 */}
-      <div className={styles.challenge}>
-        <GameButton size="large" fullWidth onClick={startBattle}>
-          {battleType === 'pve' ? '挑战副本' : '挑战对手'}
-        </GameButton>
-      </div>
+      <GameButton fullWidth size="lg" onClick={startBattle} className="mb-6">
+        {battleType === 'pve' ? '挑战副本' : '挑战对手'}
+      </GameButton>
 
       {/* 战斗记录 */}
       {battleLog.length > 0 && (
-        <GameCard title="战斗记录" className={styles.battleLog}>
-          <div className={styles.logContent}>
+        <GameCard title="战斗记录" className="mb-6">
+          <div className="h-40 overflow-y-auto bg-slate-900/50 rounded-lg p-3
+                         scrollbar-thin scrollbar-thumb-slate-600">
             {battleLog.map((log, index) => (
-              <div key={index} className={styles.logItem}>{log}</div>
+              <div key={index} className="text-xs text-slate-400 font-mono mb-1">
+                {log}
+              </div>
             ))}
           </div>
         </GameCard>
       )}
 
-      {/* 副本/竞技列表 */}
-      <div className={styles.sectionTitle}>
-        {battleType === 'pve' ? '可挑战副本' : '排行榜'}
+      {/* 列表标题 */}
+      <div className="flex items-center gap-3 mb-4 text-emerald-400 font-mono text-base uppercase tracking-wider">
+        <span>{battleType === 'pve' ? '可挑战副本' : '排行榜'}</span>
+        <div className="flex-1 h-px bg-gradient-to-r from-emerald-500/30 to-transparent" />
       </div>
-      <div className={styles.listGrid}>
+
+      {/* 列表网格 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className={styles.listCard}>
-            <div className={styles.listIcon}>
+          <div 
+            key={i}
+            className="flex items-center gap-3 p-4 bg-slate-800/60 border border-slate-700 
+                       rounded-lg hover:border-emerald-500/50 transition-all duration-200 cursor-pointer"
+          >
+            <div className="text-2xl">
               {battleType === 'pve' ? '🏰' : '🏆'}
             </div>
-            <div className={styles.listInfo}>
-              <div className={styles.listName}>
+            <div className="flex-1">
+              <div className="text-emerald-400 font-medium">
                 {battleType === 'pve' ? `副本 ${i}` : `排名 #${i}`}
               </div>
-              <div className={styles.listDesc}>
+              <div className="text-xs text-slate-500">
                 {battleType === 'pve' ? '初级难度' : '战绩 10-0'}
               </div>
             </div>
-            <GameButton size="small" variant="secondary">挑战</GameButton>
+            <GameButton size="small" variant="secondary">
+              挑战
+            </GameButton>
           </div>
         ))}
       </div>

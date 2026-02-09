@@ -2,7 +2,7 @@
  * useHero - 武将状态 Hook
  */
 import { useState, useCallback, useEffect } from 'react';
-import type { Hero, ApiResponse } from '../types/game.types';
+import type { Hero } from '../types/game.types';
 import { heroApi } from '../services/game.api';
 
 interface HeroState {
@@ -11,7 +11,7 @@ interface HeroState {
   error: string | null;
 }
 
-export function useHero(walletAddress: string) {
+export function useHero(_walletAddress: string) {
   const [state, setState] = useState<HeroState>({
     heroes: [],
     loading: false,

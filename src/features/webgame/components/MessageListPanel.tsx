@@ -1,12 +1,11 @@
 /**
  * 消息面板组件
- * 邮件列表、查看邮件、删除邮件
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
-import styles from '../styles/MailPanel.module.css';
 import { getApiBase, getAuthHeaders } from '../utils/api';
+import { GameButton } from '@/shared/components/game';
 
-// 邮件类型
 const MAIL_TYPES = {
   0: { name: '新邮件', color: '#f44336' },
   1: { name: '系统', color: '#9D080D' },
@@ -34,12 +33,7 @@ interface MailListResponse {
     unread_count: number;
     total: number;
   };
-  error?: string;  // ✅ 添加 error 属性
-}
-
-interface MailDetailResponse {
-  success: boolean;
-  data: Mail;
+  error?: string;
 }
 
 interface MessagePanelProps {
@@ -87,18 +81,7 @@ const MessagePanel: React.FC<MessagePanelProps> = memo(({ onClose }) => {
     fetchMails(activeType);
   }, [activeType]);
 
-  const handleSelectMail = async (mail: Mail) => {
-    setSelectedMail(mail);
-    
-    // 如果未读，刷新列表
-    if (mail.read_tag === 0) {
-      fetchMails(activeType);
-    }
-  };
-
   const handleDelete = async (mailId: number) => {
-    if (!confirm('确定要删除这封邮件吗？')) return;
-    
     setMessage(null);
     try {
       const res = await fetch(`${getApiBase()}/api/mail/${mailId}`, {
@@ -132,11 +115,6 @@ const MessagePanel: React.FC<MessagePanelProps> = memo(({ onClose }) => {
         const result = data.data || {};
         let msg = '领取成功！';
         if (result.gold) msg += ` ${result.gold}金币`;
-        if (result.items) {
-          result.items.forEach((item: any) => {
-            msg += ` ${item.name}x${item.count}`;
-          });
-        }
         setMessage(msg);
         fetchMails(activeType);
       } else {
@@ -174,112 +152,149 @@ const MessagePanel: React.FC<MessagePanelProps> = memo(({ onClose }) => {
   ];
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2>📨 消息中心 {unreadCount > 0 && <span className={styles.unreadBadge}>{unreadCount}</span>}</h2>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
-      </div>
-
-      {/* 消息提示 */}
-      {message && (
-        <div className={styles.message}>
-          {message}
-        </div>
-      )}
-
-      {/* 邮件类型筛选 */}
-      <div className={styles.typeFilter}>
-        {mailTypes.map(type => (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-700 shadow-xl overflow-hidden max-h-[90vh]">
+        {/* 标题栏 */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+          <h2 className="text-xl font-bold text-emerald-400 flex items-center gap-2">
+            📨 消息中心
+            {unreadCount > 0 && (
+              <span className="px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                {unreadCount}
+              </span>
+            )}
+          </h2>
           <button
-            key={type.id ?? 99}
-            className={`${styles.typeBtn} ${activeType === type.id ? styles.active : ''}`}
-            onClick={() => setActiveType(type.id)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+            onClick={onClose}
           >
-            {type.name}
+            ×
           </button>
-        ))}
-      </div>
-
-      <div className={styles.content}>
-        {/* 邮件列表 */}
-        <div className={styles.mailList}>
-          {loading ? (
-            <div className={styles.loading}>加载中...</div>
-          ) : mails.length === 0 ? (
-            <div className={styles.empty}>暂无邮件</div>
-          ) : (
-            mails.map(mail => (
-              <div
-                key={mail.id}
-                className={`${styles.mailItem} ${mail.read_tag === 0 ? styles.unread : ''} ${selectedMail?.id === mail.id ? styles.selected : ''}`}
-                onClick={() => handleSelectMail(mail)}
-              >
-                <div className={styles.mailInfo}>
-                  <span 
-                    className={styles.mailType}
-                    style={{ color: MAIL_TYPES[mail.mail_type as keyof typeof MAIL_TYPES]?.color || '#666' }}
-                  >
-                    [{MAIL_TYPES[mail.mail_type as keyof typeof MAIL_TYPES]?.name || '未知'}]
-                  </span>
-                  <span className={styles.mailFrom}>{mail.from_name}</span>
-                  <span className={styles.mailDate}>{formatDate(mail.created_at)}</span>
-                </div>
-                <div className={styles.mailTitle}>{mail.title}</div>
-                {mail.has_attachment === 1 && <span className={styles.attachmentIcon}>📎</span>}
-              </div>
-            ))
-          )}
         </div>
 
-        {/* 邮件详情 */}
-        <div className={styles.mailDetail}>
-          {selectedMail ? (
-            <>
-              <div className={styles.detailHeader}>
-                <span 
-                  className={styles.mailType}
-                  style={{ color: MAIL_TYPES[selectedMail.mail_type as keyof typeof MAIL_TYPES]?.color || '#666' }}
-                >
-                  [{MAIL_TYPES[selectedMail.mail_type as keyof typeof MAIL_TYPES]?.name || '未知'}]
-                </span>
-                <span className={styles.mailTitle}>{selectedMail.title}</span>
-              </div>
-              
-              <div className={styles.detailInfo}>
-                <span>来自: {selectedMail.from_name}</span>
-                <span>{formatDate(selectedMail.created_at)}</span>
-              </div>
+        {/* 消息提示 */}
+        {message && (
+          <div className="mx-4 mt-4 px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg text-sm border border-emerald-500/30">
+            {message}
+          </div>
+        )}
 
-              <div className={styles.detailContent}>
-                {selectedMail.content}
-              </div>
+        {/* 邮件类型筛选 */}
+        <div className="flex gap-2 p-4 border-b border-slate-700 overflow-x-auto">
+          {mailTypes.map((type) => (
+            <button
+              key={type.id ?? 99}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                activeType === type.id
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+              }`}
+              onClick={() => setActiveType(type.id)}
+            >
+              {type.name}
+            </button>
+          ))}
+        </div>
 
-              {selectedMail.has_attachment === 1 && (
-                <div className={styles.attachment}>
-                  <span>📎 附件</span>
-                  <button 
-                    className={styles.claimBtn}
-                    onClick={() => handleClaimAttachment(selectedMail.id)}
-                  >
-                    领取附件
-                  </button>
+        {/* 内容区域 */}
+        <div className="flex max-h-[60vh]">
+          {/* 邮件列表 */}
+          <div className="w-1/3 border-r border-slate-700 overflow-y-auto">
+            {loading ? (
+              <div className="p-8 text-center text-slate-500">
+                <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-2" />
+                加载中...
+              </div>
+            ) : mails.length === 0 ? (
+              <div className="p-8 text-center text-slate-500">
+                暂无邮件
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-700/50">
+                {mails.map((mail) => {
+                  const typeInfo = MAIL_TYPES[mail.mail_type as keyof typeof MAIL_TYPES] || { name: '未知', color: '#666' };
+                  return (
+                    <button
+                      key={mail.id}
+                      className={`w-full p-4 text-left transition-all ${
+                        selectedMail?.id === mail.id
+                          ? 'bg-emerald-500/10 border-l-2 border-emerald-500'
+                          : mail.read_tag === 0
+                            ? 'bg-slate-800/30'
+                            : 'hover:bg-slate-800/50'
+                      }`}
+                      onClick={() => setSelectedMail(mail)}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span 
+                          className="text-xs"
+                          style={{ color: typeInfo.color }}
+                        >
+                          [{typeInfo.name}]
+                        </span>
+                        {mail.read_tag === 0 && (
+                          <span className="w-2 h-2 bg-emerald-400 rounded-full" />
+                        )}
+                      </div>
+                      <div className={`text-sm truncate ${mail.read_tag === 0 ? 'text-slate-200 font-medium' : 'text-slate-400'}`}>
+                        {mail.title}
+                      </div>
+                      <div className="flex items-center justify-between mt-1 text-xs text-slate-500">
+                        <span className="truncate max-w-20">{mail.from_name}</span>
+                        <span>{formatDate(mail.created_at)}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* 邮件详情 */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            {selectedMail ? (
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span 
+                      className="text-sm"
+                      style={{ color: MAIL_TYPES[selectedMail.mail_type as keyof typeof MAIL_TYPES]?.color || '#666' }}
+                    >
+                      [{MAIL_TYPES[selectedMail.mail_type as keyof typeof MAIL_TYPES]?.name || '未知'}]
+                    </span>
+                    <h3 className="text-lg font-bold text-slate-200">{selectedMail.title}</h3>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-slate-500">
+                    <span>来自: {selectedMail.from_name}</span>
+                    <span>{formatDate(selectedMail.created_at)}</span>
+                  </div>
                 </div>
-              )}
 
-              <div className={styles.detailActions}>
-                <button 
-                  className={styles.deleteBtn}
-                  onClick={() => handleDelete(selectedMail.id)}
-                >
-                  删除
-                </button>
+                <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+                  <p className="text-slate-300 whitespace-pre-wrap">{selectedMail.content}</p>
+                </div>
+
+                {selectedMail.has_attachment === 1 && (
+                  <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center justify-between">
+                    <span className="text-amber-400">📎 附件</span>
+                    <GameButton size="sm" onClick={() => handleClaimAttachment(selectedMail.id)}>
+                      领取附件
+                    </GameButton>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-4 border-t border-slate-700">
+                  <GameButton variant="red" size="sm" onClick={() => handleDelete(selectedMail.id)}>
+                    删除
+                  </GameButton>
+                </div>
               </div>
-            </>
-          ) : (
-            <div className={styles.noSelection}>
-              选择一封邮件查看详情
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-center h-full text-slate-500">
+                选择一封邮件查看详情
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -87,30 +87,6 @@ export const heroApi = {
   },
 };
 
-// ============ Item API ============
-export const itemApi = {
-  /** 获取物品列表 */
-  async getItems(): Promise<ApiResponse<any[]>> {
-    return fetchApi('/api/item/list');
-  },
-};
-
-// ============ Shop API ============
-export const shopApi = {
-  /** 获取商店列表 */
-  async getShopList(type = 1): Promise<ApiResponse<ShopItem[]>> {
-    return fetchApi(`/api/shop/list?type=${type}`);
-  },
-
-  /** 购买物品 */
-  async buyItem(itemId: number, count = 1): Promise<ApiResponse<{ itemId: number; count: number }>> {
-    return fetchApi('/api/shop/buy', {
-      method: 'POST',
-      body: JSON.stringify({ item_id: itemId, count }),
-    });
-  },
-};
-
 // ============ Chat API ============
 export const chatApi = {
   /** 获取聊天列表 */
@@ -132,5 +108,126 @@ export const mailApi = {
   /** 获取邮件列表 */
   async getMails(): Promise<ApiResponse<Mail[]>> {
     return fetchApi('/api/mail/list');
+  },
+
+  /** 阅读邮件 */
+  async readMail(mailId: number): Promise<ApiResponse<{ attachmentGold?: number; attachmentItems?: any }>> {
+    return fetchApi(`/api/mail/${mailId}/read`, { method: 'POST' });
+  },
+
+  /** 删除邮件 */
+  async deleteMail(mailId: number): Promise<ApiResponse<null>> {
+    return fetchApi(`/api/mail/${mailId}`, { method: 'DELETE' });
+  },
+
+  /** 批量标记已读 */
+  async markAllAsRead(): Promise<ApiResponse<{ count: number }>> {
+    return fetchApi('/api/mail/read-all', { method: 'POST' });
+  },
+};
+
+// ============ Shop API ============
+export const shopApi = {
+  /** 获取商店列表 */
+  async getShopList(type = 1): Promise<ApiResponse<ShopItem[]>> {
+    return fetchApi(`/api/shop/list?type=${type}`);
+  },
+
+  /** 购买物品 */
+  async buyItem(itemId: number, count = 1): Promise<ApiResponse<{ itemId: number; count: number; totalPrice: number }>> {
+    return fetchApi('/api/shop/buy', {
+      method: 'POST',
+      body: JSON.stringify({ item_id: itemId, count }),
+    });
+  },
+
+  /** 刷新商店 */
+  async refreshShop(type: number): Promise<ApiResponse<{ refreshed: boolean }>> {
+    return fetchApi(`/api/shop/refresh?type=${type}`, { method: 'POST' });
+  },
+
+  /** 获取购买历史 */
+  async getPurchaseHistory(limit = 50): Promise<ApiResponse<any[]>> {
+    return fetchApi(`/api/shop/history?limit=${limit}`);
+  },
+};
+
+// ============ Building API ============
+export const buildingApi = {
+  /** 获取建筑列表 */
+  async getBuildings(cityId: number): Promise<ApiResponse<{ buildings: Building[] }>> {
+    return fetchApi(`/api/game/city/building-list/${cityId}`, { method: 'POST' });
+  },
+
+  /** 升级建筑 */
+  async upgradeBuilding(buildingId: number): Promise<ApiResponse<{ level: number }>> {
+    return fetchApi(`/api/game/building/${buildingId}/upgrade`, { method: 'POST' });
+  },
+
+  /** 建造建筑 */
+  async buildBuilding(cityId: number, configId: number, position: number): Promise<ApiResponse<{ id: number }>> {
+    return fetchApi('/api/game/building', {
+      method: 'POST',
+      body: JSON.stringify({ city_id: cityId, config_id: configId, position }),
+    });
+  },
+
+  /** 拆除建筑 */
+  async demolishBuilding(buildingId: number): Promise<ApiResponse<null>> {
+    return fetchApi(`/api/game/building/${buildingId}`, { method: 'DELETE' });
+  },
+};
+
+// ============ Item API ============
+export const itemApi = {
+  /** 获取物品列表 */
+  async getItems(): Promise<ApiResponse<any[]>> {
+    return fetchApi('/api/item/list');
+  },
+
+  /** 使用物品 */
+  async useItem(itemId: number, count = 1): Promise<ApiResponse<{ effect: string }>> {
+    return fetchApi('/api/item/use', {
+      method: 'POST',
+      body: JSON.stringify({ item_id: itemId, count }),
+    });
+  },
+
+  /** 装备物品 */
+  async equipItem(itemId: number, heroId: number): Promise<ApiResponse<null>> {
+    return fetchApi('/api/item/equip', {
+      method: 'POST',
+      body: JSON.stringify({ item_id: itemId, hero_id: heroId }),
+    });
+  },
+
+  /** 卸下物品 */
+  async unequipItem(itemId: number): Promise<ApiResponse<null>> {
+    return fetchApi('/api/item/unequip', {
+      method: 'POST',
+      body: JSON.stringify({ item_id: itemId }),
+    });
+  },
+};
+
+// ============ Battle API ============
+export const battleApi = {
+  /** 发起战斗 */
+  async startBattle(enemyType: string, enemyId?: number): Promise<ApiResponse<{
+    win: boolean;
+    damageDealt: number;
+    damageTaken: number;
+    expGained: number;
+    itemsGained?: Array<{ id: number; count: number }>;
+  }>> {
+    return fetchApi('/api/battle/start', {
+      method: 'POST',
+      body: JSON.stringify({ enemy_type: enemyType, enemy_id: enemyId }),
+    });
+  },
+
+  /** 获取战斗记录 */
+  async getBattleHistory(limit = 20): Promise<ApiResponse<any[]>> {
+    return fetchApi(`/api/battle/history?limit=${limit}`);
   },
 };

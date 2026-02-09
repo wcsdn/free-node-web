@@ -1,7 +1,8 @@
 /**
- * ChatPanel - 聊天面板 (简化版)
+ * ChatPanel - 聊天面板
+ * 原则：移动端优先，简洁设计
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { GameCard, GameButton } from '@/shared/components/game';
 import { useChat } from '../hooks/useChat';
 
@@ -17,25 +18,42 @@ export const ChatPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
   return (
     <GameCard title="世界聊天">
-      <div style={{ height: 200, overflow: 'auto', marginBottom: 10, padding: 10, background: 'rgba(0,0,0,0.3)' }}>
-        {loading ? <p>加载中...</p> : messages.slice(-50).map(m => (
-          <div key={m.id} style={{ marginBottom: 5 }}>
-            <span style={{ color: '#00FF00' }}>{m.sender}:</span>
-            <span style={{ color: '#fff' }}> {m.content}</span>
+      {/* 消息列表 */}
+      <div 
+        className="h-40 sm:h-48 overflow-y-auto bg-slate-900/50 rounded-lg p-3 mb-3
+                   scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {loading ? (
+          <p className="text-slate-400 text-center py-4">加载中...</p>
+        ) : messages.slice(-50).map(m => (
+          <div key={m.id} className="mb-2">
+            <span className="text-emerald-400 font-mono text-sm">{m.sender}:</span>
+            <span className="text-slate-200 ml-2">{m.content}</span>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 10 }}>
+
+      {/* 输入框 */}
+      <div className="flex gap-2">
         <input
+          type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyPress={e => e.key === 'Enter' && handleSend()}
           placeholder="输入消息..."
-          style={{ flex: 1, padding: 8, background: '#111', border: '1px solid #333', color: '#fff' }}
+          className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg
+                     text-slate-200 placeholder-slate-500
+                     focus:outline-none focus:border-emerald-500/50 transition-colors"
         />
-        <GameButton onClick={handleSend}>发送</GameButton>
+        <GameButton onClick={handleSend}>
+          发送
+        </GameButton>
       </div>
-      <GameButton onClick={onClose} style={{ marginTop: 10 }}>关闭</GameButton>
+
+      {/* 关闭按钮 */}
+      <GameButton onClick={onClose} variant="secondary" className="w-full mt-2">
+        关闭
+      </GameButton>
     </GameCard>
   );
 };

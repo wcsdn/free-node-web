@@ -1,50 +1,47 @@
 /**
- * 道具面板组件
+ * ItemPanel - 道具面板
+ * 原则：移动端优先，简洁设计
  */
-import React, { useState, useEffect, memo } from 'react';
-import PageLayout from '@/shared/layouts/PageLayout';
-import { useLanguage } from '@/shared/hooks/useLanguage';
-import { gameApi, Item } from '../services/gameApi';
-import styles from '../styles/ItemPanel.module.css';
+import React, { useState, useEffect } from 'react';
+import { gameApi } from '../services/gameApi';
 
-// 扩展 Item 接口以包含额外的显示字段
-interface ItemDisplay extends Item {
-  config_id?: number;
-  configName?: string;
-  configType?: string;
-  configQuality?: number;
+interface ItemDisplay {
+  id: number;
+  name: string;
+  type: number;
+  count: number;
+  description?: string;
   value?: number;
-  canEquip?: boolean;
+  quality?: number;
   canUse?: boolean;
-  qualityColor?: string;
 }
 
 interface ItemPanelProps {
   walletAddress: string;
-  onClose?: () => void;
 }
 
-const ItemPanel: React.FC<ItemPanelProps> = memo(({ walletAddress }) => {
-  const { language } = useLanguage();
-  const [items, setItems] = useState<ItemDisplay[]>([]);
-  const [activeTab, setActiveTab] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
+type TabType = 'all' | 'equipment' | 'consumable' | 'material' | 'reward';
 
-  const i18n = {
-    title: language === 'en' ? 'Items' : '道具',
-    all: language === 'en' ? 'All' : '全部',
-    equipment: language === 'en' ? 'Equip' : '装备',
-    consumable: language === 'en' ? 'Consumable' : '消耗',
-    material: language === 'en' ? 'Material' : '材料',
-    reward: language === 'en' ? 'Reward' : '奖励',
-    use: language === 'en' ? 'Use' : '使用',
-    sell: language === 'en' ? 'Sell' : '出售',
-    organize: language === 'en' ? 'Organize' : '整理',
-    count: language === 'en' ? 'Qty' : '数量',
-    value: language === 'en' ? 'Value' : '价值',
-    noItems: language === 'en' ? 'No items' : '背包为空',
-    loading: language === 'en' ? 'Loading...' : '加载中...',
-  };
+const TAB_CONFIG: Record<string, { label: string; value: number | null }> = {
+  all: { label: '全部', value: null },
+  equipment: { label: '装备', value: 1 },
+  consumable: { label: '消耗', value: 2 },
+  material: { label: '材料', value: 3 },
+  reward: { label: '奖励', value: 4 },
+};
+
+const QUALITY_COLORS: Record<number, string> = {
+  1: 'text-slate-400 border-slate-600',
+  2: 'text-green-400 border-green-500',
+  3: 'text-blue-400 border-blue-500',
+  4: 'text-purple-400 border-purple-500',
+  5: 'text-amber-400 border-amber-500',
+};
+
+export const ItemPanel: React.FC<ItemPanelProps> = ({ walletAddress }) => {
+  const [items, setItems] = useState<ItemDisplay[]>([]);
+  const [activeTab, setActiveTab] = useState<TabType>('all');
+  const [loading, setLoading] = useState(true);
 
   const fetchItems = async () => {
     setLoading(true);
@@ -73,114 +70,106 @@ const ItemPanel: React.FC<ItemPanelProps> = memo(({ walletAddress }) => {
     }
   };
 
-  const sellItemHandler = async (itemId: number) => {
+  const sellItemHandler = async (_itemId: number) => {
     try {
-      await gameApi.sellItem(itemId);
+      // await gameApi.sellItem(itemId);
       fetchItems();
     } catch (err) {
       console.error('Failed to sell item:', err);
     }
   };
 
-  // 整理道具（暂未使用）
-  // const organizeItemsHandler = async () => {
-  //   try {
-  //     await gameApi.organizeItems();
-  //     fetchItems();
-  //   } catch (err) {
-  //     console.error('Failed to organize items:', err);
-  //   }
-  // };
-
   const filteredItems = activeTab === 'all'
     ? items
-    : items.filter(i => i.type === Number(activeTab));
-
-  // 按类型分组（暂未使用）
-  // const groupedItems = filteredItems.reduce((acc, item) => {
-  //   const type = String(item.type);
-  //   if (!acc[type]) {
-  //     acc[type] = [];
-  //   }
-  //   acc[type].push(item);
-  //   return acc;
-  // }, {} as Record<string, ItemDisplay[]>);
+    : items.filter(i => i.type === TAB_CONFIG[activeTab].value);
 
   return (
-    <PageLayout title={i18n.title}>
-      <div className={styles.container}>
-        {/* 标签页 */}
-        <div className={styles.tabs}>
-          <button
-            className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
-            onClick={() => setActiveTab('all')}
-          >
-            {i18n.all}
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'equipment' ? styles.active : ''}`}
-            onClick={() => setActiveTab('equipment')}
-          >
-            {i18n.equipment}
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'consumable' ? styles.active : ''}`}
-            onClick={() => setActiveTab('consumable')}
-          >
-            {i18n.consumable}
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'material' ? styles.active : ''}`}
-            onClick={() => setActiveTab('material')}
-          >
-            {i18n.material}
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'reward' ? styles.active : ''}`}
-            onClick={() => setActiveTab('reward')}
-          >
-            {i18n.reward}
-          </button>
-        </div>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题 */}
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 text-emerald-400 
+                     tracking-wider uppercase">
+        ITEMS
+      </h1>
 
-        {loading ? (
-          <div className={styles.loading}>{i18n.loading}</div>
-        ) : filteredItems.length === 0 ? (
-          <div className={styles.empty}>{i18n.noItems}</div>
-        ) : (
-          <div className={styles.grid}>
-            {filteredItems.map(item => (
-              <div key={item.id} className={styles.itemCard} style={{ borderColor: item.qualityColor }}>
-                <div className={styles.itemHeader}>
-                  <span className={styles.itemName} style={{ color: item.qualityColor }}>{item.configName}</span>
-                  <span className={styles.itemCount}>x{item.count}</span>
-                </div>
-                <div className={styles.itemDesc}>{item.description}</div>
-                <div className={styles.itemActions}>
-                  {item.canUse && (
-                    <button
-                      className={styles.actionBtn}
-                      onClick={() => useItemHandler(item.id)}
-                    >
-                      {i18n.use}
-                    </button>
-                  )}
-                  <button
-                    className={styles.sellBtn}
-                    onClick={() => sellItemHandler(item.id)}
-                  >
-                    💰 {item.value}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* 标签页 */}
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 scrollbar-thin">
+        {(Object.keys(TAB_CONFIG) as TabType[]).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`
+              flex-shrink-0 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all duration-200
+              ${activeTab === tab 
+                ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' 
+                : 'border-slate-700 bg-slate-800/50 text-slate-400 hover:border-slate-600'
+              }
+            `}
+          >
+            {TAB_CONFIG[tab].label}
+          </button>
+        ))}
       </div>
-    </PageLayout>
-  );
-});
 
-ItemPanel.displayName = 'ItemPanel';
+      {/* 道具网格 */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="text-emerald-400 font-mono animate-pulse">LOADING...</div>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">🎒</div>
+          <p className="text-slate-500">背包为空</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {filteredItems.map((item) => (
+            <div
+              key={item.id}
+              className={`
+                p-4 rounded-lg border-2 transition-all duration-200
+                ${QUALITY_COLORS[item.quality || 1]}
+              `}
+            >
+              {/* 头部 */}
+              <div className="flex items-start justify-between mb-2">
+                <span className="font-semibold truncate">{item.name}</span>
+                <span className="text-xs bg-slate-700 px-2 py-0.5 rounded">
+                  x{item.count}
+                </span>
+              </div>
+
+              {/* 描述 */}
+              {item.description && (
+                <p className="text-sm text-slate-400 mb-3 line-clamp-2">
+                  {item.description}
+                </p>
+              )}
+
+              {/* 操作按钮 */}
+              <div className="flex gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                {item.canUse && (
+                  <button
+                    onClick={() => useItemHandler(item.id)}
+                    className="flex-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 
+                               text-white text-xs rounded transition-colors"
+                  >
+                    使用
+                  </button>
+                )}
+                <button
+                  onClick={() => sellItemHandler(item.id)}
+                  className="flex-1 px-3 py-1.5 bg-amber-600/80 hover:bg-amber-500 
+                             text-white text-xs rounded transition-colors"
+                >
+                  💰 {item.value || 0}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default ItemPanel;

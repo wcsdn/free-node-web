@@ -30,9 +30,9 @@ export const useGameLogic = () => {
   /**
    * 创建角色
    */
-  const createCharacter = useCallback(async (name: string) => {
+  const createCharacter = useCallback(async (name: string, country: string = '蜀') => {
     try {
-      const response = await gameApi.createCharacter(name);
+      const response = await gameApi.createCharacter(name, country);
       
       if (response.success) {
         showSuccess('角色创建成功！');

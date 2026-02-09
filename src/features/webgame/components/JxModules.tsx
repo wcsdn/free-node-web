@@ -1,9 +1,8 @@
 /**
  * 剑侠情缘功能面板组件
- * 从 Main.aspx 功能入口迁移
+ * 原则：移动端优先，简洁设计
  */
 import React, { memo } from 'react';
-import styles from '../styles/jxModules.module.css';
 
 interface JxModulesProps {
   walletAddress: string;
@@ -12,38 +11,46 @@ interface JxModulesProps {
 
 const JxModules: React.FC<JxModulesProps> = memo(({ onNavigate }) => {
   const modules = [
-    { id: 'market', name: '市场', icon: '/jx/Web/img/o/21.gif', desc: '买卖资源道具' },
-    { id: 'mall', name: '商城', icon: '/jx/Web/img/o/21.gif', desc: '购买珍稀物品' },
-    { id: 'mail', name: '消息', icon: '/jx/Web/img/o/33.gif', desc: '收发邮件' },
-    { id: 'task', name: '任务', icon: '/jx/Web/img/o/10.gif', desc: '日常任务' },
-    { id: 'ranking', name: '排行', icon: '/jx/Web/img/o/11.gif', desc: '玩家排名' },
-    { id: 'union', name: '帮派', icon: '/jx/Web/img/o/21.gif', desc: '帮会管理' },
-    { id: 'arena', name: '竞技', icon: '/jx/Web/img/o/12.gif', desc: 'PK竞技场' },
-    { id: 'skill', name: '技能', icon: '/jx/Web/img/o/21.gif', desc: '技能学习' },
+    { id: 'market', name: '市场', icon: '🏪', desc: '买卖资源道具' },
+    { id: 'mall', name: '商城', icon: '🛒', desc: '购买珍稀物品' },
+    { id: 'mail', name: '消息', icon: '📨', desc: '收发邮件' },
+    { id: 'task', name: '任务', icon: '📋', desc: '日常任务' },
+    { id: 'ranking', name: '排行', icon: '🏆', desc: '玩家排名' },
+    { id: 'union', name: '帮派', icon: '🏛️', desc: '帮会管理' },
+    { id: 'arena', name: '竞技', icon: '⚔️', desc: 'PK竞技场' },
+    { id: 'skill', name: '技能', icon: '✨', desc: '技能学习' },
   ];
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <button className={styles.backBtn} onClick={() => onNavigate('main')}>← 返回</button>
-        <h2>功能模块</h2>
+    <div className="min-h-screen bg-slate-900 p-4 md:p-6 lg:p-8">
+      {/* 标题栏 */}
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          className="px-4 py-2 bg-slate-800/50 text-slate-400 rounded-lg hover:text-white hover:bg-slate-800 transition-all"
+          onClick={() => onNavigate('main')}
+        >
+          ← 返回
+        </button>
+        <h1 className="text-2xl font-bold text-emerald-400">功能模块</h1>
       </div>
-      <div className={styles.grid}>
+
+      {/* 功能卡片 */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {modules.map((module) => (
-          <div
+          <button
             key={module.id}
-            className={styles.card}
+            className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 hover:bg-slate-800 transition-all flex flex-col items-center gap-3"
             onClick={() => {
               console.log('Navigate to:', module.id);
               onNavigate(module.id);
             }}
           >
-            <img src={module.icon} alt={module.name} className={styles.icon} />
-            <div className={styles.info}>
-              <span className={styles.name}>{module.name}</span>
-              <span className={styles.desc}>{module.desc}</span>
+            <span className="text-4xl">{module.icon}</span>
+            <div className="text-center">
+              <div className="font-semibold text-emerald-400">{module.name}</div>
+              <div className="text-xs text-slate-500 mt-1">{module.desc}</div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>

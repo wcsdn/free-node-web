@@ -1,7 +1,7 @@
 /**
  * 简单弹窗组件
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 declare const HidePopUp: () => void;
 

@@ -1,141 +1,103 @@
-/* GameButton - 赛博朋克风格按钮 */
-
-/* 基础样式 */
+/**
+ * GameButton - 通用按钮组件样式
+ */
 .button {
-  position: relative;
-  background: transparent;
-  border: 2px solid #00FF00;
-  color: #00FF00;
-  font-family: 'Courier New', Monaco, Menlo, Consolas, monospace;
-  font-size: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
   cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-  padding: 12px 24px;
-  min-width: 180px;
+  border: 1px solid transparent;
 }
 
-/* 扫描线动画 */
-.scanline {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 0, 0.3),
-    transparent
-  );
-  animation: scanline-sweep 3s infinite;
-}
-
-@keyframes scanline-sweep {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: 100%; }
-}
-
-.content {
-  position: relative;
-  z-index: 1;
-}
-
-/* 悬停效果 */
-.button:hover:not(.disabled) {
-  background: rgba(0, 255, 0, 0.1);
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
-  transform: scale(1.05);
-}
-
-.button:active:not(.disabled) {
-  transform: scale(0.98);
-}
-
-/* 禁用状态 */
-.disabled {
+.button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* 变体 */
-.primary {
-  border-color: #00FF00;
-  color: #00FF00;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
-
-.secondary {
-  border-color: #00AAFF;
-  color: #00AAFF;
-  box-shadow: 0 0 10px rgba(0, 170, 255, 0.3);
-}
-
-.secondary:hover:not(.disabled) {
-  background: rgba(0, 170, 255, 0.1);
-  box-shadow: 0 0 20px rgba(0, 170, 255, 0.6);
-}
-
-.danger {
-  border-color: #FF4444;
-  color: #FF4444;
-  box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
-}
-
-.danger:hover:not(.disabled) {
-  background: rgba(255, 68, 68, 0.1);
-  box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
-}
-
-/* 尺寸 */
+/* 尺寸变体 */
 .small {
-  font-size: 12px;
-  padding: 8px 16px;
-  min-width: 120px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
 }
 
 .medium {
-  font-size: 16px;
-  padding: 12px 24px;
-  min-width: 180px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.875rem;
 }
 
 .large {
-  font-size: 20px;
-  padding: 16px 32px;
-  min-width: 240px;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1rem;
+}
+
+/* 颜色变体 */
+.primary {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.primary:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.secondary {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-color: var(--border-secondary);
+}
+
+.secondary:hover:not(:disabled) {
+  background: #475569;
+  border-color: #64748B;
+  color: white;
+}
+
+.danger {
+  background: var(--color-danger);
+  color: white;
+  border-color: var(--color-danger);
+}
+
+.danger:hover:not(:disabled) {
+  background: #DC2626;
+  border-color: #DC2626;
 }
 
 /* 全宽 */
 .fullWidth {
   width: 100%;
-  min-width: auto;
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .button {
-    font-size: 14px;
-    padding: 10px 20px;
-    min-width: 140px;
-  }
-  
-  .small {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-  
-  .medium {
-    font-size: 14px;
-    padding: 10px 20px;
-  }
-  
-  .large {
-    font-size: 16px;
-    padding: 14px 28px;
-  }
+/* 扫描线动画（可选） */
+.scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: scanline 2s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
 }

@@ -1,9 +1,9 @@
 /**
  * 主内容区域组件
- * 完全参照原版 Main.aspx contentarea 部分
+ * 原则：移动端优先，简洁设计
  */
 import React, { memo } from 'react';
-import styles from '../styles/jxMain.module.css';
+import { GameCard } from '@/shared/components/game';
 
 interface CityInteriorInfo {
   Area?: number;
@@ -36,7 +36,6 @@ interface BuildingData {
   state?: number;
 }
 
-// 建筑图标配置（原版路径）
 const BUILDING_ICONS: Record<number, { icon: string; name: string; cssClass: string }> = {
   1: { icon: '/jx/Web/img/2/b/o/1.GIF', name: '聚义厅', cssClass: 'img_1_1' },
   2: { icon: '/jx/Web/img/2/b/o/2.GIF', name: '义舍', cssClass: 'img_1_2' },
@@ -66,126 +65,109 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
   const buildings = cityInteriorInfo?.buildings || [];
 
   return (
-    <div id="contentarea" className={styles.contentArea}>
-      {/* 导航栏 - 原版结构 */}
-      <div id="mainnav" className={styles.mainNav}>
-        <ul>
-          <li id="nav_1"><a id="p_1" className="nav_a_1" href="#"></a></li>
-          <li id="nav_2"><a id="p_2" className="nav_a_2" href="#"></a></li>
-          <li id="nav_3"><a id="p_3" className="nav_a_3" href="#"></a></li>
-          <li id="nav_4"><a id="p_4" className="nav_a_4" href="#"></a></li>
-          <li id="nav_5"><a id="p_5" className="nav_a_5" href="#"></a></li>
-          <li id="nav_6"><a id="p_6" className="nav_a_6" href="#"></a></li>
-          <li id="nav_7"><a id="p_7" className="nav_a_7" href="#"></a></li>
-        </ul>
-      </div>
+    <div id="contentarea" className="space-y-4 p-4">
+      {/* 资源栏 */}
+      <GameCard>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">面积:</span>
+            <span className="text-slate-300">
+              {cityInteriorInfo?.Area || 0}/<span className="text-slate-500">{cityInteriorInfo?.AreaRoom || 0}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">弟子:</span>
+            <span className="text-slate-300">{cityInteriorInfo?.Child || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-amber-400">💰</span>
+            <span className="text-slate-300">
+              {cityInteriorInfo?.Money || 0}/<span className="text-slate-500">{cityInteriorInfo?.MoneyRoom || 0}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-emerald-400">🌾</span>
+            <span className="text-slate-300">
+              {cityInteriorInfo?.Food || 0}/<span className="text-slate-500">{cityInteriorInfo?.FoodRoom || 0}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-blue-400">👥</span>
+            <span className="text-slate-300">
+              {cityInteriorInfo?.Men || 0}/<span className="text-slate-500">{cityInteriorInfo?.MenRoom || 0}</span>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-purple-400">💎</span>
+            <span className="text-amber-400 font-bold">{cityInteriorInfo?.Gold || 0}</span>
+          </div>
+        </div>
+        <div className="mt-3 pt-3 border-t border-slate-700 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">繁荣:</span>
+            <span className="text-emerald-400">{cityInteriorInfo?.Bloom || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">维护:</span>
+            <span className="text-slate-300">{cityInteriorInfo?.ChildRate || 0}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">金币产:</span>
+            <span className="text-amber-400">+{cityInteriorInfo?.MoneySpeed || 0}/h</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-slate-500">粮食产:</span>
+            <span className="text-emerald-400">+{cityInteriorInfo?.FoodSpeed || 0}/h</span>
+          </div>
+        </div>
+      </GameCard>
 
-      {/* 资源栏 - 原版精确布局 */}
-      <div id="userres" className={styles.cityInteriorInfo}>
-        <table cellSpacing="0" cellPadding="0" style={{ width: '542px', height: '30px' }}>
-          <tbody>
-            <tr>
-              <td style={{ width: '33px' }}>面积:</td>
-              <td style={{ width: '60px' }}>
-                <span id="area">{cityInteriorInfo?.Area || 0}</span>/<span id="areaRoom">{cityInteriorInfo?.AreaRoom || 0}</span>
-              </td>
-              <td style={{ width: '33px' }}>弟子:</td>
-              <td style={{ width: '26px' }}><span id="child">{cityInteriorInfo?.Child || 0}</span></td>
-              <td style={{ width: '33px' }}>
-                <img alt="" src="/jx/Web/img/4/1.gif" width="17" height="16" />
-              </td>
-              <td style={{ width: '87px' }}>
-                <span id="r_money">{cityInteriorInfo?.Money || 0}</span>/<span id="moneyRoom">{cityInteriorInfo?.MoneyRoom || 0}</span>
-              </td>
-              <td style={{ width: '33px' }}>
-                <img alt="" src="/jx/Web/img/4/2.GIF" width="16" height="17" />
-              </td>
-              <td style={{ width: '87px' }}>
-                <span id="r_food">{cityInteriorInfo?.Food || 0}</span>/<span id="foodRoom">{cityInteriorInfo?.FoodRoom || 0}</span>
-              </td>
-              <td style={{ width: '33px' }}>
-                <img alt="" src="/jx/Web/img/4/3.GIF" width="17" height="15" />
-              </td>
-              <td style={{ width: '77px' }}>
-                <span id="r_men">{cityInteriorInfo?.Men || 0}</span>/<span id="menRoom">{cityInteriorInfo?.MenRoom || 0}</span>
-              </td>
-              <td style={{ width: '23px' }}>
-                <a href="#"><img alt="" src="/jx/Web/img/4/4.gif" width="21" height="14" /></a>
-              </td>
-              <td style={{ width: '34px' }}><span id="r_gold">{cityInteriorInfo?.Gold || 0}</span></td>
-            </tr>
-            <tr>
-              <td>繁荣:</td>
-              <td><span id="bloom">{cityInteriorInfo?.Bloom || 0}</span></td>
-              <td>维护:</td>
-              <td><span id="childRate">{cityInteriorInfo?.ChildRate || 0}</span></td>
-              <td>产量:</td>
-              <td><span id="moneySpeed">{cityInteriorInfo?.MoneySpeed || 0}</span>/小时</td>
-              <td>产量:</td>
-              <td><span id="foodSpeed">{cityInteriorInfo?.FoodSpeed || 0}</span>/小时</td>
-              <td>产量:</td>
-              <td><span id="menSpeed">{cityInteriorInfo?.MenSpeed || 0}</span>/小时</td>
-              <td colSpan={2}>&nbsp;</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* 城池地图 - 原版 #mainpic */}
-      <div id="mainpic" className={styles.mainPic}>
-        {/* 城池名称 */}
-        <div className={styles.cityTitle}>{cityName}</div>
-        
-        {/* 城池图片 - 从服务器返回的 map_image 字段获取 */}
-        <div className={styles.cityImageContainer}>
+      {/* 城池地图 */}
+      <GameCard>
+        <div className="text-center mb-4">
+          <h2 className="text-xl font-bold text-emerald-400">{cityName}</h2>
+          <span className="text-sm text-slate-500">城市等级 {cityInteriorInfo?.Level || 1}</span>
+        </div>
+        <div className="relative aspect-video bg-slate-800 rounded-lg overflow-hidden">
           <img 
             src={`/jx/Web/img/2/b/m/${mapImage}`} 
-            alt={cityName} 
-            className={styles.cityImg} 
+            alt={cityName}
+            className="w-full h-full object-cover"
           />
         </div>
-        
-        {/* 建筑图标 - 从服务器返回的 buildings 数组获取 */}
-        {buildings.map((building: BuildingData) => {
-          const configId = building.config_id || building.id;
-          const iconConfig = BUILDING_ICONS[configId] || BUILDING_ICONS[1];
-          
-          return (
-            <div
-              key={building.id}
-              className={`${styles.buildingIcon} ${iconConfig.cssClass}`}
-              title={iconConfig.name}
-            >
-              <img 
-                src={iconConfig.icon} 
-                alt={iconConfig.name}
-              />
+      </GameCard>
+
+      {/* 建筑列表 */}
+      <GameCard title="建筑列表">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+          {buildings.map((building: BuildingData) => {
+            const configId = building.config_id || building.id;
+            const iconConfig = BUILDING_ICONS[configId] || BUILDING_ICONS[1];
+            return (
+              <div
+                key={building.id}
+                className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg"
+              >
+                <img 
+                  src={iconConfig.icon} 
+                  alt={iconConfig.name}
+                  className="w-8 h-8 object-contain"
+                  style={{ imageRendering: 'pixelated' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-slate-300 truncate">{iconConfig.name}</div>
+                  <div className="text-xs text-emerald-400">Lv.{building.level}</div>
+                </div>
+              </div>
+            );
+          })}
+          {buildings.length === 0 && (
+            <div className="col-span-full text-center py-8 text-slate-500">
+              暂无建筑
             </div>
-          );
-        })}
-        
-        {/* 建筑列表面板 */}
-        <div className={styles.buildingsPanel}>
-          <div className={styles.buildingsTitle}>建筑列表</div>
-          <ul className={styles.buildingsList}>
-            {buildings.map((b: BuildingData) => {
-              const configId = b.config_id || b.id;
-              const iconConfig = BUILDING_ICONS[configId] || BUILDING_ICONS[1];
-              return (
-                <li key={b.id} className={styles.buildingItem}>
-                  <img 
-                    src={iconConfig.icon} 
-                    alt="" 
-                    style={{ width: '14px', height: '14px', marginRight: '4px', imageRendering: 'pixelated' }}
-                  />
-                  <span>{iconConfig.name}</span>
-                  <span className={styles.buildingLevel}>Lv{b.level}</span>
-                </li>
-              );
-            })}
-          </ul>
+          )}
         </div>
-      </div>
+      </GameCard>
     </div>
   );
 });

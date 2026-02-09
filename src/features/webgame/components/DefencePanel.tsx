@@ -1,12 +1,13 @@
 /**
  * 城防面板组件
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useToast } from '@/shared/components/Toast/ToastContext';
-import styles from '../styles/DefencePanel.module.css';
 import { getApiBase } from '../utils/api';
+import { GameCard, GameButton } from '@/shared/components/game';
 
 interface DefenceBuilding {
   id: number;
@@ -105,7 +106,19 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
     await handleSetDefence(heroId, -1);
   };
 
-  // 品质颜色
+  // 部署英雄（包装函数，用于 GameButton）
+  const deployHero = () => {
+    if (selectedHero) {
+      handleSetDefence(selectedHero.id, 1);
+    }
+  };
+
+  // 撤防英雄（包装函数，用于 GameButton）
+  const removeHeroDefence = () => {
+    if (selectedHero) {
+      handleRemoveDefence(selectedHero.id);
+    }
+  };
 
   const i18n = {
     title: language === 'en' ? 'Defence' : '城防',
@@ -126,88 +139,109 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className="flex items-center justify-center py-20 text-slate-500">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+            <span>{i18n.loading}</span>
+          </div>
+        </div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className="p-4 md:p-6 lg:p-8">
         {/* 城防建筑 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{i18n.buildings}</h2>
+        <GameCard title={i18n.buildings} className="mb-6">
           {buildings.length === 0 ? (
-            <div className={styles.empty}>{i18n.noBuildings}</div>
+            <div className="text-center py-12 text-slate-500">
+              <div className="text-4xl mb-2">🏰</div>
+              <p>{i18n.noBuildings}</p>
+            </div>
           ) : (
-            <div className={styles.buildingGrid}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {buildings.map((building) => (
-                <div key={building.id} className={styles.buildingCard}>
-                  <div className={styles.buildingIcon}>{building.icon || '🏰'}</div>
-                  <div className={styles.buildingInfo}>
-                    <h4>{building.name}</h4>
-                    <div className={styles.buildingStats}>
+                <div
+                  key={building.id}
+                  className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-emerald-500/30 transition-all"
+                >
+                  <div className="text-3xl text-center mb-2">{building.icon || '🏰'}</div>
+                  <div className="text-center">
+                    <div className="font-semibold text-emerald-400">{building.name}</div>
+                    <div className="text-xs text-slate-500 mt-1">Lv.{building.level}</div>
+                    <div className="flex justify-center gap-3 mt-2 text-xs text-slate-400">
                       <span>⚔️ {building.attack}</span>
                       <span>❤️ {building.hitPoint}</span>
-                      <span>🎯 {building.attackRange}</span>
-                    </div>
-                    <div className={styles.buildingLevel}>
-                      {language === 'en' ? 'Level' : '等级'}: {building.level}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </GameCard>
 
         {/* 驻防英雄 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{i18n.heroes}</h2>
+        <GameCard title={i18n.heroes}>
           {heroes.length === 0 ? (
-            <div className={styles.empty}>{i18n.noHeroes}</div>
+            <div className="text-center py-12 text-slate-500">
+              <div className="text-4xl mb-2">⚔️</div>
+              <p>{i18n.noHeroes}</p>
+            </div>
           ) : (
-            <div className={styles.heroGrid}>
+            <div className="space-y-3">
               {heroes.map((hero) => (
                 <div
                   key={hero.id}
-                  className={`${styles.heroCard} ${selectedHero?.id === hero.id ? styles.selected : ''}`}
+                  className={`p-4 rounded-lg border transition-all cursor-pointer ${
+                    selectedHero?.id === hero.id
+                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      : 'bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/30'
+                  }`}
                   onClick={() => setSelectedHero(selectedHero?.id === hero.id ? null : hero)}
                 >
-                  <div className={styles.heroInfo}>
-                    <h4>{hero.name}</h4>
-                    <div className={styles.heroStats}>
-                      <span>⚔️ {hero.attack}</span>
-                      <span>🛡️ {hero.defence}</span>
-                      <span>❤️ {hero.hp}</span>
+                  <div className="flex items-center gap-3">
+                    {/* 英雄信息 */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-emerald-400">{hero.name}</span>
+                        <span className="text-xs px-2 py-0.5 bg-slate-700 rounded text-slate-400">
+                          Lv.{hero.level}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                        <span>⚔️ {hero.attack}</span>
+                        <span>🛡️ {hero.defence}</span>
+                        <span>❤️ {hero.hp}</span>
+                      </div>
                     </div>
+
+                    {/* 驻防位置 */}
+                    {hero.defencePos > 0 && (
+                      <div className="px-3 py-1 bg-emerald-500/20 rounded-full text-sm text-emerald-400">
+                        📍 位置 {hero.defencePos}
+                      </div>
+                    )}
                   </div>
-                  {hero.defencePos > 0 && (
-                    <div className={styles.deployed}>
-                      📍 {hero.defencePos}
-                    </div>
-                  )}
+
+                  {/* 操作按钮 */}
                   {selectedHero?.id === hero.id && (
-                    <div className={styles.heroActions}>
-                      <button
-                        className={styles.deployBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleSetDefence(hero.id, 1); // 默认位置1
-                        }}
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-slate-700/50">
+                      <GameButton
+                        size="small"
+                        variant="emerald"
+                        onClick={deployHero}
                       >
-                        {i18n.deploy} 📍1
-                      </button>
+                        📍 {i18n.deploy} 1
+                      </GameButton>
                       {hero.defencePos > 0 && (
-                        <button
-                          className={styles.removeBtn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoveDefence(hero.id);
-                          }}
+                        <GameButton
+                          size="small"
+                          variant="red"
+                          onClick={removeHeroDefence}
                         >
                           {i18n.remove}
-                        </button>
+                        </GameButton>
                       )}
                     </div>
                   )}
@@ -215,11 +249,11 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
               ))}
             </div>
           )}
-        </div>
+        </GameCard>
 
         {/* 选择提示 */}
         {selectedHero && (
-          <div className={styles.selectTip}>
+          <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-center text-amber-400 text-sm">
             {i18n.clickToSelect}: {selectedHero.name}
           </div>
         )}

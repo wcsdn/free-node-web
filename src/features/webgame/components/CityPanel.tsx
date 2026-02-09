@@ -1,11 +1,12 @@
 /**
  * 城市面板组件
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import PageLayout from '@/shared/layouts/PageLayout';
 import { getApiBase } from '../utils/api';
-import styles from '../styles/CityPanel.module.css';
+import { GameCard, GameButton, GameModal } from '@/shared/components/game';
 
 interface City {
   id: number;
@@ -224,29 +225,40 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className="flex items-center justify-center py-20 text-slate-500">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+            <span>{i18n.loading}</span>
+          </div>
+        </div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className="p-4 md:p-6 lg:p-8">
         {/* 城市选择 */}
-        <div className={styles.citySelector}>
-          <h3>{i18n.selectCity}</h3>
-          <div className={styles.cityList}>
+        <div className="mb-6">
+          <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-3">
+            {i18n.selectCity}
+          </h3>
+          <div className="flex flex-wrap gap-2">
             {cities.map((city) => (
               <button
                 key={city.id}
-                className={`${styles.cityBtn} ${selectedCityId === city.id ? styles.active : ''}`}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  selectedCityId === city.id
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                }`}
                 onClick={() => setSelectedCityId(city.id)}
               >
                 {city.name}
               </button>
             ))}
             {cities.length === 0 && (
-              <div className={styles.empty}>{i18n.noCities}</div>
+              <div className="text-slate-500 py-2">{i18n.noCities}</div>
             )}
           </div>
         </div>
@@ -254,57 +266,76 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
         {cityData && (
           <>
             {/* 资源栏 */}
-            <div className={styles.resourceBar}>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>💰</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.money}</span>
-                  <span className={styles.resourceRate}>+{cityData.money_rate}/h</span>
+            <GameCard className="mb-6">
+              <div className="grid grid-cols-3 gap-3">
+                {/* 金币 */}
+                <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
+                  <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center text-lg">
+                    💰
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-amber-400">{cityData.money.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500">+{cityData.money_rate}/h</div>
+                  </div>
+                </div>
+                {/* 粮食 */}
+                <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
+                  <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center text-lg">
+                    🌾
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-emerald-400">{cityData.food.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500">+{cityData.food_rate}/h</div>
+                  </div>
+                </div>
+                {/* 人口 */}
+                <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-lg">
+                    👥
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-blue-400">{cityData.population.toLocaleString()}</div>
+                    <div className="text-xs text-slate-500">+{cityData.population_rate}/h</div>
+                  </div>
                 </div>
               </div>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>🌾</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.food}</span>
-                  <span className={styles.resourceRate}>+{cityData.food_rate}/h</span>
-                </div>
-              </div>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>👥</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.population}</span>
-                  <span className={styles.resourceRate}>+{cityData.population_rate}/h</span>
-                </div>
-              </div>
-              <button className={styles.collectBtn} onClick={collectResources}>
+              <GameButton fullWidth className="mt-4" onClick={collectResources}>
                 {i18n.collect}
-              </button>
-            </div>
+              </GameButton>
+            </GameCard>
 
             {/* 建筑列表 */}
-            <div className={styles.buildingSection}>
-              <div className={styles.sectionHeader}>
-                <h3>{i18n.buildings}</h3>
-                <button className={styles.buildBtn} onClick={() => setShowBuildModal(true)}>
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-emerald-400">{i18n.buildings}</h3>
+                <button
+                  className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-sm font-medium hover:bg-emerald-500 hover:text-white transition-all border border-emerald-500/30"
+                  onClick={() => setShowBuildModal(true)}
+                >
                   + {i18n.build}
                 </button>
               </div>
 
-              <div className={styles.buildingGrid}>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {cityData.buildings.map((building) => (
-                  <div key={building.id} className={styles.buildingCard}>
-                    <div className={styles.buildingIcon}>
+                  <div
+                    key={building.id}
+                    className={`p-4 rounded-lg border transition-all ${
+                      building.state === 0
+                        ? 'bg-slate-800/30 border-slate-700/50 opacity-75'
+                        : 'bg-slate-800/60 border-slate-700 hover:border-emerald-500/30'
+                    }`}
+                  >
+                    <div className="text-3xl text-center mb-2">
                       {buildingTypes.find(t => t.id === building.config_id)?.icon || '🏢'}
                     </div>
-                    <div className={styles.buildingInfo}>
-                      <div className={styles.buildingName}>
+                    <div className="text-center">
+                      <div className="font-medium text-slate-200 truncate">
                         {buildingTypes.find(t => t.id === building.config_id)?.name || building.type}
                       </div>
-                      <div className={styles.buildingLevel}>
-                        Lv.{building.level}
-                      </div>
+                      <div className="text-sm text-emerald-400">Lv.{building.level}</div>
                       {building.state === 0 && (
-                        <div className={styles.constructing}>
+                        <div className="text-xs text-amber-400 mt-1">
                           {i18n.constructing}...
                         </div>
                       )}
@@ -313,30 +344,37 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
                 ))}
 
                 {cityData.buildings.length === 0 && (
-                  <div className={styles.emptyBuilding}>
-                    还没有建筑，快去建造吧！
+                  <div className="col-span-full py-12 text-center text-slate-500 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                    <div className="text-4xl mb-2">🏗️</div>
+                    <p>还没有建筑，快去建造吧！</p>
                   </div>
                 )}
               </div>
 
               {/* 建造队列 */}
               {cityData.events.length > 0 && (
-                <div className={styles.queueSection}>
-                  <h4>建造队列</h4>
-                  {cityData.events.map((event) => {
-                    const endTime = new Date(event.end_time).getTime();
-                    const now = Date.now();
-                    const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
-                    const minutes = Math.floor(remaining / 60);
-                    const seconds = remaining % 60;
+                <div className="mt-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                  <h4 className="text-sm font-medium text-slate-400 mb-3">建造队列</h4>
+                  <div className="space-y-2">
+                    {cityData.events.map((event) => {
+                      const endTime = new Date(event.end_time).getTime();
+                      const now = Date.now();
+                      const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
+                      const minutes = Math.floor(remaining / 60);
+                      const seconds = remaining % 60;
 
-                    return (
-                      <div key={event.id} className={styles.queueItem}>
-                        <span>{event.event_type === 'build' ? '建造' : '升级'}</span>
-                        <span>{minutes}:{seconds.toString().padStart(2, '0')}</span>
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div key={event.id} className="flex items-center justify-between p-2 bg-slate-800/50 rounded">
+                          <span className="text-sm text-slate-300">
+                            {event.event_type === 'build' ? '建造' : '升级'}
+                          </span>
+                          <span className="text-sm font-mono text-amber-400">
+                            {minutes}:{seconds.toString().padStart(2, '0')}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -344,29 +382,26 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
         )}
 
         {/* 建造弹窗 */}
-        {showBuildModal && (
-          <div className={styles.modal} onClick={() => setShowBuildModal(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-              <h3>{i18n.build}</h3>
-              <div className={styles.buildingTypes}>
-                {buildingTypes.map((type) => (
-                  <div
-                    key={type.id}
-                    className={styles.typeCard}
-                    onClick={() => buildBuilding(type.id, cityData?.buildings.length || 0)}
-                  >
-                    <span className={styles.typeIcon}>{type.icon}</span>
-                    <span className={styles.typeName}>{type.name}</span>
-                    <span className={styles.typeDesc}>{type.desc}</span>
-                  </div>
-                ))}
-              </div>
-              <button className={styles.closeBtn} onClick={() => setShowBuildModal(false)}>
-                关闭
+        <GameModal
+          isOpen={showBuildModal}
+          onClose={() => setShowBuildModal(false)}
+          title={i18n.build}
+          size="medium"
+        >
+          <div className="grid grid-cols-2 gap-3">
+            {buildingTypes.map((type) => (
+              <button
+                key={type.id}
+                className="p-4 bg-slate-800/50 rounded-lg border border-slate-700 hover:border-emerald-500/50 transition-all text-left"
+                onClick={() => buildBuilding(type.id, cityData?.buildings.length || 0)}
+              >
+                <div className="text-2xl mb-2">{type.icon}</div>
+                <div className="font-medium text-slate-200">{type.name}</div>
+                <div className="text-xs text-slate-500 mt-1">{type.desc}</div>
               </button>
-            </div>
+            ))}
           </div>
-        )}
+        </GameModal>
       </div>
     </PageLayout>
   );

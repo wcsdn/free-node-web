@@ -1,11 +1,12 @@
 /**
  * 技能学习面板组件
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useToast } from '@/shared/components/Toast/ToastContext';
-import styles from '../styles/SkillLearnPanel.module.css';
-import { apiGet, apiPost, apiDelete, getApiBase, getAuthHeaders } from '../utils/api';
+import { getApiBase } from '../utils/api';
+import { GameButton, GameModal } from '@/shared/components/game';
 
 interface Skill {
   id: number;
@@ -54,9 +55,9 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
   const { showSuccess, showError } = useToast();
   const [skills, setSkills] = useState<Skill[]>([]);
   const [availableSkills, setAvailableSkills] = useState<SkillInfo[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [learning, setLearning] = useState(false);
-
+  const [selectedSkill, setSelectedSkill] = useState<SkillInfo | null>(null);
 
   // 获取现有技能
   const fetchSkills = async () => {
@@ -77,8 +78,6 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
 
   // 获取可学习的技能列表
   const fetchAvailableSkills = () => {
-    // 从配置中获取该门派可学的技能
-    // 这里简化处理，返回一些示例技能
     const mockSkills: SkillInfo[] = [
       { id: 1, name: '普通攻击', des: '基础攻击技能', type: 1, effID: 1, effRange: 1, effValue: 100, probability: 100, needItemType: 0, upProbability: 5 },
       { id: 2, name: '强力攻击', des: '造成150%伤害', type: 1, effID: 2, effRange: 1, effValue: 150, probability: 70, needItemType: 0, upProbability: 3 },
@@ -175,38 +174,62 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
-          <h2>{i18n.title}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="w-full max-w-2xl max-h-[90vh] bg-slate-900 rounded-2xl border border-slate-700 shadow-xl overflow-hidden">
+        {/* 标题栏 */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold text-emerald-400">{i18n.title}</h2>
+            <span className="text-sm text-slate-400">|</span>
+            <span className="text-slate-300">{hero.name} (Lv.{hero.level})</span>
+          </div>
+          <button
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
 
-        <div className={styles.heroInfo}>
-          <span>{i18n.hero}: {hero.name}</span>
-          <span>{i18n.level}: {hero.level}</span>
-        </div>
-
-        <div className={styles.content}>
+        <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
           {/* 已学技能 */}
-          <div className={styles.section}>
-            <h3>{i18n.currentSkills} ({skills.length}/5)</h3>
-            {skills.length === 0 ? (
-              <div className={styles.empty}>{i18n.noSkills}</div>
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-3">
+              {i18n.currentSkills} ({skills.length}/5)
+            </h3>
+            {loading ? (
+              <div className="text-center py-8 text-slate-500">加载中...</div>
+            ) : skills.length === 0 ? (
+              <div className="text-center py-8 text-slate-500 bg-slate-800/30 rounded-lg">
+                <div className="text-3xl mb-2">📖</div>
+                <p>{i18n.noSkills}</p>
+              </div>
             ) : (
-              <div className={styles.skillGrid}>
+              <div className="grid grid-cols-2 gap-3">
                 {skills.map((skill) => (
-                  <div key={skill.id} className={styles.skillCard}>
-                    <div className={styles.skillName}>{skill.name || `技能 #${skill.static_index}`}</div>
-                    <div className={styles.skillLevel}>{i18n.level}: {skill.skillLevel}</div>
-                    <div className={styles.skillEffect}>{i18n.effect}: {skill.effValue}</div>
-                    <button
-                      className={styles.upgradeBtn}
+                  <div
+                    key={skill.id}
+                    className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-emerald-400">
+                        {skill.name || `技能 #${skill.static_index}`}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 bg-emerald-500/20 rounded text-emerald-400">
+                        Lv.{skill.skillLevel}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-500 mb-3">
+                      {i18n.effect}: {skill.effValue}
+                    </div>
+                    <GameButton
+                      size="small"
+                      fullWidth
                       onClick={() => handleUpgrade(skill.id)}
-                      disabled={learning}
+                      loading={learning}
                     >
                       {i18n.upgrade}
-                    </button>
+                    </GameButton>
                   </div>
                 ))}
               </div>
@@ -215,42 +238,80 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
 
           {/* 可学技能 */}
           {skills.length < 5 && (
-            <div className={styles.section}>
-              <h3>{i18n.availableSkills}</h3>
-              <div className={styles.skillGrid}>
+            <div>
+              <h3 className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-3">
+                {i18n.availableSkills}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
                 {availableSkills.map((skill) => (
-                  <div
+                  <button
                     key={skill.id}
-                    className={`${styles.skillCard} ${hasSkill(skill.id) ? styles.learned : ''}`}
+                    className={`p-4 rounded-lg border transition-all text-left ${
+                      hasSkill(skill.id)
+                        ? 'bg-slate-800/30 border-slate-700/50 opacity-60'
+                        : 'bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/30'
+                    }`}
+                    onClick={() => setSelectedSkill(skill)}
+                    disabled={hasSkill(skill.id)}
                   >
-                    <div className={styles.skillName}>{skill.name}</div>
-                    <div className={styles.skillDesc}>{skill.des}</div>
-                    <div className={styles.skillStats}>
-                      <span>{i18n.effect}: {skill.effValue}</span>
-                      <span>{i18n.probability}: {skill.probability}%</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`font-semibold ${hasSkill(skill.id) ? 'text-slate-500' : 'text-emerald-400'}`}>
+                        {skill.name}
+                      </span>
+                      {hasSkill(skill.id) ? (
+                        <span className="text-xs px-2 py-0.5 bg-slate-700 rounded text-slate-400">
+                          {i18n.learned}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-amber-400">{skill.probability}%</span>
+                      )}
                     </div>
-                    {hasSkill(skill.id) ? (
-                      <div className={styles.learnedBadge}>{i18n.learned}</div>
-                    ) : (
-                      <button
-                        className={styles.learnBtn}
-                        onClick={() => handleLearn()}
-                        disabled={learning}
-                      >
-                        {i18n.learn}
-                      </button>
-                    )}
-                  </div>
+                    <div className="text-xs text-slate-500">{skill.des}</div>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-slate-500">
+                      <span>{i18n.effect}: {skill.effValue}</span>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
           )}
 
           {skills.length >= 5 && (
-            <div className={styles.maxWarning}>{i18n.maxSkills}</div>
+            <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-center text-amber-400">
+              {i18n.maxSkills}
+            </div>
           )}
         </div>
       </div>
+
+      {/* 技能详情弹窗 */}
+      <GameModal
+        isOpen={!!selectedSkill && !hasSkill(selectedSkill.id)}
+        onClose={() => setSelectedSkill(null)}
+        title={selectedSkill?.name || ''}
+        size="small"
+      >
+        {selectedSkill && (
+          <div className="space-y-4">
+            <div className="p-4 bg-slate-800/50 rounded-lg">
+              <p className="text-slate-300">{selectedSkill.des}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="p-3 bg-slate-800/30 rounded-lg">
+                <div className="text-slate-500 mb-1">{i18n.effect}</div>
+                <div className="text-emerald-400 font-bold">{selectedSkill.effValue}</div>
+              </div>
+              <div className="p-3 bg-slate-800/30 rounded-lg">
+                <div className="text-slate-500 mb-1">{i18n.probability}</div>
+                <div className="text-amber-400 font-bold">{selectedSkill.probability}%</div>
+              </div>
+            </div>
+            <GameButton fullWidth onClick={handleLearn} loading={learning}>
+              {i18n.learn}
+            </GameButton>
+          </div>
+        )}
+      </GameModal>
     </div>
   );
 });

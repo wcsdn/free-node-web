@@ -1,17 +1,4 @@
 /**
- * GameButton - 赛博朋克风格按钮
- * 矩阵风格，带扫描线动画
+ * GameButton - 通用按钮组件
  */
-import React from 'react';
-import styles from './GameButton.module.css';
-
-interface GameButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger';
-  size?: 'small' | 'medium' | 'large';
-  fullWidth?: boolean;
-}
-
-export { default as GameButton } from './GameButton';
+export { GameButton } from './GameButton';

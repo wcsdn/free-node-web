@@ -2,7 +2,7 @@
  * useMail - 邮件状态 Hook
  */
 import { useState, useCallback, useEffect } from 'react';
-import type { Mail, ApiResponse } from '../types/game.types';
+import type { Mail } from '../types/game.types';
 import { mailApi } from '../services/game.api';
 
 interface MailState {
@@ -12,7 +12,7 @@ interface MailState {
   error: string | null;
 }
 
-export function useMail(walletAddress: string) {
+export function useMail(_walletAddress: string) {
   const [state, setState] = useState<MailState>({
     mails: [],
     unreadCount: 0,
@@ -26,7 +26,7 @@ export function useMail(walletAddress: string) {
     try {
       const result = await mailApi.getMails();
       if (result.success && result.data) {
-        const mails = result.data.items || [];
+        const mails = (result.data as any).items || [];
         setState({
           mails,
           unreadCount: mails.filter((m: Mail) => !m.read).length,

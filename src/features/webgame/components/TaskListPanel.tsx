@@ -1,28 +1,18 @@
 /**
  * 任务面板组件
- * 任务列表、接受任务、提交任务
+ * 原则：移动端优先，简洁设计
  */
 import React, { useState, useEffect, memo } from 'react';
-import styles from '../styles/TaskPanel.module.css';
 import { getApiBase, getAuthHeaders } from '../utils/api';
+import { GameButton } from '@/shared/components/game';
 
-// 任务类型
 const TASK_TYPES = {
   1: { name: '主线', color: '#9D080D' },
   2: { name: '日常', color: '#35c235' },
   3: { name: '成就', color: '#f99608' },
 };
 
-interface TaskConfig {
-  id: number;
-  name: string;
-  type: number;
-  desc: string;
-  target: number;
-  reward_exp: number;
-  reward_gold: number;
-  req_level: number;
-}
+// TaskConfig removed - interface not used
 
 interface Task {
   id: number;
@@ -34,7 +24,7 @@ interface Task {
   reward_exp: number;
   reward_gold: number;
   req_level: number;
-  status: number; // 0=未接, 1=进行中, 2=已完成
+  status: number;
   progress: number;
   can_accept: boolean;
 }
@@ -46,7 +36,7 @@ interface TaskListResponse {
     daily: Task[];
     level: number;
   };
-  error?: string;  // ✅ 添加 error 属性
+  error?: string;
 }
 
 interface TaskPanelProps {
@@ -130,99 +120,117 @@ const TaskPanel: React.FC<TaskPanelProps> = memo(({ onClose }) => {
   };
 
   const currentTasks = activeTab === 'main' ? tasks.main : tasks.daily;
-  // const tabName = activeTab === 'main' ? '主线任务' : '日常任务'; // 未使用变量注释掉
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2>📋 任务系统</h2>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
-      </div>
-
-      {/* 消息提示 */}
-      {message && (
-        <div className={styles.message}>
-          {message}
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg bg-slate-900 rounded-2xl border border-slate-700 shadow-xl overflow-hidden">
+        {/* 标题栏 */}
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+          <h2 className="text-xl font-bold text-emerald-400">📋 任务系统</h2>
+          <button
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
-      )}
 
-      {/* 等级信息 */}
-      <div className={styles.levelInfo}>
-        当前等级: Lv.{userLevel}
-      </div>
-
-      {/* Tab 切换 */}
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'main' ? styles.active : ''}`}
-          onClick={() => setActiveTab('main')}
-        >
-          主线任务
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'daily' ? styles.active : ''}`}
-          onClick={() => setActiveTab('daily')}
-        >
-          日常任务
-        </button>
-      </div>
-
-      {/* 任务列表 */}
-      <div className={styles.taskList}>
-        {loading ? (
-          <div className={styles.loading}>加载中...</div>
-        ) : currentTasks.length === 0 ? (
-          <div className={styles.empty}>暂无任务</div>
-        ) : (
-          currentTasks.map(task => (
-            <div key={task.id} className={`${styles.taskCard} ${styles[`type${task.type}`]}`}>
-              <div className={styles.taskHeader}>
-                <span className={styles.taskName}>{task.name}</span>
-                <span 
-                  className={styles.taskType}
-                  style={{ color: TASK_TYPES[task.type as keyof typeof TASK_TYPES]?.color || '#666' }}
-                >
-                  {TASK_TYPES[task.type as keyof typeof TASK_TYPES]?.name || '未知'}
-                </span>
-              </div>
-              
-              <div className={styles.taskDesc}>{task.desc}</div>
-              
-              <div className={styles.taskInfo}>
-                <span>目标: {task.progress}/{task.target}</span>
-                <span>奖励: {task.reward_exp}经验 {task.reward_gold}金币</span>
-              </div>
-
-              <div className={styles.taskActions}>
-                {task.status === 0 && task.can_accept && (
-                  <button 
-                    className={styles.acceptBtn}
-                    onClick={() => handleAccept(task.id)}
-                  >
-                    接受任务
-                  </button>
-                )}
-                {task.status === 1 && task.progress >= task.target && (
-                  <button 
-                    className={styles.submitBtn}
-                    onClick={() => handleSubmit(task.id)}
-                  >
-                    完成任务
-                  </button>
-                )}
-                {task.status === 1 && task.progress < task.target && (
-                  <span className={styles.pendingBtn}>进行中</span>
-                )}
-                {task.status === 2 && (
-                  <span className={styles.completedBtn}>已完成</span>
-                )}
-                {!task.can_accept && task.status === 0 && (
-                  <span className={styles.lockedBtn}>需 Lv.{task.req_level}</span>
-                )}
-              </div>
-            </div>
-          ))
+        {/* 消息提示 */}
+        {message && (
+          <div className="mx-4 mt-4 px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg text-sm border border-emerald-500/30">
+            {message}
+          </div>
         )}
+
+        {/* 等级信息 */}
+        <div className="px-4 py-2 text-sm text-slate-500 border-b border-slate-700">
+          当前等级: <span className="text-emerald-400 font-bold">Lv.{userLevel}</span>
+        </div>
+
+        {/* Tab 切换 */}
+        <div className="flex border-b border-slate-700">
+          {(['main', 'daily'] as const).map((tab) => (
+            <button
+              key={tab}
+              className={`flex-1 py-3 text-sm font-medium transition-all ${
+                activeTab === tab
+                  ? 'text-emerald-400 border-b-2 border-emerald-400 bg-emerald-500/10'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === 'main' ? '主线任务' : '日常任务'}
+            </button>
+          ))}
+        </div>
+
+        {/* 任务列表 */}
+        <div className="p-4 max-h-96 overflow-y-auto">
+          {loading ? (
+            <div className="text-center py-12 text-slate-500">
+              <div className="w-8 h-8 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-2" />
+              加载中...
+            </div>
+          ) : currentTasks.length === 0 ? (
+            <div className="text-center py-12 text-slate-500">
+              暂无任务
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {currentTasks.map((task) => {
+                const typeInfo = TASK_TYPES[task.type as keyof typeof TASK_TYPES] || { name: '未知', color: '#666' };
+                return (
+                  <div
+                    key={task.id}
+                    className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-emerald-500/30 transition-all"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-emerald-400">{task.name}</span>
+                      <span 
+                        className="text-xs px-2 py-0.5 rounded"
+                        style={{ backgroundColor: `${typeInfo.color}20`, color: typeInfo.color }}
+                      >
+                        {typeInfo.name}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-500 mb-3">{task.desc}</p>
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-3">
+                      <span>目标: {task.progress}/{task.target}</span>
+                      <span>奖励: {task.reward_exp}经验 {task.reward_gold}金币</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {task.status === 0 && task.can_accept && (
+                        <GameButton size="sm" onClick={() => handleAccept(task.id)}>
+                          接受任务
+                        </GameButton>
+                      )}
+                      {task.status === 1 && task.progress >= task.target && (
+                        <GameButton size="sm" variant="emerald" onClick={() => handleSubmit(task.id)}>
+                          完成任务
+                        </GameButton>
+                      )}
+                      {task.status === 1 && task.progress < task.target && (
+                        <span className="px-3 py-1.5 bg-slate-700 text-slate-500 rounded text-sm">
+                          进行中
+                        </span>
+                      )}
+                      {task.status === 2 && (
+                        <span className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded text-sm">
+                          已完成
+                        </span>
+                      )}
+                      {!task.can_accept && task.status === 0 && (
+                        <span className="px-3 py-1.5 bg-slate-700 text-slate-500 rounded text-sm">
+                          需 Lv.{task.req_level}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
