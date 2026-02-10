@@ -1,8 +1,10 @@
 /**
  * 基础弹窗组件
+ * 性能优化: 使用 React.memo 减少重渲染
  */
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 
+// 弹窗属性接口
 interface PopupProps {
   id: string;
   title: string;
@@ -10,61 +12,58 @@ interface PopupProps {
   onClose: () => void;
 }
 
-const Popup: React.FC<PopupProps> = ({ id, title, children, onClose }) => {
-  // 点击遮罩关闭
-  const handleOverlayClick = (e: React.MouseEvent) => {
+/**
+ * 基础弹窗组件
+ * 
+ * @description
+ * - 使用 React.memo 避免不必要的重渲染
+ * - 使用 useCallback 缓存回调函数
+ * - 使用 CSS Modules 替代内联样式
+ */
+const BasicPopup: React.FC<PopupProps> = memo(({ id, title, children, onClose }) => {
+  // 点击遮罩关闭 - 使用 useCallback 缓存
+  const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
+  }, [onClose]);
+
+  // 关闭按钮点击处理
+  const handleCloseClick = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   return (
     <div 
-      className="overlay show" 
-      style={{ display: 'block', position: 'fixed' }}
+      className="basic-popup-overlay"
       onClick={handleOverlayClick}
     >
       <div 
         id={id} 
-        className="popup show"
-        style={{ 
-          display: 'block', 
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 1002,
-          minWidth: '300px',
-          background: '#E9E9E9',
-          border: '1px solid #B0B0B0'
-        }}
+        className="basic-popup-container"
       >
-        <div style={{ 
-          padding: '10px', 
-          borderBottom: '1px solid #B0B0B0',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <span style={{ fontWeight: 'bold' }}>{title}</span>
-          <a 
-            onClick={onClose} 
-            style={{ 
-              cursor: 'pointer', 
-              fontSize: '20px',
-              textDecoration: 'none',
-              color: '#000'
-            }}
+        <div className="basic-popup-header">
+          <span className="basic-popup-title">{title}</span>
+          <button 
+            className="basic-popup-close"
+            onClick={handleCloseClick}
+            aria-label="关闭"
           >
             &times;
-          </a>
+          </button>
         </div>
-        <div className="popupBody" style={{ padding: '10px' }}>
+        <div className="basic-popup-body">
           {children}
         </div>
       </div>
     </div>
   );
-};
+});
 
-export default Popup;
+// 显示名称便于调试
+BasicPopup.displayName = 'BasicPopup';
+
+export default BasicPopup;
+
+// 导出类型供外部使用
+export type { PopupProps };

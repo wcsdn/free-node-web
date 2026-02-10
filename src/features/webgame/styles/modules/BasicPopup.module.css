@@ -1,0 +1,71 @@
+/* BasicPopup 样式模块 */
+
+/* 遮罩层 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 弹窗容器 */
+.popupContainer {
+  background-color: #E9E9E9;
+  border: 1px solid #B0B0B0;
+  border-radius: 4px;
+  min-width: 300px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 头部 */
+.header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #B0B0B0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+}
+
+/* 标题 */
+.title {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+/* 关闭按钮 */
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+/* 内容区域 */
+.body {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: calc(90vh - 50px);
+}
