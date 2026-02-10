@@ -1,342 +1,393 @@
 /* 
- * 古风样式 - 中国传统美学风格
- * Ancient Chinese Style
+ * 古风样式系统 - 中国传统美学风格
+ * Ancient Chinese Style System v2.0
+ * 参考: 汉唐风格、传统水墨、古典窗棂
  */
 
-/* ========== 基础配色 ========== */
+/* ========== 1. CSS 变量定义 ========== */
 :root {
-  --gufeng-black: #1a1a2e;    /* 墨黑 */
-  --gufeng-red: #8b0000;        /* 朱红 */
-  --gufeng-gold: #c9a227;       /* 金色 */
-  --gufeng-cream: #f5f0e1;      /* 宣纸色 */
-  --gufeng-green: #2d5a3d;      /* 黛绿 */
-  --gufeng-brown: #5c4033;       /* 檀色 */
-  --gufeng-white: #faf8f5;      /* 绢白 */
+  /* 主色调 - 传统五色 */
+  --gufeng-red: #8B0000;       /* 朱砂 - 主要强调色 */
+  --gufeng-gold: #C9A227;      /* 鎏金 - 标题和重要元素 */
+  --gufeng-black: #1A1A2E;     /* 墨黑 - 背景深色 */
+  --gufeng-white: #F5F0E1;     /* 宣纸 - 亮色背景 */
+  --gufeng-green: #2D5A3D;     /* 黛绿 - 成功状态 */
+  --gufeng-brown: #5C4033;     /* 檀木 - 边框装饰 */
+  --gufeng-blue: #1E3A5F;      /* 靛青 - 链接和交互 */
+  
+  /* 渐变背景色 */
+  --gufeng-bg-dark: linear-gradient(180deg, #0D0D1A 0%, #1A1A2E 50%, #16213E 100%);
+  --gufeng-bg-medium: linear-gradient(135deg, #1A1A2E 0%, #0F3460 100%);
+  --gufeng-bg-light: linear-gradient(180deg, #F5F0E1 0%, #E8E4D9 100%);
+  
+  /* 装饰渐变 */
+  --gufeng-gold-gradient: linear-gradient(135deg, #C9A227 0%, #F4D03F 50%, #C9A227 100%);
+  --gufeng-red-gradient: linear-gradient(135deg, #8B0000 0%, #A52A2A 100%);
+  --gufeng-green-gradient: linear-gradient(135deg, #2D5A3D 0%, #4A7C59 100%);
+  
+  /* 阴影 */
+  --gufeng-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --gufeng-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --gufeng-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --gufeng-shadow-glow: 0 0 20px rgba(201, 162, 39, 0.3);
+  
+  /* 边框 */
+  --gufeng-border-thin: 1px solid rgba(201, 162, 39, 0.3);
+  --gufeng-border-medium: 2px solid rgba(201, 162, 39, 0.5);
+  --gufeng-border-thick: 3px solid rgba(201, 162, 39, 0.8);
+  
+  /* 字体 */
+  --gufeng-font-primary: 'STKaiti', 'KaiTi', '楷体', 'SimKai', serif;
+  --gufeng-font-secondary: 'Noto Serif SC', 'Source Han Serif SC', '思源宋体', serif;
+  --gufeng-font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* 圆角 */
+  --gufeng-radius-sm: 4px;
+  --gufeng-radius-md: 8px;
+  --gufeng-radius-lg: 12px;
+  
+  /* 动画 */
+  --gufeng-transition-fast: 0.2s ease;
+  --gufeng-transition-normal: 0.3s ease;
+  --gufeng-transition-slow: 0.5s ease;
 }
 
-/* ========== 背景 - 水墨意境 ========== */
-.gufengBg {
-  background: linear-gradient(
-    180deg,
-    #1a1a2e 0%,
-    #16213e 40%,
-    #0f3460 70%,
-    #1a1a2e 100%
-  );
+/* ========== 2. 基础页面样式 ========== */
+.gufengPage {
+  min-height: 100vh;
+  background: var(--gufeng-bg-dark);
+  color: var(--gufeng-white);
+  font-family: var(--gufeng-font-primary);
   position: relative;
+  overflow-x: hidden;
 }
 
-.gufengBg::before {
+/* 水墨纹理背景 */
+.gufengPage::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 800 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  opacity: 0.3;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
   pointer-events: none;
+  z-index: 0;
 }
 
-/* ========== 标题样式 - 书法风格 ========== */
+.gufengContainer {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ========== 3. 标题样式 ========== */
 .gufengTitle {
-  font-family: 'STKaiti', 'KaiTi', '楷体', 'SimKai', serif;
+  font-family: var(--gufeng-font-primary);
+  font-size: 2rem;
   font-weight: bold;
   color: var(--gufeng-gold);
+  text-align: center;
+  margin-bottom: 20px;
   text-shadow: 
     2px 2px 4px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(201, 162, 39, 0.3);
-  letter-spacing: 4px;
-  background: linear-gradient(
-    180deg,
-    var(--gufeng-gold) 0%,
-    #f4d03f 50%,
-    var(--gufeng-gold) 100%
-  );
+    0 0 30px rgba(201, 162, 39, 0.2);
+  letter-spacing: 6px;
+  background: var(--gufeng-gold-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gufengTitleSmall {
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  font-size: 1.2rem;
-  color: var(--gufeng-gold);
+.gufengTitleLarge {
+  font-size: 2.5rem;
+  letter-spacing: 8px;
 }
 
-/* ========== 按钮 - 古典印章风格 ========== */
+.gufengTitleSmall {
+  font-size: 1.5rem;
+  letter-spacing: 4px;
+}
+
+.gufengTitleWithIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.gufengTitleWithIcon::before,
+.gufengTitleWithIcon::after {
+  content: '';
+  flex: 1;
+  max-width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gufeng-gold), transparent);
+}
+
+/* ========== 4. 按钮样式 ========== */
 .gufengBtn {
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  background: linear-gradient(
-    135deg,
-    var(--gufeng-red) 0%,
-    #a52a2a 100%
-  );
-  border: 2px solid var(--gufeng-gold);
-  color: var(--gufeng-cream);
-  padding: 12px 30px;
-  border-radius: 4px;
+  font-family: var(--gufeng-font-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
   font-size: 1.1rem;
+  color: var(--gufeng-white);
+  background: var(--gufeng-red-gradient);
+  border: 2px solid var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-md);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--gufeng-transition-normal);
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 4px 15px rgba(139, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--gufeng-shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .gufengBtn::before {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  height: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    transparent 100%
-  );
-  pointer-events: none;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--gufeng-transition-normal);
+}
+
+.gufengBtn:hover::before {
+  left: 100%;
 }
 
 .gufengBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 6px 20px rgba(139, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: var(--gufeng-shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: #F4D03F;
 }
 
 .gufengBtn:active {
   transform: translateY(0);
 }
 
-/* ========== 卡片 - 画卷风格 ========== */
+.gufengBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 按钮变体 */
+.gufengBtnPrimary {
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  border-color: #F4D03F;
+}
+
+.gufengBtnSecondary {
+  background: transparent;
+  border-color: var(--gufeng-gold);
+  color: var(--gufeng-gold);
+}
+
+.gufengBtnSuccess {
+  background: var(--gufeng-green-gradient);
+  border-color: #4A7C59;
+}
+
+.gufengBtnSmall {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.gufengBtnLarge {
+  padding: 16px 40px;
+  font-size: 1.2rem;
+}
+
+/* ========== 5. 卡片样式 ========== */
 .gufengCard {
-  background: linear-gradient(
-    135deg,
-    rgba(26, 26, 46, 0.9) 0%,
-    rgba(22, 33, 62, 0.9) 100%
-  );
+  background: rgba(26, 26, 46, 0.9);
   border: 1px solid rgba(201, 162, 39, 0.3);
-  border-radius: 8px;
+  border-radius: var(--gufeng-radius-lg);
   padding: 20px;
   position: relative;
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.5),
-    inset 0 0 30px rgba(201, 162, 39, 0.05);
+  box-shadow: var(--gufeng-shadow-lg);
+  transition: all var(--gufeng-transition-normal);
 }
 
 .gufengCard::before {
   content: '';
   position: absolute;
-  top: -1px;
-  left: 10px;
-  right: 10px;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--gufeng-gold) 50%,
-    transparent 100%
-  );
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gufeng-gold-gradient);
+  border-radius: var(--gufeng-radius-lg) var(--gufeng-radius-lg) 0 0;
 }
 
-/* ========== 边框 - 窗棂风格 ========== */
+.gufengCard:hover {
+  border-color: rgba(201, 162, 39, 0.6);
+  box-shadow: var(--gufeng-shadow-lg), var(--gufeng-shadow-glow);
+  transform: translateY(-2px);
+}
+
+.gufengCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: var(--gufeng-border-thin);
+}
+
+.gufengCardTitle {
+  font-family: var(--gufeng-font-primary);
+  font-size: 1.3rem;
+  color: var(--gufeng-gold);
+}
+
+.gufengCardBody {
+  color: var(--gufeng-white);
+  line-height: 1.8;
+}
+
+.gufengCardFooter {
+  padding-top: 12px;
+  margin-top: 16px;
+  border-top: var(--gufeng-border-thin);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* 卡片变体 */
+.gufengCardBordered {
+  background: transparent;
+  border: 2px solid rgba(201, 162, 39, 0.5);
+}
+
+.gufengCardElevated {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+}
+
+/* ========== 6. 边框装饰 ========== */
 .gufengBorder {
   border: 2px solid var(--gufeng-gold);
-  border-radius: 8px;
+  border-radius: var(--gufeng-radius-lg);
   position: relative;
   background: rgba(26, 26, 46, 0.8);
 }
 
-.gufengBorder::before,
-.gufengBorder::after {
+/* 窗棂角装饰 */
+.gufengBorderWindow {
+  border: 2px solid var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-lg);
+}
+
+.gufengBorderWindow::before,
+.gufengBorderWindow::after {
   content: '';
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--gufeng-gold);
 }
 
-.gufengBorder::before {
+.gufengBorderWindow::before {
   top: -2px;
   left: -2px;
   border-right: none;
   border-bottom: none;
-  border-radius: 8px 0 0 0;
+  border-radius: var(--gufeng-radius-lg) 0 0 0;
 }
 
-.gufengBorder::after {
+.gufengBorderWindow::after {
   bottom: -2px;
   right: -2px;
   border-left: none;
   border-top: none;
-  border-radius: 0 0 8px 0;
+  border-radius: 0 0 var(--gufeng-radius-lg) 0;
 }
 
-/* ========== 资源栏 - 古典装饰 ========== */
-.gufengResource {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(139, 0, 0, 0.3) 0%,
-    rgba(92, 64, 51, 0.3) 100%
-  );
+/* 双层边框 */
+.gufengBorderDouble {
+  border: 3px double var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-md);
+}
+
+/* 花边装饰 */
+.gufengBorderFloral {
+  border: 1px solid var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-lg);
+  position: relative;
+}
+
+.gufengBorderFloral::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
   border: 1px solid rgba(201, 162, 39, 0.3);
-  border-radius: 20px;
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  color: var(--gufeng-cream);
+  border-radius: calc(var(--gufeng-radius-lg) - 2px);
+  pointer-events: none;
 }
 
-.gufengResourceIcon {
-  font-size: 1.2rem;
+/* ========== 7. 输入框样式 ========== */
+.gufengInput {
+  font-family: var(--gufeng-font-primary);
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  color: var(--gufeng-white);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: var(--gufeng-radius-md);
+  outline: none;
+  transition: all var(--gufeng-transition-fast);
 }
 
-.gufengResourceValue {
+.gufengInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.gufengInput:focus {
+  border-color: var(--gufeng-gold);
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.3);
+}
+
+.gufengInputGroup {
+  margin-bottom: 16px;
+}
+
+.gufengInputLabel {
+  display: block;
+  margin-bottom: 8px;
   color: var(--gufeng-gold);
-  font-weight: bold;
+  font-size: 0.95rem;
 }
 
-/* ========== 导航栏 - 竹简风格 ========== */
-.gufengNav {
-  display: flex;
-  justify-content: space-around;
-  padding: 15px 10px;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 26, 46, 0.95) 0%,
-    rgba(45, 90, 61, 0.95) 100%
-  );
-  border-top: 2px solid var(--gufeng-gold);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+/* ========== 8. 列表样式 ========== */
+.gufengList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.gufengNavItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 15px;
-  color: var(--gufeng-cream);
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  cursor: pointer;
-  transition: all 0.3s;
-  border-radius: 8px;
-  position: relative;
-}
-
-.gufengNavItem:hover,
-.gufengNavItem.active {
-  color: var(--gufeng-gold);
-  background: rgba(201, 162, 39, 0.1);
-}
-
-.gufengNavItem.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 3px;
-  background: var(--gufeng-gold);
-  border-radius: 2px;
-}
-
-/* ========== 弹窗 - 屏风风格 ========== */
-.gufengPopup {
-  background: linear-gradient(
-    135deg,
-    #1a1a2e 0%,
-    #16213e 50%,
-    #0f3460 100%
-  );
-  border: 2px solid var(--gufeng-gold);
-  border-radius: 12px;
-  max-width: 90vw;
-  max-height: 85vh;
-  overflow: hidden;
-  box-shadow: 
-    0 25px 80px rgba(0, 0, 0, 0.8),
-    0 0 50px rgba(201, 162, 39, 0.1);
-  position: relative;
-}
-
-.gufengPopup::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(
-    135deg,
-    var(--gufeng-red) 0%,
-    #5c4033 100%
-  );
-  clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 5% 100%, 0 70%);
-}
-
-.gufengPopupHeader {
-  padding: 15px 20px;
-  padding-top: 70px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-}
-
-.gufengPopupTitle {
-  color: var(--gufeng-gold);
-  font-size: 1.3rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.gufengPopupClose {
-  background: none;
-  border: none;
-  color: var(--gufeng-cream);
-  font-size: 2rem;
-  cursor: pointer;
-  padding: 5px 10px;
-  transition: all 0.3s;
-}
-
-.gufengPopupClose:hover {
-  color: var(--gufeng-red);
-  transform: rotate(90deg);
-}
-
-.gufengPopupBody {
-  padding: 20px;
-  max-height: calc(85vh - 100px);
-  overflow-y: auto;
-  color: var(--gufeng-cream);
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  line-height: 1.8;
-}
-
-/* ========== 列表项 - 竹简风格 ========== */
 .gufengListItem {
   display: flex;
   align-items: center;
-  padding: 15px;
+  padding: 16px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(201, 162, 39, 0.2);
-  border-radius: 8px;
+  border-radius: var(--gufeng-radius-md);
   margin-bottom: 10px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--gufeng-transition-normal);
   position: relative;
   overflow: hidden;
 }
@@ -350,7 +401,7 @@
   width: 4px;
   background: var(--gufeng-gold);
   transform: scaleY(0);
-  transition: transform 0.3s;
+  transition: transform var(--gufeng-transition-normal);
 }
 
 .gufengListItem:hover {
@@ -362,26 +413,365 @@
   transform: scaleY(1);
 }
 
-/* ========== 建筑样式 ========== */
+.gufengListItemActive {
+  background: rgba(201, 162, 39, 0.15);
+  border-color: var(--gufeng-gold);
+}
+
+.gufengListItemActive::before {
+  transform: scaleY(1);
+}
+
+/* ========== 9. 标签页样式 ========== */
+.gufengTabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--gufeng-radius-lg);
+  margin-bottom: 20px;
+}
+
+.gufengTab {
+  flex: 1;
+  padding: 12px 20px;
+  font-family: var(--gufeng-font-primary);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: none;
+  border-radius: var(--gufeng-radius-md);
+  cursor: pointer;
+  transition: all var(--gufeng-transition-fast);
+}
+
+.gufengTab:hover {
+  color: var(--gufeng-gold);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.gufengTabActive {
+  color: #1A1A2E;
+  background: var(--gufeng-gold-gradient);
+  font-weight: bold;
+}
+
+/* ========== 10. 弹窗样式 ========== */
+.gufengModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: gufengFadeIn 0.3s ease;
+}
+
+.gufengModalContent {
+  background: var(--gufeng-bg-medium);
+  border: 2px solid var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-lg);
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(201, 162, 39, 0.1);
+  animation: gufengSlideUp 0.3s ease;
+}
+
+/* 屏风风格弹窗 */
+.gufengModalScreen {
+  background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+  border: 2px solid var(--gufeng-gold);
+  border-radius: var(--gufeng-radius-lg);
+  position: relative;
+}
+
+.gufengModalScreen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(135deg, var(--gufeng-red) 0%, var(--gufeng-brown) 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 95% 100%, 5% 100%, 0 60%);
+}
+
+.gufengModalHeader {
+  padding: 15px 20px;
+  padding-top: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--gufeng-border-thin);
+}
+
+.gufengModalTitle {
+  font-family: var(--gufeng-font-primary);
+  font-size: 1.4rem;
+  color: var(--gufeng-gold);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.gufengModalBody {
+  padding: 20px;
+  max-height: calc(85vh - 150px);
+  overflow-y: auto;
+  color: var(--gufeng-white);
+  line-height: 1.8;
+}
+
+.gufengModalFooter {
+  padding: 15px 20px;
+  border-top: var(--gufeng-border-thin);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.gufengModalClose {
+  background: none;
+  border: none;
+  color: var(--gufeng-white);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: all var(--gufeng-transition-fast);
+  line-height: 1;
+}
+
+.gufengModalClose:hover {
+  color: var(--gufeng-red);
+  transform: rotate(90deg);
+}
+
+/* ========== 11. 导航栏样式 ========== */
+.gufengNav {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 10px;
+  background: linear-gradient(180deg, rgba(26, 26, 46, 0.98) 0%, rgba(45, 90, 61, 0.98) 100%);
+  border-top: 3px solid var(--gufeng-gold);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+}
+
+.gufengNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 15px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--gufeng-font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--gufeng-transition-fast);
+  border-radius: var(--gufeng-radius-md);
+  position: relative;
+}
+
+.gufengNavItem:hover {
+  color: var(--gufeng-gold);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.gufengNavItemActive {
+  color: var(--gufeng-gold);
+  background: rgba(201, 162, 39, 0.15);
+}
+
+.gufengNavItemActive::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  background: var(--gufeng-gold);
+  border-radius: 2px;
+}
+
+.gufengNavIcon {
+  font-size: 1.4rem;
+  margin-bottom: 2px;
+}
+
+/* ========== 12. 资源栏样式 ========== */
+.gufengResourceBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--gufeng-radius-lg);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.gufengResourceItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(92, 64, 51, 0.3) 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.gufengResourceIcon {
+  font-size: 1.1rem;
+}
+
+.gufengResourceValue {
+  font-family: var(--gufeng-font-primary);
+  font-size: 0.95rem;
+  color: var(--gufeng-gold);
+  font-weight: bold;
+}
+
+.gufengResourceLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========== 13. 进度条样式 ========== */
+.gufengProgress {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.gufengProgressBar {
+  height: 100%;
+  background: var(--gufeng-gold-gradient);
+  border-radius: 4px;
+  transition: width var(--gufeng-transition-normal);
+}
+
+.gufengProgressSuccess .gufengProgressBar {
+  background: var(--gufeng-green-gradient);
+}
+
+.gufengProgressDanger .gufengProgressBar {
+  background: var(--gufeng-red-gradient);
+}
+
+/* ========== 14. 徽章样式 ========== */
+.gufengBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 12px;
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+}
+
+.gufengBadgePrimary {
+  background: var(--gufeng-red-gradient);
+  color: var(--gufeng-white);
+}
+
+.gufengBadgeSuccess {
+  background: var(--gufeng-green-gradient);
+  color: var(--gufeng-white);
+}
+
+/* ========== 15. 加载动画 ========== */
+@keyframes gufengSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.gufengSpin {
+  animation: gufengSpin 1.5s linear infinite;
+}
+
+@keyframes gufengPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.gufengPulse {
+  animation: gufengPulse 2s ease-in-out infinite;
+}
+
+@keyframes gufengFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gufengFadeIn {
+  animation: gufengFadeIn 0.5s ease;
+}
+
+@keyframes gufengSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gufengSlideUp {
+  animation: gufengSlideUp 0.4s ease;
+}
+
+@keyframes gufengSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gufengSlideDown {
+  animation: gufengSlideDown 0.4s ease;
+}
+
+/* ========== 16. 建筑样式 ========== */
 .gufengBuilding {
   position: absolute;
   transform: translate(-50%, -50%);
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--gufeng-transition-normal);
 }
 
 .gufengBuilding:hover {
   transform: translate(-50%, -50%) scale(1.1);
+  z-index: 10;
 }
 
 .gufengBuildingImg {
   width: 60px;
   height: 60px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-  border-radius: 8px;
+  border-radius: var(--gufeng-radius-md);
   border: 2px solid transparent;
-  transition: all 0.3s;
+  transition: all var(--gufeng-transition-normal);
 }
 
 .gufengBuilding:hover .gufengBuildingImg {
@@ -390,54 +780,57 @@
 }
 
 .gufengBuildingLevel {
-  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
-  font-size: 12px;
+  font-family: var(--gufeng-font-primary);
+  font-size: 11px;
   color: var(--gufeng-gold);
   background: rgba(0, 0, 0, 0.6);
   padding: 2px 8px;
   border-radius: 10px;
-  margin-top: -5px;
+  margin-top: -4px;
   display: inline-block;
 }
 
-/* ========== 动画效果 ========== */
-@keyframes gufengFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ========== 17. 表格样式 ========== */
+.gufengTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--gufeng-font-primary);
 }
 
-.gufengFadeIn {
-  animation: gufengFadeIn 0.5s ease;
+.gufengTable th,
+.gufengTable td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: var(--gufeng-border-thin);
 }
 
-@keyframes gufengPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 10px rgba(201, 162, 39, 0);
-  }
+.gufengTable th {
+  color: var(--gufeng-gold);
+  font-weight: bold;
+  background: rgba(201, 162, 39, 0.1);
 }
 
-.gufengPulse {
-  animation: gufengPulse 2s infinite;
+.gufengTable tr:hover td {
+  background: rgba(201, 162, 39, 0.05);
 }
 
-/* ========== 响应式 ========== */
+/* ========== 18. 响应式设计 ========== */
 @media (max-width: 768px) {
   .gufengTitle {
-    font-size: 1.5rem;
-    letter-spacing: 2px;
+    font-size: 1.6rem;
+    letter-spacing: 4px;
+  }
+  
+  .gufengTitleLarge {
+    font-size: 2rem;
+  }
+  
+  .gufengContainer {
+    padding: 15px;
   }
   
   .gufengBtn {
-    padding: 10px 24px;
+    padding: 10px 20px;
     font-size: 1rem;
   }
   
@@ -445,23 +838,97 @@
     padding: 15px;
   }
   
+  .gufengNav {
+    padding: 10px 5px;
+  }
+  
   .gufengNavItem {
-    padding: 6px 10px;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .gufengNavIcon {
+    font-size: 1.2rem;
+  }
+  
+  .gufengResourceBar {
+    padding: 10px 12px;
+  }
+  
+  .gufengModalContent {
+    max-height: 90vh;
+    margin: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .gufengTitle {
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+  }
+  
+  .gufengContainer {
+    padding: 10px;
+  }
+  
+  .gufengBtn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .gufengTabs {
+    flex-wrap: wrap;
+  }
+  
+  .gufengTab {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .gufengModalTitle {
     font-size: 1.2rem;
   }
   
-  .gufengResource {
-    padding: 5px 10px;
-    font-size: 12px;
+  .gufengModalHeader {
+    padding-top: 60px;
   }
-  
-  .gufengPopup {
-    max-height: 90vh;
-    margin: 10px;
-  }
+}
+
+/* ========== 19. 辅助类 ========== */
+.gufengTextCenter { text-align: center; }
+.gufengTextLeft { text-align: left; }
+.gufengTextRight { text-align: right; }
+.gufengFlex { display: flex; }
+.gufengFlexCol { flex-direction: column; }
+.gufengFlexWrap { flex-wrap: wrap; }
+.gufengItemsCenter { align-items: center; }
+.gufengJustifyCenter { justify-content: center; }
+.gufengJustifyBetween { justify-content: space-between; }
+.gufengGap { gap: 10px; }
+.gufengGapSmall { gap: 6px; }
+.gufengGapLarge { gap: 20px; }
+.gufengMargin { margin: 10px; }
+.gufengPadding { padding: 10px; }
+.gufengHidden { display: none; }
+.gufengVisible { visibility: visible; }
+.gufengInvisible { visibility: hidden; }
+
+/* ========== 20. 滚动条美化 ========== */
+.gufengScrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.gufengScrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.gufengScrollbar::-webkit-scrollbar-thumb {
+  background: var(--gufeng-gold);
+  border-radius: 4px;
+}
+
+.gufengScrollbar::-webkit-scrollbar-thumb:hover {
+  background: #F4D03F;
 }
