@@ -2,24 +2,24 @@
  * 弹窗管理 Hook
  * 统一的弹窗状态管理
  */
-import { useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, type ReactNode, type ReactElement } from 'react';
 
 // 弹窗类型定义
-export interface PopupConfig {
+interface PopupConfig {
   id: string;
   title?: string;
-  component: React.ReactNode;
+  component: ReactNode;
   onClose?: () => void;
   props?: Record<string, unknown>;
 }
 
-export interface PopupState {
+interface PopupState {
   isOpen: boolean;
   config: PopupConfig | null;
 }
 
 // 弹窗管理器接口
-export interface PopupManagerInterface {
+interface PopupManagerInterface {
   open: (config: Omit<PopupConfig, 'isOpen'>) => void;
   close: () => void;
   closeAll: () => void;
@@ -27,14 +27,12 @@ export interface PopupManagerInterface {
 }
 
 // 上下文
-import { createContext, useContext, useRef, useCallback as useReactCallback } from 'react';
-
 const PopupContext = createContext<PopupManagerInterface | null>(null);
 
 /**
  * 弹窗 Provider
  */
-export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PopupProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [popupState, setPopupState] = useState<PopupState>({
     isOpen: false,
     config: null,
@@ -91,7 +89,7 @@ const PopupContainer: React.FC<{ config: PopupConfig; onClose: () => void }> = (
   config,
   onClose,
 }) => {
-  const handleOverlayClick = (e: React.MouseEvent) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -115,39 +113,44 @@ const PopupContainer: React.FC<{ config: PopupConfig; onClose: () => void }> = (
     >
       <div
         style={{
-          backgroundColor: '#fff',
-          borderRadius: '8px',
+          backgroundColor: '#1a1a2e',
+          borderRadius: '12px',
           minWidth: '300px',
           maxWidth: '90vw',
           maxHeight: '90vh',
           overflow: 'auto',
+          border: '1px solid rgba(255,215,0,0.3)',
         }}
       >
         {config.title && (
           <div
             style={{
               padding: '12px 16px',
-              borderBottom: '1px solid #eee',
+              borderBottom: '1px solid rgba(255,255,255,0.1)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              background: 'linear-gradient(135deg, #c9a227 0%, #f4d03f 100%)',
+              borderRadius: '12px 12px 0 0',
             }}
           >
-            <h3 style={{ margin: 0 }}>{config.title}</h3>
+            <h3 style={{ margin: 0, color: '#1a1a2e' }}>{config.title}</h3>
             <button
               onClick={onClose}
               style={{
                 background: 'none',
                 border: 'none',
-                fontSize: '20px',
+                fontSize: '24px',
                 cursor: 'pointer',
+                color: '#1a1a2e',
+                lineHeight: 1,
               }}
             >
               ×
             </button>
           </div>
         )}
-        <div style={{ padding: '16px' }}>{config.component}</div>
+        <div style={{ padding: '16px', color: '#fff' }}>{config.component}</div>
       </div>
     </div>
   );
@@ -176,7 +179,7 @@ export const useQuickPopups = () => {
     open({
       id: 'help',
       title: '游戏帮助',
-      component: <div>帮助面板内容</div>,
+      component: <div style={{ padding: '20px', textAlign: 'center' }}>帮助面板开发中...</div>,
     });
   }, [open]);
 
@@ -184,7 +187,7 @@ export const useQuickPopups = () => {
     open({
       id: 'gift',
       title: '礼品兑换',
-      component: <div>礼品面板内容</div>,
+      component: <div style={{ padding: '20px', textAlign: 'center' }}>礼品面板开发中...</div>,
     });
   }, [open]);
 
@@ -192,7 +195,7 @@ export const useQuickPopups = () => {
     open({
       id: 'signin',
       title: '每日签到',
-      component: <div>签到面板内容</div>,
+      component: <div style={{ padding: '20px', textAlign: 'center' }}>签到面板开发中...</div>,
     });
   }, [open]);
 
@@ -203,6 +206,3 @@ export const useQuickPopups = () => {
     close,
   };
 };
-
-// 导入 React
-import React from 'react';
