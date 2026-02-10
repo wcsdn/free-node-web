@@ -5,7 +5,6 @@
 import React, { useEffect, useState } from 'react';
 import { gameApi } from '../services/gameApi';
 import styles from '../styles/jxMain.module.css';
-import { apiGet, apiPost, apiDelete, getApiBase, getAuthHeaders } from '../utils/api';
 
 
 interface Troop {

@@ -38,3 +38,10 @@ export { default as HelpPanel } from './HelpPanel';
 export { default as SigninPanel } from './SigninPanel';
 export { default as DailyPanel } from './DailyPanel';
 export { default as NotificationPanel } from './NotificationPanel';
+
+// 新增组件
+export { default as GiftPanel } from './GiftPanel';
+export { default as LoginPanel } from './LoginPanel';
+export { default as NewCharacterPanel } from './NewCharacterPanel';
+export { default as WaitingPanel } from './WaitingPanel';
+export { default as ErrorPanel } from './ErrorPanel';

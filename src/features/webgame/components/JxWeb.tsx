@@ -3,7 +3,6 @@
  * 完整的剑侠情缘 Web 版游戏界面
  */
 import React, { useState, useEffect, useCallback } from 'react';
-import { gameApi } from '../services/gameApi';
 import { useResources } from '../hooks/useResources';
 import { getApiBase, getAuthHeaders } from '../utils/api';
 import PopupManager from './PopupManager';
@@ -61,7 +60,8 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
   }, []);
   
   // 根据建筑 configId 和 level 动态生成图标路径
-  const getBuildingIcon = (configId: number, level: number) => {
+  const getBuildingIcon = (_configId: number, level: number) => {
+    // 保留 configId 参数以备将来扩展
     // 图标文件名是根据等级来的，不是configId
     // 1-5级：1.GIF, 2.GIF, 3.GIF, 4.GIF, 5.GIF
     // 6-10级：a6.GIF, a7.GIF, a8.GIF, a9.GIF, a10.GIF
@@ -238,11 +238,6 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  // 收集资源
-  const handleCollectResources = useCallback(async () => {
-    await collect();
-  }, [collect]);
 
   // 聊天功能 - 暂时禁用，等 API 实现后再启用
   useEffect(() => {

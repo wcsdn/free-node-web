@@ -1,95 +1,41 @@
 /**
  * 帮助面板组件
  * 游戏帮助、常见问题、操作指南
+ * 支持静态资源和后端 API 两种模式
  */
-import React, { useState, useEffect } from 'react';
-import { apiGet } from '../utils/api';
+import React, { useState } from 'react';
+import { helpData, searchArticles, HelpArticle } from '../data/help-zh-CN';
 import styles from '../styles/jxMain.module.css';
 
-interface HelpCategory {
-  id: number;
-  name: string;
-  icon: string;
-  sort_order: number;
-}
-
-interface HelpArticle {
-  id: number;
-  category_id: number;
-  title: string;
-  content: string;
-  author: string;
-  created_at: string;
-  views: number;
-}
-
 const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [categories, setCategories] = useState<HelpCategory[]>([]);
-  const [articles, setArticles] = useState<HelpArticle[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  // 使用静态数据 - 直接使用 helpData，因为类型已经包含完整结构
+  const categories = helpData;
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [articleLoading, setArticleLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [searchResults, setSearchResults] = useState<HelpArticle[]>([]);
   const [searching, setSearching] = useState(false);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    setLoading(true);
-    try {
-      const res = await apiGet<{ success: boolean; data: HelpCategory[] }>('/api/help/categories');
-      if (res.success) {
-        setCategories(res.data || []);
-      }
-    } catch (err) {
-      console.error('Failed to fetch categories:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchArticles = async (categoryId: number) => {
-    setArticleLoading(true);
-    try {
-      const res = await apiGet<{ success: boolean; data: HelpArticle[] }>(`/api/help/articles?category_id=${categoryId}`);
-      if (res.success) {
-        setArticles(res.data || []);
-      }
-    } catch (err) {
-      console.error('Failed to fetch articles:', err);
-    } finally {
-      setArticleLoading(false);
-    }
-  };
-
-  const handleCategorySelect = (categoryId: number) => {
+  const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setSelectedArticle(null);
-    fetchArticles(categoryId);
   };
 
-  const handleArticleSelect = async (article: HelpArticle) => {
+  const handleArticleSelect = (article: HelpArticle) => {
     setSelectedArticle(article);
   };
 
-  const handleSearch = async () => {
-    if (!searchKeyword.trim() || searchKeyword.length < 2) return;
-    
-    setSearching(true);
-    try {
-      const res = await apiGet<{ success: boolean; data: HelpArticle[] }>(`/api/help/search?keyword=${encodeURIComponent(searchKeyword)}`);
-      if (res.success) {
-        setSearchResults(res.data || []);
-      }
-    } catch (err) {
-      console.error('Search failed:', err);
-    } finally {
+  const handleSearch = () => {
+    if (!searchKeyword.trim() || searchKeyword.length < 2) {
+      setSearchResults([]);
       setSearching(false);
+      return;
     }
+
+    setSearching(true);
+    const results = searchArticles(searchKeyword);
+    setSearchResults(results);
   };
 
   const handleBack = () => {
@@ -97,188 +43,143 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       setSelectedArticle(null);
     } else if (selectedCategory) {
       setSelectedCategory(null);
-      setArticles([]);
     }
   };
 
+  const getCurrentCategory = () => {
+    return categories.find((c) => c.id === selectedCategory);
+  };
+
+  const getArticlesForCategory = (categoryId: string) => {
+    const category = helpData.find((c) => c.id === categoryId);
+    return category?.articles || [];
+  };
+
   return (
-    <div style={{ color: '#000', minWidth: '450px', maxWidth: '600px' }}>
-      {/* 标题栏 */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '15px',
-        paddingBottom: '10px',
-        borderBottom: '1px solid #ddd'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {selectedCategory && (
-            <button 
-              onClick={handleBack}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                cursor: 'pointer',
-                fontSize: '18px',
-                padding: '5px'
-              }}
-            >
-              ←
-            </button>
+    <div className={styles.popupOverlay}>
+      <div className={styles.helpPanel}>
+        {/* 头部 */}
+        <div className={styles.helpHeader}>
+          <h2>游戏帮助</h2>
+          <button className={styles.closeButton} onClick={onClose}>×</button>
+        </div>
+
+        <div className={styles.helpContent}>
+          {/* 侧边栏 - 分类列表 */}
+          {!selectedCategory && (
+            <div className={styles.helpSidebar}>
+              <div className={styles.helpSearch}>
+                <input
+                  type="text"
+                  placeholder="搜索帮助..."
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <button onClick={handleSearch}>搜索</button>
+              </div>
+
+              {searching ? (
+                <div className={styles.searchResults}>
+                  <h3>搜索结果</h3>
+                  {searchResults.length > 0 ? (
+                    <ul>
+                      {searchResults.map((article) => {
+                        const category = helpData.find((c) =>
+                          c.articles.some((a) => a.id === article.id)
+                        );
+                        return (
+                          <li
+                            key={`${category?.id}-${article.id}`}
+                            onClick={() => handleArticleSelect(article)}
+                          >
+                            <span className={styles.articleTitle}>{article.title}</span>
+                            <span className={styles.categoryTag}>{category?.name}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className={styles.noResults}>未找到相关内容</p>
+                  )}
+                  <button
+                    className={styles.backButton}
+                    onClick={() => {
+                      setSearching(false);
+                      setSearchKeyword('');
+                      setSearchResults([]);
+                    }}
+                  >
+                    返回分类
+                  </button>
+                </div>
+              ) : (
+                <ul className={styles.categoryList}>
+                  {categories.map((category) => (
+                    <li
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category.id)}
+                    >
+                      <span className={styles.categoryIcon}>{category.icon}</span>
+                      <span className={styles.categoryName}>{category.name}</span>
+                      <span className={styles.arrow}>›</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           )}
-          <h3 style={{ margin: 0 }}>
-            {selectedArticle ? '帮助详情' : selectedCategory ? categories.find(c => c.id === selectedCategory)?.name || '文章列表' : '帮助中心'}
-          </h3>
-        </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '24px' }}>×</button>
-      </div>
 
-      {/* 搜索栏 */}
-      {!selectedCategory && (
-        <div style={{ marginBottom: '15px' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="搜索问题..."
-              style={{ 
-                flex: 1,
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '13px'
-              }}
-            />
-            <button 
-              onClick={handleSearch}
-              disabled={searching}
-              style={{ 
-                padding: '8px 16px',
-                background: searching ? '#ccc' : '#4CAF50',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: searching ? 'not-allowed' : 'pointer'
-              }}
-            >
-              {searching ? '搜索中...' : '搜索'}
-            </button>
-          </div>
-        </div>
-      )}
+          {/* 文章列表 */}
+          {selectedCategory && !selectedArticle && (
+            <div className={styles.helpMain}>
+              <div className={styles.helpBreadcrumb}>
+                <span onClick={handleBack}>帮助</span>
+                <span> › </span>
+                <span>{getCurrentCategory()?.name}</span>
+              </div>
+              <ul className={styles.articleList}>
+                {getArticlesForCategory(selectedCategory).map((article) => (
+                  <li key={article.id} onClick={() => handleArticleSelect(article)}>
+                    <span className={styles.articleTitle}>{article.title}</span>
+                    <span className={styles.arrow}>›</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {/* 搜索结果 */}
-      {searchResults.length > 0 && (
-        <div style={{ marginBottom: '15px' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#666', fontSize: '13px' }}>搜索结果：</h4>
-          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
-            {searchResults.map(article => (
-              <div
-                key={article.id}
-                onClick={() => { setSelectedArticle(article); setSearchResults([]); }}
-                style={{
-                  padding: '10px',
-                  borderBottom: '1px solid #eee',
-                  cursor: 'pointer',
-                  background: '#f9f9f9'
-                }}
-              >
-                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{article.title}</div>
-                <div style={{ fontSize: '12px', color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {article.content.replace(/[#*`]/g, '').slice(0, 80)}...
+          {/* 文章内容 */}
+          {selectedArticle && (
+            <div className={styles.helpMain}>
+              <div className={styles.helpBreadcrumb}>
+                <span onClick={handleBack}>帮助</span>
+                <span> › </span>
+                <span onClick={() => setSelectedArticle(null)}>
+                  {getCurrentCategory()?.name}
+                </span>
+                <span> › </span>
+                <span>{selectedArticle.title}</span>
+              </div>
+              <div className={styles.articleContent}>
+                <h3>{selectedArticle.title}</h3>
+                <div className={styles.articleBody}>
+                  {selectedArticle.content.split('\n').map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+                <div className={styles.articleKeywords}>
+                  <span>关键词：</span>
+                  {selectedArticle.keywords.map((keyword, index) => (
+                    <span key={index} className={styles.keyword}>
+                      {keyword}
+                    </span>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 主内容区 */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>加载中...</div>
-      ) : selectedArticle ? (
-        // 文章详情
-        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          <h2 style={{ margin: '0 0 15px 0', fontSize: '18px', color: '#333' }}>{selectedArticle.title}</h2>
-          <div style={{ fontSize: '12px', color: '#999', marginBottom: '15px' }}>
-            浏览: {selectedArticle.views} | 作者: {selectedArticle.author}
-          </div>
-          <div 
-            style={{ 
-              lineHeight: '1.8',
-              fontSize: '14px',
-              whiteSpace: 'pre-wrap'
-            }}
-          >
-            {selectedArticle.content}
-          </div>
-        </div>
-      ) : selectedCategory ? (
-        // 文章列表
-        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-          {articleLoading ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>加载中...</div>
-          ) : articles.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>该分类下暂无文章</div>
-          ) : (
-            articles.map(article => (
-              <div
-                key={article.id}
-                onClick={() => handleArticleSelect(article)}
-                style={{
-                  padding: '12px',
-                  borderBottom: '1px solid #eee',
-                  cursor: 'pointer',
-                  background: '#f9f9f9',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                <span style={{ fontWeight: 'bold' }}>{article.title}</span>
-                <span style={{ color: '#999', fontSize: '12px' }}>→</span>
-              </div>
-            ))
+            </div>
           )}
         </div>
-      ) : (
-        // 分类列表
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-          {categories.map(category => (
-            <div
-              key={category.id}
-              onClick={() => handleCategorySelect(category.id)}
-              style={{
-                padding: '15px',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                background: '#f9f9f9',
-                textAlign: 'center',
-                transition: 'all 0.2s'
-              }}
-            >
-              <div style={{ fontSize: '24px', marginBottom: '8px' }}>{category.icon}</div>
-              <div style={{ fontWeight: 'bold', color: '#333' }}>{category.name}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* 底部提示 */}
-      <div style={{ 
-        marginTop: '15px', 
-        padding: '10px', 
-        background: '#f5f5f5', 
-        borderRadius: '4px',
-        fontSize: '12px',
-        color: '#666',
-        textAlign: 'center'
-      }}>
-        如有更多问题，请联系客服
       </div>
     </div>
   );

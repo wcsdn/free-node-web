@@ -43,6 +43,7 @@ import mapRoutes from './routes/map';
 import cityInteriorRoutes from './routes/city-interior';
 import guildRoutes from './routes/guild';
 import appendantNpcRoutes from './routes/appendant-npc';
+import giftRoutes from './routes/gift';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -106,6 +107,7 @@ app.route('/api/map', mapRoutes);
 app.route('/api/interior', cityInteriorRoutes);
 app.route('/api/guild', guildRoutes);
 app.route('/api/appendant-npc', appendantNpcRoutes);
+app.route('/api/gift', giftRoutes);
 
 // 404 处理
 app.notFound((c) => {

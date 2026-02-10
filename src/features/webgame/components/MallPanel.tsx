@@ -4,11 +4,10 @@
  */
 import React, { useState, useEffect, memo } from 'react';
 import styles from '../styles/MallPanel.module.css';
-import { mallApi, MallItem, MALL_ITEM_TYPES, MallItemType } from '../services/api/mallApi';
-import { getAuthHeaders } from '../utils/api';
+import { mallApi, MallItem } from '../services/api/mallApi';
 
 // 物品类型配置
-const ITEM_TYPES: { id: MallItemType; name: string }[] = [
+const ITEM_TYPES: { id: number; name: string }[] = [
   { id: 1, name: '热销' },
   { id: 4, name: '侠客' },
   { id: 5, name: '军事' },
@@ -22,7 +21,7 @@ interface MallPanelProps {
   onClose: () => void;
 }
 
-const MallPanel: React.FC<MallPanelProps> = memo(({ walletAddress, onClose }) => {
+const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
   const [items, setItems] = useState<MallItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentType, setCurrentType] = useState<MallItemType>(1);

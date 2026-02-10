@@ -131,7 +131,6 @@ const DailyPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const completedTasks = tasks.filter(t => t.status === 1).length;
-  const allTasksCompleted = tasks.length > 0 && completedTasks === tasks.length;
 
   if (loading) {
     return (

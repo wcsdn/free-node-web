@@ -28,8 +28,8 @@ interface ArenaPanelProps {
 }
 
 const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) => {
-  const [myRank, setMyRank] = useState(0);
-  const [myPower, setMyPower] = useState(0);
+  const [myRank] = useState(0);
+  const [myPower] = useState(0);
   const [opponents, setOpponents] = useState<ArenaOpponent[]>([]);
   const [battleLog, setBattleLog] = useState<BattleLogItem[]>([]);
   const [challenging, setChallenging] = useState(false);
@@ -72,9 +72,9 @@ const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) 
         setChallenging(false);
         return;
       }
-      const cityId = cities[0].id;
+      // cityId 当前未使用，保留以备将来扩展
 
-      const res = await gameApi.challengeArena(opponent.wallet_address);
+      const res = await gameApi.challengeArena(0); // 使用城市ID
       if (res.success) {
         const result = res.data?.win ? '胜利' : '失败';
         const exp = res.data?.rewards?.exp || 0;

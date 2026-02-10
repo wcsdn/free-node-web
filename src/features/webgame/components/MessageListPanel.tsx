@@ -37,11 +37,6 @@ interface MailListResponse {
   error?: string;  // ✅ 添加 error 属性
 }
 
-interface MailDetailResponse {
-  success: boolean;
-  data: Mail;
-}
-
 interface MessagePanelProps {
   onClose: () => void;
 }

@@ -2,10 +2,8 @@
  * 聊天面板组件
  */
 import React, { useState, useEffect, useRef, memo } from 'react';
-import PageLayout from '@/shared/layouts/PageLayout';
-import { useLanguage } from '@/shared/hooks/useLanguage';
 import styles from '../styles/ChatPanel.module.css';
-import { apiPost, apiDelete, getApiBase } from '../utils/api';
+import { getApiBase } from '../utils/api';
 
 interface ChatMessage {
   id: number;

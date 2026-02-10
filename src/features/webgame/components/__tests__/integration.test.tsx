@@ -3,10 +3,10 @@
  * 使用正式数据测试前后端接口连通性
  */
 
-import gameApi from '../services/gameApi';
+import gameApi from '../../services/gameApi';
 
 // 测试配置
-const TEST_WALLET = '0x1234567890abcdef1234567890abcdef12345678';
+const TEST_WALLET = '0x12345...';
 const TEST_SIGNATURE = 'test_signature';
 
 // API 基础配置

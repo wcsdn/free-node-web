@@ -53,7 +53,7 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
       if (res.success && res.data) {
         setMails(res.data);
         // Count unread mails
-        const unread = res.data.filter(m => m.read_tag === 0).length;
+        const unread = res.data.filter((m: Mail) => m.read_tag === 0).length;
         setUnreadCount(unread);
       }
     } catch (err) {

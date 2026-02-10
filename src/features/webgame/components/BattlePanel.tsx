@@ -2,9 +2,8 @@
  * 战斗面板组件
  * PVE副本挑战、PVP竞技挑战
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from '../styles/jxMain.module.css';
-import { getApiBase } from '../utils/api';;
 
 interface BattlePanelProps {
   walletAddress: string;
@@ -37,16 +36,9 @@ const BATTLE_STAGES: Stage[] = [
   { id: 5, name: '虎牢关', enemy: '守将', enemyLevel: 30, requiredLevel: 20, cleared: false },
 ];
 
-// 获取API基础URL
-// function getApiBase() {
-//   return import.meta.env.PROD ? 'https://game.free-node.xyz' : 'http://localhost:8787';
-// }
-
-const BattlePanel: React.FC<BattlePanelProps> = ({ cityId, onClose }) => {
+const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'pve' | 'pvp'>('pve');
-  const [stages, setStages] = useState<Stage[]>(BATTLE_STAGES);
   const [clearedStages, setClearedStages] = useState<number[]>([]);
-  const [opponents, setOpponents] = useState<Opponent[]>([]);
   const [aiOpponents] = useState<Opponent[]>([
     { name: 'NPC-关羽', level: 30, win_count: 999, isAi: true },
     { name: 'NPC-张飞', level: 28, win_count: 888, isAi: true },

@@ -990,6 +990,31 @@ export const gameApi = {
       headers: getAuthHeaders(),
     });
     return res.json();
+  },
+
+  // ==================== 礼品兑换系统 (Gift) ====================
+
+  async getGiftCodeInfo(code: string): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/gift/code/${encodeURIComponent(code)}`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  async redeemGiftCode(code: string): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/gift/redeem`, {
+      method: 'POST',
+      headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    return res.json();
+  },
+
+  async getGiftHistory(): Promise<ApiResponse<any>> {
+    const res = await fetch(`${getApiBase()}/api/gift/history`, {
+      headers: getAuthHeaders(),
+    });
+    return res.json();
   }
 };
 

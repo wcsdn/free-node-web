@@ -1273,3 +1273,65 @@ export interface ErrorCode {
 export interface ErrorCodeListResponse {
   codes: ErrorCode[];
 }
+
+// ==================== 礼品兑换相关 ====================
+
+export interface GiftCodeInfo {
+  code: string;
+  exists: boolean;
+  valid: boolean;
+  reason?: string;
+  expire_at?: string;
+  remaining_uses?: number | null;
+}
+
+export interface GiftRedemption {
+  code: string;
+  reward: {
+    gold?: number;
+    exp?: number;
+    items?: Array<{
+      item_id: number;
+      count: number;
+    }>;
+  };
+}
+
+export interface GiftRedeemResponse {
+  success: boolean;
+  code: string;
+  reward?: GiftRedemption['reward'];
+  message: string;
+}
+
+export interface GiftHistoryItem {
+  code: string;
+  redeemed_at: string;
+}
+
+export interface GiftHistoryResponse {
+  history: GiftHistoryItem[];
+  total_count: number;
+}
+
+// ==================== 激活码管理相关 ====================
+
+export interface GiftCodeCreateRequest {
+  code: string;
+  reward: {
+    gold?: number;
+    exp?: number;
+    items?: Array<{
+      item_id: number;
+      count: number;
+    }>;
+  };
+  max_uses?: number;
+  expire_at?: string;
+}
+
+export interface GiftCodeCreateResponse {
+  success: boolean;
+  code: string;
+  message: string;
+}

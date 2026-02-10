@@ -2,11 +2,8 @@
  * 英雄列表组件
  */
 import React, { useState, useEffect, memo } from 'react';
-import PageLayout from '@/shared/layouts/PageLayout';
-import { useLanguage } from '@/shared/hooks/useLanguage';
-import { useToast } from '@/shared/components/Toast/ToastContext';
 import styles from '../styles/HeroList.module.css';
-import { getApiBase, getAuthHeaders } from '../utils/api';
+import { getApiBase } from '../utils/api';
 
 interface Skill {
   id: number;
