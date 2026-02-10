@@ -1,0 +1,233 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.panel {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(155, 89, 182, 0.3);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: #fff;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #fff;
+  line-height: 1;
+  padding: 0 10px;
+}
+
+.closeBtn:hover {
+  color: #e74c3c;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #9b59b6;
+}
+
+.content {
+  height: 500px;
+}
+
+.mailContainer {
+  display: flex;
+  height: 100%;
+}
+
+.mailList {
+  width: 40%;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  overflow-y: auto;
+}
+
+.mailItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mailItem:hover {
+  background: rgba(155, 89, 182, 0.1);
+}
+
+.mailItem.selected {
+  background: rgba(155, 89, 182, 0.2);
+  border-left: 3px solid #9b59b6;
+}
+
+.mailItem.unread {
+  background: rgba(155, 89, 182, 0.05);
+}
+
+.mailItem.unread .mailInfo h4 {
+  font-weight: bold;
+}
+
+.mailIcon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.mailInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.mailInfo h4 {
+  margin: 0 0 3px 0;
+  color: #fff;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailInfo p {
+  margin: 0;
+  color: #888;
+  font-size: 0.75rem;
+}
+
+.mailTime {
+  color: #666;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+.mailDetail {
+  width: 60%;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.detailHeader h3 {
+  margin: 0 0 10px 0;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+.detailMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #888;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detailContent {
+  color: #ccc;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+
+.attachment {
+  background: rgba(155, 89, 182, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.attachment span {
+  color: #9b59b6;
+  font-weight: bold;
+}
+
+.attachmentItem {
+  display: inline-block;
+  margin: 5px 10px;
+  padding: 3px 10px;
+  background: rgba(155, 89, 182, 0.2);
+  border-radius: 15px;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.receiveBtn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.receiveBtn:hover {
+  transform: scale(1.02);
+}
+
+.detailActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.deleteBtn {
+  padding: 8px 20px;
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.deleteBtn:hover {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.noSelection {
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}

@@ -44,6 +44,7 @@ import cityInteriorRoutes from './routes/city-interior';
 import guildRoutes from './routes/guild';
 import appendantNpcRoutes from './routes/appendant-npc';
 import giftRoutes from './routes/gift';
+import testRoutes from './routes/test';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -68,12 +69,17 @@ app.get('/health', (c) => {
 });
 
 // API 路由
+// 测试路由放最前面
+app.get('/api/test-direct', (c) => c.json({ success: true, message: 'Direct test works' }));
+
 app.route('/api/game', gameRoutes);
 app.route('/api/game/city', cityRoutes);
 app.route('/api/game/hero', heroRoutes);
-app.route('/api/game/corps', corpsRoutes);
+// 移除 /api/game/corps 避免冲突
+// app.route('/api/game/corps', corpsRoutes);
 app.route('/api/battle', battleRoutes);
-app.route('/api/hero', heroRoutes);
+// 移除重复的 heroRoutes
+// app.route('/api/hero', heroRoutes);
 app.route('/api/building', buildingRoutes);
 app.route('/api/task', taskRoutes);
 app.route('/api/shop', shopRoutes);
@@ -90,9 +96,10 @@ app.route('/api/help', helpRoutes);
 app.route('/api/signin', signinRoutes);
 app.route('/api/daily', dailyRoutes);
 app.route('/api/notification', notificationRoutes);
-// 先注册 corps-member，避免与 corps/:id 路由冲突
-app.route('/api/corps/member', corpsMemberRoutes);
+app.route('/api/gift', giftRoutes);
+// 军团路由需要单独处理，避免与 corps-member 冲突
 app.route('/api/corps', corpsRoutes);
+app.route('/api/corps/member', corpsMemberRoutes);
 app.route('/api/item/craft', itemCraftRoutes);
 app.route('/api/skill', skillRoutes);
 app.route('/api/tech', techRoutes);
@@ -107,7 +114,7 @@ app.route('/api/map', mapRoutes);
 app.route('/api/interior', cityInteriorRoutes);
 app.route('/api/guild', guildRoutes);
 app.route('/api/appendant-npc', appendantNpcRoutes);
-app.route('/api/gift', giftRoutes);
+// 注意：giftRoutes 已经在上面注册过了，不要重复注册
 
 // 404 处理
 app.notFound((c) => {

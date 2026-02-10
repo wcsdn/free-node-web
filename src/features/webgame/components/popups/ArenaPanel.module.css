@@ -1,0 +1,216 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.panel {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #c9a227 0%, #f4d03f 100%);
+  color: #1a1a2e;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #1a1a2e;
+  line-height: 1;
+  padding: 0 10px;
+}
+
+.closeBtn:hover {
+  color: #e74c3c;
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #c9a227;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  background: rgba(201, 162, 39, 0.1);
+  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statLabel {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.statValue {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #f4d03f;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #f4d03f;
+}
+
+.tab.active {
+  color: #f4d03f;
+  border-bottom-color: #f4d03f;
+}
+
+.content {
+  padding: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.rankList,
+.recordList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rankItem,
+.recordItem {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  gap: 10px;
+}
+
+.rankNum {
+  font-weight: bold;
+  color: #f4d03f;
+  min-width: 30px;
+}
+
+.playerName {
+  flex: 1;
+  color: #fff;
+}
+
+.playerLevel,
+.playerPower {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.recordItem.win {
+  border-left: 3px solid #27ae60;
+}
+
+.recordItem.loss {
+  border-left: 3px solid #e74c3c;
+}
+
+.opponent {
+  flex: 1;
+  color: #fff;
+}
+
+.result {
+  font-weight: bold;
+}
+
+.result.win {
+  color: #27ae60;
+}
+
+.result.loss {
+  color: #e74c3c;
+}
+
+.reward {
+  color: #f4d03f;
+}
+
+.time {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.challengeSection {
+  text-align: center;
+  padding: 20px;
+}
+
+.challengeInfo {
+  color: #888;
+  margin-bottom: 20px;
+  line-height: 1.8;
+}
+
+.challengeBtn {
+  background: linear-gradient(135deg, #c9a227 0%, #f4d03f 100%);
+  color: #1a1a2e;
+  border: none;
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.challengeBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(201, 162, 39, 0.4);
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}

@@ -11,12 +11,25 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
+// 根路由
 app.get('/', async (c) => {
-  return success(c, { message: 'OK' });
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  return success(c, { 
+    inCorps: false, 
+    myCorps: null,
+    corpsList: [] 
+  });
 });
 
 app.post('/', async (c) => {
-  return success(c, { message: 'OK' });
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  return success(c, { 
+    inCorps: false, 
+    myCorps: null,
+    corpsList: [] 
+  });
 });
 
 export default app;

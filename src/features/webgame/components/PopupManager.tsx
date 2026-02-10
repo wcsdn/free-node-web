@@ -14,6 +14,11 @@ import SigninPanel from './business/SigninPanel';
 import DailyPanel from './business/DailyPanel';
 import NotificationPanel from './popups/NotificationPanel';
 import HeroPanel from './business/HeroPanel';
+import ArenaPanel from './popups/ArenaPanel';
+import MallPanel from './popups/MallPanel';
+import MailPanel from './popups/MailPanel';
+import RankPanel from './popups/RankPanel';
+import MapPanel from './popups/MapPanel';
 
 // 弹窗组件
 import BuildingDetailPanel from './popups/BuildingDetailPanel';
@@ -771,61 +776,6 @@ const OtherPanel: React.FC = () => {
   );
 };
 
-// 竞技场面板组件
-const ArenaPanel: React.FC = () => {
-  const [opponents] = useState([
-    { id: 1, name: '剑客', level: 10, power: 5000 },
-    { id: 2, name: '刀客', level: 8, power: 4000 },
-    { id: 3, name: '枪手', level: 12, power: 6000 },
-  ]);
-  const [message, setMessage] = useState('');
-
-  const handleChallenge = (opponent: any) => {
-    setMessage(`挑战 ${opponent.name} - 开发中`);
-  };
-
-  return (
-    <div style={{ color: '#000' }}>
-      <p style={{ marginBottom: '15px', color: '#666' }}>选择对手进行挑战：</p>
-      {opponents.map((opp) => (
-        <div 
-          key={opp.id}
-          style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            padding: '12px',
-            borderBottom: '1px solid #eee',
-            background: '#f9f9f9'
-          }}
-        >
-          <div>
-            <div style={{ fontWeight: 'bold' }}>{opp.name}</div>
-            <div style={{ fontSize: '12px', color: '#666' }}>等级: {opp.level}</div>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <span style={{ color: '#f44336' }}>战力: {opp.power}</span>
-            <button 
-              onClick={() => handleChallenge(opp)}
-              style={{ 
-                padding: '5px 15px', 
-                background: '#4CAF50', 
-                color: '#fff', 
-                border: 'none', 
-                cursor: 'pointer',
-                borderRadius: '3px'
-              }}
-            >
-              挑战
-            </button>
-          </div>
-        </div>
-      ))}
-      {message && <p style={{ color: 'blue', marginTop: '10px', textAlign: 'center' }}>{message}</p>}
-    </div>
-  );
-};
-
 // 页面名称映射
 export const PAGE_NAMES: Record<string, string> = {
   'p_1': '内政',
@@ -842,6 +792,7 @@ export const PAGE_NAMES: Record<string, string> = {
   'p_12': '竞技',
   'pp_2': '城防战',
   'pp_6': '攻城战',
+  'map': '世界地图',
 };
 
 // 打开页面
@@ -891,27 +842,7 @@ export function openPage(pageId: string) {
       break;
     case 'p_11': // 排行
     case 'rank':
-      // 使用完整的 RankingPanel 组件
-      content = (
-        <div style={{ width: '600px', maxHeight: '80vh', overflow: 'auto' }}>
-          <div style={{ padding: '15px' }}>
-            <p style={{ color: '#666', marginBottom: '15px' }}>排行榜功能请在主界面导航栏中查看</p>
-            <button 
-              onClick={() => popupManager.hide()}
-              style={{ 
-                padding: '8px 20px', 
-                background: '#4CAF50', 
-                color: '#fff', 
-                border: 'none', 
-                cursor: 'pointer',
-                borderRadius: '3px'
-              }}
-            >
-              关闭
-            </button>
-          </div>
-        </div>
-      );
+      content = <RankPanel onClose={() => popupManager.hide()} />;
       break;
     case 'p_12': // 竞技
     case 'arena':
@@ -920,6 +851,9 @@ export function openPage(pageId: string) {
     case 'pp_2': // 城防战
     case 'pp_6': // 攻城战
       content = <DefensePanel walletAddress="" cityId={1} cityMoney={3000} onClose={() => popupManager.hide()} />;
+      break;
+    case 'map': // 世界地图
+      content = <MapPanel onClose={() => popupManager.hide()} />;
       break;
     default:
       content = (
