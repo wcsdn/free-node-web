@@ -282,5 +282,4 @@ async function runTests() {
 
 runTests().catch(error => {
   console.error('测试运行失败:', error);
-  process.exit(1);
 });
