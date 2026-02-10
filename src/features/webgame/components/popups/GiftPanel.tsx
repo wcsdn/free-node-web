@@ -3,6 +3,8 @@
  * 礼包兑换、激活码兑换
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface GiftCodeResult {
@@ -109,20 +111,20 @@ const GiftPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.giftPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.giftPanel}>
         {/* 头部 */}
-        <div className={styles.giftHeader}>
+        <div className={gufengStyles.giftHeader}>
           <h2>🎁 礼品领取</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeButton} onClick={onClose}>×</button>
         </div>
 
-        <div className={styles.giftContent}>
+        <div className={gufengStyles.giftContent}>
           {/* 兑换输入区 */}
-          <div className={styles.giftRedeemSection}>
-            <div className={styles.giftInputGroup}>
+          <div className={gufengStyles.giftRedeemSection}>
+            <div className={gufengStyles.giftInputGroup}>
               <label>激活码兑换</label>
-              <div className={styles.giftInputRow}>
+              <div className={gufengStyles.giftInputRow}>
                 <input
                   type="text"
                   placeholder="请输入激活码"
@@ -139,16 +141,16 @@ const GiftPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   {loading ? '兑换中...' : '兑换'}
                 </button>
               </div>
-              <p className={styles.giftHint}>{getGiftCodeHint()}</p>
+              <p className={gufengStyles.giftHint}>{getGiftCodeHint()}</p>
             </div>
 
             {/* 兑换结果 */}
             {result && (
-              <div className={`${styles.giftResult} ${result.success ? styles.success : styles.error}`}>
+              <div className={`${gufengStyles.giftResult} ${result.success ? gufengStyles.success : gufengStyles.error}`}>
                 <h4>{result.success ? '✅ 兑换成功' : '❌ 兑换失败'}</h4>
                 <p>{result.message}</p>
                 {result.success && result.reward && (
-                  <div className={styles.giftRewards}>
+                  <div className={gufengStyles.giftRewards}>
                     <h5>获得奖励：</h5>
                     {result.reward.gold && <p>💰 金币 +{result.reward.gold}</p>}
                     {result.reward.exp && <p>✨ 经验 +{result.reward.exp}</p>}
@@ -164,12 +166,12 @@ const GiftPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           </div>
 
           {/* 分割线 */}
-          <div className={styles.giftDivider}>
+          <div className={gufengStyles.giftDivider}>
             <span>或</span>
           </div>
 
           {/* 礼包码说明 */}
-          <div className={styles.giftInfo}>
+          <div className={gufengStyles.giftInfo}>
             <h4>📋 如何获取激活码？</h4>
             <ul>
               <li>🔹 关注官方社交媒体，参与活动获得</li>
@@ -181,14 +183,14 @@ const GiftPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
           {/* 兑换历史 */}
           {history.length > 0 && (
-            <div className={styles.giftHistory}>
+            <div className={gufengStyles.giftHistory}>
               <h4>📜 兑换记录</h4>
               <ul>
                 {history.slice(0, 5).map((item, index) => (
-                  <li key={index} className={styles.historyItem}>
-                    <span className={styles.historyCode}>{item.code}</span>
-                    <span className={styles.historyTime}>{item.time}</span>
-                    <span className={`${styles.historyStatus} ${styles[item.status]}`}>
+                  <li key={index} className={gufengStyles.historyItem}>
+                    <span className={gufengStyles.historyCode}>{item.code}</span>
+                    <span className={gufengStyles.historyTime}>{item.time}</span>
+                    <span className={`${gufengStyles.historyStatus} ${styles[item.status]}`}>
                       {item.status === 'success' ? '成功' : item.status === 'used' ? '已使用' : '无效'}
                     </span>
                   </li>
@@ -198,7 +200,7 @@ const GiftPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           )}
 
           {/* 常见问题 */}
-          <div className={styles.giftFAQ}>
+          <div className={gufengStyles.giftFAQ}>
             <h4>❓ 常见问题</h4>
             <details>
               <summary>激活码不生效怎么办？</summary>

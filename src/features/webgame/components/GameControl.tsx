@@ -3,6 +3,8 @@
  */
 
 import React, { memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import { useWebGameStore, UnitType } from '../stores/useWebGameStore';
 import { GAME_CONFIG } from '../config';
 import { useSoundEffect } from '@/shared/hooks/useSoundEffect';
@@ -55,20 +57,20 @@ const GameControl: React.FC = memo(() => {
   };
 
   return (
-    <div className={styles.gameControl}>
+    <div className={gufengStyles.gameControl}>
       {/* 游戏状态 */}
-      <div className={styles.statusPanel}>
-        <div className={styles.statusItem}>
-          <span className={styles.statusLabel}>{i18n.turn}:</span>
-          <span className={styles.statusValue}>{turn}/{GAME_CONFIG.MAX_TURNS}</span>
+      <div className={gufengStyles.statusPanel}>
+        <div className={gufengStyles.statusItem}>
+          <span className={gufengStyles.statusLabel}>{i18n.turn}:</span>
+          <span className={gufengStyles.statusValue}>{turn}/{GAME_CONFIG.MAX_TURNS}</span>
         </div>
-        <div className={styles.statusItem}>
-          <span className={styles.statusLabel}>{i18n.gold}:</span>
-          <span className={styles.statusValue}>💰 {gold}</span>
+        <div className={gufengStyles.statusItem}>
+          <span className={gufengStyles.statusLabel}>{i18n.gold}:</span>
+          <span className={gufengStyles.statusValue}>💰 {gold}</span>
         </div>
-        <div className={styles.statusItem}>
-          <span className={styles.statusLabel}>{i18n.status}:</span>
-          <span className={styles.statusValue}>
+        <div className={gufengStyles.statusItem}>
+          <span className={gufengStyles.statusLabel}>{i18n.status}:</span>
+          <span className={gufengStyles.statusValue}>
             {gameStatus === 'idle' && i18n.idle}
             {gameStatus === 'playing' && i18n.playing}
             {gameStatus === 'victory' && i18n.victory}
@@ -79,25 +81,25 @@ const GameControl: React.FC = memo(() => {
 
       {/* 单位商店 */}
       {gameStatus === 'playing' && (
-        <div className={styles.shopPanel}>
-          <div className={styles.shopTitle}>{i18n.shop}</div>
-          <div className={styles.shopGrid}>
+        <div className={gufengStyles.shopPanel}>
+          <div className={gufengStyles.shopTitle}>{i18n.shop}</div>
+          <div className={gufengStyles.shopGrid}>
             {Object.entries(GAME_CONFIG.UNIT_TYPES).map(([key, unit]) => (
               <button
                 key={key}
-                className={styles.shopItem}
+                className={gufengStyles.shopItem}
                 onClick={() => { playClick(); handleBuyUnit(key as UnitType); }}
                 onMouseEnter={playHover}
                 disabled={gold < unit.cost}
               >
-                <div className={styles.shopIcon}>{unit.icon}</div>
-                <div className={styles.shopName}>{unit.name}</div>
-                <div className={styles.shopStats}>
+                <div className={gufengStyles.shopIcon}>{unit.icon}</div>
+                <div className={gufengStyles.shopName}>{unit.name}</div>
+                <div className={gufengStyles.shopStats}>
                   <span>❤️ {unit.hp}</span>
                   <span>⚔️ {unit.attack}</span>
                   <span>🛡️ {unit.defense}</span>
                 </div>
-                <div className={styles.shopCost}>💰 {unit.cost}</div>
+                <div className={gufengStyles.shopCost}>💰 {unit.cost}</div>
               </button>
             ))}
           </div>
@@ -105,10 +107,10 @@ const GameControl: React.FC = memo(() => {
       )}
 
       {/* 操作按钮 */}
-      <div className={styles.actionPanel}>
+      <div className={gufengStyles.actionPanel}>
         {gameStatus === 'playing' && (
           <button
-            className={styles.actionBtn}
+            className={gufengStyles.actionBtn}
             onClick={() => { playClick(); endTurn(); }}
             onMouseEnter={playHover}
           >
@@ -118,7 +120,7 @@ const GameControl: React.FC = memo(() => {
         
         {(gameStatus === 'victory' || gameStatus === 'defeat') && (
           <button
-            className={styles.actionBtn}
+            className={gufengStyles.actionBtn}
             onClick={() => { playClick(); resetGame(); }}
             onMouseEnter={playHover}
           >
@@ -129,8 +131,8 @@ const GameControl: React.FC = memo(() => {
 
       {/* 选中单位信息 */}
       {selectedUnit && (
-        <div className={styles.unitInfo}>
-          <div className={styles.unitInfoTitle}>{i18n.selectedUnit}</div>
+        <div className={gufengStyles.unitInfo}>
+          <div className={gufengStyles.unitInfoTitle}>{i18n.selectedUnit}</div>
           {/* TODO: 显示选中单位的详细信息 */}
         </div>
       )}

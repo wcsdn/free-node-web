@@ -2,6 +2,8 @@
  * 商城面板组件
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/jxMain.module.css';
 import { getApiBase, getAuthHeaders } from '../../utils/api';
@@ -98,18 +100,18 @@ const ShopPanel: React.FC<ShopPanelProps> = ({ onClose }) => {
   };
 
   const renderItem = (item: ShopItem) => (
-    <div key={item.id} className={styles.shopItem}>
-      <img src={item.icon} alt={item.name} className={styles.shopItemIcon} />
-      <div className={styles.shopItemInfo}>
-        <div className={styles.shopItemName}>{item.name}</div>
-        <div className={styles.shopItemDesc}>{item.desc}</div>
+    <div key={item.id} className={gufengStyles.shopItem}>
+      <img src={item.icon} alt={item.name} className={gufengStyles.shopItemIcon} />
+      <div className={gufengStyles.shopItemInfo}>
+        <div className={gufengStyles.shopItemName}>{item.name}</div>
+        <div className={gufengStyles.shopItemDesc}>{item.desc}</div>
       </div>
-      <div className={styles.shopItemPrice}>
-        <span className={styles.priceGold}>{item.price}</span>
+      <div className={gufengStyles.shopItemPrice}>
+        <span className={gufengStyles.priceGold}>{item.price}</span>
         <button 
           onClick={() => handleBuy(item)}
           disabled={buying === item.id || gold < item.price}
-          className={styles.buyBtn}
+          className={gufengStyles.buyBtn}
         >
           {buying === item.id ? '购买中...' : '购买'}
         </button>
@@ -118,12 +120,12 @@ const ShopPanel: React.FC<ShopPanelProps> = ({ onClose }) => {
   );
 
   const renderSection = (title: string, items: ShopItem[], icon: string) => (
-    <div className={styles.shopSection}>
+    <div className={gufengStyles.shopSection}>
       <h4>{icon} {title}</h4>
       {items.length === 0 ? (
-        <div className={styles.empty}>暂无商品</div>
+        <div className={gufengStyles.empty}>暂无商品</div>
       ) : (
-        <div className={styles.shopGrid}>
+        <div className={gufengStyles.shopGrid}>
           {items.map(renderItem)}
         </div>
       )}
@@ -131,17 +133,17 @@ const ShopPanel: React.FC<ShopPanelProps> = ({ onClose }) => {
   );
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel}>
+      <div className={gufengStyles.popupHeader}>
         <span>商城 (金币: {gold})</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
       
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
+      <div className={gufengStyles.popupContent}>
+        {message && <div className={gufengStyles.message}>{message}</div>}
         
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : (
           <>
             {renderSection('资源道具', resourceItems, '💰')}

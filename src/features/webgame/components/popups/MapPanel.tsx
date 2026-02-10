@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './MapPanel.module.css';
 
@@ -79,22 +81,22 @@ export const MapPanel: React.FC<MapPanelProps> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>🗺️ 世界地图</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
-        <div className={styles.toolbar}>
+        <div className={gufengStyles.toolbar}>
           <button 
-            className={`${styles.viewBtn} ${viewMode === 'map' ? styles.active : ''}`}
+            className={`${gufengStyles.viewBtn} ${viewMode === 'map' ? gufengStyles.active : ''}`}
             onClick={() => setViewMode('map')}
           >
             🗺️ 地图
           </button>
           <button 
-            className={`${styles.viewBtn} ${viewMode === 'list' ? styles.active : ''}`}
+            className={`${gufengStyles.viewBtn} ${viewMode === 'list' ? gufengStyles.active : ''}`}
             onClick={() => setViewMode('list')}
           >
             📋 列表
@@ -102,15 +104,15 @@ export const MapPanel: React.FC<MapPanelProps> = ({ onClose }) => {
         </div>
 
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : viewMode === 'map' ? (
           /* 地图视图 */
-          <div className={styles.mapContainer}>
-            <div className={styles.mapView}>
+          <div className={gufengStyles.mapContainer}>
+            <div className={gufengStyles.mapView}>
               {mapUnits.map(unit => (
                 <div
                   key={unit.id}
-                  className={`${styles.mapUnit} ${selectedUnit?.id === unit.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.mapUnit} ${selectedUnit?.id === unit.id ? gufengStyles.selected : ''}`}
                   style={{
                     left: `${unit.position.x}px`,
                     top: `${unit.position.y}px`,
@@ -119,38 +121,38 @@ export const MapPanel: React.FC<MapPanelProps> = ({ onClose }) => {
                   onClick={() => handleUnitClick(unit)}
                   title={unit.name}
                 >
-                  <span className={styles.unitIcon}>{getUnitIcon(unit.type)}</span>
-                  <span className={styles.unitName}>{unit.name}</span>
+                  <span className={gufengStyles.unitIcon}>{getUnitIcon(unit.type)}</span>
+                  <span className={gufengStyles.unitName}>{unit.name}</span>
                 </div>
               ))}
               {/* 玩家城市 */}
-              <div className={`${styles.mapUnit} ${styles.playerCity}`} style={{ left: '350px', top: '250px' }}>
-                <span className={styles.unitIcon}>🏠</span>
-                <span className={styles.unitName}>我的城池</span>
+              <div className={`${gufengStyles.mapUnit} ${gufengStyles.playerCity}`} style={{ left: '350px', top: '250px' }}>
+                <span className={gufengStyles.unitIcon}>🏠</span>
+                <span className={gufengStyles.unitName}>我的城池</span>
               </div>
             </div>
 
             {/* 选中详情 */}
             {selectedUnit && (
-              <div className={styles.unitDetail}>
+              <div className={gufengStyles.unitDetail}>
                 <h3>{selectedUnit.name}</h3>
-                <div className={styles.detailInfo}>
+                <div className={gufengStyles.detailInfo}>
                   <p>类型: {selectedUnit.type === 'bandit' ? '土匪窝' : selectedUnit.type === 'resource' ? '资源点' : 'NPC'}</p>
                   {selectedUnit.level && <p>等级: {selectedUnit.level}</p>}
                   {selectedUnit.power && <p>驻守战力: {selectedUnit.power}</p>}
                 </div>
-                <div className={styles.detailActions}>
+                <div className={gufengStyles.detailActions}>
                   {selectedUnit.type === 'bandit' && (
-                    <button className={styles.attackBtn} onClick={() => handleAttack(selectedUnit)}>
+                    <button className={gufengStyles.attackBtn} onClick={() => handleAttack(selectedUnit)}>
                       ⚔️ 进攻
                     </button>
                   )}
                   {selectedUnit.type === 'resource' && (
-                    <button className={styles.occupyBtn} onClick={() => handleOccupy(selectedUnit)}>
+                    <button className={gufengStyles.occupyBtn} onClick={() => handleOccupy(selectedUnit)}>
                       🚩 占领
                     </button>
                   )}
-                  <button className={styles.closeDetailBtn} onClick={() => setSelectedUnit(null)}>
+                  <button className={gufengStyles.closeDetailBtn} onClick={() => setSelectedUnit(null)}>
                     关闭
                   </button>
                 </div>
@@ -159,24 +161,24 @@ export const MapPanel: React.FC<MapPanelProps> = ({ onClose }) => {
           </div>
         ) : (
           /* 列表视图 */
-          <div className={styles.listView}>
+          <div className={gufengStyles.listView}>
             {mapUnits.map(unit => (
               <div 
                 key={unit.id}
-                className={styles.listItem}
+                className={gufengStyles.listItem}
                 onClick={() => handleUnitClick(unit)}
               >
-                <span className={styles.listIcon} style={{ color: getUnitColor(unit.type) }}>
+                <span className={gufengStyles.listIcon} style={{ color: getUnitColor(unit.type) }}>
                   {getUnitIcon(unit.type)}
                 </span>
-                <div className={styles.listInfo}>
-                  <span className={styles.listName}>{unit.name}</span>
-                  <span className={styles.listMeta}>
+                <div className={gufengStyles.listInfo}>
+                  <span className={gufengStyles.listName}>{unit.name}</span>
+                  <span className={gufengStyles.listMeta}>
                     {unit.level && `等级 ${unit.level}`}
                     {unit.power && ` • 战力 ${unit.power}`}
                   </span>
                 </div>
-                <span className={styles.listAction}>
+                <span className={gufengStyles.listAction}>
                   {unit.type === 'bandit' ? '进攻' : unit.type === 'resource' ? '占领' : '查看'}
                 </span>
               </div>
@@ -184,17 +186,17 @@ export const MapPanel: React.FC<MapPanelProps> = ({ onClose }) => {
           </div>
         )}
 
-        <div className={styles.legend}>
-          <div className={styles.legendItem}>
+        <div className={gufengStyles.legend}>
+          <div className={gufengStyles.legendItem}>
             <span style={{ color: '#e74c3c' }}>●</span> 土匪窝
           </div>
-          <div className={styles.legendItem}>
+          <div className={gufengStyles.legendItem}>
             <span style={{ color: '#2ecc71' }}>●</span> 资源点
           </div>
-          <div className={styles.legendItem}>
+          <div className={gufengStyles.legendItem}>
             <span style={{ color: '#9b59b6' }}>●</span> NPC
           </div>
-          <div className={styles.legendItem}>
+          <div className={gufengStyles.legendItem}>
             <span style={{ color: '#3498db' }}>●</span> 城池
           </div>
         </div>

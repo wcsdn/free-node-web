@@ -3,6 +3,8 @@
  * 替代原来的 Default.aspx (平台登录)
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface LoginPanelProps {
@@ -46,18 +48,18 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.loginPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.loginPanel}>
         {/* 头部 */}
-        <div className={styles.loginHeader}>
+        <div className={gufengStyles.loginHeader}>
           <h2>剑侠情缘 Web</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeButton} onClick={onClose}>×</button>
         </div>
 
         {/* 登录表单 */}
-        <div className={styles.loginContent}>
+        <div className={gufengStyles.loginContent}>
           <form onSubmit={handleSubmit}>
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>账号</label>
               <input
                 type="text"
@@ -68,7 +70,7 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
               />
             </div>
 
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>服务器</label>
               <select
                 value={serverId}
@@ -82,7 +84,7 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
               </select>
             </div>
 
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>推广账号</label>
               <input
                 type="text"
@@ -94,12 +96,12 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
             </div>
 
             {message && (
-              <div className={styles.loginMessage}>{message}</div>
+              <div className={gufengStyles.loginMessage}>{message}</div>
             )}
 
             <button
               type="submit"
-              className={styles.loginButton}
+              className={gufengStyles.loginButton}
               disabled={loading}
             >
               {loading ? '登录中...' : '进入游戏'}
@@ -107,13 +109,13 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
           </form>
 
           {/* 分割线 */}
-          <div className={styles.loginDivider}>
+          <div className={gufengStyles.loginDivider}>
             <span>其他方式</span>
           </div>
 
           {/* 钱包登录 */}
           <button
-            className={styles.walletLoginButton}
+            className={gufengStyles.walletLoginButton}
             onClick={() => {
               // 钱包登录逻辑
               onLogin('wallet', serverId);
@@ -123,8 +125,8 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
           </button>
 
           {/* 充值入口 */}
-          <div className={styles.rechargeSection}>
-            <div className={styles.rechargeInput}>
+          <div className={gufengStyles.rechargeSection}>
+            <div className={gufengStyles.rechargeInput}>
               <label>充值账号</label>
               <input
                 type="text"
@@ -132,7 +134,7 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
                 maxLength={50}
               />
             </div>
-            <div className={styles.rechargeInput}>
+            <div className={gufengStyles.rechargeInput}>
               <label>充值金额 (RMB)</label>
               <input
                 type="number"
@@ -140,14 +142,14 @@ const LoginPanel: React.FC<LoginPanelProps> = ({ onLogin, onClose }) => {
                 min={1}
               />
             </div>
-            <button className={styles.rechargeButton}>
+            <button className={gufengStyles.rechargeButton}>
               充值
             </button>
           </div>
         </div>
 
         {/* 底部信息 */}
-        <div className={styles.loginFooter}>
+        <div className={gufengStyles.loginFooter}>
           <p>健康游戏公告：抵制不良游戏，拒绝盗版游戏。</p>
           <p>注意自我保护，谨防受骗上当。</p>
           <p>适度游戏益脑，沉迷游戏伤身。</p>

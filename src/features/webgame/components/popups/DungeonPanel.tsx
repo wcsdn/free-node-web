@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './DungeonPanel.module.css';
 
@@ -73,21 +75,21 @@ export const DungeonPanel: React.FC<DungeonPanelProps> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>⚔️ 副本</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : selectedDungeon ? (
           /* 副本详情 */
-          <div className={styles.detailContent}>
-            <div className={styles.dungeonHeader}>
+          <div className={gufengStyles.detailContent}>
+            <div className={gufengStyles.dungeonHeader}>
               <h3>{selectedDungeon.name}</h3>
-              <div className={styles.dungeonMeta}>
+              <div className={gufengStyles.dungeonMeta}>
                 <span style={{ color: getDifficultyColor(selectedDungeon.difficulty) }}>
                   {getDifficultyStars(selectedDungeon.difficulty)}
                 </span>
@@ -97,44 +99,44 @@ export const DungeonPanel: React.FC<DungeonPanelProps> = ({ onClose }) => {
             </div>
 
             {battleResult ? (
-              <div className={styles.battleResult}>
-                <div className={styles.resultHeader}>
+              <div className={gufengStyles.battleResult}>
+                <div className={gufengStyles.resultHeader}>
                   {battleResult.victory ? '🎉 战斗胜利！' : '💀 战斗失败'}
                 </div>
-                <div className={styles.resultStats}>
-                  <div className={styles.resultItem}>
+                <div className={gufengStyles.resultStats}>
+                  <div className={gufengStyles.resultItem}>
                     <span>获得经验</span>
                     <span>+{battleResult.exp || 0}</span>
                   </div>
-                  <div className={styles.resultItem}>
+                  <div className={gufengStyles.resultItem}>
                     <span>获得银两</span>
                     <span>+{battleResult.gold || 0}</span>
                   </div>
                   {battleResult.drops?.map((drop: any, idx: number) => (
-                    <div key={idx} className={styles.resultItem}>
+                    <div key={idx} className={gufengStyles.resultItem}>
                       <span>获得道具</span>
                       <span>{drop.name} x{drop.count}</span>
                     </div>
                   ))}
                 </div>
                 <button 
-                  className={styles.backBtn}
+                  className={gufengStyles.backBtn}
                   onClick={() => setBattleResult(null)}
                 >
                   返回副本列表
                 </button>
               </div>
             ) : (
-              <div className={styles.dungeonActions}>
+              <div className={gufengStyles.dungeonActions}>
                 <p>进入副本进行挑战，通关可获得大量奖励！</p>
                 <button 
-                  className={styles.startBtn}
+                  className={gufengStyles.startBtn}
                   onClick={() => handleStartBattle(selectedDungeon)}
                 >
                   🚀 开始挑战
                 </button>
                 <button 
-                  className={styles.backBtn}
+                  className={gufengStyles.backBtn}
                   onClick={() => setSelectedDungeon(null)}
                 >
                   返回列表
@@ -144,23 +146,23 @@ export const DungeonPanel: React.FC<DungeonPanelProps> = ({ onClose }) => {
           </div>
         ) : (
           /* 副本列表 */
-          <div className={styles.dungeonList}>
+          <div className={gufengStyles.dungeonList}>
             {dungeons.map(dungeon => (
               <div 
                 key={dungeon.id} 
-                className={styles.dungeonItem}
+                className={gufengStyles.dungeonItem}
                 onClick={() => handleEnterDungeon(dungeon)}
               >
-                <div className={styles.dungeonIcon}>
+                <div className={gufengStyles.dungeonIcon}>
                   {dungeon.icon ? (
                     <img src={dungeon.icon} alt={dungeon.name} />
                   ) : (
                     <span style={{ fontSize: '2rem' }}>🏰</span>
                   )}
                 </div>
-                <div className={styles.dungeonInfo}>
+                <div className={gufengStyles.dungeonInfo}>
                   <h3>{dungeon.name}</h3>
-                  <div className={styles.dungeonMeta}>
+                  <div className={gufengStyles.dungeonMeta}>
                     <span style={{ color: getDifficultyColor(dungeon.difficulty) }}>
                       {getDifficultyStars(dungeon.difficulty)}
                     </span>
@@ -168,13 +170,13 @@ export const DungeonPanel: React.FC<DungeonPanelProps> = ({ onClose }) => {
                     <span>推荐 {dungeon.recommendedPower} 战力</span>
                   </div>
                 </div>
-                <div className={styles.enterBtn}>
+                <div className={gufengStyles.enterBtn}>
                   前往
                 </div>
               </div>
             ))}
             {dungeons.length === 0 && (
-              <div className={styles.empty}>暂无副本</div>
+              <div className={gufengStyles.empty}>暂无副本</div>
             )}
           </div>
         )}

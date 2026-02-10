@@ -3,6 +3,8 @@
  * 副本关卡选择、挑战
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { apiPost } from '../../utils/api';
 import styles from '../../styles/jxMain.module.css';
 
@@ -119,33 +121,33 @@ const DungeonPanel: React.FC<DungeonPanelProps> = ({ cityId, onClose }) => {
   };
 
   return (
-    <div className={styles.popupPanel} style={{ width: '750px' }}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel} style={{ width: '750px' }}>
+      <div className={gufengStyles.popupHeader}>
         <span>🏰 副本系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
+      <div className={gufengStyles.popupContent}>
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {battleResult ? (
-          <div className={`${styles.battleResult} ${battleResult.win ? styles.win : styles.lose}`}>
-            <div className={styles.battleResultHeader}>
+          <div className={`${gufengStyles.battleResult} ${battleResult.win ? gufengStyles.win : gufengStyles.lose}`}>
+            <div className={gufengStyles.battleResultHeader}>
               {battleResult.win ? '🎉 挑战成功!' : '💔 挑战失败'}
             </div>
-            <div className={styles.battleResultContent}>
-              <div className={styles.battleStats}>
+            <div className={gufengStyles.battleResultContent}>
+              <div className={gufengStyles.battleStats}>
                 <div>副本: {selectedDungeon?.name}</div>
                 <div>关卡: {selectedStage?.name}</div>
                 <div>敌人: {selectedStage?.enemy}</div>
               </div>
-              <div className={styles.battleRewards}>
+              <div className={gufengStyles.battleRewards}>
                 <span>+{battleResult.rewards?.exp || 0} 经验</span>
                 <span>+{battleResult.rewards?.gold || 0} 金币</span>
               </div>
             </div>
             <button 
-              className={styles.closeBtn}
+              className={gufengStyles.closeBtn}
               onClick={() => {
                 setBattleResult(null);
                 setSelectedStage(null);
@@ -156,25 +158,25 @@ const DungeonPanel: React.FC<DungeonPanelProps> = ({ cityId, onClose }) => {
           </div>
         ) : selectedDungeon ? (
           <>
-            <div className={styles.dungeonHeader}>
+            <div className={gufengStyles.dungeonHeader}>
               <h3>{selectedDungeon.name}</h3>
               <p>{selectedDungeon.description}</p>
-              <div className={styles.dungeonInfo}>
+              <div className={gufengStyles.dungeonInfo}>
                 <span>等级要求: {selectedDungeon.minLevel}</span>
                 <span>剩余次数: {selectedDungeon.remainingTimes}</span>
               </div>
             </div>
 
-            <div className={styles.stageList}>
+            <div className={gufengStyles.stageList}>
               {DUNGEON_CONFIGS[selectedDungeon.id]?.stages.map((stage) => (
                 <div 
                   key={stage.id}
-                  className={`${styles.stageCard} ${selectedStage?.id === stage.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.stageCard} ${selectedStage?.id === stage.id ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedStage(stage)}
                 >
-                  <div className={styles.stageName}>{stage.name}</div>
-                  <div className={styles.stageEnemy}>敌人: {stage.enemy}</div>
-                  <div className={styles.stageStats}>
+                  <div className={gufengStyles.stageName}>{stage.name}</div>
+                  <div className={gufengStyles.stageEnemy}>敌人: {stage.enemy}</div>
+                  <div className={gufengStyles.stageStats}>
                     血量: {stage.hp} 攻击: {stage.attack} 防御: {stage.defense}
                   </div>
                 </div>
@@ -182,12 +184,12 @@ const DungeonPanel: React.FC<DungeonPanelProps> = ({ cityId, onClose }) => {
             </div>
 
             {selectedStage && (
-              <div className={styles.fightConfirm}>
-                <div className={styles.fightInfo}>
+              <div className={gufengStyles.fightConfirm}>
+                <div className={gufengStyles.fightInfo}>
                   确认挑战: {selectedStage.name} - {selectedStage.enemy}
                 </div>
                 <button 
-                  className={styles.fightBtn}
+                  className={gufengStyles.fightBtn}
                   onClick={handleFight}
                   disabled={fighting || selectedDungeon.remainingTimes <= 0}
                 >
@@ -197,16 +199,16 @@ const DungeonPanel: React.FC<DungeonPanelProps> = ({ cityId, onClose }) => {
             )}
           </>
         ) : (
-          <div className={styles.dungeonList}>
+          <div className={gufengStyles.dungeonList}>
             {DUNGEON_LIST.map((dungeon) => (
               <div 
                 key={dungeon.id}
-                className={styles.dungeonCard}
+                className={gufengStyles.dungeonCard}
                 onClick={() => setSelectedDungeon(dungeon)}
               >
-                <div className={styles.dungeonName}>{dungeon.name}</div>
-                <div className={styles.dungeonDesc}>{dungeon.description}</div>
-                <div className={styles.dungeonInfo}>
+                <div className={gufengStyles.dungeonName}>{dungeon.name}</div>
+                <div className={gufengStyles.dungeonDesc}>{dungeon.description}</div>
+                <div className={gufengStyles.dungeonInfo}>
                   <span>等级: {dungeon.minLevel}+</span>
                   <span>次数: {dungeon.remainingTimes}/{dungeon.dailyLimit}</span>
                 </div>
@@ -215,7 +217,7 @@ const DungeonPanel: React.FC<DungeonPanelProps> = ({ cityId, onClose }) => {
           </div>
         )}
 
-        <div className={styles.backBtn} onClick={() => {
+        <div className={gufengStyles.backBtn} onClick={() => {
           if (battleResult) {
             setBattleResult(null);
           }

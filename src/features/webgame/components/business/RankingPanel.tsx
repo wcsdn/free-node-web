@@ -3,6 +3,8 @@
  * 从 Taxis.js 迁移
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/RankingPanel.module.css';
 
@@ -71,9 +73,9 @@ const RankingPanel: React.FC<RankingPanelProps> = memo(({ walletAddress, onClose
 
   // 获取排名样式
   const getRankStyle = (rank: number) => {
-    if (rank === 1) return styles.rankGold;
-    if (rank === 2) return styles.rankSilver;
-    if (rank === 3) return styles.rankBronze;
+    if (rank === 1) return gufengStyles.rankGold;
+    if (rank === 2) return gufengStyles.rankSilver;
+    if (rank === 3) return gufengStyles.rankBronze;
     return '';
   };
 
@@ -86,21 +88,21 @@ const RankingPanel: React.FC<RankingPanelProps> = memo(({ walletAddress, onClose
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
         <h2>{currentType.name}</h2>
-        <div className={styles.myRank}>
+        <div className={gufengStyles.myRank}>
           我的排名: {myRank ? `#${myRank}` : '未上榜'}
         </div>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
       {/* 排行类型 */}
-      <div className={styles.typeNav}>
+      <div className={gufengStyles.typeNav}>
         {RANK_TYPES.map((type) => (
           <button
             key={type.id}
-            className={`${styles.typeBtn} ${currentType.id === type.id ? styles.active : ''}`}
+            className={`${gufengStyles.typeBtn} ${currentType.id === type.id ? gufengStyles.active : ''}`}
             onClick={() => setCurrentType(type)}
           >
             {type.name}
@@ -109,38 +111,38 @@ const RankingPanel: React.FC<RankingPanelProps> = memo(({ walletAddress, onClose
       </div>
 
       {/* 排行列表 */}
-      <div className={styles.rankingContainer}>
+      <div className={gufengStyles.rankingContainer}>
         {/* 标题栏 */}
-        <div className={styles.rankingTitle}>
-          <span className={styles.colRank}>排名</span>
-          <span className={styles.colName}>玩家</span>
-          <span className={styles.colValue}>{currentType.name}</span>
+        <div className={gufengStyles.rankingTitle}>
+          <span className={gufengStyles.colRank}>排名</span>
+          <span className={gufengStyles.colName}>玩家</span>
+          <span className={gufengStyles.colValue}>{currentType.name}</span>
         </div>
 
         {/* 排行内容 */}
-        <div className={styles.rankingList}>
+        <div className={gufengStyles.rankingList}>
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={gufengStyles.loading}>加载中...</div>
           ) : rankings.length === 0 ? (
-            <div className={styles.empty}>暂无排行数据</div>
+            <div className={gufengStyles.empty}>暂无排行数据</div>
           ) : (
             rankings.map((item) => (
               <div
                 key={item.rank}
-                className={`${styles.rankingItem} ${getRankStyle(item.rank)}`}
+                className={`${gufengStyles.rankingItem} ${getRankStyle(item.rank)}`}
               >
-                <div className={styles.colRank}>
-                  <span className={styles.rankNum}>{item.rank}</span>
-                  <span className={styles.rankIcon}>{getRankIcon(item.rank)}</span>
+                <div className={gufengStyles.colRank}>
+                  <span className={gufengStyles.rankNum}>{item.rank}</span>
+                  <span className={gufengStyles.rankIcon}>{getRankIcon(item.rank)}</span>
                 </div>
-                <div className={styles.colName}>
-                  <span className={styles.playerName}>{item.name}</span>
+                <div className={gufengStyles.colName}>
+                  <span className={gufengStyles.playerName}>{item.name}</span>
                   {item.city_name && (
-                    <span className={styles.cityName}>{item.city_name}</span>
+                    <span className={gufengStyles.cityName}>{item.city_name}</span>
                   )}
                 </div>
-                <div className={styles.colValue}>
-                  <span className={styles.playerValue}>
+                <div className={gufengStyles.colValue}>
+                  <span className={gufengStyles.playerValue}>
                     {item.value.toLocaleString()}{currentType.unit}
                   </span>
                 </div>
@@ -152,21 +154,21 @@ const RankingPanel: React.FC<RankingPanelProps> = memo(({ walletAddress, onClose
 
       {/* 前三名展示 */}
       {rankings.length >= 3 && (
-        <div className={styles.topThree}>
-          <div className={`${styles.topItem} ${styles.second}`}>
-            <div className={styles.topAvatar}>🥈</div>
-            <div className={styles.topName}>{rankings[1]?.name}</div>
-            <div className={styles.topValue}>{rankings[1]?.value?.toLocaleString()}</div>
+        <div className={gufengStyles.topThree}>
+          <div className={`${gufengStyles.topItem} ${gufengStyles.second}`}>
+            <div className={gufengStyles.topAvatar}>🥈</div>
+            <div className={gufengStyles.topName}>{rankings[1]?.name}</div>
+            <div className={gufengStyles.topValue}>{rankings[1]?.value?.toLocaleString()}</div>
           </div>
-          <div className={`${styles.topItem} ${styles.first}`}>
-            <div className={styles.topAvatar}>🏆</div>
-            <div className={styles.topName}>{rankings[0]?.name}</div>
-            <div className={styles.topValue}>{rankings[0]?.value?.toLocaleString()}</div>
+          <div className={`${gufengStyles.topItem} ${gufengStyles.first}`}>
+            <div className={gufengStyles.topAvatar}>🏆</div>
+            <div className={gufengStyles.topName}>{rankings[0]?.name}</div>
+            <div className={gufengStyles.topValue}>{rankings[0]?.value?.toLocaleString()}</div>
           </div>
-          <div className={`${styles.topItem} ${styles.third}`}>
-            <div className={styles.topAvatar}>🥉</div>
-            <div className={styles.topName}>{rankings[2]?.name}</div>
-            <div className={styles.topValue}>{rankings[2]?.value?.toLocaleString()}</div>
+          <div className={`${gufengStyles.topItem} ${gufengStyles.third}`}>
+            <div className={gufengStyles.topAvatar}>🥉</div>
+            <div className={gufengStyles.topName}>{rankings[2]?.name}</div>
+            <div className={gufengStyles.topValue}>{rankings[2]?.value?.toLocaleString()}</div>
           </div>
         </div>
       )}

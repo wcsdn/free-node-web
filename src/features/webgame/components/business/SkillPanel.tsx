@@ -2,6 +2,8 @@
  * 技能面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/SkillPanel.module.css';
 import { apiGet, apiPost, apiDelete, getApiBase, getAuthHeaders } from '../../utils/api';
 
@@ -94,22 +96,22 @@ const SkillPanel: React.FC<SkillPanelProps> = memo(({ walletAddress, onClose }) 
     : skills.filter(s => s.category === currentCategory);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
         <h2>技能</h2>
-        <span className={styles.goldDisplay}>💰 {gold.toLocaleString()}</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <span className={gufengStyles.goldDisplay}>💰 {gold.toLocaleString()}</span>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.mainContent}>
+      <div className={gufengStyles.mainContent}>
         {/* 左侧技能列表 */}
-        <div className={styles.skillListPanel}>
+        <div className={gufengStyles.skillListPanel}>
           {/* 技能分类 */}
-          <div className={styles.categoryNav}>
+          <div className={gufengStyles.categoryNav}>
             {skillCategories.map((cat) => (
               <button
                 key={cat.id}
-                className={`${styles.catBtn} ${currentCategory === cat.id ? styles.active : ''}`}
+                className={`${gufengStyles.catBtn} ${currentCategory === cat.id ? gufengStyles.active : ''}`}
                 onClick={() => setCurrentCategory(cat.id)}
               >
                 {cat.name}
@@ -118,27 +120,27 @@ const SkillPanel: React.FC<SkillPanelProps> = memo(({ walletAddress, onClose }) 
           </div>
 
           {/* 技能列表 */}
-          <div className={styles.skillList}>
+          <div className={gufengStyles.skillList}>
             {loading ? (
-              <div className={styles.loading}>加载中...</div>
+              <div className={gufengStyles.loading}>加载中...</div>
             ) : filteredSkills.length === 0 ? (
-              <div className={styles.empty}>暂无技能</div>
+              <div className={gufengStyles.empty}>暂无技能</div>
             ) : (
               filteredSkills.map((skill) => (
                 <div
                   key={skill.id}
-                  className={`${styles.skillItem} ${selectedSkill?.id === skill.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.skillItem} ${selectedSkill?.id === skill.id ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedSkill(skill)}
                 >
-                  <div className={styles.skillIcon}>{skill.icon}</div>
-                  <div className={styles.skillInfo}>
-                    <span className={styles.skillName}>{skill.name}</span>
-                    <span className={styles.skillLevel}>等级 {skill.level}/{skill.maxLevel}</span>
+                  <div className={gufengStyles.skillIcon}>{skill.icon}</div>
+                  <div className={gufengStyles.skillInfo}>
+                    <span className={gufengStyles.skillName}>{skill.name}</span>
+                    <span className={gufengStyles.skillLevel}>等级 {skill.level}/{skill.maxLevel}</span>
                   </div>
-                  <div className={styles.skillProgress}>
-                    <div className={styles.progressBar}>
+                  <div className={gufengStyles.skillProgress}>
+                    <div className={gufengStyles.progressBar}>
                       <div 
-                        className={styles.progressFill}
+                        className={gufengStyles.progressFill}
                         style={{ width: `${(skill.level / skill.maxLevel) * 100}%` }}
                       />
                     </div>
@@ -150,40 +152,40 @@ const SkillPanel: React.FC<SkillPanelProps> = memo(({ walletAddress, onClose }) 
         </div>
 
         {/* 右侧技能详情 */}
-        <div className={styles.skillDetailPanel}>
+        <div className={gufengStyles.skillDetailPanel}>
           {selectedSkill ? (
             <>
-              <div className={styles.detailHeader}>
-                <div className={styles.detailIcon}>{selectedSkill.icon}</div>
-                <div className={styles.detailTitle}>
+              <div className={gufengStyles.detailHeader}>
+                <div className={gufengStyles.detailIcon}>{selectedSkill.icon}</div>
+                <div className={gufengStyles.detailTitle}>
                   <h3>{selectedSkill.name}</h3>
-                  <span className={styles.detailLevel}>等级 {selectedSkill.level} / {selectedSkill.maxLevel}</span>
+                  <span className={gufengStyles.detailLevel}>等级 {selectedSkill.level} / {selectedSkill.maxLevel}</span>
                 </div>
               </div>
 
-              <div className={styles.detailContent}>
-                <div className={styles.detailSection}>
+              <div className={gufengStyles.detailContent}>
+                <div className={gufengStyles.detailSection}>
                   <h4>技能效果</h4>
-                  <p className={styles.effectText}>{selectedSkill.effect}</p>
+                  <p className={gufengStyles.effectText}>{selectedSkill.effect}</p>
                 </div>
 
-                <div className={styles.detailSection}>
+                <div className={gufengStyles.detailSection}>
                   <h4>技能描述</h4>
                   <p>{selectedSkill.desc}</p>
                 </div>
 
                 {selectedSkill.requires && (
-                  <div className={styles.detailSection}>
+                  <div className={gufengStyles.detailSection}>
                     <h4>学习要求</h4>
-                    <p className={styles.requiresText}>{selectedSkill.requires}</p>
+                    <p className={gufengStyles.requiresText}>{selectedSkill.requires}</p>
                   </div>
                 )}
 
-                <div className={styles.detailSection}>
+                <div className={gufengStyles.detailSection}>
                   <h4>升级进度</h4>
-                  <div className={styles.bigProgressBar}>
+                  <div className={gufengStyles.bigProgressBar}>
                     <div 
-                      className={styles.progressFill}
+                      className={gufengStyles.progressFill}
                       style={{ width: `${(selectedSkill.level / selectedSkill.maxLevel) * 100}%` }}
                     />
                   </div>
@@ -191,14 +193,14 @@ const SkillPanel: React.FC<SkillPanelProps> = memo(({ walletAddress, onClose }) 
                 </div>
               </div>
 
-              <div className={styles.detailActions}>
+              <div className={gufengStyles.detailActions}>
                 {selectedSkill.level >= selectedSkill.maxLevel ? (
-                  <button className={styles.maxLevelBtn} disabled>
+                  <button className={gufengStyles.maxLevelBtn} disabled>
                     已满级
                   </button>
                 ) : (
                   <button 
-                    className={styles.learnBtn}
+                    className={gufengStyles.learnBtn}
                     onClick={() => handleLearnSkill(selectedSkill.id)}
                   >
                     升级技能
@@ -207,7 +209,7 @@ const SkillPanel: React.FC<SkillPanelProps> = memo(({ walletAddress, onClose }) 
               </div>
             </>
           ) : (
-            <div className={styles.noSkillSelected}>
+            <div className={gufengStyles.noSkillSelected}>
               <p>请选择技能查看详情</p>
             </div>
           )}

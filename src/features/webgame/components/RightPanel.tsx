@@ -3,6 +3,8 @@
  * 从 Main.aspx rightpanel 部分迁移
  */
 import React, { memo, useState, useEffect } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import { apiGet, apiPost, apiDelete } from '../utils/api';
 import styles from '../styles/jxMain.module.css';
 import Popup from './Popup';
@@ -85,7 +87,7 @@ const RightPanel: React.FC<RightPanelProps> = memo(({ gameNotice, walletAddress 
   };
 
   return (
-    <div id="rightpanel" className={styles.rightPanel}>
+    <div id="rightpanel" className={gufengStyles.rightPanel}>
       {/* 功能入口按钮 */}
       <div style={{
         display: 'flex',
@@ -204,7 +206,7 @@ const RightPanel: React.FC<RightPanelProps> = memo(({ gameNotice, walletAddress 
         </Popup>
       )}
 
-      <div id="sidebav" className={styles.sideNav}>
+      <div id="sidebav" className={gufengStyles.sideNav}>
         <ul id="chalink">
           <li><a id="p_12" className="nav_a_12" href="#">竞技</a></li>
           <li><a className="nav_a_13" href="#">商城</a></li>
@@ -214,8 +216,8 @@ const RightPanel: React.FC<RightPanelProps> = memo(({ gameNotice, walletAddress 
           <li><a id="p_11" className="nav_a_11" href="#">排行</a></li>
           <li><a href="#" onClick={() => window.open('/jx/Web/tyro_help_CN.html', '_blank')}>帮助</a></li>
         </ul>
-        <div id="gamenews" className={styles.gameNews}>
-          <span className={styles.gonggao}>{gameNotice || '欢迎来到剑侠情缘！'}</span>
+        <div id="gamenews" className={gufengStyles.gameNews}>
+          <span className={gufengStyles.gonggao}>{gameNotice || '欢迎来到剑侠情缘！'}</span>
         </div>
       </div>
 
@@ -226,18 +228,18 @@ const RightPanel: React.FC<RightPanelProps> = memo(({ gameNotice, walletAddress 
       </div>
 
       {/* 聊天窗口 */}
-      <div id="main" className={styles.chatWindow}>
+      <div id="main" className={gufengStyles.chatWindow}>
         <div id="ChatHead">
           <span style={{ float: 'left', fontSize: '12px', color: '#000' }}>世界聊天</span>
           <a href="#" onClick={() => {}}><img src="/jx/Web/img/o/22.gif" alt="关闭" /></a>
         </div>
-        <div id="ChatBody" className={styles.chatBody}>
-          <div id="ChatContent" className={styles.chatContent}>
+        <div id="ChatBody" className={gufengStyles.chatBody}>
+          <div id="ChatContent" className={gufengStyles.chatContent}>
             <div id="ChatMessageList"></div>
           </div>
-          <div className={styles.chatSend}>
+          <div className={gufengStyles.chatSend}>
             <input 
-              className={styles.input_message2} 
+              className={gufengStyles.input_message2} 
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   // 发送消息逻辑
@@ -249,7 +251,7 @@ const RightPanel: React.FC<RightPanelProps> = memo(({ gameNotice, walletAddress 
             />
           </div>
         </div>
-        <div className={styles.sendchatmessage2}>
+        <div className={gufengStyles.sendchatmessage2}>
           <a href="#" onClick={() => {}}>
             <img src="/jx/Web/img/o/49.GIF" alt="发送" />
           </a>

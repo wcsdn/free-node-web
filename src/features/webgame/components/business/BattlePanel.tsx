@@ -3,6 +3,8 @@
  * PVE副本挑战、PVP竞技挑战
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface BattlePanelProps {
@@ -124,17 +126,17 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
   }
 
   return (
-    <div className={styles.popupPanel} style={{ width: '700px' }}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel} style={{ width: '700px' }}>
+      <div className={gufengStyles.popupHeader}>
         <span>⚔️ 战斗系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.popupContent}>
+      <div className={gufengStyles.popupContent}>
         {/* Tab 切换 */}
-        <div className={styles.battleTabs}>
+        <div className={gufengStyles.battleTabs}>
           <button
-            className={`${styles.battleTab} ${activeTab === 'pve' ? styles.active : ''}`}
+            className={`${gufengStyles.battleTab} ${activeTab === 'pve' ? gufengStyles.active : ''}`}
             onClick={() => {
               setActiveTab('pve');
               setSelectedStage(null);
@@ -145,7 +147,7 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
             🏰 PVE副本
           </button>
           <button
-            className={`${styles.battleTab} ${activeTab === 'pvp' ? styles.active : ''}`}
+            className={`${gufengStyles.battleTab} ${activeTab === 'pvp' ? gufengStyles.active : ''}`}
             onClick={() => {
               setActiveTab('pvp');
               setSelectedStage(null);
@@ -158,16 +160,16 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
         </div>
 
         {/* 消息提示 */}
-        {message && <div className={styles.message}>{message}</div>}
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {/* 战斗结果 */}
         {battleResult && (
-          <div className={`${styles.battleResult} ${battleResult.win ? styles.win : styles.lose}`}>
-            <div className={styles.battleResultHeader}>
+          <div className={`${gufengStyles.battleResult} ${battleResult.win ? gufengStyles.win : gufengStyles.lose}`}>
+            <div className={gufengStyles.battleResultHeader}>
               {battleResult.win ? '🎉 战斗胜利!' : '💔 战斗失败'}
             </div>
-            <div className={styles.battleResultContent}>
-              <div className={styles.battleStats}>
+            <div className={gufengStyles.battleResultContent}>
+              <div className={gufengStyles.battleStats}>
                 {activeTab === 'pve' ? (
                   <>
                     <div>关卡: {battleResult.report?.stageName}</div>
@@ -179,18 +181,18 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
                 <div>回合数: {battleResult.rounds}</div>
                 <div>战力对比: {battleResult.report?.yourPower} vs {battleResult.report?.opponentPower}</div>
               </div>
-              <div className={styles.battleRewards}>
+              <div className={gufengStyles.battleRewards}>
                 <span>获得经验: +{battleResult.rewards.exp}</span>
                 <span>获得金币: +{battleResult.rewards.gold}</span>
               </div>
-              <div className={styles.battleLog}>
+              <div className={gufengStyles.battleLog}>
                 {battleResult.report?.battleLog?.map((log: string, i: number) => (
                   <div key={i}>{log}</div>
                 ))}
               </div>
             </div>
             <button 
-              className={styles.closeResultBtn}
+              className={gufengStyles.closeResultBtn}
               onClick={() => setBattleResult(null)}
             >
               继续
@@ -200,38 +202,38 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
 
         {/* PVE副本列表 */}
         {activeTab === 'pve' && !battleResult && (
-          <div className={styles.stageList}>
+          <div className={gufengStyles.stageList}>
             <h4>副本关卡</h4>
-            <div className={styles.stageGrid}>
+            <div className={gufengStyles.stageGrid}>
               {stages.map(stage => (
                 <div
                   key={stage.id}
-                  className={`${styles.stageCard} ${selectedStage?.id === stage.id ? styles.selected : ''} ${clearedStages.includes(stage.id) ? styles.cleared : ''}`}
+                  className={`${gufengStyles.stageCard} ${selectedStage?.id === stage.id ? gufengStyles.selected : ''} ${clearedStages.includes(stage.id) ? gufengStyles.cleared : ''}`}
                   onClick={() => setSelectedStage(stage)}
                 >
-                  <div className={styles.stageName}>{stage.name}</div>
-                  <div className={styles.stageEnemy}>
+                  <div className={gufengStyles.stageName}>{stage.name}</div>
+                  <div className={gufengStyles.stageEnemy}>
                     {clearedStages.includes(stage.id) ? '✅' : '👹'} {stage.enemy}
                   </div>
-                  <div className={styles.stageLevel}>
+                  <div className={gufengStyles.stageLevel}>
                     推荐等级: {Math.floor(stage.enemyLevel / 2)}
                   </div>
                   {clearedStages.includes(stage.id) && (
-                    <div className={styles.clearedBadge}>已通关</div>
+                    <div className={gufengStyles.clearedBadge}>已通关</div>
                   )}
                 </div>
               ))}
             </div>
 
             {selectedStage && (
-              <div className={styles.fightConfirm}>
-                <div className={styles.fightInfo}>
+              <div className={gufengStyles.fightConfirm}>
+                <div className={gufengStyles.fightInfo}>
                   挑战: <strong>{selectedStage.name}</strong>
                   <br />
                   敌人: {selectedStage.enemy} (Lv.{selectedStage.enemyLevel})
                 </div>
                 <button
-                  className={styles.fightBtn}
+                  className={gufengStyles.fightBtn}
                   onClick={() => fightPVE(selectedStage)}
                   disabled={fighting}
                 >
@@ -244,34 +246,34 @@ const BattlePanel: React.FC<BattlePanelProps> = ({ onClose }) => {
 
         {/* PVP竞技对手 */}
         {activeTab === 'pvp' && !battleResult && (
-          <div className={styles.arenaList}>
+          <div className={gufengStyles.arenaList}>
             <h4>AI对手</h4>
-            <div className={styles.opponentList}>
+            <div className={gufengStyles.opponentList}>
               {aiOpponents.map((opponent, i) => (
                 <div
                   key={`ai-${i}`}
-                  className={`${styles.opponentCard} ${selectedOpponent?.name === opponent.name ? styles.selected : ''}`}
+                  className={`${gufengStyles.opponentCard} ${selectedOpponent?.name === opponent.name ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedOpponent(opponent)}
                 >
-                  <div className={styles.opponentName}>
+                  <div className={gufengStyles.opponentName}>
                     {opponent.name}
-                    {opponent.isAi && <span className={styles.aiBadge}>AI</span>}
+                    {opponent.isAi && <span className={gufengStyles.aiBadge}>AI</span>}
                   </div>
-                  <div className={styles.opponentLevel}>等级: {opponent.level}</div>
-                  <div className={styles.opponentWins}>胜场: {opponent.win_count}</div>
+                  <div className={gufengStyles.opponentLevel}>等级: {opponent.level}</div>
+                  <div className={gufengStyles.opponentWins}>胜场: {opponent.win_count}</div>
                 </div>
               ))}
             </div>
 
             {selectedOpponent && (
-              <div className={styles.fightConfirm}>
-                <div className={styles.fightInfo}>
+              <div className={gufengStyles.fightConfirm}>
+                <div className={gufengStyles.fightInfo}>
                   挑战: <strong>{selectedOpponent.name}</strong>
                   <br />
                   等级: {selectedOpponent.level}
                 </div>
                 <button
-                  className={styles.fightBtn}
+                  className={gufengStyles.fightBtn}
                   onClick={() => fightPVP(selectedOpponent)}
                   disabled={fighting}
                 >

@@ -2,6 +2,8 @@
  * 城市面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import PageLayout from '@/shared/layouts/PageLayout';
 import { getApiBase } from '../../utils/api';
@@ -224,29 +226,29 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 城市选择 */}
-        <div className={styles.citySelector}>
+        <div className={gufengStyles.citySelector}>
           <h3>{i18n.selectCity}</h3>
-          <div className={styles.cityList}>
+          <div className={gufengStyles.cityList}>
             {cities.map((city) => (
               <button
                 key={city.id}
-                className={`${styles.cityBtn} ${selectedCityId === city.id ? styles.active : ''}`}
+                className={`${gufengStyles.cityBtn} ${selectedCityId === city.id ? gufengStyles.active : ''}`}
                 onClick={() => setSelectedCityId(city.id)}
               >
                 {city.name}
               </button>
             ))}
             {cities.length === 0 && (
-              <div className={styles.empty}>{i18n.noCities}</div>
+              <div className={gufengStyles.empty}>{i18n.noCities}</div>
             )}
           </div>
         </div>
@@ -254,57 +256,57 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
         {cityData && (
           <>
             {/* 资源栏 */}
-            <div className={styles.resourceBar}>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>💰</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.money}</span>
-                  <span className={styles.resourceRate}>+{cityData.money_rate}/h</span>
+            <div className={gufengStyles.resourceBar}>
+              <div className={gufengStyles.resourceItem}>
+                <span className={gufengStyles.resourceIcon}>💰</span>
+                <div className={gufengStyles.resourceInfo}>
+                  <span className={gufengStyles.resourceValue}>{cityData.money}</span>
+                  <span className={gufengStyles.resourceRate}>+{cityData.money_rate}/h</span>
                 </div>
               </div>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>🌾</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.food}</span>
-                  <span className={styles.resourceRate}>+{cityData.food_rate}/h</span>
+              <div className={gufengStyles.resourceItem}>
+                <span className={gufengStyles.resourceIcon}>🌾</span>
+                <div className={gufengStyles.resourceInfo}>
+                  <span className={gufengStyles.resourceValue}>{cityData.food}</span>
+                  <span className={gufengStyles.resourceRate}>+{cityData.food_rate}/h</span>
                 </div>
               </div>
-              <div className={styles.resourceItem}>
-                <span className={styles.resourceIcon}>👥</span>
-                <div className={styles.resourceInfo}>
-                  <span className={styles.resourceValue}>{cityData.population}</span>
-                  <span className={styles.resourceRate}>+{cityData.population_rate}/h</span>
+              <div className={gufengStyles.resourceItem}>
+                <span className={gufengStyles.resourceIcon}>👥</span>
+                <div className={gufengStyles.resourceInfo}>
+                  <span className={gufengStyles.resourceValue}>{cityData.population}</span>
+                  <span className={gufengStyles.resourceRate}>+{cityData.population_rate}/h</span>
                 </div>
               </div>
-              <button className={styles.collectBtn} onClick={collectResources}>
+              <button className={gufengStyles.collectBtn} onClick={collectResources}>
                 {i18n.collect}
               </button>
             </div>
 
             {/* 建筑列表 */}
-            <div className={styles.buildingSection}>
-              <div className={styles.sectionHeader}>
+            <div className={gufengStyles.buildingSection}>
+              <div className={gufengStyles.sectionHeader}>
                 <h3>{i18n.buildings}</h3>
-                <button className={styles.buildBtn} onClick={() => setShowBuildModal(true)}>
+                <button className={gufengStyles.buildBtn} onClick={() => setShowBuildModal(true)}>
                   + {i18n.build}
                 </button>
               </div>
 
-              <div className={styles.buildingGrid}>
+              <div className={gufengStyles.buildingGrid}>
                 {cityData.buildings.map((building) => (
-                  <div key={building.id} className={styles.buildingCard}>
-                    <div className={styles.buildingIcon}>
+                  <div key={building.id} className={gufengStyles.buildingCard}>
+                    <div className={gufengStyles.buildingIcon}>
                       {buildingTypes.find(t => t.id === building.config_id)?.icon || '🏢'}
                     </div>
-                    <div className={styles.buildingInfo}>
-                      <div className={styles.buildingName}>
+                    <div className={gufengStyles.buildingInfo}>
+                      <div className={gufengStyles.buildingName}>
                         {buildingTypes.find(t => t.id === building.config_id)?.name || building.type}
                       </div>
-                      <div className={styles.buildingLevel}>
+                      <div className={gufengStyles.buildingLevel}>
                         Lv.{building.level}
                       </div>
                       {building.state === 0 && (
-                        <div className={styles.constructing}>
+                        <div className={gufengStyles.constructing}>
                           {i18n.constructing}...
                         </div>
                       )}
@@ -313,7 +315,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
                 ))}
 
                 {cityData.buildings.length === 0 && (
-                  <div className={styles.emptyBuilding}>
+                  <div className={gufengStyles.emptyBuilding}>
                     还没有建筑，快去建造吧！
                   </div>
                 )}
@@ -321,7 +323,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
 
               {/* 建造队列 */}
               {cityData.events.length > 0 && (
-                <div className={styles.queueSection}>
+                <div className={gufengStyles.queueSection}>
                   <h4>建造队列</h4>
                   {cityData.events.map((event) => {
                     const endTime = new Date(event.end_time).getTime();
@@ -331,7 +333,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
                     const seconds = remaining % 60;
 
                     return (
-                      <div key={event.id} className={styles.queueItem}>
+                      <div key={event.id} className={gufengStyles.queueItem}>
                         <span>{event.event_type === 'build' ? '建造' : '升级'}</span>
                         <span>{minutes}:{seconds.toString().padStart(2, '0')}</span>
                       </div>
@@ -345,23 +347,23 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
 
         {/* 建造弹窗 */}
         {showBuildModal && (
-          <div className={styles.modal} onClick={() => setShowBuildModal(false)}>
-            <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+          <div className={gufengStyles.modal} onClick={() => setShowBuildModal(false)}>
+            <div className={gufengStyles.modalContent} onClick={(e) => e.stopPropagation()}>
               <h3>{i18n.build}</h3>
-              <div className={styles.buildingTypes}>
+              <div className={gufengStyles.buildingTypes}>
                 {buildingTypes.map((type) => (
                   <div
                     key={type.id}
-                    className={styles.typeCard}
+                    className={gufengStyles.typeCard}
                     onClick={() => buildBuilding(type.id, cityData?.buildings.length || 0)}
                   >
-                    <span className={styles.typeIcon}>{type.icon}</span>
-                    <span className={styles.typeName}>{type.name}</span>
-                    <span className={styles.typeDesc}>{type.desc}</span>
+                    <span className={gufengStyles.typeIcon}>{type.icon}</span>
+                    <span className={gufengStyles.typeName}>{type.name}</span>
+                    <span className={gufengStyles.typeDesc}>{type.desc}</span>
                   </div>
                 ))}
               </div>
-              <button className={styles.closeBtn} onClick={() => setShowBuildModal(false)}>
+              <button className={gufengStyles.closeBtn} onClick={() => setShowBuildModal(false)}>
                 关闭
               </button>
             </div>

@@ -2,6 +2,8 @@
  * 遮罩层组件
  */
 import React, { memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface OverlayProps {
@@ -13,7 +15,7 @@ const Overlay: React.FC<OverlayProps> = memo(({ show, onClose }) => {
   if (!show) return null;
 
   return (
-    <div id="overlay" className={styles.overlay} onClick={onClose}></div>
+    <div id="overlay" className={gufengStyles.overlay} onClick={onClose}></div>
   );
 });
 

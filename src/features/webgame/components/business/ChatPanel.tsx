@@ -2,6 +2,8 @@
  * 聊天面板组件
  */
 import React, { useState, useEffect, useRef, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/ChatPanel.module.css';
 import { getApiBase } from '../../utils/api';
 
@@ -186,23 +188,23 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(({ walletAddress }) => {
 
   return (
     <PageLayout title={i18n.title} showBackButton={true}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 频道切换 */}
-        <div className={styles.channelBar}>
+        <div className={gufengStyles.channelBar}>
           <button
-            className={`${styles.channelBtn} ${channel === 1 ? styles.active : ''}`}
+            className={`${gufengStyles.channelBtn} ${channel === 1 ? gufengStyles.active : ''}`}
             onClick={() => { setChannel(1); setSelectedPartner(null); }}
           >
             🌍 {i18n.world}
           </button>
           <button
-            className={`${styles.channelBtn} ${channel === 2 ? styles.active : ''}`}
+            className={`${gufengStyles.channelBtn} ${channel === 2 ? gufengStyles.active : ''}`}
             onClick={() => { setChannel(2); setSelectedPartner(null); }}
           >
             🏰 {i18n.guild}
           </button>
           <button
-            className={`${styles.channelBtn} ${channel === 3 ? styles.active : ''}`}
+            className={`${gufengStyles.channelBtn} ${channel === 3 ? gufengStyles.active : ''}`}
             onClick={() => setChannel(3)}
           >
             💬 {i18n.private}
@@ -211,8 +213,8 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(({ walletAddress }) => {
 
         {/* 私聊收件人选择 */}
         {channel === 3 && !selectedPartner && (
-          <div className={styles.privateSection}>
-            <div className={styles.privateInput}>
+          <div className={gufengStyles.privateSection}>
+            <div className={gufengStyles.privateInput}>
               <label>{i18n.privateTo}</label>
               <input
                 type="text"
@@ -221,39 +223,39 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(({ walletAddress }) => {
                 placeholder={language === 'en' ? 'Wallet address' : '钱包地址'}
               />
             </div>
-            <div className={styles.conversationList}>
+            <div className={gufengStyles.conversationList}>
               {conversations.map((conv) => (
                 <div
                   key={conv.partner}
-                  className={styles.conversationItem}
+                  className={gufengStyles.conversationItem}
                   onClick={() => setSelectedPartner(conv.partner)}
                 >
-                  <div className={styles.convPartner}>{conv.partner.slice(0, 8)}...</div>
-                  <div className={styles.convLast}>{conv.last_message}</div>
-                  <div className={styles.convTime}>{formatTime(conv.last_time)}</div>
+                  <div className={gufengStyles.convPartner}>{conv.partner.slice(0, 8)}...</div>
+                  <div className={gufengStyles.convLast}>{conv.last_message}</div>
+                  <div className={gufengStyles.convTime}>{formatTime(conv.last_time)}</div>
                 </div>
               ))}
               {conversations.length === 0 && (
-                <div className={styles.empty}>{i18n.noConversations}</div>
+                <div className={gufengStyles.empty}>{i18n.noConversations}</div>
               )}
             </div>
           </div>
         )}
 
         {/* 消息列表 */}
-        <div className={styles.messageList}>
+        <div className={gufengStyles.messageList}>
           {loading && messages.length === 0 ? (
-            <div className={styles.loading}>{i18n.loading}</div>
+            <div className={gufengStyles.loading}>{i18n.loading}</div>
           ) : messages.length === 0 ? (
-            <div className={styles.empty}>{i18n.noMessages}</div>
+            <div className={gufengStyles.empty}>{i18n.noMessages}</div>
           ) : (
             messages.map((msg) => (
-              <div key={msg.id} className={styles.messageItem}>
-                <div className={styles.messageHeader}>
-                  <span className={styles.sender}>{msg.name || msg.sender.slice(0, 8)}</span>
-                  <span className={styles.time}>{formatTime(msg.created_at)}</span>
+              <div key={msg.id} className={gufengStyles.messageItem}>
+                <div className={gufengStyles.messageHeader}>
+                  <span className={gufengStyles.sender}>{msg.name || msg.sender.slice(0, 8)}</span>
+                  <span className={gufengStyles.time}>{formatTime(msg.created_at)}</span>
                 </div>
-                <div className={styles.messageContent}>{msg.content}</div>
+                <div className={gufengStyles.messageContent}>{msg.content}</div>
               </div>
             ))
           )}
@@ -261,7 +263,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(({ walletAddress }) => {
         </div>
 
         {/* 输入区域 */}
-        <div className={styles.inputArea}>
+        <div className={gufengStyles.inputArea}>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -269,7 +271,7 @@ const ChatPanel: React.FC<ChatPanelProps> = memo(({ walletAddress }) => {
             placeholder={`${getChannelName(channel)} - ${i18n.placeholder}`}
             rows={2}
           />
-          <button className={styles.sendBtn} onClick={handleSend}>
+          <button className={gufengStyles.sendBtn} onClick={handleSend}>
             ➤
           </button>
         </div>

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './ArenaPanel.module.css';
 
@@ -73,56 +75,56 @@ export const ArenaPanel: React.FC<ArenaPanelProps> = ({ onClose }) => {
 
   const getResultClass = (result: string) => {
     switch (result) {
-      case 'win': return styles.win;
-      case 'loss': return styles.loss;
+      case 'win': return gufengStyles.win;
+      case 'loss': return gufengStyles.loss;
       default: return '';
     }
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>🏟️ 竞技场</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : (
           <>
             {/* 统计信息 */}
-            <div className={styles.stats}>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>排名</span>
-                <span className={styles.statValue}>#{arenaData?.rank || '-'}</span>
+            <div className={gufengStyles.stats}>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statLabel}>排名</span>
+                <span className={gufengStyles.statValue}>#{arenaData?.rank || '-'}</span>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>战功</span>
-                <span className={styles.statValue}>{arenaData?.score || 0}</span>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statLabel}>战功</span>
+                <span className={gufengStyles.statValue}>{arenaData?.score || 0}</span>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>战绩</span>
-                <span className={styles.statValue}>{arenaData?.winCount || 0}胜 {arenaData?.totalCount || 0}负</span>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statLabel}>战绩</span>
+                <span className={gufengStyles.statValue}>{arenaData?.winCount || 0}胜 {arenaData?.totalCount || 0}负</span>
               </div>
             </div>
 
             {/* 标签页 */}
-            <div className={styles.tabs}>
+            <div className={gufengStyles.tabs}>
               <button 
-                className={`${styles.tab} ${activeTab === 'rank' ? styles.active : ''}`}
+                className={`${gufengStyles.tab} ${activeTab === 'rank' ? gufengStyles.active : ''}`}
                 onClick={() => setActiveTab('rank')}
               >
                 排行榜
               </button>
               <button 
-                className={`${styles.tab} ${activeTab === 'challenge' ? styles.active : ''}`}
+                className={`${gufengStyles.tab} ${activeTab === 'challenge' ? gufengStyles.active : ''}`}
                 onClick={() => setActiveTab('challenge')}
               >
                 挑战
               </button>
               <button 
-                className={`${styles.tab} ${activeTab === 'record' ? styles.active : ''}`}
+                className={`${gufengStyles.tab} ${activeTab === 'record' ? gufengStyles.active : ''}`}
                 onClick={() => setActiveTab('record')}
               >
                 战报
@@ -130,49 +132,49 @@ export const ArenaPanel: React.FC<ArenaPanelProps> = ({ onClose }) => {
             </div>
 
             {/* 内容区域 */}
-            <div className={styles.content}>
+            <div className={gufengStyles.content}>
               {activeTab === 'rank' && (
-                <div className={styles.rankList}>
+                <div className={gufengStyles.rankList}>
                   {arenaData?.rankings?.map((player, index) => (
-                    <div key={player.wallet_address} className={styles.rankItem}>
-                      <span className={styles.rankNum}>{index + 1}</span>
-                      <span className={styles.playerName}>{player.name}</span>
-                      <span className={styles.playerLevel}>等级 {player.level}</span>
-                      <span className={styles.playerPower}>战力 {player.power}</span>
+                    <div key={player.wallet_address} className={gufengStyles.rankItem}>
+                      <span className={gufengStyles.rankNum}>{index + 1}</span>
+                      <span className={gufengStyles.playerName}>{player.name}</span>
+                      <span className={gufengStyles.playerLevel}>等级 {player.level}</span>
+                      <span className={gufengStyles.playerPower}>战力 {player.power}</span>
                     </div>
                   ))}
                   {(!arenaData?.rankings || arenaData.rankings.length === 0) && (
-                    <div className={styles.empty}>暂无排名数据</div>
+                    <div className={gufengStyles.empty}>暂无排名数据</div>
                   )}
                 </div>
               )}
 
               {activeTab === 'challenge' && (
-                <div className={styles.challengeSection}>
-                  <div className={styles.challengeInfo}>
+                <div className={gufengStyles.challengeSection}>
+                  <div className={gufengStyles.challengeInfo}>
                     <p>挑战其他玩家可以获得战功奖励！</p>
                     <p>胜利可获得 50 战功，失败可获得 10 战功</p>
                   </div>
-                  <button className={styles.challengeBtn} onClick={handleChallenge}>
+                  <button className={gufengStyles.challengeBtn} onClick={handleChallenge}>
                     🎲 随机挑战
                   </button>
                 </div>
               )}
 
               {activeTab === 'record' && (
-                <div className={styles.recordList}>
+                <div className={gufengStyles.recordList}>
                   {arenaData?.recentRecords?.map((record) => (
-                    <div key={record.id} className={`${styles.recordItem} ${getResultClass(record.result)}`}>
-                      <span className={styles.opponent}>{record.opponent_name}</span>
-                      <span className={styles.result}>{getResultText(record.result)}</span>
-                      <span className={styles.reward}>+{record.reward} 战功</span>
-                      <span className={styles.time}>
+                    <div key={record.id} className={`${gufengStyles.recordItem} ${getResultClass(record.result)}`}>
+                      <span className={gufengStyles.opponent}>{record.opponent_name}</span>
+                      <span className={gufengStyles.result}>{getResultText(record.result)}</span>
+                      <span className={gufengStyles.reward}>+{record.reward} 战功</span>
+                      <span className={gufengStyles.time}>
                         {new Date(record.created_at).toLocaleDateString()}
                       </span>
                     </div>
                   ))}
                   {(!arenaData?.recentRecords || arenaData.recentRecords.length === 0) && (
-                    <div className={styles.empty}>暂无战报</div>
+                    <div className={gufengStyles.empty}>暂无战报</div>
                   )}
                 </div>
               )}

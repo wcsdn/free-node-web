@@ -3,6 +3,8 @@
  * 防御设施建造、升级
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 import { getApiBase } from '../../utils/api';
 
@@ -189,63 +191,63 @@ const DefensePanel: React.FC<DefensePanelProps> = ({ cityId, cityMoney, onClose 
   });
 
   return (
-    <div className={styles.popupPanel} style={{ width: '750px' }}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel} style={{ width: '750px' }}>
+      <div className={gufengStyles.popupHeader}>
         <span>🛡️ 城防系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.popupContent}>
+      <div className={gufengStyles.popupContent}>
         {/* 城防概览 */}
-        <div className={styles.defenseOverview}>
-          <div className={styles.defenseTotal}>
-            <span className={styles.defenseLabel}>总防御力</span>
-            <span className={styles.defenseValue}>{totalDefense}</span>
+        <div className={gufengStyles.defenseOverview}>
+          <div className={gufengStyles.defenseTotal}>
+            <span className={gufengStyles.defenseLabel}>总防御力</span>
+            <span className={gufengStyles.defenseValue}>{totalDefense}</span>
           </div>
-          <div className={styles.defenseMoney}>
+          <div className={gufengStyles.defenseMoney}>
             <span>💰 银两: {cityMoney.toLocaleString()}</span>
           </div>
         </div>
 
         {/* 消息 */}
-        {message && <div className={styles.message}>{message}</div>}
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {/* 城防设施列表 */}
-        <div className={styles.defenseList}>
+        <div className={gufengStyles.defenseList}>
           <h4>我的城防</h4>
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={gufengStyles.loading}>加载中...</div>
           ) : defenses.length === 0 ? (
-            <div className={styles.empty}>暂无城防设施</div>
+            <div className={gufengStyles.empty}>暂无城防设施</div>
           ) : (
-            <div className={styles.defenseGrid}>
+            <div className={gufengStyles.defenseGrid}>
               {updatedConfigs.filter(c => c.currentLevel > 0).map(config => (
-                <div key={config.type} className={styles.defenseCard}>
-                  <div className={styles.defenseIcon}>{config.icon}</div>
-                  <div className={styles.defenseInfo}>
-                    <div className={styles.defenseName}>
+                <div key={config.type} className={gufengStyles.defenseCard}>
+                  <div className={gufengStyles.defenseIcon}>{config.icon}</div>
+                  <div className={gufengStyles.defenseInfo}>
+                    <div className={gufengStyles.defenseName}>
                       {config.name}
-                      <span className={styles.defenseLevel}>Lv.{config.currentLevel}</span>
+                      <span className={gufengStyles.defenseLevel}>Lv.{config.currentLevel}</span>
                     </div>
-                    <div className={styles.defenseBonus}>
+                    <div className={gufengStyles.defenseBonus}>
                       防御力: +{config.defense}
                     </div>
-                    <div className={styles.defenseDesc}>{config.description}</div>
+                    <div className={gufengStyles.defenseDesc}>{config.description}</div>
                   </div>
-                  <div className={styles.defenseActions}>
+                  <div className={gufengStyles.defenseActions}>
                     {config.currentLevel < config.maxLevel ? (
                       <button
-                        className={styles.upgradeBtn}
+                        className={gufengStyles.upgradeBtn}
                         onClick={() => handleUpgrade(config.type)}
                         disabled={upgrading === config.type}
                       >
                         {upgrading === config.type ? '升级中...' : `升级 (${getUpgradeCost(config.type, config.currentLevel)})`}
                       </button>
                     ) : (
-                      <span className={styles.maxBadge}>满级</span>
+                      <span className={gufengStyles.maxBadge}>满级</span>
                     )}
                     <button
-                      className={styles.demolishBtn}
+                      className={gufengStyles.demolishBtn}
                       onClick={() => handleDemolish(config.type)}
                     >
                       拆除
@@ -258,36 +260,36 @@ const DefensePanel: React.FC<DefensePanelProps> = ({ cityId, cityMoney, onClose 
         </div>
 
         {/* 可建造设施 */}
-        <div className={styles.availableDefenses}>
+        <div className={gufengStyles.availableDefenses}>
           <h4>可建造设施</h4>
-          <div className={styles.availableGrid}>
+          <div className={gufengStyles.availableGrid}>
             {updatedConfigs.map(config => {
               const canBuild = config.currentLevel === 0;
               return (
                 <div
                   key={config.type}
-                  className={`${styles.availableCard} ${canBuild ? '' : styles.disabled}`}
+                  className={`${gufengStyles.availableCard} ${canBuild ? '' : gufengStyles.disabled}`}
                 >
-                  <div className={styles.availableIcon}>{config.icon}</div>
-                  <div className={styles.availableInfo}>
-                    <div className={styles.availableName}>{config.name}</div>
-                    <div className={styles.availableDesc}>{config.description}</div>
-                    <div className={styles.availableStats}>
+                  <div className={gufengStyles.availableIcon}>{config.icon}</div>
+                  <div className={gufengStyles.availableInfo}>
+                    <div className={gufengStyles.availableName}>{config.name}</div>
+                    <div className={gufengStyles.availableDesc}>{config.description}</div>
+                    <div className={gufengStyles.availableStats}>
                       <span>建造: 💰{config.baseCost}</span>
                       <span>满级防御: +{config.maxLevel * config.bonusValue}</span>
                     </div>
                   </div>
-                  <div className={styles.availableAction}>
+                  <div className={gufengStyles.availableAction}>
                     {canBuild ? (
                       <button
-                        className={styles.buildBtn}
+                        className={gufengStyles.buildBtn}
                         onClick={() => handleBuild(config.type)}
                         disabled={building || cityMoney < config.baseCost}
                       >
                         {building ? '建造中...' : '建造'}
                       </button>
                     ) : (
-                      <span className={styles.builtBadge}>已建造</span>
+                      <span className={gufengStyles.builtBadge}>已建造</span>
                     )}
                   </div>
                 </div>

@@ -3,6 +3,8 @@
  * 替代原来的 Enter.aspx (角色创建页面)
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface NewCharacterPanelProps {
@@ -75,23 +77,23 @@ const NewCharacterPanel: React.FC<NewCharacterPanelProps> = ({ onCreate, onBack 
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.newCharacterPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.newCharacterPanel}>
         {/* 头部 */}
-        <div className={styles.newCharacterHeader}>
+        <div className={gufengStyles.newCharacterHeader}>
           <h2>创建角色</h2>
           {onBack && (
-            <button className={styles.backButton} onClick={onBack}>
+            <button className={gufengStyles.backButton} onClick={onBack}>
               返回
             </button>
           )}
         </div>
 
         {/* 创建表单 */}
-        <div className={styles.newCharacterContent}>
+        <div className={gufengStyles.newCharacterContent}>
           <form onSubmit={handleSubmit}>
             {/* 角色名 */}
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>角色名</label>
               <input
                 type="text"
@@ -100,13 +102,13 @@ const NewCharacterPanel: React.FC<NewCharacterPanelProps> = ({ onCreate, onBack 
                 placeholder="2-14个字符"
                 maxLength={14}
               />
-              <p className={styles.formHint}>
+              <p className={gufengStyles.formHint}>
                 由汉字、字母 a～z（不区分大小写）、数字 0～9 组成
               </p>
             </div>
 
             {/* 城镇名 */}
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>城镇名</label>
               <input
                 type="text"
@@ -115,33 +117,33 @@ const NewCharacterPanel: React.FC<NewCharacterPanelProps> = ({ onCreate, onBack 
                 placeholder="2-18个字符"
                 maxLength={18}
               />
-              <p className={styles.formHint}>
+              <p className={gufengStyles.formHint}>
                 您的城市将以此命名
               </p>
             </div>
 
             {/* 性别选择 */}
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>选择性别</label>
-              <div className={styles.genderSelector}>
-                <label className={`${styles.genderOption} ${gender === 'female' ? styles.selected : ''}`}>
+              <div className={gufengStyles.genderSelector}>
+                <label className={`${gufengStyles.genderOption} ${gender === 'female' ? gufengStyles.selected : ''}`}>
                   <input
                     type="radio"
                     name="gender"
                     checked={gender === 'female'}
                     onChange={() => setGender('female')}
                   />
-                  <span className={styles.genderIcon}>👩</span>
+                  <span className={gufengStyles.genderIcon}>👩</span>
                   <span>女</span>
                 </label>
-                <label className={`${styles.genderOption} ${gender === 'male' ? styles.selected : ''}`}>
+                <label className={`${gufengStyles.genderOption} ${gender === 'male' ? gufengStyles.selected : ''}`}>
                   <input
                     type="radio"
                     name="gender"
                     checked={gender === 'male'}
                     onChange={() => setGender('male')}
                   />
-                  <span className={styles.genderIcon}>👨</span>
+                  <span className={gufengStyles.genderIcon}>👨</span>
                   <span>男</span>
                 </label>
               </div>
@@ -149,13 +151,13 @@ const NewCharacterPanel: React.FC<NewCharacterPanelProps> = ({ onCreate, onBack 
 
             {/* 错误信息 */}
             {error && (
-              <div className={styles.errorMessage}>{error}</div>
+              <div className={gufengStyles.errorMessage}>{error}</div>
             )}
 
             {/* 提交按钮 */}
             <button
               type="submit"
-              className={styles.createButton}
+              className={gufengStyles.createButton}
               disabled={loading}
             >
               {loading ? '创建中...' : '进入游戏'}
@@ -164,7 +166,7 @@ const NewCharacterPanel: React.FC<NewCharacterPanelProps> = ({ onCreate, onBack 
         </div>
 
         {/* 底部提示 */}
-        <div className={styles.newCharacterFooter}>
+        <div className={gufengStyles.newCharacterFooter}>
           <p>💡 提示：角色创建后无法更改，请谨慎选择</p>
         </div>
       </div>

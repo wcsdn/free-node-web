@@ -3,6 +3,8 @@
  * 从 Mall.js 迁移，使用 mallApi 服务
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/MallPanel.module.css';
 import { mallApi, MallItem } from '../../services/api/mallApi';
 
@@ -84,10 +86,10 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
         <h2>🏪 商城</h2>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
       {/* 消息提示 */}
@@ -105,11 +107,11 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
       )}
 
       {/* 物品类型 */}
-      <div className={styles.typeNav}>
+      <div className={gufengStyles.typeNav}>
         {ITEM_TYPES.map((type) => (
           <button
             key={type.id}
-            className={`${styles.typeBtn} ${currentType === type.id ? styles.active : ''}`}
+            className={`${gufengStyles.typeBtn} ${currentType === type.id ? gufengStyles.active : ''}`}
             onClick={() => setCurrentType(type.id)}
           >
             {type.name}
@@ -118,30 +120,30 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
       </div>
 
       {/* 物品列表 */}
-      <div className={styles.itemGrid}>
+      <div className={gufengStyles.itemGrid}>
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : items.length === 0 ? (
-          <div className={styles.empty}>暂无商品</div>
+          <div className={gufengStyles.empty}>暂无商品</div>
         ) : (
           items.map((item) => (
             <div
               key={item.Id}
-              className={`${styles.itemCard} ${selectedItem?.Id === item.Id ? styles.selected : ''}`}
+              className={`${gufengStyles.itemCard} ${selectedItem?.Id === item.Id ? gufengStyles.selected : ''}`}
               onClick={() => setSelectedItem(item)}
             >
               <img 
                 src={item.Image ? `/jx/Web${item.Image}` : '/jx/Web/img/2/1.gif'} 
                 alt={item.Name} 
-                className={styles.itemIcon}
+                className={gufengStyles.itemIcon}
                 onError={(e) => { (e.target as HTMLImageElement).src = '/jx/Web/img/2/1.gif'; }}
               />
-              <div className={styles.itemInfo}>
-                <span className={styles.itemName}>{item.Name}</span>
-                <span className={styles.itemDesc}>{item.Desc || '暂无描述'}</span>
-                <span className={styles.itemPrice}>💰 {item.Gold}</span>
+              <div className={gufengStyles.itemInfo}>
+                <span className={gufengStyles.itemName}>{item.Name}</span>
+                <span className={gufengStyles.itemDesc}>{item.Desc || '暂无描述'}</span>
+                <span className={gufengStyles.itemPrice}>💰 {item.Gold}</span>
                 {item.Limit && item.Limit > 0 && (
-                  <span className={styles.itemLimit}>限{item.Limit}个</span>
+                  <span className={gufengStyles.itemLimit}>限{item.Limit}个</span>
                 )}
               </div>
             </div>
@@ -150,8 +152,8 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
       </div>
 
       {/* 底部操作 */}
-      <div className={styles.footer}>
-        <div className={styles.selectedInfo}>
+      <div className={gufengStyles.footer}>
+        <div className={gufengStyles.selectedInfo}>
           {selectedItem ? (
             <>
               <span>已选: {selectedItem.Name}</span>
@@ -162,7 +164,7 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
           )}
         </div>
         <button
-          className={styles.buyBtn}
+          className={gufengStyles.buyBtn}
           disabled={!selectedItem || buying}
           onClick={() => selectedItem && setShowBuyConfirm(true)}
         >
@@ -172,21 +174,21 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
 
       {/* 购买确认弹窗 */}
       {showBuyConfirm && selectedItem && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
+        <div className={gufengStyles.modal}>
+          <div className={gufengStyles.modalContent}>
             <h3>购买确认</h3>
-            <div className={styles.buyForm}>
-              <div className={styles.formItem}>
+            <div className={gufengStyles.buyForm}>
+              <div className={gufengStyles.formItem}>
                 <label>商品:</label>
                 <span>{selectedItem.Name}</span>
               </div>
-              <div className={styles.formItem}>
+              <div className={gufengStyles.formItem}>
                 <label>单价:</label>
                 <span>💰 {selectedItem.Gold} 元宝</span>
               </div>
-              <div className={styles.formItem}>
+              <div className={gufengStyles.formItem}>
                 <label>数量:</label>
-                <div className={styles.countControl}>
+                <div className={gufengStyles.countControl}>
                   <button onClick={() => setBuyCount(Math.max(1, buyCount - 1))}>-</button>
                   <input
                     type="number"
@@ -198,21 +200,21 @@ const MallPanel: React.FC<MallPanelProps> = memo(({ onClose }) => {
                   <button onClick={() => setBuyCount(Math.min(selectedItem.Limit || 99, buyCount + 1))}>+</button>
                 </div>
               </div>
-              <div className={styles.formItem}>
+              <div className={gufengStyles.formItem}>
                 <label>总价:</label>
-                <span className={styles.totalPrice}>💰 {selectedItem.Gold * buyCount} 元宝</span>
+                <span className={gufengStyles.totalPrice}>💰 {selectedItem.Gold * buyCount} 元宝</span>
               </div>
             </div>
-            <div className={styles.modalActions}>
+            <div className={gufengStyles.modalActions}>
               <button 
-                className={styles.confirmBtn} 
+                className={gufengStyles.confirmBtn} 
                 onClick={handleBuy}
                 disabled={buying}
               >
                 {buying ? '购买中...' : '确认购买'}
               </button>
               <button 
-                className={styles.cancelBtn} 
+                className={gufengStyles.cancelBtn} 
                 onClick={() => setShowBuyConfirm(false)}
                 disabled={buying}
               >

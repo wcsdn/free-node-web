@@ -3,6 +3,8 @@
  * 军队管理、兵种训练、武将委任、兵力调动
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/jxMain.module.css';
 
@@ -247,41 +249,41 @@ const MilitaryPanel: React.FC<MilitaryPanelProps> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.popupPanel} style={{ width: '750px' }}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel} style={{ width: '750px' }}>
+      <div className={gufengStyles.popupHeader}>
         <span>🎖️ 军事系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
-      <div className={styles.popupContent}>
-        <div className={styles.militaryTabs}>
-          <button className={`${styles.militaryTab} ${activeTab === 'list' ? styles.active : ''}`} onClick={() => setActiveTab('list')}>军队列表</button>
-          <button className={`${styles.militaryTab} ${activeTab === 'train' ? styles.active : ''}`} onClick={() => setActiveTab('train')}>训练军队</button>
-          <button className={`${styles.militaryTab} ${activeTab === 'assign' ? styles.active : ''}`} onClick={() => setActiveTab('assign')}>武将委任</button>
+      <div className={gufengStyles.popupContent}>
+        <div className={gufengStyles.militaryTabs}>
+          <button className={`${gufengStyles.militaryTab} ${activeTab === 'list' ? gufengStyles.active : ''}`} onClick={() => setActiveTab('list')}>军队列表</button>
+          <button className={`${gufengStyles.militaryTab} ${activeTab === 'train' ? gufengStyles.active : ''}`} onClick={() => setActiveTab('train')}>训练军队</button>
+          <button className={`${gufengStyles.militaryTab} ${activeTab === 'assign' ? gufengStyles.active : ''}`} onClick={() => setActiveTab('assign')}>武将委任</button>
         </div>
-        {message && <div className={styles.message}>{message}</div>}
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {activeTab === 'list' && (
-          <div className={styles.troopList}>
-            {loading ? <div className={styles.loading}>加载中...</div> : assignments.length === 0 ? (
-              <div className={styles.empty}><p>暂无军队</p><p style={{ color: '#666', fontSize: '12px' }}>前往「训练军队」招募士兵</p></div>
+          <div className={gufengStyles.troopList}>
+            {loading ? <div className={gufengStyles.loading}>加载中...</div> : assignments.length === 0 ? (
+              <div className={gufengStyles.empty}><p>暂无军队</p><p style={{ color: '#666', fontSize: '12px' }}>前往「训练军队」招募士兵</p></div>
             ) : Object.entries(assignmentsByCity).map(([cityId, { cityName, troops }]) => (
-              <div key={cityId} className={styles.cityTroops}>
-                <div className={styles.cityTroopsHeader}>🏰 {cityName}</div>
+              <div key={cityId} className={gufengStyles.cityTroops}>
+                <div className={gufengStyles.cityTroopsHeader}>🏰 {cityName}</div>
                 {troops.map(troop => (
-                  <div key={troop.id} className={styles.troopCard}>
-                    <div className={styles.troopIcon}>{TROOP_ICONS[troop.type] || '⚔️'}</div>
-                    <div className={styles.troopInfo}>
-                      <div className={styles.troopName}>
-                        {getConfig(troop.type)?.name || troop.type}<span className={styles.troopAmount}> ×{troop.amount}</span>
+                  <div key={troop.id} className={gufengStyles.troopCard}>
+                    <div className={gufengStyles.troopIcon}>{TROOP_ICONS[troop.type] || '⚔️'}</div>
+                    <div className={gufengStyles.troopInfo}>
+                      <div className={gufengStyles.troopName}>
+                        {getConfig(troop.type)?.name || troop.type}<span className={gufengStyles.troopAmount}> ×{troop.amount}</span>
                       </div>
-                      <div className={styles.troopStats}>攻击: {troop.attack} | 防御: {troop.defense}</div>
-                      {troop.hero_name && <div className={styles.troopHero}>👑 {troop.hero_name} (Lv.{troop.hero_level}) 攻+{troop.hero_attack} 防+{troop.hero_defense}</div>}
+                      <div className={gufengStyles.troopStats}>攻击: {troop.attack} | 防御: {troop.defense}</div>
+                      {troop.hero_name && <div className={gufengStyles.troopHero}>👑 {troop.hero_name} (Lv.{troop.hero_level}) 攻+{troop.hero_attack} 防+{troop.hero_defense}</div>}
                     </div>
-                    <div className={styles.troopActions}>
+                    <div className={gufengStyles.troopActions}>
                       {troop.hero_id ? (
-                        <button className={styles.unassignBtn} onClick={() => handleUnassignHero(troop.id)}>解除</button>
+                        <button className={gufengStyles.unassignBtn} onClick={() => handleUnassignHero(troop.id)}>解除</button>
                       ) : (
-                        <button className={styles.disbandBtn} onClick={() => handleDisband(troop.id, troop.amount)}>解散</button>
+                        <button className={gufengStyles.disbandBtn} onClick={() => handleDisband(troop.id, troop.amount)}>解散</button>
                       )}
                     </div>
                   </div>
@@ -292,70 +294,70 @@ const MilitaryPanel: React.FC<MilitaryPanelProps> = ({ onClose }) => {
         )}
 
         {activeTab === 'train' && (
-          <div className={styles.trainSection}>
-            <div className={styles.troopTypes}>
+          <div className={gufengStyles.trainSection}>
+            <div className={gufengStyles.troopTypes}>
               <h4>可训练兵种</h4>
-              <div className={styles.troopTypeGrid}>
+              <div className={gufengStyles.troopTypeGrid}>
                 {troopTypes.map(type => (
-                  <div key={type.id} className={`${styles.troopTypeCard} ${trainType === type.id ? styles.selected : ''}`} onClick={() => setTrainType(type.id)}>
-                    <div className={styles.troopTypeIcon}>{type.icon}</div>
-                    <div className={styles.troopTypeName}>{type.name}</div>
-                    <div className={styles.troopTypeCost}>💰 {type.cost}银两</div>
-                    <div className={styles.troopTypeStats}>⚔️{type.attack} 🛡️{type.defense}</div>
+                  <div key={type.id} className={`${gufengStyles.troopTypeCard} ${trainType === type.id ? gufengStyles.selected : ''}`} onClick={() => setTrainType(type.id)}>
+                    <div className={gufengStyles.troopTypeIcon}>{type.icon}</div>
+                    <div className={gufengStyles.troopTypeName}>{type.name}</div>
+                    <div className={gufengStyles.troopTypeCost}>💰 {type.cost}银两</div>
+                    <div className={gufengStyles.troopTypeStats}>⚔️{type.attack} 🛡️{type.defense}</div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className={styles.trainForm}>
+            <div className={gufengStyles.trainForm}>
               <h4>训练配置</h4>
-              <div className={styles.formRow}>
+              <div className={gufengStyles.formRow}>
                 <label>选择城市:</label>
-                <select value={trainCityId} onChange={(e) => setTrainCityId(Number(e.target.value) || '')} className={styles.formSelect}>
+                <select value={trainCityId} onChange={(e) => setTrainCityId(Number(e.target.value) || '')} className={gufengStyles.formSelect}>
                   {cities.map(city => <option key={city.id} value={city.id}>{city.name}</option>)}
                 </select>
               </div>
-              <div className={styles.formRow}>
+              <div className={gufengStyles.formRow}>
                 <label>兵种:</label>
-                <select value={trainType} onChange={(e) => setTrainType(e.target.value)} className={styles.formSelect}>
+                <select value={trainType} onChange={(e) => setTrainType(e.target.value)} className={gufengStyles.formSelect}>
                   <option value="">请选择兵种</option>
                   {troopTypes.map(type => <option key={type.id} value={type.id}>{type.icon} {type.name}</option>)}
                 </select>
               </div>
-              <div className={styles.formRow}>
+              <div className={gufengStyles.formRow}>
                 <label>数量:</label>
-                <input type="number" value={trainAmount} onChange={(e) => setTrainAmount(Math.max(1, Number(e.target.value)))} className={styles.formInput} min={1} />
-                {trainType && <span className={styles.costHint}>消耗: {trainAmount * (getConfig(trainType)?.cost || 0)} 银两</span>}
+                <input type="number" value={trainAmount} onChange={(e) => setTrainAmount(Math.max(1, Number(e.target.value)))} className={gufengStyles.formInput} min={1} />
+                {trainType && <span className={gufengStyles.costHint}>消耗: {trainAmount * (getConfig(trainType)?.cost || 0)} 银两</span>}
               </div>
-              <button className={styles.trainBtn} onClick={handleTrain} disabled={training || !trainType || !trainCityId}>{training ? '训练中...' : '开始训练'}</button>
+              <button className={gufengStyles.trainBtn} onClick={handleTrain} disabled={training || !trainType || !trainCityId}>{training ? '训练中...' : '开始训练'}</button>
             </div>
           </div>
         )}
 
         {activeTab === 'assign' && (
-          <div className={styles.assignSection}>
-            <div className={styles.assignHeroes}>
+          <div className={gufengStyles.assignSection}>
+            <div className={gufengStyles.assignHeroes}>
               <h4>空闲武将 ({getIdleHeroes(Number(assignCityId)).length})</h4>
-              <div className={styles.heroSelectList}>
+              <div className={gufengStyles.heroSelectList}>
                 {getIdleHeroes(Number(assignCityId)).map(hero => (
-                  <div key={hero.id} className={`${styles.heroSelectItem} ${assignHeroId === hero.id ? styles.selected : ''}`} onClick={() => setAssignHeroId(hero.id)}>
+                  <div key={hero.id} className={`${gufengStyles.heroSelectItem} ${assignHeroId === hero.id ? gufengStyles.selected : ''}`} onClick={() => setAssignHeroId(hero.id)}>
                     <span>{hero.name}</span>
-                    <span className={styles.heroStats}>Lv.{hero.level} ⚔️{hero.attack} 🛡️{hero.defense}</span>
+                    <span className={gufengStyles.heroStats}>Lv.{hero.level} ⚔️{hero.attack} 🛡️{hero.defense}</span>
                   </div>
                 ))}
-                {getIdleHeroes(Number(assignCityId)).length === 0 && <p className={styles.emptyHint}>该城市暂无空闲武将</p>}
+                {getIdleHeroes(Number(assignCityId)).length === 0 && <p className={gufengStyles.emptyHint}>该城市暂无空闲武将</p>}
               </div>
             </div>
-            <div className={styles.assignForm}>
+            <div className={gufengStyles.assignForm}>
               <h4>委任配置</h4>
-              <div className={styles.formRow}>
+              <div className={gufengStyles.formRow}>
                 <label>选择城市:</label>
-                <select value={assignCityId} onChange={(e) => { setAssignCityId(Number(e.target.value) || ''); setAssignTroopId(''); }} className={styles.formSelect}>
+                <select value={assignCityId} onChange={(e) => { setAssignCityId(Number(e.target.value) || ''); setAssignTroopId(''); }} className={gufengStyles.formSelect}>
                   {cities.map(city => <option key={city.id} value={city.id}>{city.name}</option>)}
                 </select>
               </div>
-              <div className={styles.formRow}>
+              <div className={gufengStyles.formRow}>
                 <label>选择军队:</label>
-                <select value={assignTroopId} onChange={(e) => setAssignTroopId(Number(e.target.value) || '')} className={styles.formSelect}>
+                <select value={assignTroopId} onChange={(e) => setAssignTroopId(Number(e.target.value) || '')} className={gufengStyles.formSelect}>
                   <option value="">请选择要委任的军队</option>
                   {getAssignableTroops().map(troop => (
                     <option key={troop.id} value={troop.id}>
@@ -364,18 +366,18 @@ const MilitaryPanel: React.FC<MilitaryPanelProps> = ({ onClose }) => {
                   ))}
                 </select>
               </div>
-              <button className={styles.assignBtn} onClick={handleAssignHero} disabled={assigning || !assignHeroId || !assignTroopId}>{assigning ? '委任中...' : '确认委任'}</button>
+              <button className={gufengStyles.assignBtn} onClick={handleAssignHero} disabled={assigning || !assignHeroId || !assignTroopId}>{assigning ? '委任中...' : '确认委任'}</button>
             </div>
-            <div className={styles.currentAssignments}>
+            <div className={gufengStyles.currentAssignments}>
               <h4>当前委任</h4>
-              <div className={styles.assignmentList}>
+              <div className={gufengStyles.assignmentList}>
                 {assignments.filter(a => a.hero_id).map(assignment => (
-                  <div key={assignment.id} className={styles.assignmentItem}>
+                  <div key={assignment.id} className={gufengStyles.assignmentItem}>
                     <span>{assignment.hero_name} → {TROOP_ICONS[assignment.type]}{assignment.type}</span>
-                    <button className={styles.unassignBtn} onClick={() => handleUnassignHero(assignment.id)}>解除</button>
+                    <button className={gufengStyles.unassignBtn} onClick={() => handleUnassignHero(assignment.id)}>解除</button>
                   </div>
                 ))}
-                {assignments.filter(a => a.hero_id).length === 0 && <p className={styles.emptyHint}>暂无委任记录</p>}
+                {assignments.filter(a => a.hero_id).length === 0 && <p className={gufengStyles.emptyHint}>暂无委任记录</p>}
               </div>
             </div>
           </div>

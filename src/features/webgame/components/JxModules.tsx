@@ -3,6 +3,8 @@
  * 从 Main.aspx 功能入口迁移
  */
 import React, { memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../styles/jxModules.module.css';
 
 interface JxModulesProps {
@@ -23,25 +25,25 @@ const JxModules: React.FC<JxModulesProps> = memo(({ onNavigate }) => {
   ];
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <button className={styles.backBtn} onClick={() => onNavigate('main')}>← 返回</button>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
+        <button className={gufengStyles.backBtn} onClick={() => onNavigate('main')}>← 返回</button>
         <h2>功能模块</h2>
       </div>
-      <div className={styles.grid}>
+      <div className={gufengStyles.grid}>
         {modules.map((module) => (
           <div
             key={module.id}
-            className={styles.card}
+            className={gufengStyles.card}
             onClick={() => {
               console.log('Navigate to:', module.id);
               onNavigate(module.id);
             }}
           >
-            <img src={module.icon} alt={module.name} className={styles.icon} />
-            <div className={styles.info}>
-              <span className={styles.name}>{module.name}</span>
-              <span className={styles.desc}>{module.desc}</span>
+            <img src={module.icon} alt={module.name} className={gufengStyles.icon} />
+            <div className={gufengStyles.info}>
+              <span className={gufengStyles.name}>{module.name}</span>
+              <span className={gufengStyles.desc}>{module.desc}</span>
             </div>
           </div>
         ))}

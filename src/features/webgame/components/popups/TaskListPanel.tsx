@@ -3,6 +3,8 @@
  * 任务列表、接受任务、提交任务
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/TaskPanel.module.css';
 import { getApiBase, getAuthHeaders } from '../../utils/api';
 
@@ -133,34 +135,34 @@ const TaskPanel: React.FC<TaskPanelProps> = memo(({ onClose }) => {
   // const tabName = activeTab === 'main' ? '主线任务' : '日常任务'; // 未使用变量注释掉
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
         <h2>📋 任务系统</h2>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
       {/* 消息提示 */}
       {message && (
-        <div className={styles.message}>
+        <div className={gufengStyles.message}>
           {message}
         </div>
       )}
 
       {/* 等级信息 */}
-      <div className={styles.levelInfo}>
+      <div className={gufengStyles.levelInfo}>
         当前等级: Lv.{userLevel}
       </div>
 
       {/* Tab 切换 */}
-      <div className={styles.tabs}>
+      <div className={gufengStyles.tabs}>
         <button
-          className={`${styles.tab} ${activeTab === 'main' ? styles.active : ''}`}
+          className={`${gufengStyles.tab} ${activeTab === 'main' ? gufengStyles.active : ''}`}
           onClick={() => setActiveTab('main')}
         >
           主线任务
         </button>
         <button
-          className={`${styles.tab} ${activeTab === 'daily' ? styles.active : ''}`}
+          className={`${gufengStyles.tab} ${activeTab === 'daily' ? gufengStyles.active : ''}`}
           onClick={() => setActiveTab('daily')}
         >
           日常任务
@@ -168,35 +170,35 @@ const TaskPanel: React.FC<TaskPanelProps> = memo(({ onClose }) => {
       </div>
 
       {/* 任务列表 */}
-      <div className={styles.taskList}>
+      <div className={gufengStyles.taskList}>
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : currentTasks.length === 0 ? (
-          <div className={styles.empty}>暂无任务</div>
+          <div className={gufengStyles.empty}>暂无任务</div>
         ) : (
           currentTasks.map(task => (
-            <div key={task.id} className={`${styles.taskCard} ${styles[`type${task.type}`]}`}>
-              <div className={styles.taskHeader}>
-                <span className={styles.taskName}>{task.name}</span>
+            <div key={task.id} className={`${gufengStyles.taskCard} ${styles[`type${task.type}`]}`}>
+              <div className={gufengStyles.taskHeader}>
+                <span className={gufengStyles.taskName}>{task.name}</span>
                 <span 
-                  className={styles.taskType}
+                  className={gufengStyles.taskType}
                   style={{ color: TASK_TYPES[task.type as keyof typeof TASK_TYPES]?.color || '#666' }}
                 >
                   {TASK_TYPES[task.type as keyof typeof TASK_TYPES]?.name || '未知'}
                 </span>
               </div>
               
-              <div className={styles.taskDesc}>{task.desc}</div>
+              <div className={gufengStyles.taskDesc}>{task.desc}</div>
               
-              <div className={styles.taskInfo}>
+              <div className={gufengStyles.taskInfo}>
                 <span>目标: {task.progress}/{task.target}</span>
                 <span>奖励: {task.reward_exp}经验 {task.reward_gold}金币</span>
               </div>
 
-              <div className={styles.taskActions}>
+              <div className={gufengStyles.taskActions}>
                 {task.status === 0 && task.can_accept && (
                   <button 
-                    className={styles.acceptBtn}
+                    className={gufengStyles.acceptBtn}
                     onClick={() => handleAccept(task.id)}
                   >
                     接受任务
@@ -204,20 +206,20 @@ const TaskPanel: React.FC<TaskPanelProps> = memo(({ onClose }) => {
                 )}
                 {task.status === 1 && task.progress >= task.target && (
                   <button 
-                    className={styles.submitBtn}
+                    className={gufengStyles.submitBtn}
                     onClick={() => handleSubmit(task.id)}
                   >
                     完成任务
                   </button>
                 )}
                 {task.status === 1 && task.progress < task.target && (
-                  <span className={styles.pendingBtn}>进行中</span>
+                  <span className={gufengStyles.pendingBtn}>进行中</span>
                 )}
                 {task.status === 2 && (
-                  <span className={styles.completedBtn}>已完成</span>
+                  <span className={gufengStyles.completedBtn}>已完成</span>
                 )}
                 {!task.can_accept && task.status === 0 && (
-                  <span className={styles.lockedBtn}>需 Lv.{task.req_level}</span>
+                  <span className={gufengStyles.lockedBtn}>需 Lv.{task.req_level}</span>
                 )}
               </div>
             </div>

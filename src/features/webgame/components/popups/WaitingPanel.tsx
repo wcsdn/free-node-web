@@ -3,6 +3,8 @@
  * 替代原来的 EnterWaiting.aspx (排队等待页面)
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface WaitingPanelProps {
@@ -43,35 +45,35 @@ const WaitingPanel: React.FC<WaitingPanelProps> = ({
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.waitingPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.waitingPanel}>
         {/* 头部 */}
-        <div className={styles.waitingHeader}>
+        <div className={gufengStyles.waitingHeader}>
           <h2>请稍候</h2>
         </div>
 
         {/* 等待内容 */}
-        <div className={styles.waitingContent}>
+        <div className={gufengStyles.waitingContent}>
           {/* 等待动画 */}
-          <div className={styles.waitingAnimation}>
-            <div className={styles.waitingSpinner}></div>
+          <div className={gufengStyles.waitingAnimation}>
+            <div className={gufengStyles.waitingSpinner}></div>
           </div>
 
           {/* 消息 */}
-          <div className={styles.waitingMessage}>
+          <div className={gufengStyles.waitingMessage}>
             <p>{message}</p>
           </div>
 
           {/* 倒计时 */}
-          <div className={styles.waitingTimer}>
+          <div className={gufengStyles.waitingTimer}>
             <span>剩余时间：</span>
-            <span className={styles.timerValue}>{formatTime(countdown)}</span>
+            <span className={gufengStyles.timerValue}>{formatTime(countdown)}</span>
           </div>
 
           {/* 取消按钮 */}
           {onCancel && (
             <button
-              className={styles.waitingCancelButton}
+              className={gufengStyles.waitingCancelButton}
               onClick={onCancel}
             >
               取消
@@ -80,7 +82,7 @@ const WaitingPanel: React.FC<WaitingPanelProps> = ({
         </div>
 
         {/* 提示 */}
-        <div className={styles.waitingTips}>
+        <div className={gufengStyles.waitingTips}>
           <p>💡 建议：高峰期可能出现排队，请耐心等待</p>
         </div>
       </div>

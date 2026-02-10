@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './MallPanel.module.css';
 
@@ -70,21 +72,21 @@ export const MallPanel: React.FC<MallPanelProps> = ({ onClose }) => {
   const uniqueTypes = [...new Set(items.map(item => item.type))].sort();
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>🛒 商城</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : (
           <>
             {/* 分类标签 */}
-            <div className={styles.tabs}>
+            <div className={gufengStyles.tabs}>
               <button 
-                className={`${styles.tab} ${activeType === 'all' ? styles.active : ''}`}
+                className={`${gufengStyles.tab} ${activeType === 'all' ? gufengStyles.active : ''}`}
                 onClick={() => setActiveType('all')}
               >
                 全部
@@ -92,7 +94,7 @@ export const MallPanel: React.FC<MallPanelProps> = ({ onClose }) => {
               {uniqueTypes.map(type => (
                 <button 
                   key={type}
-                  className={`${styles.tab} ${activeType === type ? styles.active : ''}`}
+                  className={`${gufengStyles.tab} ${activeType === type ? gufengStyles.active : ''}`}
                   onClick={() => setActiveType(type)}
                 >
                   {typeNames[type] || `类型${type}`}
@@ -101,26 +103,26 @@ export const MallPanel: React.FC<MallPanelProps> = ({ onClose }) => {
             </div>
 
             {/* 商品列表 */}
-            <div className={styles.itemGrid}>
+            <div className={gufengStyles.itemGrid}>
               {filteredItems.map(item => (
-                <div key={item.id} className={styles.itemCard}>
-                  <div className={styles.itemIcon}>
+                <div key={item.id} className={gufengStyles.itemCard}>
+                  <div className={gufengStyles.itemIcon}>
                     {item.icon ? (
                       <img src={item.icon} alt={item.name} />
                     ) : (
-                      <div className={styles.defaultIcon}>📦</div>
+                      <div className={gufengStyles.defaultIcon}>📦</div>
                     )}
                   </div>
-                  <div className={styles.itemInfo}>
+                  <div className={gufengStyles.itemInfo}>
                     <h3>{item.name}</h3>
-                    <p className={styles.description}>{item.description}</p>
-                    <div className={styles.price}>
-                      <span className={styles.priceLabel}>💰</span>
-                      <span className={styles.priceValue}>{item.price}</span>
+                    <p className={gufengStyles.description}>{item.description}</p>
+                    <div className={gufengStyles.price}>
+                      <span className={gufengStyles.priceLabel}>💰</span>
+                      <span className={gufengStyles.priceValue}>{item.price}</span>
                     </div>
                   </div>
                   <button 
-                    className={styles.buyBtn}
+                    className={gufengStyles.buyBtn}
                     onClick={() => handleBuy(item)}
                   >
                     购买
@@ -130,7 +132,7 @@ export const MallPanel: React.FC<MallPanelProps> = ({ onClose }) => {
             </div>
 
             {filteredItems.length === 0 && (
-              <div className={styles.empty}>暂无商品</div>
+              <div className={gufengStyles.empty}>暂无商品</div>
             )}
           </>
         )}

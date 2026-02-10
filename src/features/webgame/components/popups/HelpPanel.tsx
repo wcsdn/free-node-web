@@ -4,6 +4,8 @@
  * 支持静态资源和后端 API 两种模式
  */
 import React, { useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { helpData, searchArticles, HelpArticle } from '../../data/help-zh-CN';
 import styles from '../../styles/jxMain.module.css';
 
@@ -56,19 +58,19 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.helpPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.helpPanel}>
         {/* 头部 */}
-        <div className={styles.helpHeader}>
+        <div className={gufengStyles.helpHeader}>
           <h2>游戏帮助</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeButton} onClick={onClose}>×</button>
         </div>
 
-        <div className={styles.helpContent}>
+        <div className={gufengStyles.helpContent}>
           {/* 侧边栏 - 分类列表 */}
           {!selectedCategory && (
-            <div className={styles.helpSidebar}>
-              <div className={styles.helpSearch}>
+            <div className={gufengStyles.helpSidebar}>
+              <div className={gufengStyles.helpSearch}>
                 <input
                   type="text"
                   placeholder="搜索帮助..."
@@ -80,7 +82,7 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               </div>
 
               {searching ? (
-                <div className={styles.searchResults}>
+                <div className={gufengStyles.searchResults}>
                   <h3>搜索结果</h3>
                   {searchResults.length > 0 ? (
                     <ul>
@@ -93,17 +95,17 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             key={`${category?.id}-${article.id}`}
                             onClick={() => handleArticleSelect(article)}
                           >
-                            <span className={styles.articleTitle}>{article.title}</span>
-                            <span className={styles.categoryTag}>{category?.name}</span>
+                            <span className={gufengStyles.articleTitle}>{article.title}</span>
+                            <span className={gufengStyles.categoryTag}>{category?.name}</span>
                           </li>
                         );
                       })}
                     </ul>
                   ) : (
-                    <p className={styles.noResults}>未找到相关内容</p>
+                    <p className={gufengStyles.noResults}>未找到相关内容</p>
                   )}
                   <button
-                    className={styles.backButton}
+                    className={gufengStyles.backButton}
                     onClick={() => {
                       setSearching(false);
                       setSearchKeyword('');
@@ -114,15 +116,15 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   </button>
                 </div>
               ) : (
-                <ul className={styles.categoryList}>
+                <ul className={gufengStyles.categoryList}>
                   {categories.map((category) => (
                     <li
                       key={category.id}
                       onClick={() => handleCategorySelect(category.id)}
                     >
-                      <span className={styles.categoryIcon}>{category.icon}</span>
-                      <span className={styles.categoryName}>{category.name}</span>
-                      <span className={styles.arrow}>›</span>
+                      <span className={gufengStyles.categoryIcon}>{category.icon}</span>
+                      <span className={gufengStyles.categoryName}>{category.name}</span>
+                      <span className={gufengStyles.arrow}>›</span>
                     </li>
                   ))}
                 </ul>
@@ -132,17 +134,17 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
           {/* 文章列表 */}
           {selectedCategory && !selectedArticle && (
-            <div className={styles.helpMain}>
-              <div className={styles.helpBreadcrumb}>
+            <div className={gufengStyles.helpMain}>
+              <div className={gufengStyles.helpBreadcrumb}>
                 <span onClick={handleBack}>帮助</span>
                 <span> › </span>
                 <span>{getCurrentCategory()?.name}</span>
               </div>
-              <ul className={styles.articleList}>
+              <ul className={gufengStyles.articleList}>
                 {getArticlesForCategory(selectedCategory).map((article) => (
                   <li key={article.id} onClick={() => handleArticleSelect(article)}>
-                    <span className={styles.articleTitle}>{article.title}</span>
-                    <span className={styles.arrow}>›</span>
+                    <span className={gufengStyles.articleTitle}>{article.title}</span>
+                    <span className={gufengStyles.arrow}>›</span>
                   </li>
                 ))}
               </ul>
@@ -151,8 +153,8 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
           {/* 文章内容 */}
           {selectedArticle && (
-            <div className={styles.helpMain}>
-              <div className={styles.helpBreadcrumb}>
+            <div className={gufengStyles.helpMain}>
+              <div className={gufengStyles.helpBreadcrumb}>
                 <span onClick={handleBack}>帮助</span>
                 <span> › </span>
                 <span onClick={() => setSelectedArticle(null)}>
@@ -161,17 +163,17 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 <span> › </span>
                 <span>{selectedArticle.title}</span>
               </div>
-              <div className={styles.articleContent}>
+              <div className={gufengStyles.articleContent}>
                 <h3>{selectedArticle.title}</h3>
-                <div className={styles.articleBody}>
+                <div className={gufengStyles.articleBody}>
                   {selectedArticle.content.split('\n').map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>
                   ))}
                 </div>
-                <div className={styles.articleKeywords}>
+                <div className={gufengStyles.articleKeywords}>
                   <span>关键词：</span>
                   {selectedArticle.keywords.map((keyword, index) => (
-                    <span key={index} className={styles.keyword}>
+                    <span key={index} className={gufengStyles.keyword}>
                       {keyword}
                     </span>
                   ))}

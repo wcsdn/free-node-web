@@ -2,6 +2,8 @@
  * 提示框组件
  */
 import React, { memo, useEffect } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface TipsProps {
@@ -26,7 +28,7 @@ const Tips: React.FC<TipsProps> = memo(({ show, onClose, content, x = 0, y = 0 }
   return (
     <div 
       id="tips" 
-      className={styles.tips}
+      className={gufengStyles.tips}
       style={{ left: x, top: y }}
     >
       {content || '提示信息'}

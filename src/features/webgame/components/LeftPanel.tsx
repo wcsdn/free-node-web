@@ -3,6 +3,8 @@
  * 完全参照原版 Main.aspx leftpanel 部分
  */
 import React, { memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../styles/jxMain.module.css';
 
 interface LeftPanelProps {
@@ -12,17 +14,17 @@ interface LeftPanelProps {
 
 const LeftPanel: React.FC<LeftPanelProps> = memo(() => {
   return (
-    <div id="leftpanel" className={styles.leftPanel}>
-      <div id="logo" className={styles.logo} onClick={() => window.location.reload()}></div>
+    <div id="leftpanel" className={gufengStyles.leftPanel}>
+      <div id="logo" className={gufengStyles.logo} onClick={() => window.location.reload()}></div>
 
-      <div id="info_user" className={styles.infoUser}>
-        <div id="userlevel" className={styles.userLevel}>
+      <div id="info_user" className={gufengStyles.infoUser}>
+        <div id="userlevel" className={gufengStyles.userLevel}>
           <span>
             <a id="userName" className="font_bold" href="#">
               {'玩家'}
             </a>
           </span>
-          <div id="vipeffect" className={styles.vipEffect}></div>
+          <div id="vipeffect" className={gufengStyles.vipEffect}></div>
           <div>
             <span className="font_bold" id="userState"></span>
           </div>
@@ -37,9 +39,9 @@ const LeftPanel: React.FC<LeftPanelProps> = memo(() => {
           </ul>
         </div>
 
-        <div id="usercity" className={styles.userCity}></div>
+        <div id="usercity" className={gufengStyles.userCity}></div>
 
-        <div id="info_out" className={styles.infoOut}>
+        <div id="info_out" className={gufengStyles.infoOut}>
           <ul>
             <li>
               <a id="to_main" href="#" target="_blank">首页</a>
@@ -65,7 +67,7 @@ const LeftPanel: React.FC<LeftPanelProps> = memo(() => {
           </ul>
         </div>
 
-        <div id="info_sever" className={styles.infoServer}>
+        <div id="info_sever" className={gufengStyles.infoServer}>
           <ul>
             <li>服务器名称</li>
             <li><span id="serverName" className="font_bold">{'默认'}</span></li>

@@ -2,6 +2,8 @@
  * 邮件面板组件
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/jxMain.module.css';
 
@@ -129,22 +131,22 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
   };
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel}>
+      <div className={gufengStyles.popupHeader}>
         <span>邮件 {unreadCount > 0 && `(${unreadCount}封未读)`}</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
       
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
+      <div className={gufengStyles.popupContent}>
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {/* 筛选和发送 */}
-        <div className={styles.mailToolbar}>
-          <div className={styles.mailFilters}>
+        <div className={gufengStyles.mailToolbar}>
+          <div className={gufengStyles.mailFilters}>
             {MAIL_TYPES.map(type => (
               <button
                 key={type.id ?? 99}
-                className={`${styles.filterBtn} ${selectedType === type.id ? styles.active : ''}`}
+                className={`${gufengStyles.filterBtn} ${selectedType === type.id ? gufengStyles.active : ''}`}
                 onClick={() => setSelectedType(type.id)}
               >
                 {type.name}
@@ -152,7 +154,7 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
             ))}
           </div>
           <button 
-            className={styles.composeBtn}
+            className={gufengStyles.composeBtn}
             onClick={() => setShowCompose(!showCompose)}
           >
             {showCompose ? '取消' : '写邮件'}
@@ -161,72 +163,72 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
 
         {/* 写信界面 */}
         {showCompose && (
-          <div className={styles.composeArea}>
-            <div className={styles.composeField}>
+          <div className={gufengStyles.composeArea}>
+            <div className={gufengStyles.composeField}>
               <label>收件人地址:</label>
               <input 
                 type="text" 
                 value={composeTo}
                 onChange={(e) => setComposeTo(e.target.value)}
                 placeholder="0x..."
-                className={styles.composeInput}
+                className={gufengStyles.composeInput}
               />
             </div>
-            <div className={styles.composeField}>
+            <div className={gufengStyles.composeField}>
               <label>标题:</label>
               <input 
                 type="text" 
                 value={composeTitle}
                 onChange={(e) => setComposeTitle(e.target.value)}
                 placeholder="邮件标题"
-                className={styles.composeInput}
+                className={gufengStyles.composeInput}
               />
             </div>
-            <div className={styles.composeField}>
+            <div className={gufengStyles.composeField}>
               <label>内容:</label>
               <textarea 
                 value={composeContent}
                 onChange={(e) => setComposeContent(e.target.value)}
                 placeholder="邮件内容"
-                className={styles.composeTextarea}
+                className={gufengStyles.composeTextarea}
                 rows={4}
               />
             </div>
-            <button onClick={handleSend} className={styles.sendBtn}>
+            <button onClick={handleSend} className={gufengStyles.sendBtn}>
               发送邮件
             </button>
           </div>
         )}
 
         {/* 邮件列表 */}
-        <div className={styles.mailContainer}>
-          <div className={styles.mailList}>
+        <div className={gufengStyles.mailContainer}>
+          <div className={gufengStyles.mailList}>
             {loading ? (
-              <div className={styles.loading}>加载中...</div>
+              <div className={gufengStyles.loading}>加载中...</div>
             ) : mails.length === 0 ? (
-              <div className={styles.empty}>暂无邮件</div>
+              <div className={gufengStyles.empty}>暂无邮件</div>
             ) : (
               mails.map(mail => (
                 <div 
                   key={mail.id}
-                  className={`${styles.mailItem} ${mail.read_tag === 0 ? styles.unread : ''} ${selectedMail?.id === mail.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.mailItem} ${mail.read_tag === 0 ? gufengStyles.unread : ''} ${selectedMail?.id === mail.id ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedMail(mail)}
                 >
-                  <div className={styles.mailItemHeader}>
+                  <div className={gufengStyles.mailItemHeader}>
                     <span 
-                      className={styles.mailType}
+                      className={gufengStyles.mailType}
                       style={{ backgroundColor: getMailTypeColor(mail.mail_type) }}
                     >
                       {getMailTypeName(mail.mail_type)}
                     </span>
-                    <span className={styles.mailTime}>
+                    <span className={gufengStyles.mailTime}>
                       {new Date(mail.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className={styles.mailSender}>{mail.from_name}</div>
-                  <div className={styles.mailTitle}>{mail.title}</div>
+                  <div className={gufengStyles.mailSender}>{mail.from_name}</div>
+                  <div className={gufengStyles.mailTitle}>{mail.title}</div>
                   {mail.has_attachment === 1 && (
-                    <span className={styles.hasAttachment}>📎 有附件</span>
+                    <span className={gufengStyles.hasAttachment}>📎 有附件</span>
                   )}
                 </div>
               ))
@@ -235,22 +237,22 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
 
           {/* 邮件详情 */}
           {selectedMail && (
-            <div className={styles.mailDetail}>
-              <div className={styles.mailDetailHeader}>
+            <div className={gufengStyles.mailDetail}>
+              <div className={gufengStyles.mailDetailHeader}>
                 <h4>{selectedMail.title}</h4>
-                <div className={styles.mailMeta}>
+                <div className={gufengStyles.mailMeta}>
                   <span>来自: {selectedMail.from_name}</span>
                   <span>{new Date(selectedMail.created_at).toLocaleString()}</span>
                 </div>
               </div>
-              <div className={styles.mailContent}>
+              <div className={gufengStyles.mailContent}>
                 {selectedMail.content}
               </div>
-              <div className={styles.mailActions}>
+              <div className={gufengStyles.mailActions}>
                 {selectedMail.has_attachment === 1 && (
                   <button 
                     onClick={() => handleClaim(selectedMail)}
-                    className={styles.claimBtn}
+                    className={gufengStyles.claimBtn}
                   >
                     领取附件
                   </button>
@@ -259,7 +261,7 @@ const MailPanel: React.FC<MailPanelProps> = ({ onClose }) => {
                   onClick={() => {
                     if (confirm('确定删除这封邮件?')) handleDelete(selectedMail.id);
                   }}
-                  className={styles.deleteBtn}
+                  className={gufengStyles.deleteBtn}
                 >
                   删除
                 </button>

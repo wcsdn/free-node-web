@@ -3,6 +3,8 @@
  * 完全参照原版 Main.aspx contentarea 部分
  */
 import React, { memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../styles/jxMain.module.css';
 
 interface CityInteriorInfo {
@@ -66,9 +68,9 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
   const buildings = cityInteriorInfo?.buildings || [];
 
   return (
-    <div id="contentarea" className={styles.contentArea}>
+    <div id="contentarea" className={gufengStyles.contentArea}>
       {/* 导航栏 - 原版结构 */}
-      <div id="mainnav" className={styles.mainNav}>
+      <div id="mainnav" className={gufengStyles.mainNav}>
         <ul>
           <li id="nav_1"><a id="p_1" className="nav_a_1" href="#"></a></li>
           <li id="nav_2"><a id="p_2" className="nav_a_2" href="#"></a></li>
@@ -81,7 +83,7 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
       </div>
 
       {/* 资源栏 - 原版精确布局 */}
-      <div id="userres" className={styles.cityInteriorInfo}>
+      <div id="userres" className={gufengStyles.cityInteriorInfo}>
         <table cellSpacing="0" cellPadding="0" style={{ width: '542px', height: '30px' }}>
           <tbody>
             <tr>
@@ -132,16 +134,16 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
       </div>
 
       {/* 城池地图 - 原版 #mainpic */}
-      <div id="mainpic" className={styles.mainPic}>
+      <div id="mainpic" className={gufengStyles.mainPic}>
         {/* 城池名称 */}
-        <div className={styles.cityTitle}>{cityName}</div>
+        <div className={gufengStyles.cityTitle}>{cityName}</div>
         
         {/* 城池图片 - 从服务器返回的 map_image 字段获取 */}
-        <div className={styles.cityImageContainer}>
+        <div className={gufengStyles.cityImageContainer}>
           <img 
             src={`/jx/Web/img/2/b/m/${mapImage}`} 
             alt={cityName} 
-            className={styles.cityImg} 
+            className={gufengStyles.cityImg} 
           />
         </div>
         
@@ -153,7 +155,7 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
           return (
             <div
               key={building.id}
-              className={`${styles.buildingIcon} ${iconConfig.cssClass}`}
+              className={`${gufengStyles.buildingIcon} ${iconConfig.cssClass}`}
               title={iconConfig.name}
             >
               <img 
@@ -165,21 +167,21 @@ const ContentArea: React.FC<ContentAreaProps> = memo(({ cityInteriorInfo }) => {
         })}
         
         {/* 建筑列表面板 */}
-        <div className={styles.buildingsPanel}>
-          <div className={styles.buildingsTitle}>建筑列表</div>
-          <ul className={styles.buildingsList}>
+        <div className={gufengStyles.buildingsPanel}>
+          <div className={gufengStyles.buildingsTitle}>建筑列表</div>
+          <ul className={gufengStyles.buildingsList}>
             {buildings.map((b: BuildingData) => {
               const configId = b.config_id || b.id;
               const iconConfig = BUILDING_ICONS[configId] || BUILDING_ICONS[1];
               return (
-                <li key={b.id} className={styles.buildingItem}>
+                <li key={b.id} className={gufengStyles.buildingItem}>
                   <img 
                     src={iconConfig.icon} 
                     alt="" 
                     style={{ width: '14px', height: '14px', marginRight: '4px', imageRendering: 'pixelated' }}
                   />
                   <span>{iconConfig.name}</span>
-                  <span className={styles.buildingLevel}>Lv{b.level}</span>
+                  <span className={gufengStyles.buildingLevel}>Lv{b.level}</span>
                 </li>
               );
             })}

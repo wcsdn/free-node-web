@@ -2,6 +2,8 @@
  * 建筑面板组件
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import { BuildingInfo } from '../../services/api/cityApi';
 import styles from '../../styles/jxMain.module.css';
@@ -98,52 +100,52 @@ const BuildingPanel: React.FC<BuildingPanelProps> = ({ cityId, onClose }) => {
   const availablePositions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].filter(p => !usedPositions.includes(p));
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel}>
+      <div className={gufengStyles.popupHeader}>
         <span>建筑系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
       
-      <div className={styles.popupContent}>
+      <div className={gufengStyles.popupContent}>
         {/* 消息 */}
-        {message && <div className={styles.message}>{message}</div>}
+        {message && <div className={gufengStyles.message}>{message}</div>}
 
         {/* 建造按钮 */}
-        <div className={styles.buildAction}>
+        <div className={gufengStyles.buildAction}>
           <button 
             onClick={() => setShowBuildModal(true)}
             disabled={availablePositions.length === 0}
-            className={styles.buildBtn}
+            className={gufengStyles.buildBtn}
           >
             建造建筑 ({availablePositions.length} 个空位)
           </button>
         </div>
 
         {/* 建筑列表 */}
-        <div className={styles.buildingList}>
+        <div className={gufengStyles.buildingList}>
           <h4>已建造建筑</h4>
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={gufengStyles.loading}>加载中...</div>
           ) : buildings.length === 0 ? (
-            <div className={styles.empty}>暂无建筑</div>
+            <div className={gufengStyles.empty}>暂无建筑</div>
           ) : (
-            <div className={styles.buildingGrid}>
+            <div className={gufengStyles.buildingGrid}>
               {buildings.map(building => (
                 <div 
                   key={building.ID}
-                  className={`${styles.buildingCard} ${selectedBuilding?.ID === building.ID ? styles.selected : ''}`}
+                  className={`${gufengStyles.buildingCard} ${selectedBuilding?.ID === building.ID ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedBuilding(building)}
                 >
-                  <div className={styles.buildingName}>
+                  <div className={gufengStyles.buildingName}>
                     {building.config?.name || `建筑${building.ConfigID}`}
                   </div>
-                  <div className={styles.buildingLevel}>
+                  <div className={gufengStyles.buildingLevel}>
                     等级: {building.Level}/{building.config?.maxLevel || 10}
                   </div>
-                  <div className={styles.buildingEffect}>
+                  <div className={gufengStyles.buildingEffect}>
                     效果: {building.config?.levelInfo?.effectValue || 0}
                   </div>
-                  <div className={styles.buildingType}>
+                  <div className={gufengStyles.buildingType}>
                     {building.config?.type === 1 ? '内政' : '防御'}
                   </div>
                 </div>
@@ -154,22 +156,22 @@ const BuildingPanel: React.FC<BuildingPanelProps> = ({ cityId, onClose }) => {
 
         {/* 建筑详情 */}
         {selectedBuilding && selectedBuilding.config && (
-          <div className={styles.buildingDetail}>
+          <div className={gufengStyles.buildingDetail}>
             <h4>{selectedBuilding.config.name} - 详情</h4>
-            <div className={styles.buildingDetailInfo}>
+            <div className={gufengStyles.buildingDetailInfo}>
               <div>当前等级: {selectedBuilding.Level}</div>
               <div>效果值: {selectedBuilding.config.levelInfo?.effectValue || 0}</div>
               <div>最大等级: {selectedBuilding.config.maxLevel}</div>
             </div>
             {selectedBuilding.Level < selectedBuilding.config.maxLevel && (
-              <div className={styles.buildingUpgrade}>
+              <div className={gufengStyles.buildingUpgrade}>
                 <div>升级需求:</div>
                 <div>铜钱: {selectedBuilding.config.levelInfo?.costMoney || 0}</div>
                 <div>粮食: {selectedBuilding.config.levelInfo?.costFood || 0}</div>
                 <div>人口: {selectedBuilding.config.levelInfo?.costPeople || 0}</div>
                 <button 
                   onClick={() => handleUpgrade(selectedBuilding)}
-                  className={styles.upgradeBtn}
+                  className={gufengStyles.upgradeBtn}
                 >
                   升级
                 </button>
@@ -180,19 +182,19 @@ const BuildingPanel: React.FC<BuildingPanelProps> = ({ cityId, onClose }) => {
 
         {/* 建造弹窗 */}
         {showBuildModal && (
-          <div className={styles.modal}>
-            <div className={styles.modalContent}>
+          <div className={gufengStyles.modal}>
+            <div className={gufengStyles.modalContent}>
               <h4>选择要建造的建筑</h4>
-              <div className={styles.buildOptions}>
+              <div className={gufengStyles.buildOptions}>
                 {BUILDING_CONFIGS.map(config => (
-                  <div key={config.id} className={styles.buildOption}>
-                    <div className={styles.buildOptionName}>{config.name}</div>
-                    <div className={styles.buildOptionDesc}>{config.desc}</div>
-                    <div className={styles.buildOptionType}>
+                  <div key={config.id} className={gufengStyles.buildOption}>
+                    <div className={gufengStyles.buildOptionName}>{config.name}</div>
+                    <div className={gufengStyles.buildOptionDesc}>{config.desc}</div>
+                    <div className={gufengStyles.buildOptionType}>
                       {config.type === 1 ? '内政' : '防御'} | 最高{config.maxLevel}级
                     </div>
                     <select 
-                      className={styles.positionSelect}
+                      className={gufengStyles.positionSelect}
                       onChange={(e) => {
                         const pos = parseInt(e.target.value);
                         if (pos > 0) {
@@ -211,7 +213,7 @@ const BuildingPanel: React.FC<BuildingPanelProps> = ({ cityId, onClose }) => {
               </div>
               <button 
                 onClick={() => setShowBuildModal(false)}
-                className={styles.cancelBtn}
+                className={gufengStyles.cancelBtn}
               >
                 取消
               </button>

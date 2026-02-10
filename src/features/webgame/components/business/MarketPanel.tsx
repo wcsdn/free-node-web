@@ -2,6 +2,8 @@
  * 市场面板组件 - 资源交易
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/jxMain.module.css';
 
@@ -90,22 +92,22 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
   const currentCity = cities.find(c => c.id === selectedCity);
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel}>
+      <div className={gufengStyles.popupHeader}>
         <span>市场交易</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
       
-      <div className={styles.popupContent}>
-        {message && <div className={styles.message}>{message}</div>}
+      <div className={gufengStyles.popupContent}>
+        {message && <div className={gufengStyles.message}>{message}</div>}
         
         {/* 城市选择 */}
-        <div className={styles.marketCitySelect}>
+        <div className={gufengStyles.marketCitySelect}>
           <label>选择城市: </label>
           <select 
             value={selectedCity} 
             onChange={(e) => setSelectedCity(parseInt(e.target.value))}
-            className={styles.citySelect}
+            className={gufengStyles.citySelect}
           >
             {cities.map(city => (
               <option key={city.id} value={city.id}>
@@ -116,15 +118,15 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
         </div>
 
         {/* 买卖切换 */}
-        <div className={styles.marketActions}>
+        <div className={gufengStyles.marketActions}>
           <button 
-            className={`${styles.actionTab} ${action === 'buy' ? styles.active : ''}`}
+            className={`${gufengStyles.actionTab} ${action === 'buy' ? gufengStyles.active : ''}`}
             onClick={() => setAction('buy')}
           >
             买入资源
           </button>
           <button 
-            className={`${styles.actionTab} ${action === 'sell' ? styles.active : ''}`}
+            className={`${gufengStyles.actionTab} ${action === 'sell' ? gufengStyles.active : ''}`}
             onClick={() => setAction('sell')}
           >
             卖出资源
@@ -133,29 +135,29 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
 
         {/* 资源列表 */}
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : (
-          <div className={styles.marketItems}>
+          <div className={gufengStyles.marketItems}>
             {items.map(item => (
               <div 
                 key={item.id}
-                className={`${styles.marketItem} ${selectedItem?.id === item.id ? styles.selected : ''}`}
+                className={`${gufengStyles.marketItem} ${selectedItem?.id === item.id ? gufengStyles.selected : ''}`}
                 onClick={() => setSelectedItem(item)}
               >
-                <img src={item.icon} alt={item.resource_name} className={styles.itemIcon} />
-                <div className={styles.itemInfo}>
-                  <div className={styles.itemName}>{item.resource_name}</div>
-                  <div className={styles.itemPrice}>
-                    单价: <span className={action === 'buy' ? styles.sellPrice : styles.buyPrice}>
+                <img src={item.icon} alt={item.resource_name} className={gufengStyles.itemIcon} />
+                <div className={gufengStyles.itemInfo}>
+                  <div className={gufengStyles.itemName}>{item.resource_name}</div>
+                  <div className={gufengStyles.itemPrice}>
+                    单价: <span className={action === 'buy' ? gufengStyles.sellPrice : gufengStyles.buyPrice}>
                       {item.price} 金币
                     </span>
                   </div>
-                  <div className={styles.itemRange}>
+                  <div className={gufengStyles.itemRange}>
                     数量: {item.min_amount}-{item.max_amount}
                   </div>
                 </div>
                 {currentCity && (
-                  <div className={styles.itemStock}>
+                  <div className={gufengStyles.itemStock}>
                     拥有: {currentCity[item.resource_type as keyof typeof currentCity] || 0}
                   </div>
                 )}
@@ -166,8 +168,8 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
 
         {/* 交易区域 */}
         {selectedItem && (
-          <div className={styles.tradeArea}>
-            <div className={styles.tradeForm}>
+          <div className={gufengStyles.tradeArea}>
+            <div className={gufengStyles.tradeForm}>
               <label>数量: </label>
               <input 
                 type="number" 
@@ -175,17 +177,17 @@ const MarketPanel: React.FC<MarketPanelProps> = ({ onClose }) => {
                 onChange={(e) => setAmount(Math.max(selectedItem.min_amount, Math.min(selectedItem.max_amount, parseInt(e.target.value) || 0)))}
                 min={selectedItem.min_amount}
                 max={selectedItem.max_amount}
-                className={styles.amountInput}
+                className={gufengStyles.amountInput}
               />
               <button 
                 onClick={handleTrade}
-                className={action === 'buy' ? styles.buyBtn : styles.sellBtn}
+                className={action === 'buy' ? gufengStyles.buyBtn : gufengStyles.sellBtn}
               >
                 {action === 'buy' ? '买入' : '卖出'} 
                 ({(amount * selectedItem.price)} 金币)
               </button>
             </div>
-            <div className={styles.tradeTips}>
+            <div className={gufengStyles.tradeTips}>
               {action === 'buy' 
                 ? `买入 ${amount} ${selectedItem.resource_name} 需要 ${amount * selectedItem.price} 金币`
                 : `卖出 ${amount} ${selectedItem.resource_name} 将获得 ${amount * selectedItem.price} 金币`

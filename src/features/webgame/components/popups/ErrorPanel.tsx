@@ -3,6 +3,8 @@
  * 替代原来的 Error.aspx (错误页面)
  */
 import React from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import styles from '../../styles/jxMain.module.css';
 
 interface ErrorPanelProps {
@@ -35,48 +37,48 @@ const ErrorPanel: React.FC<ErrorPanelProps> = ({
   };
 
   return (
-    <div className={styles.popupOverlay}>
-      <div className={styles.errorPanel}>
+    <div className={gufengStyles.popupOverlay}>
+      <div className={gufengStyles.errorPanel}>
         {/* 错误图标 */}
-        <div className={styles.errorIcon}>❌</div>
+        <div className={gufengStyles.errorIcon}>❌</div>
 
         {/* 错误标题 */}
-        <h2 className={styles.errorTitle}>出错了</h2>
+        <h2 className={gufengStyles.errorTitle}>出错了</h2>
 
         {/* 错误信息 */}
-        <div className={styles.errorContent}>
+        <div className={gufengStyles.errorContent}>
           {errorCode && (
-            <p className={styles.errorCode}>错误代码: {errorCode}</p>
+            <p className={gufengStyles.errorCode}>错误代码: {errorCode}</p>
           )}
-          <p className={styles.errorMessage}>{getErrorMessage(error)}</p>
+          <p className={gufengStyles.errorMessage}>{getErrorMessage(error)}</p>
           {error !== errorCode && (
-            <p className={styles.errorDetail}>{error}</p>
+            <p className={gufengStyles.errorDetail}>{error}</p>
           )}
         </div>
 
         {/* 操作按钮 */}
-        <div className={styles.errorActions}>
+        <div className={gufengStyles.errorActions}>
           {onRetry && (
-            <button className={styles.errorButton} onClick={onRetry}>
+            <button className={gufengStyles.errorButton} onClick={onRetry}>
               🔄 重试
             </button>
           )}
           {onBack && (
-            <button className={styles.errorButton} onClick={onBack}>
+            <button className={gufengStyles.errorButton} onClick={onBack}>
               ← 返回
             </button>
           )}
           {onHome && (
-            <button className={styles.errorButton} onClick={onHome}>
+            <button className={gufengStyles.errorButton} onClick={onHome}>
               🏠 首页
             </button>
           )}
         </div>
 
         {/* 联系客服 */}
-        <div className={styles.errorSupport}>
+        <div className={gufengStyles.errorSupport}>
           <p>如问题持续存在，请联系客服</p>
-          <p className={styles.supportInfo}>
+          <p className={gufengStyles.supportInfo}>
             工作时间：周一至周五 9:00-18:00
           </p>
         </div>

@@ -2,6 +2,8 @@
  * 武将面板组件
  */
 import React, { useEffect, useState } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi, type Hero } from '../../services/gameApi';
 import styles from '../../styles/jxMain.module.css';
 
@@ -99,64 +101,64 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ cityId, onClose }) => {
   };
 
   return (
-    <div className={styles.popupPanel}>
-      <div className={styles.popupHeader}>
+    <div className={gufengStyles.popupPanel}>
+      <div className={gufengStyles.popupHeader}>
         <span>武将系统</span>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
       
-      <div className={styles.popupContent}>
+      <div className={gufengStyles.popupContent}>
         {/* 招募区域 */}
-        <div className={styles.recruitArea}>
+        <div className={gufengStyles.recruitArea}>
           <h4>招募武将</h4>
-          <div className={styles.recruitBtns}>
+          <div className={gufengStyles.recruitBtns}>
             <button 
               onClick={() => handleRecruit('normal')}
               disabled={recruiting}
-              className={styles.recruitBtn}
+              className={gufengStyles.recruitBtn}
             >
               普通招募 (免费)
             </button>
             <button 
               onClick={() => handleRecruit('advanced')}
               disabled={recruiting}
-              className={styles.recruitBtnAdvanced}
+              className={gufengStyles.recruitBtnAdvanced}
             >
               高级招募 (消耗金币)
             </button>
           </div>
-          {message && <div className={styles.message}>{message}</div>}
+          {message && <div className={gufengStyles.message}>{message}</div>}
         </div>
 
         {/* 武将列表 */}
-        <div className={styles.heroList}>
+        <div className={gufengStyles.heroList}>
           <h4>我的武将 ({heroes.length})</h4>
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={gufengStyles.loading}>加载中...</div>
           ) : heroes.length === 0 ? (
-            <div className={styles.empty}>暂无武将</div>
+            <div className={gufengStyles.empty}>暂无武将</div>
           ) : (
-            <div className={styles.heroGrid}>
+            <div className={gufengStyles.heroGrid}>
               {heroes.map(hero => (
                 <div 
                   key={hero.id} 
-                  className={`${styles.heroCard} ${selectedHero?.id === hero.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.heroCard} ${selectedHero?.id === hero.id ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedHero(hero)}
                 >
                   <div 
-                    className={styles.heroQuality}
+                    className={gufengStyles.heroQuality}
                     style={{ backgroundColor: getQualityColor(hero.quality) }}
                   >
                     {getQualityName(hero.quality)}
                   </div>
-                  <div className={styles.heroName}>{hero.name}</div>
-                  <div className={styles.heroStats}>
+                  <div className={gufengStyles.heroName}>{hero.name}</div>
+                  <div className={gufengStyles.heroStats}>
                     <div>等级: {hero.level}</div>
                     <div>攻: {hero.attack}</div>
                     <div>防: {hero.defense}</div>
                     <div>血: {hero.hp}/{hero.max_hp}</div>
                   </div>
-                  <div className={styles.heroState}>
+                  <div className={gufengStyles.heroState}>
                     {hero.state === 0 ? '空闲' : hero.state === 1 ? '守城' : '训练中'}
                   </div>
                 </div>
@@ -167,9 +169,9 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ cityId, onClose }) => {
 
         {/* 武将详情 */}
         {selectedHero && (
-          <div className={styles.heroDetail}>
+          <div className={gufengStyles.heroDetail}>
             <h4>{selectedHero.name} - 详情</h4>
-            <div className={styles.heroDetailStats}>
+            <div className={gufengStyles.heroDetailStats}>
               <div>等级: {selectedHero.level}</div>
               <div>经验: {selectedHero.exp}/{selectedHero.level * 500}</div>
               <div>攻击力: {selectedHero.attack}</div>
@@ -177,16 +179,16 @@ const HeroPanel: React.FC<HeroPanelProps> = ({ cityId, onClose }) => {
               <div>生命值: {selectedHero.hp}/{selectedHero.max_hp}</div>
               <div>突破次数: {selectedHero.level - 1}</div>
             </div>
-            <div className={styles.heroActions}>
+            <div className={gufengStyles.heroActions}>
               <button 
                 onClick={() => handleTrain(selectedHero)}
-                className={styles.actionBtn}
+                className={gufengStyles.actionBtn}
               >
                 训练 (+经验)
               </button>
               <button 
                 onClick={() => handleUpgrade(selectedHero)}
-                className={styles.actionBtn}
+                className={gufengStyles.actionBtn}
               >
                 突破 (消耗{selectedHero.level * 100}金币)
               </button>

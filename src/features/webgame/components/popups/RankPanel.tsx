@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './RankPanel.module.css';
 
@@ -60,72 +62,72 @@ export const RankPanel: React.FC<RankPanelProps> = ({ onClose }) => {
   };
 
   const getRankClass = (rank: number) => {
-    if (rank === 1) return styles.first;
-    if (rank === 2) return styles.second;
-    if (rank === 3) return styles.third;
+    if (rank === 1) return gufengStyles.first;
+    if (rank === 2) return gufengStyles.second;
+    if (rank === 3) return gufengStyles.third;
     return '';
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>🏆 排行榜</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {/* 我的排名 */}
         {myRank && (
-          <div className={styles.myRank}>
-            <div className={styles.myRankInfo}>
-              <span className={styles.myRankLabel}>我的排名</span>
-              <span className={styles.myRankValue}>#{myRank.rank || '-'}</span>
+          <div className={gufengStyles.myRank}>
+            <div className={gufengStyles.myRankInfo}>
+              <span className={gufengStyles.myRankLabel}>我的排名</span>
+              <span className={gufengStyles.myRankValue}>#{myRank.rank || '-'}</span>
             </div>
-            <div className={styles.myRankInfo}>
-              <span className={styles.myRankLabel}>我的{getTypeLabel(activeTab)}</span>
-              <span className={styles.myRankValue}>{myRank.score || myRank.power || myRank.level || '-'}</span>
+            <div className={gufengStyles.myRankInfo}>
+              <span className={gufengStyles.myRankLabel}>我的{getTypeLabel(activeTab)}</span>
+              <span className={gufengStyles.myRankValue}>{myRank.score || myRank.power || myRank.level || '-'}</span>
             </div>
           </div>
         )}
 
         {/* 标签页 */}
-        <div className={styles.tabs}>
+        <div className={gufengStyles.tabs}>
           {rankTypes.map(type => (
             <button
               key={type.key}
-              className={`${styles.tab} ${activeTab === type.key ? styles.active : ''}`}
+              className={`${gufengStyles.tab} ${activeTab === type.key ? gufengStyles.active : ''}`}
               onClick={() => setActiveTab(type.key)}
             >
-              <span className={styles.tabIcon}>{type.icon}</span>
-              <span className={styles.tabLabel}>{type.label}</span>
+              <span className={gufengStyles.tabIcon}>{type.icon}</span>
+              <span className={gufengStyles.tabLabel}>{type.label}</span>
             </button>
           ))}
         </div>
 
         {/* 排行榜列表 */}
-        <div className={styles.content}>
+        <div className={gufengStyles.content}>
           {loading ? (
-            <div className={styles.loading}>加载中...</div>
+            <div className={gufengStyles.loading}>加载中...</div>
           ) : (
-            <div className={styles.rankList}>
+            <div className={gufengStyles.rankList}>
               {rankings.map((item, idx) => (
-                <div key={idx} className={`${styles.rankItem} ${getRankClass(item.rank)}`}>
-                  <div className={styles.rankNum}>
-                    <span className={styles.rankIcon}>{getRankIcon(item.rank)}</span>
-                    <span className={styles.rankNumber}>{item.rank}</span>
+                <div key={idx} className={`${gufengStyles.rankItem} ${getRankClass(item.rank)}`}>
+                  <div className={gufengStyles.rankNum}>
+                    <span className={gufengStyles.rankIcon}>{getRankIcon(item.rank)}</span>
+                    <span className={gufengStyles.rankNumber}>{item.rank}</span>
                   </div>
-                  <div className={styles.playerInfo}>
-                    <span className={styles.playerName}>{item.name}</span>
-                    {item.level && <span className={styles.playerLevel}>Lv.{item.level}</span>}
-                    {item.title && <span className={styles.playerTitle}>{item.title}</span>}
+                  <div className={gufengStyles.playerInfo}>
+                    <span className={gufengStyles.playerName}>{item.name}</span>
+                    {item.level && <span className={gufengStyles.playerLevel}>Lv.{item.level}</span>}
+                    {item.title && <span className={gufengStyles.playerTitle}>{item.title}</span>}
                   </div>
-                  <div className={styles.rankValue}>
+                  <div className={gufengStyles.rankValue}>
                     {getTypeValue(activeTab, item.value)}
                   </div>
                 </div>
               ))}
               {rankings.length === 0 && (
-                <div className={styles.empty}>暂无排名数据</div>
+                <div className={gufengStyles.empty}>暂无排名数据</div>
               )}
             </div>
           )}

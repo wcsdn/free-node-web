@@ -2,6 +2,8 @@
  * 英雄列表组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../styles/gufeng.module.css';
+
 import styles from '../styles/HeroList.module.css';
 import { getApiBase } from '../utils/api';
 
@@ -164,25 +166,25 @@ const HeroList: React.FC<HeroListProps> = memo(({ walletAddress }) => {
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 招募按钮 */}
-        <div className={styles.recruitSection}>
+        <div className={gufengStyles.recruitSection}>
           <button
-            className={styles.recruitBtn}
+            className={gufengStyles.recruitBtn}
             onClick={() => recruitHero('normal')}
             disabled={recruiting}
           >
             {i18n.normal}
           </button>
           <button
-            className={`${styles.recruitBtn} ${styles.advanced}`}
+            className={`${gufengStyles.recruitBtn} ${gufengStyles.advanced}`}
             onClick={() => recruitHero('advanced')}
             disabled={recruiting}
           >
@@ -192,48 +194,48 @@ const HeroList: React.FC<HeroListProps> = memo(({ walletAddress }) => {
 
         {/* 英雄列表 */}
         {heroes.length === 0 ? (
-          <div className={styles.empty}>{i18n.noHeroes}</div>
+          <div className={gufengStyles.empty}>{i18n.noHeroes}</div>
         ) : (
-          <div className={styles.heroGrid}>
+          <div className={gufengStyles.heroGrid}>
             {heroes.map((hero) => (
               <div
                 key={hero.id}
-                className={`${styles.heroCard} ${selectedHero?.id === hero.id ? styles.selected : ''}`}
+                className={`${gufengStyles.heroCard} ${selectedHero?.id === hero.id ? gufengStyles.selected : ''}`}
                 style={{ borderColor: qualityColors[hero.quality - 1] }}
                 onClick={() => setSelectedHero(selectedHero?.id === hero.id ? null : hero)}
               >
-                <div className={styles.heroHeader}>
+                <div className={gufengStyles.heroHeader}>
                   <h3>{hero.name}</h3>
                   <span
-                    className={styles.quality}
+                    className={gufengStyles.quality}
                     style={{ backgroundColor: qualityColors[hero.quality - 1] }}
                   >
                     {qualityNames[hero.quality - 1]}
                   </span>
                 </div>
 
-                <div className={styles.heroStats}>
-                  <div className={styles.statRow}>
+                <div className={gufengStyles.heroStats}>
+                  <div className={gufengStyles.statRow}>
                     <span>{i18n.level}:</span>
                     <span>{hero.level}</span>
                   </div>
-                  <div className={styles.statRow}>
+                  <div className={gufengStyles.statRow}>
                     <span>{i18n.hp}:</span>
                     <span>{hero.hp}/{hero.max_hp}</span>
                   </div>
-                  <div className={styles.statRow}>
+                  <div className={gufengStyles.statRow}>
                     <span>{i18n.attack}:</span>
                     <span>{hero.attack}</span>
                   </div>
-                  <div className={styles.statRow}>
+                  <div className={gufengStyles.statRow}>
                     <span>{i18n.defense}:</span>
                     <span>{hero.defense}</span>
                   </div>
-                  <div className={styles.statRow}>
+                  <div className={gufengStyles.statRow}>
                     <span>{i18n.training}:</span>
-                    <div className={styles.trainingBar}>
+                    <div className={gufengStyles.trainingBar}>
                       <div
-                        className={styles.trainingProgress}
+                        className={gufengStyles.trainingProgress}
                         style={{ width: `${hero.training}%` }}
                       />
                     </div>
@@ -242,25 +244,25 @@ const HeroList: React.FC<HeroListProps> = memo(({ walletAddress }) => {
                 </div>
 
                 {/* 经验条 */}
-                <div className={styles.expBar}>
+                <div className={gufengStyles.expBar}>
                   <div
-                    className={styles.expProgress}
+                    className={gufengStyles.expProgress}
                     style={{ width: `${Math.min(100, (hero.exp % 100))}%` }}
                   />
                 </div>
-                <div className={styles.expText}>{hero.exp}/{hero.level * 100} EXP</div>
+                <div className={gufengStyles.expText}>{hero.exp}/{hero.level * 100} EXP</div>
 
                 {/* 操作按钮 */}
-                <div className={styles.heroActions}>
+                <div className={gufengStyles.heroActions}>
                   <button
-                    className={styles.actionBtn}
+                    className={gufengStyles.actionBtn}
                     onClick={(e) => { e.stopPropagation(); handleTrain(hero.id, 'normal'); }}
                     disabled={training === hero.id || hero.state === 2}
                   >
                     {i18n.train}
                   </button>
                   <button
-                    className={`${styles.actionBtn} ${styles.levelUpBtn}`}
+                    className={`${gufengStyles.actionBtn} ${gufengStyles.levelUpBtn}`}
                     onClick={(e) => { e.stopPropagation(); handleLevelUp(hero.id); }}
                   >
                     {i18n.levelUp}
@@ -269,18 +271,18 @@ const HeroList: React.FC<HeroListProps> = memo(({ walletAddress }) => {
 
                 {/* 选中显示技能 */}
                 {selectedHero?.id === hero.id && (
-                  <div className={styles.skillsSection}>
-                    <div className={styles.skillsTitle}>{i18n.skills}</div>
-                    <div className={styles.skillsList}>
+                  <div className={gufengStyles.skillsSection}>
+                    <div className={gufengStyles.skillsTitle}>{i18n.skills}</div>
+                    <div className={gufengStyles.skillsList}>
                       {hero.skills && hero.skills.length > 0 ? (
                         hero.skills.map((skill) => (
-                          <div key={skill.id} className={styles.skillItem}>
+                          <div key={skill.id} className={gufengStyles.skillItem}>
                             <span>技能 #{skill.static_index}</span>
                             <span>Lv.{skill.skill_level}</span>
                           </div>
                         ))
                       ) : (
-                        <div className={styles.noSkills}>
+                        <div className={gufengStyles.noSkills}>
                           {language === 'en' ? 'No skills' : '暂无技能'}
                         </div>
                       )}

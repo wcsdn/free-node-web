@@ -2,6 +2,8 @@
  * 军团面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import PageLayout from '@/shared/layouts/PageLayout';
 import { getApiBase } from '../../utils/api';
@@ -245,27 +247,27 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 创建军团按钮 */}
         {!createMode && (
-          <button className={styles.createBtn} onClick={() => setCreateMode(true)}>
+          <button className={gufengStyles.createBtn} onClick={() => setCreateMode(true)}>
             ➕ {i18n.createCorps}
           </button>
         )}
 
         {/* 创建军团表单 */}
         {createMode && (
-          <div className={styles.createForm}>
+          <div className={gufengStyles.createForm}>
             <h3>{i18n.createCorps}</h3>
             
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>{i18n.corpsName}</label>
               <input
                 type="text"
@@ -275,17 +277,17 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
               />
             </div>
 
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>{i18n.selectHeroes} ({selectedHeroIds.length})</label>
-              <div className={styles.heroGrid}>
+              <div className={gufengStyles.heroGrid}>
                 {availableHeroes.map((hero) => (
                   <div
                     key={hero.id}
-                    className={`${styles.heroCard} ${selectedHeroIds.includes(hero.id) ? styles.selected : ''}`}
+                    className={`${gufengStyles.heroCard} ${selectedHeroIds.includes(hero.id) ? gufengStyles.selected : ''}`}
                     onClick={() => toggleHeroSelect(hero.id)}
                   >
-                    <div className={styles.heroName}>{hero.name}</div>
-                    <div className={styles.heroStats}>
+                    <div className={gufengStyles.heroName}>{hero.name}</div>
+                    <div className={gufengStyles.heroStats}>
                       Lv.{hero.level} | {hero.hp}/{hero.max_hp} | ATK:{hero.attack}
                     </div>
                   </div>
@@ -293,9 +295,9 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
               </div>
             </div>
 
-            <div className={styles.formActions}>
+            <div className={gufengStyles.formActions}>
               <button 
-                className={styles.cancelBtn} 
+                className={gufengStyles.cancelBtn} 
                 onClick={() => {
                   setCreateMode(false);
                   setSelectedHeroIds([]);
@@ -304,7 +306,7 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
                 {i18n.cancel}
               </button>
               <button 
-                className={styles.confirmBtn}
+                className={gufengStyles.confirmBtn}
                 onClick={handleCreateCorps}
                 disabled={!newCorpsName.trim() || selectedHeroIds.length === 0 || actionLoading}
               >
@@ -316,27 +318,27 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
 
         {/* 军团列表 */}
         {!createMode && (
-          <div className={styles.corpsSection}>
+          <div className={gufengStyles.corpsSection}>
             <h3>{i18n.myCorps}</h3>
             
             {corpsList.length === 0 ? (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>🏛️</div>
+              <div className={gufengStyles.emptyState}>
+                <div className={gufengStyles.emptyIcon}>🏛️</div>
                 <p>{i18n.noCorps}</p>
-                <p className={styles.hint}>{i18n.createFirst}</p>
+                <p className={gufengStyles.hint}>{i18n.createFirst}</p>
               </div>
             ) : (
-              <div className={styles.corpsGrid}>
+              <div className={gufengStyles.corpsGrid}>
                 {corpsList.map((corps) => (
                   <div
                     key={corps.id}
-                    className={`${styles.corpsCard} ${selectedCorps?.id === corps.id ? styles.selected : ''}`}
+                    className={`${gufengStyles.corpsCard} ${selectedCorps?.id === corps.id ? gufengStyles.selected : ''}`}
                     onClick={() => fetchCorpsDetail(corps.id)}
                   >
-                    <div className={styles.corpsName}>{corps.name}</div>
-                    <div className={styles.corpsInfo}>
+                    <div className={gufengStyles.corpsName}>{corps.name}</div>
+                    <div className={gufengStyles.corpsInfo}>
                       <span>👥 {corps.heroCount} {i18n.heroes}</span>
-                      <span className={corps.state === 2 ? styles.marching : ''}>
+                      <span className={corps.state === 2 ? gufengStyles.marching : ''}>
                         {corps.stateText}
                       </span>
                     </div>
@@ -349,31 +351,31 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
 
         {/* 军团详情 */}
         {selectedCorps && (
-          <div className={styles.corpsDetail}>
+          <div className={gufengStyles.corpsDetail}>
             <h3>{selectedCorps.name}</h3>
             
-            <div className={styles.detailStats}>
-              <div className={styles.statItem}>
+            <div className={gufengStyles.detailStats}>
+              <div className={gufengStyles.statItem}>
                 <span>❤️ {i18n.totalHp}</span>
                 <span>{selectedCorps.totalHp || 0}</span>
               </div>
-              <div className={styles.statItem}>
+              <div className={gufengStyles.statItem}>
                 <span>⚔️ {i18n.totalAtk}</span>
                 <span>{selectedCorps.totalAttack || 0}</span>
               </div>
             </div>
 
             {/* 英雄列表 */}
-            <div className={styles.detailHeroes}>
+            <div className={gufengStyles.detailHeroes}>
               <h4>{i18n.heroes}</h4>
-              <div className={styles.heroList}>
+              <div className={gufengStyles.heroList}>
                 {(selectedCorps.heroes || []).map((hero) => (
-                  <div key={hero.id} className={styles.heroItem}>
-                    <div className={styles.heroInfo}>
-                      <span className={styles.heroName}>{hero.name}</span>
-                      <span className={styles.heroQuality}>品质{hero.quality}</span>
+                  <div key={hero.id} className={gufengStyles.heroItem}>
+                    <div className={gufengStyles.heroInfo}>
+                      <span className={gufengStyles.heroName}>{hero.name}</span>
+                      <span className={gufengStyles.heroQuality}>品质{hero.quality}</span>
                     </div>
-                    <div className={styles.heroBattleStats}>
+                    <div className={gufengStyles.heroBattleStats}>
                       <span>HP:{hero.hp}/{hero.max_hp}</span>
                       <span>ATK:{hero.attack}</span>
                       <span>DEF:{hero.defense}</span>
@@ -384,10 +386,10 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
             </div>
 
             {/* 操作按钮 */}
-            <div className={styles.detailActions}>
+            <div className={gufengStyles.detailActions}>
               {selectedCorps.state === 2 ? (
                 <button 
-                  className={styles.recallBtn}
+                  className={gufengStyles.recallBtn}
                   onClick={() => handleRecall(selectedCorps.id)}
                   disabled={actionLoading}
                 >
@@ -396,7 +398,7 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
               ) : (
                 <>
                   <button 
-                    className={styles.marchBtn}
+                    className={gufengStyles.marchBtn}
                     onClick={() => {
                       const target = prompt(language === 'en' ? 'Enter target position:' : '输入目标位置:');
                       if (target) handleMarch(selectedCorps.id, parseInt(target));
@@ -406,7 +408,7 @@ const CorpsPanel: React.FC<CorpsPanelProps> = memo(({ walletAddress }) => {
                     🚀 {i18n.march}
                   </button>
                   <button 
-                    className={styles.disbandBtn}
+                    className={gufengStyles.disbandBtn}
                     onClick={() => handleDisband(selectedCorps.id)}
                     disabled={actionLoading}
                   >

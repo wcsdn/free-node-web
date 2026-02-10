@@ -2,6 +2,8 @@
  * 帮派面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import styles from '../../styles/GuildPanel.module.css';
@@ -187,59 +189,59 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
   if (loading && guildList.length === 0) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 我的帮派 */}
-        <div className={styles.section}>
+        <div className={gufengStyles.section}>
           <h3>{i18n.myGuild}</h3>
           {myGuild ? (
-            <div className={styles.myGuildCard}>
-              <div className={styles.guildHeader}>
-                <span className={styles.guildName}>{myGuild.name}</span>
-                <span className={styles.memberCount}>👥 {myGuild.member_count}</span>
+            <div className={gufengStyles.myGuildCard}>
+              <div className={gufengStyles.guildHeader}>
+                <span className={gufengStyles.guildName}>{myGuild.name}</span>
+                <span className={gufengStyles.memberCount}>👥 {myGuild.member_count}</span>
               </div>
               {myGuild.notice && (
-                <div className={styles.notice}>{myGuild.notice}</div>
+                <div className={gufengStyles.notice}>{myGuild.notice}</div>
               )}
-              <div className={styles.memberList}>
+              <div className={gufengStyles.memberList}>
                 {(myGuild.members || []).map((member) => (
-                  <div key={member.id} className={styles.memberItem}>
-                    <span className={styles.memberName}>
+                  <div key={member.id} className={gufengStyles.memberItem}>
+                    <span className={gufengStyles.memberName}>
                       {member.character_name || member.wallet_address.slice(0, 8)}
                     </span>
                     <span
-                      className={styles.roleBadge}
+                      className={gufengStyles.roleBadge}
                       style={{ backgroundColor: getRoleBadge(member.role).color }}
                     >
                       {getRoleBadge(member.role).text}
                     </span>
-                    <span className={styles.contribution}>
+                    <span className={gufengStyles.contribution}>
                       {member.contribution} {i18n.contribution}
                     </span>
                   </div>
                 ))}
               </div>
-              <div className={styles.guildActions}>
-                <button className={styles.leaveBtn} onClick={leaveGuild}>
+              <div className={gufengStyles.guildActions}>
+                <button className={gufengStyles.leaveBtn} onClick={leaveGuild}>
                   ↪️ {i18n.leave}
                 </button>
                 {myGuild.leader_address.toLowerCase() === walletAddress.toLowerCase() && (
-                  <button className={styles.disbandBtn} onClick={disbandGuild}>
+                  <button className={gufengStyles.disbandBtn} onClick={disbandGuild}>
                     🗑️ {i18n.disband}
                   </button>
                 )}
               </div>
             </div>
           ) : (
-            <div className={styles.noGuild}>
+            <div className={gufengStyles.noGuild}>
               <p>{i18n.noGuild}</p>
-              <button className={styles.createBtn} onClick={() => setCreateMode(true)}>
+              <button className={gufengStyles.createBtn} onClick={() => setCreateMode(true)}>
                 ➕ {i18n.create}
               </button>
             </div>
@@ -248,9 +250,9 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
 
         {/* 创建帮派表单 */}
         {createMode && (
-          <div className={styles.createForm}>
+          <div className={gufengStyles.createForm}>
             <h4>{i18n.create}</h4>
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>{i18n.name}</label>
               <input
                 type="text"
@@ -260,7 +262,7 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
                 maxLength={12}
               />
             </div>
-            <div className={styles.formGroup}>
+            <div className={gufengStyles.formGroup}>
               <label>{i18n.notice}</label>
               <textarea
                 value={createNotice}
@@ -269,12 +271,12 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
                 rows={3}
               />
             </div>
-            <div className={styles.formActions}>
-              <button className={styles.cancelBtn} onClick={() => setCreateMode(false)}>
+            <div className={gufengStyles.formActions}>
+              <button className={gufengStyles.cancelBtn} onClick={() => setCreateMode(false)}>
                 {language === 'en' ? 'Cancel' : '取消'}
               </button>
               <button
-                className={styles.confirmBtn}
+                className={gufengStyles.confirmBtn}
                 onClick={createGuild}
                 disabled={!createName.trim()}
               >
@@ -285,9 +287,9 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
         )}
 
         {/* 帮派列表 */}
-        <div className={styles.section}>
+        <div className={gufengStyles.section}>
           <h3>{i18n.guildList}</h3>
-          <div className={styles.searchBar}>
+          <div className={gufengStyles.searchBar}>
             <input
               type="text"
               value={searchTerm}
@@ -297,16 +299,16 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
             />
             <button onClick={fetchGuildList}>🔍</button>
           </div>
-          <div className={styles.guildList}>
+          <div className={gufengStyles.guildList}>
             {guildList.map((guild) => (
-              <div key={guild.id} className={styles.guildItem}>
-                <div className={styles.guildInfo}>
-                  <span className={styles.guildName}>{guild.name}</span>
-                  <span className={styles.memberCount}>👥 {guild.member_count}</span>
+              <div key={guild.id} className={gufengStyles.guildItem}>
+                <div className={gufengStyles.guildInfo}>
+                  <span className={gufengStyles.guildName}>{guild.name}</span>
+                  <span className={gufengStyles.memberCount}>👥 {guild.member_count}</span>
                 </div>
                 {myGuild?.id !== guild.id && (
                   <button
-                    className={styles.joinBtn}
+                    className={gufengStyles.joinBtn}
                     onClick={() => joinGuild(guild.id)}
                   >
                     {i18n.join}
@@ -315,7 +317,7 @@ const GuildPanel: React.FC<GuildPanelProps> = memo(({ walletAddress }) => {
               </div>
             ))}
             {guildList.length === 0 && !loading && (
-              <div className={styles.empty}>No guilds found</div>
+              <div className={gufengStyles.empty}>No guilds found</div>
             )}
           </div>
         </div>

@@ -2,6 +2,8 @@
  * 技能学习面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { useLanguage } from '../../shared/hooks/useLanguage';
 import { useToast } from '../../shared/components/Toast/ToastContext';
 import styles from '../../styles/SkillLearnPanel.module.css';
@@ -175,33 +177,33 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
   };
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay} onClick={onClose}>
+      <div className={gufengStyles.panel} onClick={(e) => e.stopPropagation()}>
+        <div className={gufengStyles.header}>
           <h2>{i18n.title}</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
-        <div className={styles.heroInfo}>
+        <div className={gufengStyles.heroInfo}>
           <span>{i18n.hero}: {hero.name}</span>
           <span>{i18n.level}: {hero.level}</span>
         </div>
 
-        <div className={styles.content}>
+        <div className={gufengStyles.content}>
           {/* 已学技能 */}
-          <div className={styles.section}>
+          <div className={gufengStyles.section}>
             <h3>{i18n.currentSkills} ({skills.length}/5)</h3>
             {skills.length === 0 ? (
-              <div className={styles.empty}>{i18n.noSkills}</div>
+              <div className={gufengStyles.empty}>{i18n.noSkills}</div>
             ) : (
-              <div className={styles.skillGrid}>
+              <div className={gufengStyles.skillGrid}>
                 {skills.map((skill) => (
-                  <div key={skill.id} className={styles.skillCard}>
-                    <div className={styles.skillName}>{skill.name || `技能 #${skill.static_index}`}</div>
-                    <div className={styles.skillLevel}>{i18n.level}: {skill.skillLevel}</div>
-                    <div className={styles.skillEffect}>{i18n.effect}: {skill.effValue}</div>
+                  <div key={skill.id} className={gufengStyles.skillCard}>
+                    <div className={gufengStyles.skillName}>{skill.name || `技能 #${skill.static_index}`}</div>
+                    <div className={gufengStyles.skillLevel}>{i18n.level}: {skill.skillLevel}</div>
+                    <div className={gufengStyles.skillEffect}>{i18n.effect}: {skill.effValue}</div>
                     <button
-                      className={styles.upgradeBtn}
+                      className={gufengStyles.upgradeBtn}
                       onClick={() => handleUpgrade(skill.id)}
                       disabled={learning}
                     >
@@ -215,25 +217,25 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
 
           {/* 可学技能 */}
           {skills.length < 5 && (
-            <div className={styles.section}>
+            <div className={gufengStyles.section}>
               <h3>{i18n.availableSkills}</h3>
-              <div className={styles.skillGrid}>
+              <div className={gufengStyles.skillGrid}>
                 {availableSkills.map((skill) => (
                   <div
                     key={skill.id}
-                    className={`${styles.skillCard} ${hasSkill(skill.id) ? styles.learned : ''}`}
+                    className={`${gufengStyles.skillCard} ${hasSkill(skill.id) ? gufengStyles.learned : ''}`}
                   >
-                    <div className={styles.skillName}>{skill.name}</div>
-                    <div className={styles.skillDesc}>{skill.des}</div>
-                    <div className={styles.skillStats}>
+                    <div className={gufengStyles.skillName}>{skill.name}</div>
+                    <div className={gufengStyles.skillDesc}>{skill.des}</div>
+                    <div className={gufengStyles.skillStats}>
                       <span>{i18n.effect}: {skill.effValue}</span>
                       <span>{i18n.probability}: {skill.probability}%</span>
                     </div>
                     {hasSkill(skill.id) ? (
-                      <div className={styles.learnedBadge}>{i18n.learned}</div>
+                      <div className={gufengStyles.learnedBadge}>{i18n.learned}</div>
                     ) : (
                       <button
-                        className={styles.learnBtn}
+                        className={gufengStyles.learnBtn}
                         onClick={() => handleLearn()}
                         disabled={learning}
                       >
@@ -247,7 +249,7 @@ const SkillLearnPanel: React.FC<SkillLearnPanelProps> = memo(({ walletAddress, h
           )}
 
           {skills.length >= 5 && (
-            <div className={styles.maxWarning}>{i18n.maxSkills}</div>
+            <div className={gufengStyles.maxWarning}>{i18n.maxSkills}</div>
           )}
         </div>
       </div>

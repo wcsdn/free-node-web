@@ -2,6 +2,8 @@
  * 城防面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -126,32 +128,32 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 城防建筑 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{i18n.buildings}</h2>
+        <div className={gufengStyles.section}>
+          <h2 className={gufengStyles.sectionTitle}>{i18n.buildings}</h2>
           {buildings.length === 0 ? (
-            <div className={styles.empty}>{i18n.noBuildings}</div>
+            <div className={gufengStyles.empty}>{i18n.noBuildings}</div>
           ) : (
-            <div className={styles.buildingGrid}>
+            <div className={gufengStyles.buildingGrid}>
               {buildings.map((building) => (
-                <div key={building.id} className={styles.buildingCard}>
-                  <div className={styles.buildingIcon}>{building.icon || '🏰'}</div>
-                  <div className={styles.buildingInfo}>
+                <div key={building.id} className={gufengStyles.buildingCard}>
+                  <div className={gufengStyles.buildingIcon}>{building.icon || '🏰'}</div>
+                  <div className={gufengStyles.buildingInfo}>
                     <h4>{building.name}</h4>
-                    <div className={styles.buildingStats}>
+                    <div className={gufengStyles.buildingStats}>
                       <span>⚔️ {building.attack}</span>
                       <span>❤️ {building.hitPoint}</span>
                       <span>🎯 {building.attackRange}</span>
                     </div>
-                    <div className={styles.buildingLevel}>
+                    <div className={gufengStyles.buildingLevel}>
                       {language === 'en' ? 'Level' : '等级'}: {building.level}
                     </div>
                   </div>
@@ -162,35 +164,35 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
         </div>
 
         {/* 驻防英雄 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>{i18n.heroes}</h2>
+        <div className={gufengStyles.section}>
+          <h2 className={gufengStyles.sectionTitle}>{i18n.heroes}</h2>
           {heroes.length === 0 ? (
-            <div className={styles.empty}>{i18n.noHeroes}</div>
+            <div className={gufengStyles.empty}>{i18n.noHeroes}</div>
           ) : (
-            <div className={styles.heroGrid}>
+            <div className={gufengStyles.heroGrid}>
               {heroes.map((hero) => (
                 <div
                   key={hero.id}
-                  className={`${styles.heroCard} ${selectedHero?.id === hero.id ? styles.selected : ''}`}
+                  className={`${gufengStyles.heroCard} ${selectedHero?.id === hero.id ? gufengStyles.selected : ''}`}
                   onClick={() => setSelectedHero(selectedHero?.id === hero.id ? null : hero)}
                 >
-                  <div className={styles.heroInfo}>
+                  <div className={gufengStyles.heroInfo}>
                     <h4>{hero.name}</h4>
-                    <div className={styles.heroStats}>
+                    <div className={gufengStyles.heroStats}>
                       <span>⚔️ {hero.attack}</span>
                       <span>🛡️ {hero.defence}</span>
                       <span>❤️ {hero.hp}</span>
                     </div>
                   </div>
                   {hero.defencePos > 0 && (
-                    <div className={styles.deployed}>
+                    <div className={gufengStyles.deployed}>
                       📍 {hero.defencePos}
                     </div>
                   )}
                   {selectedHero?.id === hero.id && (
-                    <div className={styles.heroActions}>
+                    <div className={gufengStyles.heroActions}>
                       <button
-                        className={styles.deployBtn}
+                        className={gufengStyles.deployBtn}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSetDefence(hero.id, 1); // 默认位置1
@@ -200,7 +202,7 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
                       </button>
                       {hero.defencePos > 0 && (
                         <button
-                          className={styles.removeBtn}
+                          className={gufengStyles.removeBtn}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleRemoveDefence(hero.id);
@@ -219,7 +221,7 @@ const DefencePanel: React.FC<DefencePanelProps> = memo(({ walletAddress, cityId:
 
         {/* 选择提示 */}
         {selectedHero && (
-          <div className={styles.selectTip}>
+          <div className={gufengStyles.selectTip}>
             {i18n.clickToSelect}: {selectedHero.name}
           </div>
         )}

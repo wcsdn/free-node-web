@@ -2,6 +2,8 @@
  * 科技面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { useToast } from '@/shared/components/Toast/ToastContext';
@@ -112,64 +114,64 @@ const TechnicPanel: React.FC<TechnicPanelProps> = memo(({ walletAddress }) => {
   if (loading) {
     return (
       <PageLayout title={i18n.title}>
-        <div className={styles.loading}>{i18n.loading}</div>
+        <div className={gufengStyles.loading}>{i18n.loading}</div>
       </PageLayout>
     );
   }
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {technics.length === 0 ? (
-          <div className={styles.empty}>{i18n.noTechnics}</div>
+          <div className={gufengStyles.empty}>{i18n.noTechnics}</div>
         ) : (
-          <div className={styles.techGrid}>
+          <div className={gufengStyles.techGrid}>
             {technics.map((tech) => (
-              <div key={tech.id} className={styles.techCard}>
-                <div className={styles.techHeader}>
-                  <span className={styles.techIcon}>{tech.icon || '⚙️'}</span>
-                  <div className={styles.techTitle}>
+              <div key={tech.id} className={gufengStyles.techCard}>
+                <div className={gufengStyles.techHeader}>
+                  <span className={gufengStyles.techIcon}>{tech.icon || '⚙️'}</span>
+                  <div className={gufengStyles.techTitle}>
                     <h3>{tech.name}</h3>
-                    <span className={styles.techLevel}>
+                    <span className={gufengStyles.techLevel}>
                       {i18n.level}: {tech.level}/{tech.maxLevel}
                     </span>
                   </div>
                 </div>
 
-                <div className={styles.techDesc}>{tech.des}</div>
+                <div className={gufengStyles.techDesc}>{tech.des}</div>
 
-                <div className={styles.techEffects}>
-                  <div className={styles.effectRow}>
+                <div className={gufengStyles.techEffects}>
+                  <div className={gufengStyles.effectRow}>
                     <span>{i18n.currentEffect}:</span>
-                    <span className={styles.effectValue}>{tech.currEff}</span>
+                    <span className={gufengStyles.effectValue}>{tech.currEff}</span>
                   </div>
                   {tech.level < tech.maxLevel && tech.nextEff > 0 && (
-                    <div className={styles.effectRow}>
+                    <div className={gufengStyles.effectRow}>
                       <span>{i18n.nextEffect}:</span>
-                      <span className={styles.effectValueNext}>{tech.nextEff}</span>
+                      <span className={gufengStyles.effectValueNext}>{tech.nextEff}</span>
                     </div>
                   )}
                 </div>
 
                 {tech.level < tech.maxLevel && (
-                  <div className={styles.techCost}>
-                    <div className={styles.costTitle}>{i18n.cost}:</div>
-                    <div className={styles.costItems}>
+                  <div className={gufengStyles.techCost}>
+                    <div className={gufengStyles.costTitle}>{i18n.cost}:</div>
+                    <div className={gufengStyles.costItems}>
                       {tech.upNeedGold > 0 && (
-                        <span className={styles.costItem}>💰 {tech.upNeedGold}</span>
+                        <span className={gufengStyles.costItem}>💰 {tech.upNeedGold}</span>
                       )}
                       {tech.upNeedFood > 0 && (
-                        <span className={styles.costItem}>🌾 {tech.upNeedFood}</span>
+                        <span className={gufengStyles.costItem}>🌾 {tech.upNeedFood}</span>
                       )}
                       {tech.upNeedMoney > 0 && (
-                        <span className={styles.costItem}>💵 {tech.upNeedMoney}</span>
+                        <span className={gufengStyles.costItem}>💵 {tech.upNeedMoney}</span>
                       )}
                       {tech.upNeedTime > 0 && (
-                        <span className={styles.costItem}>⏱️ {formatTime(tech.upNeedTime)}</span>
+                        <span className={gufengStyles.costItem}>⏱️ {formatTime(tech.upNeedTime)}</span>
                       )}
                     </div>
                     {tech.upNeedBuildingName && (
-                      <div className={styles.require}>
+                      <div className={gufengStyles.require}>
                         {i18n.require}: {tech.upNeedBuildingName} Lv.{tech.upNeedBuildingLevel}
                       </div>
                     )}
@@ -178,14 +180,14 @@ const TechnicPanel: React.FC<TechnicPanelProps> = memo(({ walletAddress }) => {
 
                 {tech.level < tech.maxLevel ? (
                   <button
-                    className={styles.upgradeBtn}
+                    className={gufengStyles.upgradeBtn}
                     onClick={() => handleUpgrade(tech.index)}
                     disabled={upgrading === tech.index}
                   >
                     {upgrading === tech.index ? i18n.upgrading : i18n.upgrade}
                   </button>
                 ) : (
-                  <div className={styles.maxLevel}>{i18n.maxLevel}</div>
+                  <div className={gufengStyles.maxLevel}>{i18n.maxLevel}</div>
                 )}
               </div>
             ))}

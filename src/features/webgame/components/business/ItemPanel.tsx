@@ -2,6 +2,8 @@
  * 道具面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import PageLayout from '@/shared/layouts/PageLayout';
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import { gameApi, Item } from '../../services/gameApi';
@@ -108,35 +110,35 @@ const ItemPanel: React.FC<ItemPanelProps> = memo(({ walletAddress }) => {
 
   return (
     <PageLayout title={i18n.title}>
-      <div className={styles.container}>
+      <div className={gufengStyles.container}>
         {/* 标签页 */}
-        <div className={styles.tabs}>
+        <div className={gufengStyles.tabs}>
           <button
-            className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
+            className={`${gufengStyles.tab} ${activeTab === 'all' ? gufengStyles.active : ''}`}
             onClick={() => setActiveTab('all')}
           >
             {i18n.all}
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'equipment' ? styles.active : ''}`}
+            className={`${gufengStyles.tab} ${activeTab === 'equipment' ? gufengStyles.active : ''}`}
             onClick={() => setActiveTab('equipment')}
           >
             {i18n.equipment}
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'consumable' ? styles.active : ''}`}
+            className={`${gufengStyles.tab} ${activeTab === 'consumable' ? gufengStyles.active : ''}`}
             onClick={() => setActiveTab('consumable')}
           >
             {i18n.consumable}
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'material' ? styles.active : ''}`}
+            className={`${gufengStyles.tab} ${activeTab === 'material' ? gufengStyles.active : ''}`}
             onClick={() => setActiveTab('material')}
           >
             {i18n.material}
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'reward' ? styles.active : ''}`}
+            className={`${gufengStyles.tab} ${activeTab === 'reward' ? gufengStyles.active : ''}`}
             onClick={() => setActiveTab('reward')}
           >
             {i18n.reward}
@@ -144,29 +146,29 @@ const ItemPanel: React.FC<ItemPanelProps> = memo(({ walletAddress }) => {
         </div>
 
         {loading ? (
-          <div className={styles.loading}>{i18n.loading}</div>
+          <div className={gufengStyles.loading}>{i18n.loading}</div>
         ) : filteredItems.length === 0 ? (
-          <div className={styles.empty}>{i18n.noItems}</div>
+          <div className={gufengStyles.empty}>{i18n.noItems}</div>
         ) : (
-          <div className={styles.grid}>
+          <div className={gufengStyles.grid}>
             {filteredItems.map(item => (
-              <div key={item.id} className={styles.itemCard} style={{ borderColor: item.qualityColor }}>
-                <div className={styles.itemHeader}>
-                  <span className={styles.itemName} style={{ color: item.qualityColor }}>{item.configName}</span>
-                  <span className={styles.itemCount}>x{item.count}</span>
+              <div key={item.id} className={gufengStyles.itemCard} style={{ borderColor: item.qualityColor }}>
+                <div className={gufengStyles.itemHeader}>
+                  <span className={gufengStyles.itemName} style={{ color: item.qualityColor }}>{item.configName}</span>
+                  <span className={gufengStyles.itemCount}>x{item.count}</span>
                 </div>
-                <div className={styles.itemDesc}>{item.description}</div>
-                <div className={styles.itemActions}>
+                <div className={gufengStyles.itemDesc}>{item.description}</div>
+                <div className={gufengStyles.itemActions}>
                   {item.canUse && (
                     <button
-                      className={styles.actionBtn}
+                      className={gufengStyles.actionBtn}
                       onClick={() => useItemHandler(item.id)}
                     >
                       {i18n.use}
                     </button>
                   )}
                   <button
-                    className={styles.sellBtn}
+                    className={gufengStyles.sellBtn}
                     onClick={() => sellItemHandler(item.id)}
                   >
                     💰 {item.value}

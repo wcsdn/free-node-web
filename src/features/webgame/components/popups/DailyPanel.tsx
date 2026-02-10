@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import gameApi from '../../services/gameApi';
 import styles from './DailyPanel.module.css';
 
@@ -74,78 +76,78 @@ export const DailyPanel: React.FC<DailyPanelProps> = ({ onClose }) => {
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'completed': return styles.completed;
-      case 'in_progress': return styles.inProgress;
-      case 'locked': return styles.locked;
+      case 'completed': return gufengStyles.completed;
+      case 'in_progress': return gufengStyles.inProgress;
+      case 'locked': return gufengStyles.locked;
       default: return '';
     }
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.panel}>
-        <div className={styles.header}>
+    <div className={gufengStyles.overlay}>
+      <div className={gufengStyles.panel}>
+        <div className={gufengStyles.header}>
           <h2>📅 每日任务</h2>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
         </div>
 
         {loading ? (
-          <div className={styles.loading}>加载中...</div>
+          <div className={gufengStyles.loading}>加载中...</div>
         ) : (
           <>
             {/* 统计信息 */}
-            <div className={styles.stats}>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{dailyData?.stats.completed || 0}/{dailyData?.stats.total || 0}</span>
-                <span className={styles.statLabel}>完成</span>
+            <div className={gufengStyles.stats}>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statValue}>{dailyData?.stats.completed || 0}/{dailyData?.stats.total || 0}</span>
+                <span className={gufengStyles.statLabel}>完成</span>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>{dailyData?.stats.claimed || 0}</span>
-                <span className={styles.statLabel}>已领取</span>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statValue}>{dailyData?.stats.claimed || 0}</span>
+                <span className={gufengStyles.statLabel}>已领取</span>
               </div>
-              <div className={styles.statItem}>
-                <span className={styles.statValue}>+{dailyData?.stats.totalExp || 0}</span>
-                <span className={styles.statLabel}>可获经验</span>
+              <div className={gufengStyles.statItem}>
+                <span className={gufengStyles.statValue}>+{dailyData?.stats.totalExp || 0}</span>
+                <span className={gufengStyles.statLabel}>可获经验</span>
               </div>
             </div>
 
             {/* 任务列表 */}
-            <div className={styles.taskList}>
+            <div className={gufengStyles.taskList}>
               {dailyData?.tasks?.map((task) => (
-                <div key={task.id} className={`${styles.taskItem} ${getStatusClass(task.status)}`}>
-                  <div className={styles.taskInfo}>
+                <div key={task.id} className={`${gufengStyles.taskItem} ${getStatusClass(task.status)}`}>
+                  <div className={gufengStyles.taskInfo}>
                     <h3>{task.title}</h3>
                     <p>{task.description}</p>
                     {task.status === 'in_progress' && (
-                      <div className={styles.progressBar}>
+                      <div className={gufengStyles.progressBar}>
                         <div 
-                          className={styles.progressFill} 
+                          className={gufengStyles.progressFill} 
                           style={{ width: `${(task.progress / (task.target || 1)) * 100}%` }}
                         />
-                        <span className={styles.progressText}>
+                        <span className={gufengStyles.progressText}>
                           {task.progress}/{task.target || 100}%
                         </span>
                       </div>
                     )}
                   </div>
-                  <div className={styles.taskReward}>
+                  <div className={gufengStyles.taskReward}>
                     <span>奖励: {task.reward?.exp || 0} 经验</span>
                     {task.status === 'completed' && !dailyData.date && (
                       <button 
-                        className={styles.claimBtn}
+                        className={gufengStyles.claimBtn}
                         onClick={() => handleClaim(task.id)}
                       >
                         领取
                       </button>
                     )}
-                    <span className={`${styles.status} ${getStatusClass(task.status)}`}>
+                    <span className={`${gufengStyles.status} ${getStatusClass(task.status)}`}>
                       {getStatusText(task.status)}
                     </span>
                   </div>
                 </div>
               ))}
               {(!dailyData?.tasks || dailyData.tasks.length === 0) && (
-                <div className={styles.empty}>今日暂无任务</div>
+                <div className={gufengStyles.empty}>今日暂无任务</div>
               )}
             </div>
           </>

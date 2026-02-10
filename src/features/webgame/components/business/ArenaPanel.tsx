@@ -2,6 +2,8 @@
  * 竞技场面板组件
  */
 import React, { useState, useEffect, memo } from 'react';
+import gufengStyles from '../../styles/gufeng.module.css';
+
 import { gameApi } from '../../services/gameApi';
 import styles from '../../styles/ArenaPanel.module.css';
 
@@ -99,34 +101,34 @@ const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) 
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
+    <div className={gufengStyles.container}>
+      <div className={gufengStyles.header}>
         <h2>竞技场</h2>
-        <div className={styles.myInfo}>
+        <div className={gufengStyles.myInfo}>
           <span>排名: #{myRank}</span>
           <span>战力: {myPower}</span>
         </div>
-        <button className={styles.closeBtn} onClick={onClose}>×</button>
+        <button className={gufengStyles.closeBtn} onClick={onClose}>×</button>
       </div>
 
-      <div className={styles.content}>
+      <div className={gufengStyles.content}>
         {/* 对手列表 */}
-        <div className={styles.opponentPanel}>
+        <div className={gufengStyles.opponentPanel}>
           <h3>挑战对手</h3>
-          <div className={styles.opponentList}>
+          <div className={gufengStyles.opponentList}>
             {opponents.map((opponent) => (
-              <div key={opponent.wallet_address} className={styles.opponentCard}>
-                <div className={styles.opponentRank}>{opponent.isAi ? 'AI' : '#?'}</div>
-                <div className={styles.opponentInfo}>
-                  <span className={styles.opponentName}>{opponent.name}</span>
-                  <span className={styles.opponentLevel}>等级 {opponent.level}</span>
-                  <span className={styles.opponentPower}>胜场 {opponent.win_count || 0}</span>
+              <div key={opponent.wallet_address} className={gufengStyles.opponentCard}>
+                <div className={gufengStyles.opponentRank}>{opponent.isAi ? 'AI' : '#?'}</div>
+                <div className={gufengStyles.opponentInfo}>
+                  <span className={gufengStyles.opponentName}>{opponent.name}</span>
+                  <span className={gufengStyles.opponentLevel}>等级 {opponent.level}</span>
+                  <span className={gufengStyles.opponentPower}>胜场 {opponent.win_count || 0}</span>
                 </div>
-                <div className={styles.opponentStats}>
-                  <span className={styles.winRate}>{opponent.isAi ? 'AI对手' : '玩家'}</span>
+                <div className={gufengStyles.opponentStats}>
+                  <span className={gufengStyles.winRate}>{opponent.isAi ? 'AI对手' : '玩家'}</span>
                 </div>
                 <button 
-                  className={styles.challengeBtn}
+                  className={gufengStyles.challengeBtn}
                   onClick={() => handleChallenge(opponent)}
                   disabled={challenging}
                 >
@@ -138,18 +140,18 @@ const ArenaPanel: React.FC<ArenaPanelProps> = memo(({ walletAddress, onClose }) 
         </div>
 
         {/* 战斗记录 */}
-        <div className={styles.logPanel}>
+        <div className={gufengStyles.logPanel}>
           <h3>战斗记录</h3>
-          <div className={styles.battleLog}>
+          <div className={gufengStyles.battleLog}>
             {battleLog.length === 0 ? (
-              <div className={styles.emptyLog}>暂无战斗记录</div>
+              <div className={gufengStyles.emptyLog}>暂无战斗记录</div>
             ) : (
               battleLog.map((log, idx) => (
-                <div key={idx} className={styles.logItem}>
-                  <span className={log.result === '胜利' ? styles.winText : styles.loseText}>
+                <div key={idx} className={gufengStyles.logItem}>
+                  <span className={log.result === '胜利' ? gufengStyles.winText : gufengStyles.loseText}>
                     {log.result}
                   </span>
-                  <span className={styles.logReward}>{log.reward}</span>
+                  <span className={gufengStyles.logReward}>{log.reward}</span>
                 </div>
               ))
             )}
