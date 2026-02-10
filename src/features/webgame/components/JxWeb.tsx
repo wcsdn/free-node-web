@@ -46,13 +46,13 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
   // 加载城池建筑数据（提取为独立函数，可以在任何地方调用）
   const loadBuildings = useCallback(async () => {
     try {
-      const res = await fetch(`${getApiBase()}/api/game/city/building-list/1`, {
-        method: 'POST',
+      const res = await fetch(`${getApiBase()}/api/building/city/1`, {
+        method: 'GET',
         headers: getAuthHeaders(),
       });
       const data = await res.json();
-      if (data.success && data.data?.buildings) {
-        setBuildings(data.data.buildings);
+      if (data.success && data.data) {
+        setBuildings(data.data);
       }
     } catch (err) {
       console.error('Failed to load buildings:', err);
@@ -195,8 +195,8 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
     // 加载城市数据（资源、产量等）
     const loadCityData = async () => {
       try {
-        const res = await fetch(`${getApiBase()}/api/game/city/interior/1`, {
-          method: 'POST',
+        const res = await fetch(`${getApiBase()}/api/interior`, {
+          method: 'GET',
           headers: getAuthHeaders(),
         });
         const data = await res.json();
