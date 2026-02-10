@@ -1,20 +1,24 @@
 /**
- * 剑侠情缘 Web 测试页面
- * 点击事件管理模块
+ * 弹窗管理器
+ * 统一的弹窗展示与控制中心
  */
 import React, { useState, useEffect } from 'react';
-import MilitaryPanel from './MilitaryPanel';
-import BattlePanel from './BattlePanel';
-import DungeonPanel from './DungeonPanel';
-import DefensePanel from './DefensePanel';
-import HelpPanel from './HelpPanel';
-import SigninPanel from './SigninPanel';
-import DailyPanel from './DailyPanel';
-import NotificationPanel from './NotificationPanel';
-import HeroPanel from './HeroPanel';
-// TaskListPanel 和 MessageListPanel 使用内联定义
+
+// 业务组件
+import MilitaryPanel from './business/MilitaryPanel';
+import BattlePanel from './business/BattlePanel';
+import DungeonPanel from './business/DungeonPanel';
+import DefensePanel from './business/DefensePanel';
+import HelpPanel from './popups/HelpPanel';
+import SigninPanel from './business/SigninPanel';
+import DailyPanel from './business/DailyPanel';
+import NotificationPanel from './popups/NotificationPanel';
+import HeroPanel from './business/HeroPanel';
+
+// 弹窗组件
 import BuildingDetailPanel from './popups/BuildingDetailPanel';
 import BuildingSelectPanel from './popups/BuildingSelectPanel';
+
 import { getApiBase, getAuthHeaders } from '../utils/api';
 import { cityApi } from '../services/api/cityApi';
 
