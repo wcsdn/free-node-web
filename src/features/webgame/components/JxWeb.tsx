@@ -1,12 +1,12 @@
 /**
  * JxWeb 主组件
- * 完整的剑侠情缘 Web 版游戏界面
+ * 古风版 - 剑侠情缘 Web 版游戏界面
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useResources } from '../hooks/useResources';
 import { getApiBase, getAuthHeaders } from '../utils/api';
 import PopupManager from './PopupManager';
-import styles from '../styles/jxweb.module.css';
+import gufengStyles from '../styles/gufeng.module.css';
 import '../styles/jxMain.module.css'; // 引入建筑位置样式
 
 interface ChatMessage {
@@ -179,7 +179,7 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
         '/jx/Web/Css/Common.css',
       ];
       
-      styles.forEach(href => {
+      gufengStyles.forEach(href => {
         // 检查是否已经加载
         if (!document.querySelector(`link[href="${href}"]`)) {
           const link = document.createElement('link');
@@ -320,8 +320,8 @@ const JxWeb: React.FC<JxWebProps> = ({ walletAddress: propWalletAddress }) => {
 
   if (loading) {
     return (
-      <div className={styles.loadingScreen}>
-        <div className={styles.loadingText}>正在加载游戏...</div>
+      <div className={gufengStyles.loadingScreen}>
+        <div className={gufengStyles.loadingText}>正在加载游戏...</div>
       </div>
     );
   }

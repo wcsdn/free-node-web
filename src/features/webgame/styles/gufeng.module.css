@@ -1,0 +1,467 @@
+/* 
+ * 古风样式 - 中国传统美学风格
+ * Ancient Chinese Style
+ */
+
+/* ========== 基础配色 ========== */
+:root {
+  --gufeng-black: #1a1a2e;    /* 墨黑 */
+  --gufeng-red: #8b0000;        /* 朱红 */
+  --gufeng-gold: #c9a227;       /* 金色 */
+  --gufeng-cream: #f5f0e1;      /* 宣纸色 */
+  --gufeng-green: #2d5a3d;      /* 黛绿 */
+  --gufeng-brown: #5c4033;       /* 檀色 */
+  --gufeng-white: #faf8f5;      /* 绢白 */
+}
+
+/* ========== 背景 - 水墨意境 ========== */
+.gufengBg {
+  background: linear-gradient(
+    180deg,
+    #1a1a2e 0%,
+    #16213e 40%,
+    #0f3460 70%,
+    #1a1a2e 100%
+  );
+  position: relative;
+}
+
+.gufengBg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 800 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* ========== 标题样式 - 书法风格 ========== */
+.gufengTitle {
+  font-family: 'STKaiti', 'KaiTi', '楷体', 'SimKai', serif;
+  font-weight: bold;
+  color: var(--gufeng-gold);
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(201, 162, 39, 0.3);
+  letter-spacing: 4px;
+  background: linear-gradient(
+    180deg,
+    var(--gufeng-gold) 0%,
+    #f4d03f 50%,
+    var(--gufeng-gold) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gufengTitleSmall {
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  font-size: 1.2rem;
+  color: var(--gufeng-gold);
+}
+
+/* ========== 按钮 - 古典印章风格 ========== */
+.gufengBtn {
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  background: linear-gradient(
+    135deg,
+    var(--gufeng-red) 0%,
+    #a52a2a 100%
+  );
+  border: 2px solid var(--gufeng-gold);
+  color: var(--gufeng-cream);
+  padding: 12px 30px;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 15px rgba(139, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.gufengBtn::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.gufengBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(139, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gufengBtn:active {
+  transform: translateY(0);
+}
+
+/* ========== 卡片 - 画卷风格 ========== */
+.gufengCard {
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 46, 0.9) 0%,
+    rgba(22, 33, 62, 0.9) 100%
+  );
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 30px rgba(201, 162, 39, 0.05);
+}
+
+.gufengCard::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 10px;
+  right: 10px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--gufeng-gold) 50%,
+    transparent 100%
+  );
+}
+
+/* ========== 边框 - 窗棂风格 ========== */
+.gufengBorder {
+  border: 2px solid var(--gufeng-gold);
+  border-radius: 8px;
+  position: relative;
+  background: rgba(26, 26, 46, 0.8);
+}
+
+.gufengBorder::before,
+.gufengBorder::after {
+  content: '';
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--gufeng-gold);
+}
+
+.gufengBorder::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 8px 0 0 0;
+}
+
+.gufengBorder::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 8px 0;
+}
+
+/* ========== 资源栏 - 古典装饰 ========== */
+.gufengResource {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 0, 0, 0.3) 0%,
+    rgba(92, 64, 51, 0.3) 100%
+  );
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 20px;
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  color: var(--gufeng-cream);
+}
+
+.gufengResourceIcon {
+  font-size: 1.2rem;
+}
+
+.gufengResourceValue {
+  color: var(--gufeng-gold);
+  font-weight: bold;
+}
+
+/* ========== 导航栏 - 竹简风格 ========== */
+.gufengNav {
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 26, 46, 0.95) 0%,
+    rgba(45, 90, 61, 0.95) 100%
+  );
+  border-top: 2px solid var(--gufeng-gold);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.gufengNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 15px;
+  color: var(--gufeng-cream);
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 8px;
+  position: relative;
+}
+
+.gufengNavItem:hover,
+.gufengNavItem.active {
+  color: var(--gufeng-gold);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.gufengNavItem.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--gufeng-gold);
+  border-radius: 2px;
+}
+
+/* ========== 弹窗 - 屏风风格 ========== */
+.gufengPopup {
+  background: linear-gradient(
+    135deg,
+    #1a1a2e 0%,
+    #16213e 50%,
+    #0f3460 100%
+  );
+  border: 2px solid var(--gufeng-gold);
+  border-radius: 12px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(201, 162, 39, 0.1);
+  position: relative;
+}
+
+.gufengPopup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(
+    135deg,
+    var(--gufeng-red) 0%,
+    #5c4033 100%
+  );
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 5% 100%, 0 70%);
+}
+
+.gufengPopupHeader {
+  padding: 15px 20px;
+  padding-top: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+}
+
+.gufengPopupTitle {
+  color: var(--gufeng-gold);
+  font-size: 1.3rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.gufengPopupClose {
+  background: none;
+  border: none;
+  color: var(--gufeng-cream);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: all 0.3s;
+}
+
+.gufengPopupClose:hover {
+  color: var(--gufeng-red);
+  transform: rotate(90deg);
+}
+
+.gufengPopupBody {
+  padding: 20px;
+  max-height: calc(85vh - 100px);
+  overflow-y: auto;
+  color: var(--gufeng-cream);
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  line-height: 1.8;
+}
+
+/* ========== 列表项 - 竹简风格 ========== */
+.gufengListItem {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.gufengListItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gufeng-gold);
+  transform: scaleY(0);
+  transition: transform 0.3s;
+}
+
+.gufengListItem:hover {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: rgba(201, 162, 39, 0.4);
+}
+
+.gufengListItem:hover::before {
+  transform: scaleY(1);
+}
+
+/* ========== 建筑样式 ========== */
+.gufengBuilding {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.gufengBuilding:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.gufengBuildingImg {
+  width: 60px;
+  height: 60px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.gufengBuilding:hover .gufengBuildingImg {
+  border-color: var(--gufeng-gold);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.5);
+}
+
+.gufengBuildingLevel {
+  font-family: 'STKaiti', 'KaiTi', '楷体', serif;
+  font-size: 12px;
+  color: var(--gufeng-gold);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: -5px;
+  display: inline-block;
+}
+
+/* ========== 动画效果 ========== */
+@keyframes gufengFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gufengFadeIn {
+  animation: gufengFadeIn 0.5s ease;
+}
+
+@keyframes gufengPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(201, 162, 39, 0);
+  }
+}
+
+.gufengPulse {
+  animation: gufengPulse 2s infinite;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .gufengTitle {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+  
+  .gufengBtn {
+    padding: 10px 24px;
+    font-size: 1rem;
+  }
+  
+  .gufengCard {
+    padding: 15px;
+  }
+  
+  .gufengNavItem {
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gufengTitle {
+    font-size: 1.2rem;
+  }
+  
+  .gufengResource {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .gufengPopup {
+    max-height: 90vh;
+    margin: 10px;
+  }
+}
