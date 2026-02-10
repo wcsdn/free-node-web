@@ -54,7 +54,8 @@ export class AppendantNPCRepository {
       LIMIT 1
     `).bind(walletAddress).first();
 
-    return result as AppendantNPC | null;
+    if (!result) return null;
+    return result as unknown as AppendantNPC;
   }
 
   /**
@@ -67,7 +68,8 @@ export class AppendantNPCRepository {
       LIMIT 1
     `).bind(walletAddress, npcPos).first();
 
-    return result as AppendantNPC | null;
+    if (!result) return null;
+    return result as unknown as AppendantNPC;
   }
 
   /**
@@ -80,7 +82,7 @@ export class AppendantNPCRepository {
       ORDER BY end_time ASC
     `).all();
 
-    return result.results as AppendantNPC[];
+    return result.results as unknown as AppendantNPC[];
   }
 
   /**

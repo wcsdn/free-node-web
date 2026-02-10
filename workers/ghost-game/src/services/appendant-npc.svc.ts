@@ -3,7 +3,7 @@
  */
 
 import { D1Database } from '@cloudflare/workers-types';
-import { AppendantNPCRepository, AppendantNPC } from './appendant-npc.repo';
+import { AppendantNPCRepository, AppendantNPC } from '../repositories/appendant-npc.repo';
 
 export interface OccupyResult {
   success: boolean;
@@ -210,11 +210,11 @@ export class AppendantNPCService {
   getOccupationBenefits(npcPos: number): {
     name: string;
     duration: number;
-    rewards: {
+    rewards: Array<{
       type: string;
       amount: number;
       interval: string;
-    }[];
+    }>;
   } | null {
     const config = this.repo.getNPCConfig(npcPos);
     if (!config) return null;

@@ -11,11 +11,11 @@ const SIGN_MESSAGE_PREFIX = '\x19Ethereum Signed Message:\n';
 /**
  * 验证 Ethereum 签名
  */
-export function verifySignature(
+export async function verifySignature(
   message: string,
   signature: string,
   expectedAddress: string
-): boolean {
+): Promise<boolean> {
   try {
     // 1. 解析签名
     const sig = parseSignature(signature);
@@ -25,7 +25,7 @@ export function verifySignature(
     const prefixedMessage = createSignedMessage(message);
 
     // 3. 恢复公钥/地址
-    const recoveredAddress = recoverAddress(prefixedMessage, sig);
+    const recoveredAddress = await recoverAddress(prefixedMessage, sig);
     if (!recoveredAddress) return false;
 
     // 4. 比较地址 (不区分大小写)
@@ -69,11 +69,11 @@ function parseSignature(signature: string): { r: string; s: string; v: number } 
  * 恢复地址
  * 使用 secp256k1 曲线恢复公钥，然后生成地址
  */
-function recoverAddress(message: string, sig: { r: string; s: string; v: number }): string | null {
+async function recoverAddress(message: string, sig: { r: string; s: string; v: number }): Promise<string | null> {
   try {
     // 这里简化处理 - 在生产环境中应该使用 ethers.js 或 secp256k1 库
     // 临时使用简单的哈希作为占位符
-    const messageHash = hashMessage(message);
+    const messageHash = await hashMessage(message);
     
     // 在实际实现中，这里应该调用：
     // const recovered = ethers.recoverAddress(messageHash, { r: sig.r, s: sig.s, v: sig.v });
@@ -97,13 +97,13 @@ export function createSignedMessage(message: string): string {
 /**
  * 消息哈希
  */
-function hashMessage(message: string): string {
+async function hashMessage(message: string): Promise<string> {
   // 简化实现
   const encoder = new TextEncoder();
   const data = encoder.encode(message);
   // 使用 crypto.subtle (浏览器环境) 或 Buffer (Node 环境)
   try {
-    const hashBuffer = crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     return Buffer.from(new Uint8Array(hashBuffer)).toString('hex');
   } catch {
     // 降级到 Buffer

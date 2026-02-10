@@ -197,6 +197,7 @@ export const cityService = {
 
 /**
  * 创建初始建筑 (私有辅助函数)
+ * 只创建不存在的建筑，避免重复
  */
 async function createInitialBuildings(db: D1Database, cityId: number, buildingRepo: any): Promise<void> {
   // 创建默认建筑：仓库、市场、校场、城墙
@@ -208,13 +209,20 @@ async function createInitialBuildings(db: D1Database, cityId: number, buildingRe
   ];
 
   for (const b of initialBuildings) {
-    await buildingRepo.create(db, {
-      city_id: cityId,
-      type: b.type,
-      level: 1,
-      position: b.position,
-      state: 0,
-      config_id: b.config_id,
-    });
+    // 检查该位置是否已有建筑
+    const existing = await db.prepare(`
+      SELECT id FROM buildings WHERE city_id = ? AND position = ?
+    `).bind(cityId, b.position).first();
+
+    if (!existing) {
+      await buildingRepo.create(db, {
+        city_id: cityId,
+        type: b.type,
+        level: 1,
+        position: b.position,
+        state: 0,
+        config_id: b.config_id,
+      });
+    }
   }
 }

@@ -105,6 +105,7 @@ export interface FightSummaryServerInfo {
   defencePowerBattleBegin: number;
   attackPowerBattleEnd: number;
   defencePowerBattleEnd: number;
+  weiWang: number;
 }
 
 export interface FightSummaryClientInfo {
@@ -203,6 +204,7 @@ export function decodeFightSummary(encoded: string): FightSummaryServerInfo | nu
       defencePowerBattleBegin: 0,
       attackPowerBattleEnd: 0,
       defencePowerBattleEnd: 0,
+      weiWang: -100, // 默认值
     };
 
     const parts = encoded.split(ITEM_SEPARATOR);

@@ -90,7 +90,7 @@ export async function verifyWalletAuth(
   if (requireSignature || signature.startsWith('0x')) {
     // 验证签名
     const message = createAuthMessage(address);
-    const isValid = verifySignature(message, signature, address);
+    const isValid = await verifySignature(message, signature, address);
 
     if (!isValid) {
       console.log('[Auth] Signature verification failed for', address);
@@ -222,7 +222,7 @@ export async function verifyWalletAuthDetailed(
   // 验证签名
   if (options.requireSignature || signature.startsWith('0x')) {
     const message = createAuthMessage(address);
-    const isValid = verifySignature(message, signature, address);
+    const isValid = await verifySignature(message, signature, address);
 
     if (!isValid) {
       return {
