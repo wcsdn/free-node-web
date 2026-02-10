@@ -95,6 +95,57 @@ app.post('/:cityId/collect', async (c) => {
   return success(c, r.data);
 });
 
+// 城市内政信息 (修复: 前端调用 /api/game/city/interior/:cityId)
+app.get('/interior/:cityId', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const cityId = parseInt(c.req.param('cityId'));
+  if (!cityId) return error(c, 'cityId is required');
+
+  try {
+    // 验证城市属于用户
+    const isOwner = await db.prepare(`
+      SELECT id FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
+
+    if (!isOwner) return error(c, 'City not found', 404);
+
+    // 获取城市信息
+    const city = await db.prepare(`
+      SELECT * FROM cities WHERE id = ?
+    `).bind(cityId).first();
+
+    if (!city) return error(c, 'City not found', 404);
+
+    // 计算繁荣度等级
+    const prosperity = Number(city.prosperity) || 0;
+    const prosperityLevel = Math.floor(prosperity / 100) + 1;
+
+    // 获取建筑数量
+    const buildings = await db.prepare(`
+      SELECT COUNT(*) as count FROM buildings WHERE city_id = ?
+    `).bind(cityId).first();
+
+    return success(c, {
+      cityId: city.id,
+      prosperity: Number(city.prosperity) || 0,
+      prosperityLevel,
+      money: Number(city.money) || 0,
+      food: Number(city.food) || 0,
+      population: Number(city.population) || 0,
+      moneyRate: Number(city.money_rate) || 0,
+      foodRate: Number(city.food_rate) || 0,
+      buildingCount: buildings?.count || 0,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 创建新城市
 app.post('/create', async (c) => {
   const walletAddress = await verifyWalletAuth(c);

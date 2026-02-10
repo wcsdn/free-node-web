@@ -254,7 +254,7 @@ export const gameApi = {
 
   async createCharacter(name: string, country: string): Promise<ApiResponse<Character>> {
     const res = await fetch(`${getApiBase()}/api/character/create`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, country }),
     });
@@ -263,7 +263,7 @@ export const gameApi = {
 
   async loginCharacter(wallet_address: string): Promise<ApiResponse<Character>> {
     const res = await fetch(`${getApiBase()}/api/character/login`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet_address }),
     });
@@ -280,7 +280,7 @@ export const gameApi = {
 
   async createCity(name: string, position: number): Promise<ApiResponse<City>> {
     const res = await fetch(`${getApiBase()}/api/city/create`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, position }),
     });
@@ -296,7 +296,7 @@ export const gameApi = {
 
   async collectResources(cityId: number): Promise<ApiResponse<{ money: number; food: number; men: number }>> {
     const res = await fetch(`${getApiBase()}/api/city/${cityId}/collect`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -312,7 +312,7 @@ export const gameApi = {
 
   async recruitHero(cityId: number, count: number = 1): Promise<ApiResponse<Hero>> {
     const res = await fetch(`${getApiBase()}/api/hero/recruit`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ city_id: cityId, count }),
     });
@@ -321,7 +321,7 @@ export const gameApi = {
 
   async trainHero(heroId: number): Promise<ApiResponse<Hero>> {
     const res = await fetch(`${getApiBase()}/api/hero/${heroId}/train`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -330,7 +330,7 @@ export const gameApi = {
   async upgradeHero(heroId: number): Promise<ApiResponse<Hero>> {
     // 使用训练接口升级英雄（与后端一致）
     const res = await fetch(`${getApiBase()}/api/hero/${heroId}/train`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -339,7 +339,7 @@ export const gameApi = {
   // 战斗相关
   async startPveBattle(stageId: number, heroIds: number[]): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/battle/pve/dungeon`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ stage_id: stageId, hero_ids: heroIds }),
     });
@@ -363,7 +363,7 @@ export const gameApi = {
 
   async buildBuilding(cityId: number, configId: number, position: number): Promise<ApiResponse<Building>> {
     const res = await fetch(`${getApiBase()}/api/building/build`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ city_id: cityId, config_id: configId, position }),
     });
@@ -372,7 +372,7 @@ export const gameApi = {
 
   async upgradeBuilding(buildingId: number): Promise<ApiResponse<Building>> {
     const res = await fetch(`${getApiBase()}/api/building/${buildingId}/upgrade`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -388,7 +388,7 @@ export const gameApi = {
 
   async acceptTask(taskId: number): Promise<ApiResponse<Task>> {
     const res = await fetch(`${getApiBase()}/api/task/accept`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ task_id: taskId }),
     });
@@ -397,7 +397,7 @@ export const gameApi = {
 
   async submitTask(taskId: number, heroIds: number[]): Promise<ApiResponse<Task>> {
     const res = await fetch(`${getApiBase()}/api/task/submit`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ task_id: taskId, hero_ids: heroIds }),
     });
@@ -414,7 +414,7 @@ export const gameApi = {
 
   async buyItem(shopId: number, count: number = 1): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/shop/buy`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ shop_id: shopId, count }),
     });
@@ -431,7 +431,7 @@ export const gameApi = {
 
   async buyFromMarket(marketId: number, count: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/market/buy`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ market_id: marketId, count }),
     });
@@ -440,7 +440,7 @@ export const gameApi = {
 
   async sellToMarket(itemId: number, count: number, price: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/market/sell`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id: itemId, count, price }),
     });
@@ -474,7 +474,7 @@ export const gameApi = {
 
   async sendMail(toUser: string, title: string, content: string, attachment?: any): Promise<ApiResponse<Mail>> {
     const res = await fetch(`${getApiBase()}/api/mail/send`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ to_user: toUser, title, content, attachment }),
     });
@@ -483,7 +483,7 @@ export const gameApi = {
 
   async claimMailAttachment(mailId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/mail/${mailId}/claim`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -507,7 +507,7 @@ export const gameApi = {
 
   async useItem(itemId: number, targetId?: number): Promise<ApiResponse<void>> {
     const res = await fetch(`${getApiBase()}/api/item/use`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id: itemId, target_id: targetId }),
     });
@@ -516,7 +516,7 @@ export const gameApi = {
 
   async sellItem(itemId: number, count: number = 1): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/item/sell`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id: itemId, count }),
     });
@@ -525,7 +525,7 @@ export const gameApi = {
 
   async organizeItems(): Promise<ApiResponse<void>> {
     const res = await fetch(`${getApiBase()}/api/item/organize`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -556,7 +556,7 @@ export const gameApi = {
 
   async challengeArena(opponentId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/arena/challenge`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ opponent_id: opponentId }),
     });
@@ -572,7 +572,7 @@ export const gameApi = {
 
   async buyArenaChallengeCount(): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/arena/buy-challenge`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -602,7 +602,7 @@ export const gameApi = {
 
   async trainTroops(cityId: number, troopType: string, count: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/military/train`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ city_id: cityId, troop_type: troopType, count }),
     });
@@ -611,7 +611,7 @@ export const gameApi = {
 
   async disbandTroops(troopId: number, count: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/military/disband`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ troop_id: troopId, count }),
     });
@@ -620,7 +620,7 @@ export const gameApi = {
 
   async assignHeroToTroop(heroId: number, troopId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/military/assign-hero`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ hero_id: heroId, troop_id: troopId }),
     });
@@ -629,7 +629,7 @@ export const gameApi = {
 
   async unassignHeroFromTroop(heroId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/military/unassign-hero`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ hero_id: heroId }),
     });
@@ -638,7 +638,7 @@ export const gameApi = {
 
   async transferTroops(fromTroopId: number, toTroopId: number, count: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/military/transfer`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ from_troop_id: fromTroopId, to_troop_id: toTroopId, count }),
     });
@@ -663,7 +663,7 @@ export const gameApi = {
 
   async createGuild(name: string): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/guild/create`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ name }),
     });
@@ -672,7 +672,7 @@ export const gameApi = {
 
   async joinGuild(guildId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/guild/${guildId}/join`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -680,7 +680,7 @@ export const gameApi = {
 
   async leaveGuild(): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/guild/leave`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -695,7 +695,7 @@ export const gameApi = {
 
   async donateToGuild(guildId: number, resourceType: string, amount: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/guild/${guildId}/donate`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ resource_type: resourceType, amount }),
     });
@@ -705,7 +705,7 @@ export const gameApi = {
   // 聊天相关
   async sendChatMessage(channel: string, content: string, toUser?: string): Promise<ApiResponse<ChatMessage>> {
     const res = await fetch(`${getApiBase()}/api/chat/send`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ channel, content, to_user: toUser }),
     });
@@ -745,7 +745,7 @@ export const gameApi = {
 
   async learnSkill(skillId: number, heroId?: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/skill/learn`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ skill_id: skillId, hero_id: heroId }),
     });
@@ -761,7 +761,7 @@ export const gameApi = {
 
   async equipSkill(skillId: number, heroId: number, slot: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/skill/equip`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ skill_id: skillId, hero_id: heroId, slot }),
     });
@@ -770,7 +770,7 @@ export const gameApi = {
 
   async unequipSkill(heroId: number, slot: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/skill/unequip`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ hero_id: heroId, slot }),
     });
@@ -801,7 +801,7 @@ export const gameApi = {
 
   async createCorps(name: string, cityId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/corps`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, city_id: cityId }),
     });
@@ -818,7 +818,7 @@ export const gameApi = {
 
   async marchCorps(corpsId: number, targetCityId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/corps/${corpsId}/march`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ target_city_id: targetCityId }),
     });
@@ -827,7 +827,7 @@ export const gameApi = {
 
   async recallCorps(corpsId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/corps/${corpsId}/recall`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -835,7 +835,7 @@ export const gameApi = {
 
   async adjustCorpsFormation(corpsId: number, formation: any): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/corps/${corpsId}/adjust`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ formation }),
     });
@@ -852,7 +852,7 @@ export const gameApi = {
 
   async upgradeTechnic(): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/technic/upgrade`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -936,7 +936,7 @@ export const gameApi = {
 
   async craftItem(category: string, recipeId: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/item/craft/craft`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ category, recipe_id: recipeId }),
     });
@@ -945,7 +945,7 @@ export const gameApi = {
 
   async craftItemBatch(category: string, recipeId: number, count: number): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/item/craft/craft-batch`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ category, recipe_id: recipeId, count }),
     });
@@ -970,7 +970,7 @@ export const gameApi = {
 
   async occupyNPC(npcPos: number, useGold?: boolean, useInsignia?: boolean): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/appendant-npc/occupy`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ npc_pos: npcPos, use_gold: useGold, use_insignia: useInsignia }),
     });
@@ -979,7 +979,7 @@ export const gameApi = {
 
   async abandonNPC(): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/appendant-npc/abandon`, {
-      method: 'POST',
+      method: 'GET',
       headers: getAuthHeaders(),
     });
     return res.json();
@@ -1003,7 +1003,7 @@ export const gameApi = {
 
   async redeemGiftCode(code: string): Promise<ApiResponse<any>> {
     const res = await fetch(`${getApiBase()}/api/gift/redeem`, {
-      method: 'POST',
+      method: 'GET',
       headers: { ...getAuthHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ code }),
     });

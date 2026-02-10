@@ -61,6 +61,73 @@ app.get('/user-info', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
+  try {
+    // 获取或创建用户和城市
+    const result = await cityService.getOrCreate(db, walletAddress);
+    const r = result as any;
+    
+    if (!r.ok) {
+      return error(c, r.error || 'Failed', r.status || 500);
+    }
+
+    return success(c, {
+      walletAddress: r.data.city.wallet_address,
+      character: {
+        name: '玩家',
+        level: 1,
+        gold: 1000,
+      },
+      city: r.data.city,
+      buildings: r.data.buildings,
+      heroes: [],
+      isNew: r.data.isNew,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// POST 版本也支持 (兼容某些客户端)
+app.post('/user-info', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const result = await cityService.getOrCreate(db, walletAddress);
+    const r = result as any;
+    
+    if (!r.ok) {
+      return error(c, r.error || 'Failed', r.status || 500);
+    }
+
+    return success(c, {
+      walletAddress: r.data.city.wallet_address,
+      character: {
+        name: '玩家',
+        level: 1,
+        gold: 1000,
+      },
+      city: r.data.city,
+      buildings: r.data.buildings,
+      heroes: [],
+      isNew: r.data.isNew,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 获取用户信息 (旧接口，兼容)
+app.get('/user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
   const result = await userService.getInfo(db, walletAddress);
   const r = result as any;
   if (!r.ok) {

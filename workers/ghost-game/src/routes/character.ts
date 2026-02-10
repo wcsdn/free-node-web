@@ -180,4 +180,42 @@ app.post('/login', async (c) => {
   }
 });
 
+// 创建角色 (POST /create - 兼容前端)
+app.post('/create', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { name } = await c.req.json<{ name?: string }>();
+  if (!name || name.length < 2 || name.length > 12) {
+    return error(c, 'Name must be 2-12 characters');
+  }
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const existing = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (existing) return error(c, 'Character already exists');
+
+    await db.prepare(`
+      INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level)
+      VALUES (?, ?, 1, 0, 1000, 0)
+    `).bind(walletAddress, name).run();
+
+    return success(c, {
+      walletAddress,
+      name,
+      level: 1,
+      gold: 1000,
+      message: 'Character created successfully'
+    });
+  } catch (err: any) {
+    console.error('Create character error:', err);
+    return error(c, err.message || '创建角色失败');
+  }
+});
+
 export default app;
