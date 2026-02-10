@@ -1054,17 +1054,21 @@ const PopupManagerComponent: React.FC = () => {
   if (!popup) return null;
 
   return (
-    <div 
-      className="overlay show" 
-      style={{ 
-        display: 'block', 
+    <div
+      className="basic-popup-overlay"
+      style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        background: 'rgba(15, 23, 42, 0.6)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -1072,52 +1076,83 @@ const PopupManagerComponent: React.FC = () => {
         }
       }}
     >
-      <div 
-        className="popup show"
-        style={{ 
-          display: 'block', 
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+      <div
+        className="basic-popup-container"
+        style={{
+          position: 'relative',
+          top: 'auto',
+          left: 'auto',
+          transform: 'none',
           zIndex: 10000,
           minWidth: '400px',
           maxWidth: '90vw',
-          maxHeight: '90vh',
-          background: '#E9E9E9',
-          border: '1px solid #B0B0B0',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+          maxHeight: '85vh',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          borderRadius: '16px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
-        <div style={{ 
-          padding: '10px', 
-          borderBottom: '1px solid #B0B0B0',
+        <div style={{
+          padding: '16px 20px',
+          borderBottom: '1px solid #e2e8f0',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          background: '#f0f0f0',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         }}>
-          <span style={{ fontWeight: 'bold', color: '#000' }}>{popup.title}</span>
-          <a 
+          <span style={{ fontWeight: 600, fontSize: '16px', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{popup.title}</span>
+          <button
             onClick={() => popupManager.hide()}
-            style={{ 
-              cursor: 'pointer', 
-              fontSize: '24px',
-              textDecoration: 'none',
-              color: '#000',
-              lineHeight: '1',
-              width: '30px',
-              height: '30px',
+            style={{
+              cursor: 'pointer',
+              fontSize: '22px',
+              color: '#ffffff',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              padding: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: '3px',
+              transition: 'all 0.2s ease',
             }}
           >
             &times;
-          </a>
+          </button>
         </div>
-        <div className="popupBody" style={{ padding: '15px', maxHeight: 'calc(90vh - 50px)', overflow: 'auto' }}>
+        <div style={{ 
+          padding: '20px', 
+          maxHeight: 'calc(85vh - 60px)', 
+          overflow: 'auto', 
+          background: '#f8fafc',
+          overflowX: 'hidden',
+        }}>
+          <style>{`
+            div[style*="overflow: auto"]::-webkit-scrollbar {
+              width: 6px;
+              height: 6px;
+            }
+            div[style*="overflow: auto"]::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            div[style*="overflow: auto"]::-webkit-scrollbar-thumb {
+              background: rgba(0, 0, 0, 0.2);
+              border-radius: 3px;
+            }
+            div[style*="overflow: auto"]::-webkit-scrollbar-thumb:hover {
+              background: rgba(0, 0, 0, 0.3);
+            }
+            @media (max-width: 480px) {
+              div[style*="max-height: calc(85vh"] {
+                max-height: calc(90vh - 60px) !important;
+              }
+            }
+          `}</style>
           {popup.content}
         </div>
       </div>
