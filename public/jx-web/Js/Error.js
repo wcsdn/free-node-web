@@ -1,0 +1,100 @@
+﻿
+var ErrorList1 = [
+Lang["Error_1"],
+Lang["Error_2"],
+Lang["Error_3"]
+];
+
+var ErrorList2 = [
+Lang["Error_4"],
+Lang["Error_5"],
+Lang["Error_6"],
+Lang["Error_7"],
+Lang["Error_8"],
+Lang["Error_9"],
+Lang["Error_10"],
+Lang["Error_11"],
+Lang["Error_12"],
+Lang["Error_13"],
+Lang["Error_14"],
+Lang["Error_15"],
+Lang["Error_16"],
+Lang["Error_17"],
+Lang["Error_18"],
+Lang["Error_19"],
+Lang["Error_20"],
+Lang["Error_21"],
+Lang["Error_22"],
+Lang["Error_23"],
+Lang["Error_24"],
+Lang["Error_25"],
+Lang["Error_26"],
+Lang["Error_27"],
+Lang["Error_28"],
+Lang["Error_29"],
+Lang["Error_30"],
+Lang["Error_31"],
+Lang["Error_32"],
+Lang["Error_33"],
+Lang["Error_34"],
+Lang["Error_35"],
+Lang["Error_36"],
+Lang["Error_37"],
+Lang["Error_38"],
+Lang["Error_39"],
+Lang["Error_40"],
+Lang["Error_41"],
+Lang["Error_42"],
+Lang["Error_43"],
+Lang["Error_44"],
+Lang["Error_45"],
+Lang["Error_46"],
+Lang["Error_47"],
+Lang["Error_48"],
+Lang["Error_49"],
+Lang["Error_50"],
+Lang["Error_51"],
+Lang["Error_52"],
+Lang["Error_53"],
+Lang["Error_54"],
+Lang["Error_55"],
+Lang["Error_56"],
+Lang["Error_57"],
+Lang["Error_58"],
+Lang["Error_59"],
+Lang["Error_60"],
+Lang["Error_61"],
+Lang["Error_62"],
+Lang["Error_63"],
+Lang["Error_64"],
+Lang["Error_65"],
+Lang["Error_66"],
+Lang["Error_67"],
+Lang["Error_68"],
+Lang["Error_69"],
+Lang["Error_70"]
+];
+
+//显示错误弹出对话框
+function ShowErrorBox(error_id)
+{
+    if(error_id==-1)
+        MessageText=Lang["Error_71"];
+    else
+    {
+        if(error_id>=1 && error_id<=10000)
+            MessageText=ErrorList1[error_id];
+        else
+            MessageText=ErrorList2[error_id-10000];
+    }
+    ShowPopUp("0");
+    CanEnterPop=1;
+}
+
+//显示一个提示信息
+function ShowMessageBox(message)
+{
+    MessageText=message;
+    ShowPopUp("0");
+    CanEnterPop=1;
+}

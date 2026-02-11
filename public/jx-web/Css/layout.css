@@ -1,0 +1,29 @@
+#wrapper{
+	width:1003px;
+	margin: 0 auto;
+	text-align: left;
+	position: relative;
+	height: 600px;
+	background:url(../img/o/0.GIF) repeat-x left top;
+}
+#contentarea{
+	width: 552px;
+	position: absolute;
+	top: 0px;
+	left: 128px;
+	height: 600px;
+}
+#leftpanel{
+	width:128px;
+	position: absolute;
+	top:0px;
+	left: 0px;
+	height: 600px;
+}
+#rightpanel{
+	width:323px;
+	position: absolute;
+	top: 0px;
+	left: 680px;
+	height: 600px;
+}

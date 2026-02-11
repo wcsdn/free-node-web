@@ -197,21 +197,21 @@ export const cityService = {
 
 /**
  * 创建初始建筑 (私有辅助函数)
- * 新号只创建聚义厅(位置1),其他建筑需要玩家自己建造
+ * 新号只创建聚义厅(位置10),其他建筑需要玩家自己建造
  */
 async function createInitialBuildings(db: D1Database, cityId: number, buildingRepo: any): Promise<void> {
   // 检查是否已有建筑
   const existing = await db.prepare(`
-    SELECT id FROM buildings WHERE city_id = ? AND position = 1
+    SELECT id FROM buildings WHERE city_id = ? AND position = 10
   `).bind(cityId).first();
 
-  // 只创建聚义厅(config_id: 1, position: 1)
+  // 只创建聚义厅(config_id: 1, position: 10)
   if (!existing) {
     await buildingRepo.create(db, {
       city_id: cityId,
       type: 'interior' as const,
       level: 1,
-      position: 1,
+      position: 10,
       state: 0,
       config_id: 1, // 聚义厅
     });

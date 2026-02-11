@@ -21,8 +21,7 @@ const DebugPage = lazy(() => import('@/features/debug/DebugPage'));
 const IotPage = lazy(() => import('@/features/iot/IotPage'));
 const AlphaTerminal = lazy(() => import('@/features/alpha/AlphaTerminal'));
 const SituationMonitorPage = lazy(() => import('@/features/situation-monitor/SituationMonitorPage'));
-const WebGame = lazy(() => import('@/features/webgame'));
-const JxWeb = lazy(() => import('@/features/webgame/components/JxWeb'));
+const JxWebGame = lazy(() => import('@/features/jx-web/JxWebGame'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -170,18 +169,12 @@ export const routes: RouteObject[] = [
         ),
       },
       {
-        path: 'webgame',
-        element: (
-          <PageWrapper>
-            <WebGame />
-          </PageWrapper>
-        ),
-      },
-      {
         path: 'jxweb',
         element: (
           <PageWrapper>
-            <JxWeb />
+            <ProtectedRoute>
+              <JxWebGame />
+            </ProtectedRoute>
           </PageWrapper>
         ),
       },

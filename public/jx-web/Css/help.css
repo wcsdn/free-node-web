@@ -1,0 +1,176 @@
+body,dl,dt,dd,ul,ol,li,form,input,p,blockquote,th,td{margin:0;padding:0;font-weight:400;}
+h1,h2,h3,h4,h4,h5{margin:0;padding:0;}
+a:link, a:visited {color:#000000;text-decoration:none;}
+a:hover,a:active{font-weight:bold;text-decoration:underline;}
+table{border-collapse:collapse;}
+body{font-family:宋体;font-size:12px;color:#000000;text-align:left;background-color:#FFF;}
+img{border: 0px;}
+ol,ul{list-style:none;}
+
+
+
+
+.tree_title{margin-left:12px;}
+.tree_title_1{
+	margin-left:12px;
+	display: none;
+}
+h5{
+	font-size: 12px;
+}
+h3{
+	font-size:20px;
+}
+h4{
+	font-size: 16px;
+}
+#logo_help{
+	width: 1004px;
+	height: 98px;
+	background: url(../img/h/d/1.gif) no-repeat left top;
+}
+#sidebar_help{
+	width: 128px;
+	border-top: 1px solid gray;
+	padding-left:48px;
+	padding-top:30px;
+}
+#content_help{
+	width: 800px;
+	position: absolute;
+	left:176px;
+	top:98px;
+	border-left:1px dotted gray;
+	border-top:1px solid gray;
+	padding-left:27px;
+	padding-bottom:30px;
+	padding-top:30px;
+}
+.main_help{
+	padding-top: 24px;
+	padding-left: 65px;
+}
+.intro_help_4 span,.intro_help_5 span,.intro_help_6 span{
+	margin-left:54px;
+	color: #32cd32;
+}
+/*内政ul样式*/
+.interior_common{
+	margin-left:57px;
+	padding-top:10px;
+	line-height: 16px;
+}
+.science_common{
+	margin-left:54px;
+	line-height:16px;
+}
+/*城防帮助样式*/
+.defence_common{
+	line-height:16px;
+	margin-left:56px;
+}
+.intro_help_4{
+	width:385px;
+	padding-top:35px;
+}
+
+/*侠客帮助样式*/
+.intro_help_5{
+	width: 385px;
+	padding-top:30px;
+}
+.intro_help_5 .hero_common_1{
+	margin-left:56px;
+	padding-top:24px;
+	line-height:16px;
+}
+.intro_help_5 .hero_common_2{
+	margin-left:56px;
+	padding-top:5px;
+	line-height:16px;
+}
+
+/*大地图帮助样式*/
+.map_common_1{
+	line-height:18px;
+	padding-top:50px;
+}
+ #map_help{
+	text-align: center; /*map table style*/
+	margin-top:13px;
+	margin-left:0px;
+}
+#map_help td{
+	border: none;
+}
+
+/*物品帮助样式*/
+ .item_common_1{
+	margin-left:66px;
+	padding-top:5px;
+	line-height:16px;
+}
+.item_common_2{
+	line-height:18px;
+	padding-top:25px;
+}
+/************************帮助通用样式***************************/
+/*顶部页面介绍样式*/
+.intro_help_1{
+	height: 58px;
+}
+.intro_help_1 p{												
+	margin-top:10px;
+}
+.intro_help_1 img,.intro_help_2 img,.intro_help_3 img,.intro_help_4 img,.intro_help_5 img,.intro_help_6 img{
+	float: left;
+	margin-right:7px;
+}
+.clear{
+	clear:both;
+}
+/*table样式*/
+.main_help table{
+	text-align: center;
+	margin-top:13px;
+	margin-left:56px;
+}
+.main_help td{
+	border:#666666 1px solid;
+}
+
+.helptitle{
+ margin-bottom: 20px;
+ line-height: 18px;
+}
+
+.tree_title_2{
+ margin-left:12px;
+ display: block;
+}
+.help_font_1{
+ font-size: 14px;
+ font-weight: bold;
+}
+.help_font_2{
+ font-size:12px;
+ font-weight: bold;
+}
+.tree_title_1 li a:link,.tree_title_1 li a:visited{
+ font-size:12px;
+ color:#36c205;
+}
+.tree_title_2 li a:link,.tree_title_2 li a:visited{
+ font-size: 12px;
+ color: #36c205;
+}
+.iquality_1,.hquality_1{color: #000;}
+.iquality_2,.hquality_2{color: #5aa905;}
+.iquality_3,.hquality_3{color: #008b83;}
+.iquality_4,.hquality_4{color: #3939c3;}
+.iquality_5,.hquality_5{color: #72008b;}
+.font_gold{color: #000;}
+.font_wood{color: #339933;}
+.font_dust{color: #996633;}
+.font_water{color: #0099cc;}
+.font_fire{color: #ff6633;}

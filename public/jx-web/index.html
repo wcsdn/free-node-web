@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剑侠情缘Web</title>
+
+<!-- CSS -->
+<link href="Css/Common.css" rel="stylesheet" type="text/css" />
+
+<!-- JavaScript Libraries -->
+<script src="Js/Jquery.js" type="text/javascript"></script>
+<script src="Js/Lang_CN.js" type="text/javascript"></script>
+<script src="Js/Version.js" type="text/javascript"></script>
+
+<!-- API Configuration -->
+<script src="config.js" type="text/javascript"></script>
+
+<!-- Core Scripts -->
+<script src="Js/Common.js" type="text/javascript"></script>
+<script src="Js/Event.js" type="text/javascript"></script>
+<script src="Js/Main.js" type="text/javascript"></script>
+<script src="Js/Timer.js" type="text/javascript"></script>
+<script src="Js/Area.js" type="text/javascript"></script>
+<script src="Js/Tips.js" type="text/javascript"></script>
+<script src="Js/Tree.js" type="text/javascript"></script>
+<script src="Js/PopUp.js" type="text/javascript"></script>
+
+<!-- Feature Scripts -->
+<script src="Js/Pages.js" type="text/javascript"></script>
+<script src="Js/Item.js" type="text/javascript"></script>
+<script src="Js/union.js" type="text/javascript"></script>
+<script src="Js/Market.js" type="text/javascript"></script>
+<script src="Js/Mail.js" type="text/javascript"></script>
+<script src="Js/Error.js" type="text/javascript"></script>
+<script src="Js/Task.js" type="text/javascript"></script>
+<script src="Js/Taxis.js" type="text/javascript"></script>
+<script src="Js/Teacher.js" type="text/javascript"></script>
+<script src="Js/Mall.js" type="text/javascript"></script>
+<script src="Js/Chess.js" type="text/javascript"></script>
+<script src="Js/Warfare.js" type="text/javascript"></script>
+
+<style type="text/css">a,area {blr:expression(this.onFocus=this.blur())}</style>
+</head>
+
+<body onkeydown="KeyDo(event)" oncontextmenu="return false;">
+<div id="wrapper">
+<div id="line"></div>
+<div id="line1"></div>
+
+<div id="leftpanel">
+	<div id="logo" onclick="window.location.reload()"></div>
+	<div id="info_user">
+	 
+		<div id="userlevel">
+		<span><a id="userName" class="font_bold" onmousedown="GetMyInfo()" href="#"></a></span>
+		<div id="vipeffect"></div>
+		<div><span class="font_bold" id="userState" onmouseover="ShowTips(event,'EndProtect_1')" onmouseout="HideTips()"></span></div>		
+		    <ul>
+			<li onmouseover="ShowTips(event,'common_1_77')" onmouseout="HideTips()">官位:<a id="userLevel" href="fruition_help_CN.html" target="_blank"></a></li>
+			<li>帮派:<span id="userUnit"></span></li>
+			<li><a href="fruition_help_cn.html#f5" target="_blank" title="打擂台，得战勋" style="color:#35c235;text-decoration:underline;">战勋</a>:<span id="userIns">0</span></li>
+		    </ul>
+		</div>
+		<div id="usercity">
+		</div>
+		<div id="info_out">
+		    <ul>
+			    <li><a id="to_main" onmouseover="ShowTips(event,'common_1_11')" onmouseout="HideTips()" target="_blank" href="#">首页</a></li>
+			    <li><a id="to_account" onmouseover="ShowTips(event,'common_1_12')" onmouseout="HideTips()" target="_blank" href="#">帐户设置</a></li>
+			    <li><a id="to_gold" target="_blank" href="#" style="color:green;">充值元宝</a></li>
+			    <li><a id="to_gift" target="_blank" href="Active.html">礼品领取</a></li>
+			    <li><a id="to_extend" onclick='PopUpExtendBox()' href="#">没资源点我</a></li>
+			    <li><a id="to_forum" onmouseover="ShowTips(event,'common_1_13')" onmouseout="HideTips()" target="_blank" href="#">论坛</a></li>
+			    <li><a onmouseover="ShowTips(event,'common_1_14')" onmouseout="HideTips()" href="#" id="exit_4" onmousedown="ShowPopUp(this.id)">退出</a></li>
+		    </ul>
+		</div>
+		<div id="info_sever">
+		<ul>
+			<li>服务器名称</li>
+			<li><span id="serverName" class="font_bold"></span></li>
+			<li>在线玩家:<span id="onlineNum"></span></li>
+			<li>服务器时间</li>
+			<li id="serverTime">00:00:00</li>
+			<li>服务器速度:<span id="percent">10</span></li>
+			<li>经验倍率:<span id="expPer"></span>倍</li> 
+		</ul>
+		</div>
+	</div>
+</div>
+
+<div id="contentarea">
+	<div id="mainnav">
+		<ul>
+			<li id="nav_1"><a onfocus="this.blur()" id="p_1" onmouseover="ShowTips(event,'common_1_0')" onmouseout="HideTips()" class="nav_a_1" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_2"><a onfocus="this.blur()" id="p_2" onmouseover="ShowTips(event,'common_1_1')" onmouseout="HideTips()" class="nav_a_2" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_3"><a onfocus="this.blur()" id="p_3" onmouseover="ShowTips(event,'common_1_2')" onmouseout="HideTips()" class="nav_a_3" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_4"><a onfocus="this.blur()" id="p_4" onmouseover="ShowTips(event,'common_1_3')" onmouseout="HideTips()" class="nav_a_4" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_5"><a onfocus="this.blur()" id="p_5" onmouseover="ShowTips(event,'common_1_4')" onmouseout="HideTips()" class="nav_a_5" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_6"><a onfocus="this.blur()" id="p_6" onmouseover="ShowTips(event,'common_1_5')" onmouseout="HideTips()" class="nav_a_6" href="#" onmousedown="ChangePage(this.id)"></a></li>
+			<li id="nav_7"><a onfocus="this.blur()" id="p_7" onmouseover="ShowTips(event,'common_1_6')" onmouseout="HideTips()" class="nav_a_7" href="#" onmousedown="ChangePage(this.id)"></a></li>
+		</ul>
+	</div>
+	
+	<div id="userres">
+    <table width="542" style="height:30px" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+    <td style="width:33px" onmouseover="ShowTips(event,'common_2_15')" onmouseout="HideTips()">面积:</td>
+    <td style="width:60px"><span id="area">0</span>/<span id="areaRoom">0</span></td>
+    <td style="width:33px" onmouseover="ShowTips(event,'common_2_59')" onmouseout="HideTips()">弟子:</td>
+    <td style="width:26px"><span id="child">0</span></td>
+    <td style="width:33px" onmouseover="ShowTips(event,'common_2_18')" onmouseout="HideTips()"><img alt="" src="img/4/1.gif" width="17" height="16" /></td>
+    <td style="width:87px"><span id="r_money">0</span>/<span id="moneyRoom">0</span></td>
+    <td style="width:33px" onmouseover="ShowTips(event,'common_2_20')" onmouseout="HideTips()"><img alt="" src="img/4/2.GIF" width="16" height="17" /></td>
+    <td style="width:87px"><span id="r_food">0</span>/<span id="foodRoom">0</span></td>
+    <td style="width:33px" onmouseover="ShowTips(event,'common_2_22')" onmouseout="HideTips()"><img alt="" src="img/4/3.GIF" width="17" height="15" /></td>
+    <td style="width:77px"><span id="r_men">0</span>/<span id="menRoom">0</span></td>
+    <td style="width:23px" onmouseover="ShowTips(event,'common_2_24')" onmouseout="HideTips()"><a onclick='ShowPopUp("pop_108")' href="#"><img alt="" src="img/4/4.gif" width="21" height="14"/></a></td>
+    <td style="width:34px"><span id="r_gold">0</span></td>
+    </tr>
+    <tr>
+    <td onmouseover="ShowTips(event,'common_2_16')" onmouseout="HideTips()">繁荣:</td>
+    <td><span id="bloom">0</span></td>
+    <td onmouseover="ShowTips(event,'common_2_17')" onmouseout="HideTips()">维护:</td>
+    <td><span id="childRate">0</span></td>
+    <td onmouseover="ShowTips(event,'common_2_19')" onmouseout="HideTips()">产量:</td>
+    <td><span id="moneySpeed">0</span>/小时</td>
+    <td onmouseover="ShowTips(event,'common_2_21')" onmouseout="HideTips()">产量:</td>
+    <td><span id="foodSpeed">0</span>/小时</td>
+    <td onmouseover="ShowTips(event,'common_2_23')" onmouseout="HideTips()">产量:</td>
+    <td><span id="menSpeed">0</span>/小时</td>
+    <td colspan="2">&nbsp;</td>
+    </tr>
+    </table>
+	</div>
+	
+	<div id="mainpic">
+	</div>
+</div>
+
+<div id="rightpanel">
+	<div id="sidebav">
+	<img alt="" id="new_mail" src="img/o/33.GIF" style="display:none; z-index: 1; right: 195px; position: absolute; top: 16px;" />
+	<img alt="" id="task_sgin" src="img/1/10a.GIF" style="z-index: 1; right: 102px; position: absolute; top: 16px;" />
+	<ul id="chalink">
+	<li><a id="p_12" class="nav_a_12" onmousedown="ChangePage(this.id)" href="#">竞技</a></li>
+	<li><a class="nav_a_13" style="color:Red;" onmousedown="ClickMall()" href="#">商城</a></li>
+	<li><a id="p_8" class="nav_a_8" onmouseover="ShowTips(event,'common_1_7')" onmouseout="HideTips()" onmousedown="ChangePage(this.id)" href="#">消息</a></li>
+	<li><a id="p_9" class="nav_a_9" onmouseover="ShowTips(event,'common_1_9')" onmouseout="HideTips()" onmousedown="ChangePage(this.id)" href="#">市场</a></li>
+	<li><a id="p_10" class="nav_a_10" onmouseover="ShowTips(event,'common_1_8')" onmouseout="HideTips()" onmousedown="ChangePage(this.id)" href="#">任务</a></li>
+	<li><a id="p_11" class="nav_a_11" onmousedown="ChangePage(this.id)" href="#">排行</a></li>
+	<li><a onmouseover="ShowTips(event,'common_1_10')" onmouseout="HideTips()" href="tyro_help_CN.html" target="_blank">帮助</a></li>
+	</ul>
+	<div id="gamenews">
+	   <span class="gonggao">欢迎来到剑侠情缘Web版!</span>
+	</div>
+</div>
+
+ <div id="eventinfo">
+ </div>
+	 
+     <div id="trees">
+     </div>
+     
+     <div id="main" class="dragclass">
+  <div id="ChatHead">
+   <span style="float:left;font-size:12px;color:#000;">世界聊天</span>
+   <a href="#" onclick="ChatClose();"><img src="img/o/22.gif"/></a>
+  </div>
+  <div id="ChatBody">
+    <div id="ChatContent">
+    <div id="ChatMessageList"></div>
+    </div>
+        <div id="chat_send">
+        <input class="input_message2" onkeydown="return SendWorMessageByKey(event)" type='text' id='input_line_wor'/>
+        </div>
+  </div>
+  <div class="sendchatmessage2"><a href="#" onclick="SendWorMessage()"><img src="img/o/49.GIF" /></a></div>  
+</div>
+</div>
+
+<div id="defence_chess"><a id="pp_2" href="#" onmousedown="ChangePage(this.id)"><img src="img/o/77.GIF" /></a></div>
+<div id="attack_chess"><a id="pp_6" href="#" onmousedown="ChangePage(this.id)"><img src="img/o/78.GIF" /></a></div>
+</div>
+
+<div id="teacher_icon" style="position: absolute; display:none">	
+	<div class="mm_img_icon" onmouseup="Teacher_Reshow()"><img alt="" src="img/h/t/14.gif" /></div>
+</div>
+<div id="mm_img_icon2" onmouseup="WorChatShow()"><img alt="" src="img/h/t/15.gif" /></div>
+<div id="teacher" style="position: absolute; display:none">	
+	<div class="mm_img" onmousedown="Teacher_Detail()"><img alt="" src="img/h/t/13.gif" /></div>
+	<div class="case_1">
+	<div class="case_2">
+	<div id="teacher_book">
+	<p id="teacher_content"></p>
+	</div>
+	</div>
+	</div>
+</div>
+
+<div id="tips" class="tips" style="position: absolute; display:none">
+</div>
+<div id="tips_short" class="tips_short" style="position: absolute ;display:none">
+</div>
+<div id="overlay">
+</div>
+<div id="popup" class="popup" style="position: absolute ;display:none">
+</div>
+<div id="waiting" class="waiting" style="position: absolute ;display:none">
+</div>
+<div id="otheroverlay"></div>
+<div id="otherpopup" style="z-index:1002;position: absolute;left:600px;top:300px;display:none;"></div>
+
+</body>
+</html>
