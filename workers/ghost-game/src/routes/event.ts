@@ -429,4 +429,77 @@ function formatDuration(seconds: number): string {
   }
 }
 
+
+// GetValidEvent - GET /event/valid
+app.get('/valid', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetValidEvent 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// DeleteEvent - POST /event/delete
+app.post('/delete', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, event_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 DeleteEvent 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// AddSearchEvent - POST /event/search
+app.post('/search', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, search_type } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 AddSearchEvent 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// AddVisitEvent - POST /event/visit
+app.post('/visit', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { cityID, actionType, objType, objID, pos, goldFlag } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 AddVisitEvent 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

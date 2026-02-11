@@ -58,4 +58,293 @@ app.get('/my-rank', async (c) => {
   return success(c, { rank: 999, score: 0 });
 });
 
+
+// GetRankList - GET /rank/list
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { rank_type, page, page_size } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetRankList 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetUserRankByPage - GET /rank/user
+app.get('/user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetUserRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetHeroRankByPage - GET /rank/hero
+app.get('/hero', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetHeroRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetFameRankByPage - GET /rank/fame
+app.get('/fame', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetFameRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetFameRankByUserName - GET /rank/fame-by-user
+app.get('/fame-by-user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { username } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetFameRankByUserName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetFameRankCount - GET /rank/fame-count
+app.get('/fame-count', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetFameRankCount 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetPrestigeRankByPage - GET /rank/prestige
+app.get('/prestige', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetPrestigeRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetPrestigeRankByUserName - GET /rank/prestige-by-user
+app.get('/prestige-by-user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { username } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetPrestigeRankByUserName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetPrestigeRankCount - GET /rank/prestige-count
+app.get('/prestige-count', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetPrestigeRankCount 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetInsigniaRankByPage - GET /rank/insignia
+app.get('/insignia', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetInsigniaRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetInsigniaRankByUserName - GET /rank/insignia-by-user
+app.get('/insignia-by-user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { username } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetInsigniaRankByUserName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetTerritoryRankByPage - GET /rank/territory
+app.get('/territory', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetTerritoryRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetTerritoryRankByUserName - GET /rank/territory-by-user
+app.get('/territory-by-user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { username } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetTerritoryRankByUserName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetUnionRankByPage - GET /rank/union
+app.get('/union', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { page, pageSize } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetUnionRankByPage 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetUnionRankByUnionName - GET /rank/union-by-name
+app.get('/union-by-name', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { union_name } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetUnionRankByUnionName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetUserRankByUserName - GET /rank/user-by-name
+app.get('/user-by-name', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { username } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetUserRankByUserName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

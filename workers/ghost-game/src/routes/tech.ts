@@ -362,4 +362,23 @@ app.get('/effects', async (c) => {
   }
 });
 
+
+// GetTechnicByBuilding - GET /tech/by-building
+app.get('/by-building', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, building_type } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetTechnicByBuilding 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

@@ -101,4 +101,23 @@ app.post('/cancel', async (c) => {
   }
 });
 
+
+// Ys_SelectBattle - POST /warfare/select
+app.post('/select', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { area, warfare_type, city_id, pos } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 Ys_SelectBattle 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;

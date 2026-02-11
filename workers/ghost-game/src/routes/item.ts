@@ -528,4 +528,419 @@ app.post('/organize', async (c) => {
   }
 });
 
+
+// GetItemByType - GET /item/by-type
+app.get('/by-type', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_type, page, order_by, order_type } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetItemByType 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetItemNum - GET /item/count
+app.get('/count', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_type } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetItemNum 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetItemCanUse - GET /item/can-use
+app.get('/can-use', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_type, level, sex, union, page } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetItemCanUse 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UseItemRes - POST /item/use-resource
+app.post('/use-resource', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UseItemRes 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// CancleSellItem - POST /item/cancel-sell
+app.post('/cancel-sell', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 CancleSellItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UserBattleItem - POST /item/battle-use
+app.post('/battle-use', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos, cityID, player, objID, targetID, itemBattleID, targetX, targetY } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UserBattleItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// equipItemForAttackList - POST /item/equip-attack-list
+app.post('/equip-attack-list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_list } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 equipItemForAttackList 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// equipItemForDefListT - POST /item/equip-def-list
+app.post('/equip-def-list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_list } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 equipItemForDefListT 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// takeOffBattleItem - POST /item/takeoff-battle
+app.post('/takeoff-battle', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 takeOffBattleItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetConvokeItem - GET /item/convoke
+app.get('/convoke', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetConvokeItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetGrangerItem - GET /item/granger
+app.get('/granger', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetGrangerItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// TakeItem - POST /item/equip
+app.post('/equip', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id, hero_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 TakeItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// DebusItem - POST /item/unequip
+app.post('/unequip', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 DebusItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// RepairItem - POST /item/repair
+app.post('/repair', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 RepairItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// RepairItemGeneral - POST /item/repair-general
+app.post('/repair-general', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 RepairItemGeneral 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// DonateItem - POST /item/donate
+app.post('/donate', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 DonateItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UseItemHeroExp - POST /item/use-hero-exp
+app.post('/use-hero-exp', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id, hero_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UseItemHeroExp 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UseItemInsignia - POST /item/use-insignia
+app.post('/use-insignia', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UseItemInsignia 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UserItemChangeSkill - POST /item/change-skill
+app.post('/change-skill', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, hero_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UserItemChangeSkill 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UserItemUpSkill - POST /item/upgrade-skill
+app.post('/upgrade-skill', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, hero_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UserItemUpSkill 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UserItemSkillEXP - POST /item/skill-exp
+app.post('/skill-exp', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, hero_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UserItemSkillEXP 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// UseFeastItem - POST /item/use-feast
+app.post('/use-feast', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 UseFeastItem 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetItemName - GET /item/name
+app.get('/name', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { item_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // TODO: 实现 GetItemName 逻辑
+    return success(c, { message: 'Not implemented yet' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 export default app;
