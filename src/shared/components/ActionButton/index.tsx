@@ -71,7 +71,7 @@ const BUTTON_CONFIG = {
     icon: '🎮',
     title: 'Strategy Game',
     titleCn: '策略游戏',
-    path: '/webgame',
+    path: '/jxweb',
   },
 };
 

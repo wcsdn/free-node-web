@@ -34,9 +34,10 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
-  const { authHeader, authenticate } = useWalletAuth();
+  const { authHeader, authenticate, isSigning } = useWalletAuth();
   const navigate = useNavigate();
   const [checking, setChecking] = React.useState(true);
+  const [authFailed, setAuthFailed] = React.useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -50,17 +51,20 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       // 2. 如果已有 authHeader，直接通过
       if (authHeader) {
         setChecking(false);
+        setAuthFailed(false);
         return;
       }
 
       // 3. 未认证，触发签名
       const success = await authenticate();
       if (!success) {
-        navigate('/');
+        setAuthFailed(true);
+        setChecking(false);
         return;
       }
 
       setChecking(false);
+      setAuthFailed(false);
     };
 
     if (checking) {
@@ -68,7 +72,70 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     }
   }, [isConnected, authHeader, checking, openConnectModal, authenticate, navigate]);
 
-  if (!isConnected || checking) return null;
+  // 显示加载状态
+  if (!isConnected || (checking && !authFailed)) {
+    return null;
+  }
+
+  // 认证失败，显示重试按钮
+  if (authFailed && !authHeader) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#000',
+        color: '#fff',
+        zIndex: 9999,
+      }}>
+        <h2 style={{ marginBottom: '20px' }}>需要签名认证</h2>
+        <p style={{ marginBottom: '30px', opacity: 0.7 }}>
+          请签名以验证您的钱包地址
+        </p>
+        <button
+          onClick={async () => {
+            setChecking(true);
+            setAuthFailed(false);
+          }}
+          disabled={isSigning}
+          style={{
+            padding: '12px 24px',
+            fontSize: '16px',
+            backgroundColor: '#4CAF50',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: isSigning ? 'not-allowed' : 'pointer',
+            opacity: isSigning ? 0.6 : 1,
+          }}
+        >
+          {isSigning ? '签名中...' : '重新签名'}
+        </button>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            marginTop: '15px',
+            padding: '8px 16px',
+            fontSize: '14px',
+            backgroundColor: 'transparent',
+            color: '#999',
+            border: '1px solid #666',
+            borderRadius: '8px',
+            cursor: 'pointer',
+          }}
+        >
+          返回首页
+        </button>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 };
 
