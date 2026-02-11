@@ -263,11 +263,6 @@ function cb_UpdateUserOnline(result)
 //同步服务器时间
 function CreateUpdateTimer()
 {
-    UpdateClientTime();
-}
-
-function CreateUpdateTimer()
-{
     Main.GetServerTimeNow(cb_UpdateClientTime);
     updateTimer=setTimeout("CreateUpdateTimer()",3600000);
 }
