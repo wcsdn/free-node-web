@@ -109,14 +109,23 @@ function generateApiMethod(methodName, config) {
       return config.mock;
     }
     
-    // 构建请求参数
+    // 构建请求参数和端点
     const data = {};
+    let endpoint = config.endpoint;
     
     if (Array.isArray(config.params)) {
       // 数组格式：按顺序映射参数
       config.params.forEach((paramName, index) => {
         if (args[index] !== undefined) {
-          data[paramName] = args[index];
+          // 检查端点中是否有路径参数占位符
+          const pathParam = ':' + paramName;
+          if (endpoint.includes(pathParam)) {
+            // 替换路径参数
+            endpoint = endpoint.replace(pathParam, args[index]);
+          } else {
+            // 添加到请求数据
+            data[paramName] = args[index];
+          }
         }
       });
     } else if (typeof config.params === 'object') {
@@ -135,7 +144,7 @@ function generateApiMethod(methodName, config) {
     
     // 发送请求
     apiRequest(
-      config.endpoint,
+      endpoint,
       config.httpMethod,
       data,
       config.auth !== false, // 默认需要认证

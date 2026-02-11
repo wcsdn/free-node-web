@@ -18,29 +18,29 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 城市内政信息 (修复: 前端调用 /api/game/city/interior-info/:cityId)
-app.post('/interior-info/:cityId', async (c) => {
+// 城市内政信息 (C# 原始: GetCityInteriorInfo(int cityID))
+app.post('/interior-info/:cityID', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const cityId = parseInt(c.req.param('cityId'));
-  if (!cityId) return error(c, 'cityId is required');
+  const cityID = parseInt(c.req.param('cityID'));
+  if (!cityID) return error(c, 'cityID is required');
 
   try {
     // 验证城市属于用户
     const isOwner = await db.prepare(`
       SELECT id FROM cities WHERE id = ? AND wallet_address = ?
-    `).bind(cityId, walletAddress).first();
+    `).bind(cityID, walletAddress).first();
 
     if (!isOwner) return error(c, 'City not found', 404);
 
     // 获取城市信息
     const city = await db.prepare(`
       SELECT * FROM cities WHERE id = ?
-    `).bind(cityId).first();
+    `).bind(cityID).first();
 
     if (!city) return error(c, 'City not found', 404);
 
@@ -51,7 +51,7 @@ app.post('/interior-info/:cityId', async (c) => {
     // 获取建筑数量
     const buildings = await db.prepare(`
       SELECT COUNT(*) as count FROM buildings WHERE city_id = ?
-    `).bind(cityId).first();
+    `).bind(cityID).first();
 
     return success(c, {
       cityId: city.id,
