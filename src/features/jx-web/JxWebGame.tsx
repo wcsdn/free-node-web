@@ -6,6 +6,11 @@ import React, { useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { useWalletAuth } from '@/shared/hooks/useWalletAuth';
 
+// 开发模式配置
+const DEV_MODE = import.meta.env.DEV;
+const DEV_TEST_ADDRESS = '0x1234567890123456789012345678901234567890';
+const DEV_TEST_AUTH = `${DEV_TEST_ADDRESS}:dev_signature`;
+
 const JxWebGame: React.FC = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { address } = useAccount();
@@ -15,12 +20,20 @@ const JxWebGame: React.FC = () => {
     // 当 iframe 加载完成后，传递认证信息
     const handleIframeLoad = () => {
       if (iframeRef.current?.contentWindow) {
+        // 开发模式：使用测试账号
+        const walletAddress = DEV_MODE ? DEV_TEST_ADDRESS : address;
+        const auth = DEV_MODE ? DEV_TEST_AUTH : authHeader;
+
+        if (DEV_MODE) {
+          console.log('🔧 开发模式：使用测试账号', walletAddress);
+        }
+
         // 向 iframe 传递钱包地址和认证信息
         iframeRef.current.contentWindow.postMessage(
           {
             type: 'AUTH_INFO',
-            walletAddress: address,
-            authHeader: authHeader,
+            walletAddress: walletAddress,
+            authHeader: auth,
           },
           window.location.origin
         );

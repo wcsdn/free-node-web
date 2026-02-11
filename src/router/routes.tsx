@@ -30,6 +30,11 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </Suspense>
 );
 
+// 开发模式配置
+const DEV_MODE = import.meta.env.DEV; // Vite 开发模式
+const DEV_TEST_ADDRESS = '0x1234567890123456789012345678901234567890';
+const DEV_TEST_AUTH = `${DEV_TEST_ADDRESS}:dev_signature`;
+
 // 受保护路由 - 需要登录和签名
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isConnected } = useAccount();
@@ -41,6 +46,14 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   useEffect(() => {
     const checkAuth = async () => {
+      // 开发模式：跳过认证检查
+      if (DEV_MODE) {
+        console.log('🔧 开发模式：跳过钱包认证');
+        setChecking(false);
+        setAuthFailed(false);
+        return;
+      }
+
       // 1. 检查是否连接钱包
       if (!isConnected) {
         openConnectModal?.();
@@ -71,6 +84,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       checkAuth();
     }
   }, [isConnected, authHeader, checking, openConnectModal, authenticate, navigate]);
+
+  // 开发模式：直接通过
+  if (DEV_MODE && !checking) {
+    return <>{children}</>;
+  }
 
   // 显示加载状态
   if (!isConnected || (checking && !authFailed)) {
