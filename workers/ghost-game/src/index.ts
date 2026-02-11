@@ -7,50 +7,35 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import type { Env } from './types';
 
-// 导入路由
-import characterRoutes from './routes/character';
-import cityRoutes from './routes/city';
-import battleRoutes from './routes/battle';
-import heroRoutes from './routes/hero';
-import buildingRoutes from './routes/building';
-import taskRoutes from './routes/task';
-import shopRoutes from './routes/shop';
-import marketRoutes from './routes/market';
-import mailRoutes from './routes/mail';
-import rankRoutes from './routes/rank';
-import militaryRoutes from './routes/military';
-import dungeonRoutes from './routes/dungeon';
-import defenseRoutes from './routes/defense';
-import itemRoutes from './routes/item';
-import arenaRoutes from './routes/arena';
-import gameRoutes from './routes/game';
-import chatRoutes from './routes/chat';
-import helpRoutes from './routes/help';
-import signinRoutes from './routes/signin';
-import dailyRoutes from './routes/daily';
-import notificationRoutes from './routes/notification';
-import corpsRoutes from './routes/corps';
-import itemCraftRoutes from './routes/item-craft';
-import corpsMemberRoutes from './routes/corps-member';
-import skillRoutes from './routes/skill';
-import techRoutes from './routes/tech';
-import activityRoutes from './routes/activity';
-import feishuRoutes from './routes/feishu';
-import eventRoutes from './routes/event';
-import persistEffectRoutes from './routes/persist-effect';
-import festivalRoutes from './routes/festival';
-import mapRoutes from './routes/map';
-import cityInteriorRoutes from './routes/city-interior';
-import guildRoutes from './routes/guild';
+// 导入路由 - 按字母顺序排列
+import adminRoutes from './routes/admin';
 import appendantNpcRoutes from './routes/appendant-npc';
-import giftRoutes from './routes/gift';
-import testRoutes from './routes/test';
+import arenaRoutes from './routes/arena';
+import battleRoutes from './routes/battle';
+import buildingRoutes from './routes/building';
+import chatRoutes from './routes/chat';
+import corpsRoutes from './routes/corps';
+import defenseRoutes from './routes/defense';
+import effectRoutes from './routes/effect';
+import eventRoutes from './routes/event';
+import gameRoutes from './routes/game';
+import guildRoutes from './routes/guild';
+import heroRoutes from './routes/hero';
+import itemRoutes from './routes/item';
+import mailRoutes from './routes/mail';
+import mapRoutes from './routes/map';
+import marketRoutes from './routes/market';
+import rankRoutes from './routes/rank';
+import shopRoutes from './routes/shop';
+import taskRoutes from './routes/task';
+import techRoutes from './routes/tech';
+import warfareRoutes from './routes/warfare';
 
 const app = new Hono<{ Bindings: Env }>();
 
-// 使用 Hono 的 CORS 中间件
+// CORS 中间件
 app.use('*', cors({
-  origin: (origin) => origin || 'http://localhost:5174', // 允许所有来源
+  origin: (origin) => origin || 'http://localhost:5174',
   allowHeaders: ['Content-Type', 'X-Wallet-Auth', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   credentials: true,
@@ -68,53 +53,29 @@ app.get('/health', (c) => {
   });
 });
 
-// API 路由
-// 测试路由放最前面
-app.get('/api/test-direct', (c) => c.json({ success: true, message: 'Direct test works' }));
-
-app.route('/api/game', gameRoutes);
-app.route('/api/game/city', cityRoutes);
-app.route('/api/game/hero', heroRoutes);
-// 移除 /api/game/corps 避免冲突
-// app.route('/api/game/corps', corpsRoutes);
-app.route('/api/battle', battleRoutes);
-// 移除重复的 heroRoutes
-// app.route('/api/hero', heroRoutes);
-app.route('/api/building', buildingRoutes);
-app.route('/api/task', taskRoutes);
-app.route('/api/shop', shopRoutes);
-app.route('/api/market', marketRoutes);
-app.route('/api/mail', mailRoutes);
-app.route('/api/rank', rankRoutes);
-app.route('/api/military', militaryRoutes);
-app.route('/api/dungeon', dungeonRoutes);
-app.route('/api/defense', defenseRoutes);
-app.route('/api/item', itemRoutes);
-app.route('/api/arena', arenaRoutes);
-app.route('/api/chat', chatRoutes);
-app.route('/api/help', helpRoutes);
-app.route('/api/signin', signinRoutes);
-app.route('/api/daily', dailyRoutes);
-app.route('/api/notification', notificationRoutes);
-app.route('/api/gift', giftRoutes);
-// 军团路由需要单独处理，避免与 corps-member 冲突
-app.route('/api/corps', corpsRoutes);
-app.route('/api/corps/member', corpsMemberRoutes);
-app.route('/api/item/craft', itemCraftRoutes);
-app.route('/api/skill', skillRoutes);
-app.route('/api/tech', techRoutes);
-// Technic alias for backward compatibility
-app.route('/api/technic', techRoutes);
-app.route('/api/activity', activityRoutes);
-app.route('/api/feishu', feishuRoutes);
-app.route('/api/event', eventRoutes);
-app.route('/api/effect', persistEffectRoutes);
-app.route('/api/festival', festivalRoutes);
-app.route('/api/map', mapRoutes);
-app.route('/api/interior', cityInteriorRoutes);
-app.route('/api/guild', guildRoutes);
+// API 路由 - 按字母顺序注册
+app.route('/api/admin', adminRoutes);
 app.route('/api/appendant-npc', appendantNpcRoutes);
-// 注意：giftRoutes 已经在上面注册过了，不要重复注册
+app.route('/api/arena', arenaRoutes);
+app.route('/api/battle', battleRoutes);
+app.route('/api/building', buildingRoutes);
+app.route('/api/chat', chatRoutes);
+app.route('/api/corps', corpsRoutes);
+app.route('/api/defense', defenseRoutes);
+app.route('/api/effect', effectRoutes);
+app.route('/api/event', eventRoutes);
+app.route('/api/game', gameRoutes);
+app.route('/api/guild', guildRoutes);
+app.route('/api/hero', heroRoutes);
+app.route('/api/item', itemRoutes);
+app.route('/api/mail', mailRoutes);
+app.route('/api/map', mapRoutes);
+app.route('/api/market', marketRoutes);
+app.route('/api/rank', rankRoutes);
+app.route('/api/shop', shopRoutes);
+app.route('/api/task', taskRoutes);
+app.route('/api/tech', techRoutes);
+app.route('/api/warfare', warfareRoutes);
 
 // 404 处理
 app.notFound((c) => {
