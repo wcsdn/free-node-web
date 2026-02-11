@@ -1,0 +1,129 @@
+/* 移动端抽屉样式 - 清新古风水墨风格 */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(93, 64, 55, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+.drawer {
+  position: fixed;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(250, 248, 245, 0.95) 100%);
+  backdrop-filter: blur(15px);
+  z-index: 9999;
+  box-shadow: 0 0 30px rgba(139, 69, 19, 0.2);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  border: 2px solid rgba(139, 69, 19, 0.15);
+}
+
+.drawer.left {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 340px;
+  transform: translateX(0);
+  border-right: 3px solid rgba(139, 69, 19, 0.2);
+}
+
+.drawer.right {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 85%;
+  max-width: 340px;
+  transform: translateX(0);
+  border-left: 3px solid rgba(139, 69, 19, 0.2);
+}
+
+.drawer.bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 75vh;
+  transform: translateY(0);
+  border-top: 3px solid rgba(139, 69, 19, 0.2);
+  border-radius: 20px 20px 0 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(245, 222, 179, 0.3) 0%, rgba(255, 248, 220, 0.3) 100%);
+  border-bottom: 2px solid rgba(139, 69, 19, 0.15);
+  box-shadow: 0 2px 8px rgba(139, 69, 19, 0.08);
+}
+
+.title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: bold;
+  color: #5d4037;
+  letter-spacing: 1px;
+}
+
+.closeBtn {
+  background: linear-gradient(135deg, rgba(205, 133, 63, 0.2), rgba(222, 184, 135, 0.2));
+  border: 1.5px solid rgba(139, 69, 19, 0.25);
+  border-radius: 8px;
+  font-size: 22px;
+  color: #5d4037;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.15);
+}
+
+.closeBtn:active {
+  transform: scale(0.92);
+  background: linear-gradient(135deg, rgba(205, 133, 63, 0.3), rgba(222, 184, 135, 0.3));
+}
+
+.content {
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100% - 68px);
+  -webkit-overflow-scrolling: touch;
+  background: #faf8f5;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: rgba(139, 69, 19, 0.05);
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(139, 69, 19, 0.2);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 69, 19, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,37 +1,10 @@
-
-/* 强制隐藏不需要的元素 */
-@media screen and (max-width: 1024px) {
-  :global(#line),
-  :global(#line1),
-  :global(#leftpanel),
-  :global(#mainnav),
-  :global(#rightpanel) {
-    display: none !important;
-  }
-  
-  :global(#contentarea),
-  :global(.contentArea) {
-    width: 100% !important;
-    left: 0 !important;
-    margin-left: 0 !important;
-    position: relative !important;
-    overflow-x: auto !important;
-  }
-  
-  :global(#mainpic) {
-    left: 0 !important;
-    transform: none !important;
-    margin: 0 !important;
-    display: block !important;
-  }
-}
-
 /**
  * 剑侠情缘主样式 - 完全参照原版 Main.aspx 的 CSS
+ * 使用 :global 使样式全局生效
  */
 
 /* 主容器 - 原版 #wrapper */
-.gameWrapper {
+:global(#wrapper) {
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -43,7 +16,7 @@
 }
 
 /* 主容器内部 - 原版 #wrapper 内容 */
-.gameWrapperInner {
+:global(#wrapperInner) {
   width: 1003px;
   height: 600px;
   position: relative;
@@ -51,7 +24,7 @@
 }
 
 /* 装饰分隔线 - 原版使用 GIF */
-.line, .line1 {
+:global(.line), :global(.line1) {
   position: absolute;
   width: 2px;
   height: 475px;
@@ -60,27 +33,28 @@
   z-index: 10;
 }
 
-.line { left: 122px; }
-.line1 { left: 683px; }
+:global(.line) { left: 122px; }
+:global(.line1) { left: 683px; }
 
 /* 左面板 - 原版 #leftpanel */
-.leftPanel {
+:global(#leftpanel) {
   width: 128px;
   height: 600px;
   position: absolute;
   top: 0;
   left: 0;
   overflow: hidden;
+  background: url('/jx/Web/img/o/21.GIF') no-repeat left top;
 }
 
-.logo {
+:global(#logo) {
   width: 128px;
   height: 90px;
   background: url('/jx/Web/img/o/1.GIF') no-repeat left top;
   cursor: pointer;
 }
 
-.infoUser {
+:global(#info_user) {
   height: 480px;
   width: 118px;
   padding-left: 10px;
@@ -88,29 +62,29 @@
   color: #000;
 }
 
-.infoUser ul {
+:global(#info_user ul) {
   line-height: 18px;
 }
 
-.infoUser li {
+:global(#info_user li) {
   margin: 0;
   color: inherit;
 }
 
-.userLevel {
+:global(#userlevel) {
   height: 120px;
 }
 
-.userCity {
+:global(#usercity) {
   height: 60px;
 }
 
-.userCity ul {
+:global(#usercity ul) {
   margin-top: 5px;
   line-height: 14px;
 }
 
-.userLevel a {
+:global(#info_user a) {
   color: #000;
   text-decoration: underline;
   font-weight: bold;
@@ -743,15 +717,6 @@
   top: 0;
   width: 552px;
   height: 600px;
-}
-
-/* 移动端覆盖 */
-@media (max-width: 768px) {
-  .contentArea {
-    left: 0 !important;
-    width: 100% !important;
-    position: relative !important;
-  }
 }
 
 /* 主导航 - 使用 :global 确保原版类名生效 */

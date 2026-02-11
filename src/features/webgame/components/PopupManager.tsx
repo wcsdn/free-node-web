@@ -513,9 +513,9 @@ const MarketPanel: React.FC = () => {
       const data = await res.json();
       if (data.success) {
         if (action === 'buy') {
-          setMessage(`成功买入 ${amount} ${resources.find(r => r.id === resourceId)?.name}！消耗 ${data.data.cost} 银两`);
+          setMessage(`成功买入 ${amount} ${(Array.isArray(resources) ? resources : []).find(r => r.id === resourceId)?.name}！消耗 ${data.data.cost} 银两`);
         } else {
-          setMessage(`成功卖出 ${amount} ${resources.find(r => r.id === resourceId)?.name}！获得 ${data.data.earned} 银两`);
+          setMessage(`成功卖出 ${amount} ${(Array.isArray(resources) ? resources : []).find(r => r.id === resourceId)?.name}！获得 ${data.data.earned} 银两`);
         }
       } else {
         setMessage(data.message || '交易失败');

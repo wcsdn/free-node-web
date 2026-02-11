@@ -6,7 +6,7 @@ import gufengStyles from '../../styles/gufeng.module.css';
 
 import { useLanguage } from '@/shared/hooks/useLanguage';
 import PageLayout from '@/shared/layouts/PageLayout';
-import { getApiBase } from '../../utils/api';
+import { getApiBase, getAuthHeaders } from '../../utils/api';
 import styles from '../../styles/CityPanel.module.css';
 
 interface City {
@@ -73,7 +73,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
       // 使用 /api/game/user-info 来触发自动注册并获取城市列表
       const res = await fetch(`${getApiBase()}/api/game/user-info`, {
         method: 'POST',
-        headers: { 'X-Wallet-Auth': walletAddress || '' },
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success && data.data.CityList && data.data.CityList.length > 0) {
@@ -103,9 +103,9 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
   // 获取城市详情 - 使用 game API 以支持自动注册
   const fetchCityDetail = async (id: number) => {
     try {
-      const res = await fetch(`${getApiBase()}/api/game/city/interior/${id}`, {
+      const res = await fetch(`${getApiBase()}/api/game/city/interior-info/${id}`, {
         method: 'POST',
-        headers: { 'X-Wallet-Auth': walletAddress || '' },
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
@@ -139,7 +139,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
     try {
       const res = await fetch(`${getApiBase()}/api/game/city/building-list/${cityId}`, {
         method: 'POST',
-        headers: { 'X-Wallet-Auth': walletAddress || '' },
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
@@ -177,7 +177,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
     try {
       const res = await fetch(`${getApiBase()}/api/city/${selectedCityId}/collect`, {
         method: 'POST',
-        headers: { 'X-Wallet-Auth': walletAddress || '' },
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
@@ -197,7 +197,7 @@ const CityPanel: React.FC<CityPanelProps> = memo(({ walletAddress, cityId: propC
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Wallet-Auth': walletAddress || '',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ buildingId: configId, position }),
       });

@@ -83,7 +83,7 @@ export const cityApi = {
    * 获取城市内政信息
    */
   async getCityInterior(cityId: number): Promise<CityDetailResponse> {
-    const res = await fetch(`${getApiBase()}/api/game/city/interior/${cityId}`, {
+    const res = await fetch(`${getApiBase()}/api/game/city/interior-info/${cityId}`, {
       method: 'POST',
       headers: getAuthHeaders(),
     });

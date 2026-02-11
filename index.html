@@ -7,6 +7,91 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="FREE-NODE Web3 Matrix Terminal" />
     <title>FREE-NODE | Matrix Terminal</title>
+    <!-- 提供 lodash 全局变量，修复第三方库依赖 -->
+    <script>
+      // 内联 lodash shim - 提供最基本的 find/forEach 等方法
+      (function(global) {
+        if (!global._) {
+          global._ = {
+            find: function(arr, predicate) {
+              if (!Array.isArray(arr)) return undefined;
+              for (let i = 0; i < arr.length; i++) {
+                if (predicate(arr[i], i, arr)) return arr[i];
+              }
+              return undefined;
+            },
+            forEach: function(arr, iteratee) {
+              if (!Array.isArray(arr)) return;
+              for (let i = 0; i < arr.length; i++) {
+                iteratee(arr[i], i, arr);
+              }
+            },
+            filter: function(arr, predicate) {
+              if (!Array.isArray(arr)) return [];
+              return arr.filter(predicate);
+            },
+            map: function(arr, mapper) {
+              if (!Array.isArray(arr)) return [];
+              return arr.map(mapper);
+            },
+            reduce: function(arr, reducer, initial) {
+              if (!Array.isArray(arr)) return initial;
+              return arr.reduce(reducer, initial);
+            },
+            some: function(arr, predicate) {
+              if (!Array.isArray(arr)) return false;
+              return arr.some(predicate);
+            },
+            every: function(arr, predicate) {
+              if (!Array.isArray(arr)) return true;
+              return arr.every(predicate);
+            },
+            includes: function(arr, value) {
+              if (!Array.isArray(arr)) return false;
+              return arr.includes(value);
+            },
+            indexOf: function(arr, value) {
+              if (!Array.isArray(arr)) return -1;
+              return arr.indexOf(value);
+            },
+            findIndex: function(arr, predicate) {
+              if (!Array.isArray(arr)) return -1;
+              return arr.findIndex(predicate);
+            },
+            keys: function(obj) {
+              return obj ? Object.keys(obj) : [];
+            },
+            values: function(obj) {
+              return obj ? Object.values(obj) : [];
+            },
+            pick: function(obj, keys) {
+              if (!obj) return {};
+              const result = {};
+              for (const key of keys) {
+                if (obj.hasOwnProperty(key)) result[key] = obj[key];
+              }
+              return result;
+            },
+            omit: function(obj, keys) {
+              if (!obj) return {};
+              const result = {};
+              for (const key in obj) {
+                if (!keys.includes(key)) result[key] = obj[key];
+              }
+              return result;
+            },
+            cloneDeep: function(obj) {
+              return obj ? JSON.parse(JSON.stringify(obj)) : {};
+            },
+            isEmpty: function(obj) {
+              if (!obj) return true;
+              if (Array.isArray(obj)) return obj.length === 0;
+              return Object.keys(obj).length === 0;
+            }
+          };
+        }
+      })(typeof window !== 'undefined' ? window : global);
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

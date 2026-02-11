@@ -96,8 +96,8 @@ export const cityService = {
           name: DEFAULT_CITY_NAME,
         } as CityCreate);
 
-        // 创建初始内政建筑
-        await this.createInitialBuildings(db, city.id);
+        // 创建初始建筑(只有聚义厅)
+        await createInitialBuildings(db, city.id, buildingRepo);
       }
 
       const buildings = await buildingRepo.findByCity(db, city!.id);
@@ -197,32 +197,23 @@ export const cityService = {
 
 /**
  * 创建初始建筑 (私有辅助函数)
- * 只创建不存在的建筑，避免重复
+ * 新号只创建聚义厅(位置1),其他建筑需要玩家自己建造
  */
 async function createInitialBuildings(db: D1Database, cityId: number, buildingRepo: any): Promise<void> {
-  // 创建默认建筑：仓库、市场、校场、城墙
-  const initialBuildings = [
-    { type: 'interior' as const, position: 1, config_id: 1 },  // 仓库
-    { type: 'interior' as const, position: 2, config_id: 2 },  // 市场
-    { type: 'interior' as const, position: 3, config_id: 3 },  // 校场
-    { type: 'defense' as const, position: 10, config_id: 101 }, // 城墙
-  ];
+  // 检查是否已有建筑
+  const existing = await db.prepare(`
+    SELECT id FROM buildings WHERE city_id = ? AND position = 1
+  `).bind(cityId).first();
 
-  for (const b of initialBuildings) {
-    // 检查该位置是否已有建筑
-    const existing = await db.prepare(`
-      SELECT id FROM buildings WHERE city_id = ? AND position = ?
-    `).bind(cityId, b.position).first();
-
-    if (!existing) {
-      await buildingRepo.create(db, {
-        city_id: cityId,
-        type: b.type,
-        level: 1,
-        position: b.position,
-        state: 0,
-        config_id: b.config_id,
-      });
-    }
+  // 只创建聚义厅(config_id: 1, position: 1)
+  if (!existing) {
+    await buildingRepo.create(db, {
+      city_id: cityId,
+      type: 'interior' as const,
+      level: 1,
+      position: 1,
+      state: 0,
+      config_id: 1, // 聚义厅
+    });
   }
 }

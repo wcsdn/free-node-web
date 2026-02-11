@@ -751,6 +751,716 @@
   animation: gufengSlideDown 0.4s ease;
 }
 
+/* ========== 粒子效果系统 ========== */
+@keyframes gufengFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes gufengGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(201, 162, 39, 0.6);
+  }
+}
+
+@keyframes gufengShine {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gufengParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--gufeng-gold);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: gufengFloat 3s ease-in-out infinite;
+}
+
+.gufengGlow {
+  animation: gufengGlow 2s ease-in-out infinite;
+}
+
+/* 扫光效果 */
+.gufengShine {
+  position: relative;
+  overflow: hidden;
+}
+
+.gufengShine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: gufengShine 3s ease-in-out infinite;
+}
+
+/* 脉冲按钮 */
+.gufengPulseBtn {
+  animation: gufengPulse 2s ease-in-out infinite;
+}
+
+@keyframes gufengPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: var(--gufeng-shadow-md);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(201, 162, 39, 0.5);
+  }
+}
+
+/* 摇动动画（错误提示） */
+@keyframes gufengShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.gufengShake {
+  animation: gufengShake 0.5s ease;
+}
+
+/* 缩放入场动画 */
+@keyframes gufengZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gufengZoomIn {
+  animation: gufengZoomIn 0.3s ease;
+}
+
+/* 渐入动画 */
+@keyframes gufengFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gufengFadeInUp {
+  animation: gufengFadeInUp 0.5s ease;
+}
+
+/* ========== 增强版卡片 ========== */
+.gufengCardEnhanced {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  border: 2px solid rgba(201, 162, 39, 0.4);
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gufengCardEnhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gufeng-gold-gradient);
+  border-radius: 16px 16px 0 0;
+}
+
+.gufengCardEnhanced::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.gufengCardEnhanced:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 162, 39, 0.7);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(201, 162, 39, 0.2);
+}
+
+/* ========== 增强版按钮 ========== */
+.gufengBtnEnhanced {
+  font-family: var(--gufeng-font-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gufeng-white);
+  background: var(--gufeng-red-gradient);
+  border: 2px solid var(--gufeng-gold);
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gufengBtnEnhanced::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.gufengBtnEnhanced:hover::before {
+  left: 100%;
+}
+
+.gufengBtnEnhanced:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 30px rgba(201, 162, 39, 0.3);
+  border-color: #F4D03F;
+}
+
+.gufengBtnEnhanced:active {
+  transform: translateY(-1px);
+}
+
+.gufengBtnEnhanced:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 按钮变体 */
+.gufengBtnPrimaryEnhanced {
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  border-color: #F4D03F;
+}
+
+.gufengBtnSecondaryEnhanced {
+  background: transparent;
+  border-color: var(--gufeng-gold);
+  color: var(--gufeng-gold);
+}
+
+.gufengBtnSuccessEnhanced {
+  background: var(--gufeng-green-gradient);
+  border-color: #4A7C59;
+  color: #fff;
+}
+
+.gufengBtnDangerEnhanced {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-color: #e74c3c;
+  color: #fff;
+}
+
+.gufengBtnSmallEnhanced {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  border-radius: 20px;
+}
+
+.gufengBtnLargeEnhanced {
+  padding: 18px 45px;
+  font-size: 1.2rem;
+  border-radius: 35px;
+}
+
+/* ========== 状态徽章 ========== */
+.gufengBadgeEnhanced {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 20px;
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 10px rgba(201, 162, 39, 0.3);
+}
+
+.gufengBadgePrimaryEnhanced {
+  background: var(--gufeng-red-gradient);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(139, 0, 0, 0.3);
+}
+
+.gufengBadgeSuccessEnhanced {
+  background: var(--gufeng-green-gradient);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(45, 90, 61, 0.3);
+}
+
+.gufengBadgeInfoEnhanced {
+  background: linear-gradient(135deg, #1E3A5F 0%, #3498db 100%);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(30, 58, 95, 0.3);
+}
+
+/* ========== 骨架屏加载 ========== */
+@keyframes gufengSkeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.gufengSkeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: gufengSkeleton 1.5s ease-in-out infinite;
+  border-radius: var(--gufeng-radius-md);
+}
+
+.gufengSkeletonText {
+  height: 16px;
+  margin-bottom: 8px;
+}
+
+.gufengSkeletonTitle {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 16px;
+}
+
+.gufengSkeletonAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.gufengSkeletonCard {
+  height: 120px;
+}
+
+/* ========== 增强版列表项 ========== */
+.gufengListItemEnhanced {
+  display: flex;
+  align-items: center;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.gufengListItemEnhanced::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--gufeng-gold-gradient);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.gufengListItemEnhanced::after {
+  content: '';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) rotate(-45deg);
+  transition: all 0.3s ease;
+}
+
+.gufengListItemEnhanced:hover {
+  background: rgba(201, 162, 39, 0.08);
+  border-color: rgba(201, 162, 39, 0.4);
+  padding-left: 24px;
+}
+
+.gufengListItemEnhanced:hover::before {
+  transform: scaleY(1);
+}
+
+.gufengListItemEnhanced:hover::after {
+  right: 16px;
+  border-color: var(--gufeng-gold);
+}
+
+.gufengListItemActiveEnhanced {
+  background: rgba(201, 162, 39, 0.12);
+  border-color: var(--gufeng-gold);
+}
+
+.gufengListItemActiveEnhanced::before {
+  transform: scaleY(1);
+}
+
+/* ========== 分隔线 ========== */
+.gufengDivider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 162, 39, 0.4),
+    transparent
+  );
+  margin: 20px 0;
+}
+
+.gufengDividerWithText {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.gufengDividerWithText::before,
+.gufengDividerWithText::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 162, 39, 0.3),
+    transparent
+  );
+}
+
+.gufengDividerWithText::before {
+  margin-right: 16px;
+}
+
+.gufengDividerWithText::after {
+  margin-left: 16px;
+}
+
+/* ========== 头像框 ========== */
+.gufengAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 3px solid var(--gufeng-gold);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.gufengAvatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(201, 162, 39, 0.4);
+}
+
+.gufengAvatarSmall {
+  width: 36px;
+  height: 36px;
+  border-width: 2px;
+}
+
+.gufengAvatarLarge {
+  width: 80px;
+  height: 80px;
+  border-width: 4px;
+}
+
+.gufengAvatarRounded {
+  border-radius: 12px;
+}
+
+/* ========== 统计数字动画 ========== */
+@keyframes gufengCountUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gufengCountUp {
+  animation: gufengCountUp 0.5s ease forwards;
+}
+
+/* ========== 工具提示 ========== */
+.gufengTooltip {
+  position: relative;
+}
+
+.gufengTooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--gufeng-white);
+  font-size: 0.8rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.gufengTooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ========== 音效图标（视觉化） ========== */
+.gufengSoundWave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 20px;
+}
+
+.gufengSoundWave span {
+  width: 3px;
+  background: var(--gufeng-gold);
+  border-radius: 2px;
+  animation: gufengSoundWave 1s ease-in-out infinite;
+}
+
+.gufengSoundWave span:nth-child(1) {
+  height: 40%;
+  animation-delay: 0s;
+}
+
+.gufengSoundWave span:nth-child(2) {
+  height: 70%;
+  animation-delay: 0.1s;
+}
+
+.gufengSoundWave span:nth-child(3) {
+  height: 100%;
+  animation-delay: 0.2s;
+}
+
+.gufengSoundWave span:nth-child(4) {
+  height: 70%;
+  animation-delay: 0.3s;
+}
+
+.gufengSoundWave span:nth-child(5) {
+  height: 40%;
+  animation-delay: 0.4s;
+}
+
+@keyframes gufengSoundWave {
+  0%, 100% {
+    transform: scaleY(0.5);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* ========== 遮罩层 ========== */
+.gufengOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 999;
+  animation: gufengFadeIn 0.3s ease;
+}
+
+.gufengOverlayLight {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+/* ========== 玻璃拟态效果 ========== */
+.gufengGlass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--gufeng-radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.gufengGlassDark {
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ========== 装饰性边框 ========== */
+.gufengBorderDecorative {
+  position: relative;
+  padding: 3px;
+  background: var(--gufeng-gold-gradient);
+  border-radius: var(--gufeng-radius-lg);
+}
+
+.gufengBorderDecorative::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--gufeng-bg-medium);
+  border-radius: calc(var(--gufeng-radius-lg) - 3px);
+}
+
+.gufengBorderDecorative > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ========== 角标装饰 ========== */
+.gufengCornerBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+}
+
+.gufengCornerBadge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px;
+  background: var(--gufeng-red-gradient);
+  transform: rotate(45deg) translateY(-40px) translateX(40px);
+}
+
+/* ========== 响应式增强 ========== */
+@media (max-width: 768px) {
+  .gufengCardEnhanced {
+    padding: 18px;
+    border-radius: 12px;
+  }
+  
+  .gufengBtnEnhanced {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+  
+  .gufengListItemEnhanced {
+    padding: 14px 16px;
+  }
+  
+  .gufengListItemEnhanced:hover {
+    padding-left: 20px;
+  }
+  
+  .gufengTooltip::after {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gufengCardEnhanced {
+    padding: 14px;
+    border-radius: 10px;
+  }
+  
+  .gufengBtnEnhanced {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 25px;
+  }
+  
+  .gufengListItemEnhanced {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  
+  .gufengAvatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .gufengAvatarLarge {
+    width: 60px;
+    height: 60px;
+  }
+}
+
 /* ========== 16. 建筑样式 ========== */
 .gufengBuilding {
   position: absolute;
@@ -932,3 +1642,1529 @@
 .gufengScrollbar::-webkit-scrollbar-thumb:hover {
   background: #F4D03F;
 }
+
+/* ========== 21. 战斗/技能特效样式 ========== */
+.gufengEffectHit {
+  position: relative;
+  animation: gufengHit 0.3s ease;
+}
+
+@keyframes gufengHit {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.1);
+    filter: brightness(2);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.gufengEffectCritical {
+  position: relative;
+  animation: gufengCritical 0.5s ease;
+}
+
+@keyframes gufengCritical {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+  }
+  25% {
+    transform: scale(1.2) rotate(-5deg);
+    filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  }
+  50% {
+    transform: scale(1.15) rotate(5deg);
+    filter: brightness(1.8) drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+  }
+  75% {
+    transform: scale(1.1) rotate(-3deg);
+    filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1) drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+  }
+}
+
+/* 伤害数字 */
+.gufengDamageNumber {
+  position: absolute;
+  font-family: var(--gufeng-font-primary);
+  font-weight: bold;
+  font-size: 24px;
+  color: #ff4444;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(255, 68, 68, 0.5);
+  pointer-events: none;
+  animation: gufengDamageFloat 1s ease-out forwards;
+  z-index: 1000;
+}
+
+.gufengDamageNumber.critical {
+  font-size: 32px;
+  color: #ffd700;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+.gufengDamageNumber.heal {
+  color: #4CAF50;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+@keyframes gufengDamageFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.8);
+  }
+}
+
+/* ========== 22. 资源图标动画 ========== */
+.gufengResourcePulse {
+  animation: gufengResourcePulse 1s ease-in-out infinite;
+}
+
+@keyframes gufengResourcePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.gufengResourceGlow {
+  filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.6));
+}
+
+/* ========== 23. 选中状态 ========== */
+.gufengSelected {
+  position: relative;
+  border-color: var(--gufeng-gold) !important;
+  box-shadow: 
+    0 0 20px rgba(201, 162, 39, 0.3),
+    inset 0 0 20px rgba(201, 162, 39, 0.1);
+}
+
+.gufengSelected::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* ========== 24. 锁定状态 ========== */
+.gufengLocked {
+  position: relative;
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+.gufengLocked::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  filter: grayscale(1);
+}
+
+/* ========== 25. 倒计时样式 ========== */
+.gufengCountdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--gufeng-font-primary);
+  font-size: 1.2rem;
+  color: var(--gufeng-gold);
+  font-weight: bold;
+}
+
+.gufengCountdownItem {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 32px;
+  text-align: center;
+}
+
+.gufengCountdownSeparator {
+  color: var(--gufeng-gold);
+}
+
+/* ========== 26. 冷却指示器 ========== */
+.gufengCooldown {
+  position: relative;
+  overflow: hidden;
+}
+
+.gufengCooldown::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  animation: gufengCooldownShrink 1s linear forwards;
+}
+
+@keyframes gufengCooldownShrink {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+/* ========== 27. 渐变文字 ========== */
+.gufengTextGradient {
+  background: var(--gufeng-gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gufengTextGradientRed {
+  background: var(--gufeng-red-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gufengTextGradientGreen {
+  background: var(--gufeng-green-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== 28. 发光文字 ========== */
+.gufengTextGlow {
+  color: var(--gufeng-gold);
+  text-shadow: 
+    0 0 10px rgba(201, 162, 39, 0.5),
+    0 0 20px rgba(201, 162, 39, 0.3),
+    0 0 30px rgba(201, 162, 39, 0.2);
+  animation: gufengTextGlowPulse 2s ease-in-out infinite;
+}
+
+@keyframes gufengTextGlowPulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px rgba(201, 162, 39, 0.5),
+      0 0 20px rgba(201, 162, 39, 0.3),
+      0 0 30px rgba(201, 162, 39, 0.2);
+  }
+  50% {
+    text-shadow: 
+      0 0 20px rgba(201, 162, 39, 0.8),
+      0 0 40px rgba(201, 162, 39, 0.5),
+      0 0 60px rgba(201, 162, 39, 0.3);
+  }
+}
+
+/* ========== 29. 闪烁文字 ========== */
+.gufengTextBlink {
+  animation: gufengTextBlink 1s step-end infinite;
+}
+
+@keyframes gufengTextBlink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ========== 30. 进度环 ========== */
+.gufengProgressRing {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.gufengProgressRing svg {
+  transform: rotate(-90deg);
+}
+
+.gufengProgressRingCircle {
+  fill: none;
+  stroke-width: 8;
+}
+
+.gufengProgressRingBg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.gufengProgressRingFg {
+  stroke: var(--gufeng-gold);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.gufengProgressRingText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--gufeng-font-primary);
+  font-size: 1rem;
+  color: var(--gufeng-gold);
+  font-weight: bold;
+}
+
+/* ========== 31. 步骤指示器 ========== */
+.gufengSteps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+}
+
+.gufengSteps::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.gufengStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.gufengStepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.gufengStep.active .gufengStepCircle {
+  background: var(--gufeng-gold-gradient);
+  border-color: var(--gufeng-gold);
+  color: #1A1A2E;
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+}
+
+.gufengStep.completed .gufengStepCircle {
+  background: var(--gufeng-green-gradient);
+  border-color: #4A7C59;
+  color: #fff;
+}
+
+.gufengStepLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.gufengStep.active .gufengStepLabel {
+  color: var(--gufeng-gold);
+}
+
+.gufengStep.completed .gufengStepLabel {
+  color: #4CAF50;
+}
+
+/* ========== 32. 对话框 ========== */
+.gufengDialog {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(22, 33, 62, 0.98) 100%);
+  border: 2px solid var(--gufeng-gold);
+  border-radius: 16px;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(201, 162, 39, 0.1);
+  overflow: hidden;
+}
+
+.gufengDialogHeader {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, var(--gufeng-red) 0%, var(--gufeng-brown) 100%);
+  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.gufengDialogTitle {
+  font-family: var(--gufeng-font-primary);
+  font-size: 1.4rem;
+  color: var(--gufeng-gold);
+  margin: 0;
+}
+
+.gufengDialogBody {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.gufengDialogFooter {
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(201, 162, 39, 0.2);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ========== 33. 提示框 ========== */
+.gufengToast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 28px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--gufeng-gold);
+  border-radius: 30px;
+  color: var(--gufeng-white);
+  font-size: 0.95rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: gufengToastIn 0.3s ease, gufengToastOut 0.3s ease 2.7s forwards;
+  z-index: 2000;
+}
+
+.gufengToast.success {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.9);
+}
+
+.gufengToast.error {
+  border-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.9);
+}
+
+.gufengToast.warning {
+  border-color: #f39c12;
+  background: rgba(243, 156, 18, 0.9);
+}
+
+@keyframes gufengToastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes gufengToastOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+/* ========== 34. 消息气泡 ========== */
+.gufengBubble {
+  max-width: 70%;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  position: relative;
+}
+
+.gufengBubbleLeft {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-left-radius: 4px;
+  margin-right: auto;
+}
+
+.gufengBubbleRight {
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+}
+
+/* ========== 35. 装饰云纹 ========== */
+.gufengCloud {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.gufengCloud::before,
+.gufengCloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: inherit;
+}
+
+.gufengCloud::before {
+  width: 50%;
+  height: 150%;
+  top: -25%;
+  left: 25%;
+}
+
+.gufengCloud::after {
+  width: 70%;
+  height: 120%;
+  top: -10%;
+  right: 25%;
+}
+
+/* ========== 36. 胜利/失败特效 ========== */
+.gufengVictory {
+  position: relative;
+  animation: gufengVictory 0.8s ease;
+}
+
+@keyframes gufengVictory {
+  0% {
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.gufengDefeat {
+  position: relative;
+  animation: gufengDefeat 0.8s ease;
+}
+
+@keyframes gufengDefeat {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9);
+    filter: grayscale(0.5);
+  }
+  100% {
+    transform: scale(1);
+    filter: grayscale(0.8);
+    opacity: 0.7;
+  }
+}
+
+/* ========== 37. 星星闪烁 ========== */
+.gufengStar {
+  display: inline-block;
+  color: var(--gufeng-gold);
+  animation: gufengStarTwinkle 1.5s ease-in-out infinite;
+}
+
+@keyframes gufengStarTwinkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* ========== 38. 排行榜王冠 ========== */
+.gufengCrown {
+  font-size: 1.5rem;
+  animation: gufengCrownBounce 2s ease-in-out infinite;
+}
+
+@keyframes gufengCrownBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.gufengCrownGold {
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+}
+
+.gufengCrownSilver {
+  filter: drop-shadow(0 0 8px rgba(192, 192, 192, 0.6));
+}
+
+.gufengCrownBronze {
+  filter: drop-shadow(0 0 8px rgba(205, 127, 50, 0.6));
+}
+
+/* ========== 39. 头像框装饰 ========== */
+.gufengAvatarFrame {
+  position: relative;
+  padding: 4px;
+  background: var(--gufeng-gold-gradient);
+  border-radius: 50%;
+}
+
+.gufengAvatarFrameGold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 50%, #ffd700 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.gufengAvatarFrameSilver {
+  background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 50%, #e0e0e0 100%);
+  box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+}
+
+.gufengAvatarFrameBronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #a05a20 50%, #cd7f32 100%);
+  box-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
+}
+
+/* ========== 40. 横向进度条 ========== */
+.gufengHorizontalProgress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gufengHorizontalProgressTrack {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.gufengHorizontalProgressBar {
+  height: 100%;
+  background: var(--gufeng-gold-gradient);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.gufengHorizontalProgressText {
+  min-width: 50px;
+  font-family: var(--gufeng-font-primary);
+  font-size: 0.9rem;
+  color: var(--gufeng-gold);
+  text-align: right;
+}
+
+/* ========== 41. 竖向进度条 ========== */
+.gufengVerticalProgress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.gufengVerticalProgressTrack {
+  flex: 1;
+  width: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+}
+
+.gufengVerticalProgressBar {
+  width: 100%;
+  background: var(--gufeng-gold-gradient);
+  border-radius: 4px;
+  transition: height 0.5s ease;
+}
+
+.gufengVerticalProgressText {
+  font-family: var(--gufeng-font-primary);
+  font-size: 0.9rem;
+  color: var(--gufeng-gold);
+}
+
+/* ========== 42. 标签云 ========== */
+.gufengTagCloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gufengTag {
+  padding: 6px 14px;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--gufeng-gold);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gufengTag:hover {
+  background: rgba(201, 162, 39, 0.2);
+  border-color: var(--gufeng-gold);
+  transform: translateY(-2px);
+}
+
+.gufengTagActive {
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  border-color: var(--gufeng-gold);
+}
+
+/* ========== 43. 搜索框 ========== */
+.gufengSearch {
+  position: relative;
+  width: 100%;
+}
+
+.gufengSearchInput {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  font-size: 1rem;
+  color: var(--gufeng-white);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 162, 39, 0.4);
+  border-radius: 25px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.gufengSearchInput::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.gufengSearchInput:focus {
+  border-color: var(--gufeng-gold);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.2);
+}
+
+.gufengSearchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.2rem;
+}
+
+/* ========== 44. 滚动视图指示器 ========== */
+.gufengScrollIndicator {
+  position: absolute;
+  background: rgba(201, 162, 39, 0.5);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.gufengScrollIndicatorHorizontal {
+  bottom: 2px;
+  left: 0;
+  height: 3px;
+}
+
+.gufengScrollIndicatorVertical {
+  right: 2px;
+  top: 0;
+  width: 3px;
+}
+
+/* ========== 45. 移动端手势提示 ========== */
+.gufengSwipeHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+}
+
+.gufengSwipeHintIcon {
+  font-size: 1.5rem;
+  animation: gufengSwipeHintBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes gufengSwipeHintBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ========== 46. 震动反馈（移动端） ========== */
+@media (max-width: 768px) {
+  .gufengVibrate {
+    animation: gufengVibrate 0.5s ease;
+  }
+  
+  @keyframes gufengVibrate {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-3px);
+    }
+    40% {
+      transform: translateX(3px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
+  }
+}
+
+/* ========== 47. 等级徽章 ========== */
+.gufengLevelBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  background: linear-gradient(135deg, #1E3A5F 0%, #3498db 100%);
+  border-radius: 16px;
+  font-family: var(--gufeng-font-primary);
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(30, 58, 95, 0.4);
+}
+
+.gufengLevelBadgeGold {
+  background: var(--gufeng-gold-gradient);
+  color: #1A1A2E;
+  box-shadow: 0 2px 15px rgba(201, 162, 39, 0.4);
+}
+
+.gufengLevelBadgeRed {
+  background: var(--gufeng-red-gradient);
+  box-shadow: 0 2px 15px rgba(139, 0, 0, 0.4);
+}
+
+/* ========== 48. 属性条 ========== */
+.gufengStatBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gufengStatIcon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 162, 39, 0.1);
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+.gufengStatContent {
+  flex: 1;
+}
+
+.gufengStatLabel {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+}
+
+.gufengStatValue {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--gufeng-white);
+}
+
+.gufengStatValuePositive {
+  color: #4CAF50;
+}
+
+.gufengStatValueNegative {
+  color: #e74c3c;
+}
+
+/* ========== 49. 浮动操作按钮 ========== */
+.gufengFab {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--gufeng-gold-gradient);
+  border: none;
+  color: #1A1A2E;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 99;
+}
+
+.gufengFab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(201, 162, 39, 0.5);
+}
+
+.gufengFab:active {
+  transform: scale(0.95);
+}
+
+.gufengFabSmall {
+  width: 44px;
+  height: 44px;
+  font-size: 1.2rem;
+  bottom: 80px;
+  right: 15px;
+}
+
+.gufengFabMini {
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  bottom: 70px;
+  right: 10px;
+}
+
+/* ========== 50. 底部安全区适配 ========== */
+.gufengSafeAreaBottom {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.gufengSafeAreaTop {
+  padding-top: env(safe-area-inset-top, 20px);
+}
+
+/* ========== 51. 胜利/失败特效 ========== */
+.win {
+  color: #27ae60 !important;
+}
+
+.loss {
+  color: #e74c3c !important;
+}
+
+/* 胜利特效 */
+.gufengVictory {
+  position: relative;
+  animation: gufengVictory 0.8s ease;
+}
+
+@keyframes gufengVictory {
+  0% {
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* 失败特效 */
+.gufengDefeat {
+  position: relative;
+  animation: gufengDefeat 0.8s ease;
+}
+
+@keyframes gufengDefeat {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9);
+    filter: grayscale(0.5);
+  }
+  100% {
+    transform: scale(1);
+    filter: grayscale(0.8);
+    opacity: 0.7;
+  }
+}
+
+/* ========== 52. 排行榜样式增强 ========== */
+.rankItem {
+  position: relative;
+  overflow: hidden;
+}
+
+.rankItem.first {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+}
+
+.rankItem.second {
+  background: linear-gradient(135deg, rgba(192, 192, 192, 0.15) 0%, rgba(192, 192, 192, 0.05) 100%);
+  border: 1px solid rgba(192, 192, 192, 0.4);
+}
+
+.rankItem.third {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.15) 0%, rgba(205, 127, 50, 0.05) 100%);
+  border: 1px solid rgba(205, 127, 50, 0.4);
+}
+
+/* ========== 53. 任务面板样式 ========== */
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.taskItem {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.taskItem:hover {
+  border-color: rgba(201, 162, 39, 0.4);
+  transform: translateX(4px);
+}
+
+.taskItem.completed {
+  opacity: 0.6;
+}
+
+.taskItem.completed .taskCheck {
+  background: linear-gradient(135deg, #2D5A3D 0%, #4A7C59 100%);
+  border-color: #4CAF50;
+}
+
+.taskCheck {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(201, 162, 39, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.taskCheck::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.taskItem.completed .taskCheck::after {
+  opacity: 1;
+}
+
+.taskInfo {
+  flex: 1;
+}
+
+.taskTitle {
+  color: #fff;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.taskDesc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+}
+
+.taskReward {
+  background: rgba(201, 162, 39, 0.15);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  padding: 6px 12px;
+  border-radius: 15px;
+  color: #ffd700;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ========== 54. 消息列表样式 ========== */
+.messageList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.messageItem {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.messageItem:hover {
+  background: rgba(201, 162, 39, 0.08);
+  border-color: rgba(201, 162, 39, 0.2);
+}
+
+.messageHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.messageAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a227 0%, #f4d03f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.messageName {
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.messageTime {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  margin-left: auto;
+}
+
+.messageContent {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.messageUnread::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  border-radius: 50%;
+  border: 2px solid #1a1a2e;
+}
+
+/* ========== 55. 武将卡片增强 ========== */
+.heroCard {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  border: 2px solid rgba(201, 162, 39, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.heroCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+}
+
+.heroCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 162, 39, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(201, 162, 39, 0.15);
+}
+
+.heroCard.selected {
+  border-color: #ffd700;
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.25);
+}
+
+.heroCard .quality {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.heroStats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.heroStatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.heroStatLabel {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.heroStatValue {
+  color: #fff;
+  font-weight: 600;
+}
+
+.heroExpBar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.heroExpProgress {
+  height: 100%;
+  background: linear-gradient(90deg, #c9a227, #f4d03f);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.heroTrainingBar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.heroTrainingProgress {
+  height: 100%;
+  background: linear-gradient(90deg, #2D5A3D, #4A7C59);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.heroActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.heroActionBtn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.heroActionBtnPrimary {
+  background: linear-gradient(135deg, #c9a227 0%, #f4d03f 100%);
+  color: #1a1a2e;
+}
+
+.heroActionBtnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+}
+
+.heroActionBtnSecondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.heroActionBtnSecondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========== 56. 商城卡片 ========== */
+.shopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+
+.shopItem {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.shopItem:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201, 162, 39, 0.5);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(201, 162, 39, 0.1);
+}
+
+.shopItemIcon {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.shopItemName {
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.shopItemPrice {
+  color: #ffd700;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.shopItemBtn {
+  background: linear-gradient(135deg, #c9a227 0%, #f4d03f 100%);
+  color: #1a1a2e;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.shopItemBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+}
+
+/* ========== 57. 邮件附件 ========== */
+.mailAttachment {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(155, 89, 182, 0.05) 100%);
+  border: 1px solid rgba(155, 89, 182, 0.3);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
+}
+
+.mailAttachmentTitle {
+  color: #9b59b6;
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+}
+
+.mailAttachmentItem {
+  display: inline-block;
+  background: rgba(155, 89, 182, 0.2);
+  padding: 4px 12px;
+  border-radius: 15px;
+  color: #fff;
+  font-size: 0.85rem;
+  margin: 4px;
+}
+
+.mailReceiveBtn {
+  background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.mailReceiveBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(155, 89, 182, 0.4);
+}
+
+/* ========== 58. 建筑选择 ========== */
+.buildingGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  padding: 16px;
+}
+
+.buildingItem {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.buildingItem:hover {
+  border-color: rgba(201, 162, 39, 0.5);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.buildingItem.selected {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+}
+
+.buildingIcon {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.buildingName {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.buildingDesc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+}
+
+/* ========== 59. 城市面板 ========== */
+.cityPanel {
+  padding: 20px;
+}
+
+.cityStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.cityStatItem {
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+
+.cityStatValue {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 4px;
+}
+
+.cityStatLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cityBuildings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.cityBuildingItem {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cityBuildingItem:hover {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: rgba(201, 162, 39, 0.3);
+}
+
+.cityBuildingIcon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+
+.cityBuildingName {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cityBuildingLevel {
+  font-size: 0.7rem;
+  color: #ffd700;
+  margin-top: 4px;
+}
+
+/* ========== 结束 ========== */

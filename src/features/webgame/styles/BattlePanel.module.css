@@ -1,16 +1,16 @@
 /**
- * 战斗面板样式
+ * 战斗面板样式 - 古风版本
  */
 .container {
-  padding: 16px;
+  padding: 20px;
 }
 
 .selectionArea {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  gap: 16px;
+  gap: 24px;
   align-items: start;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 @media (max-width: 768px) {
@@ -23,179 +23,248 @@
 }
 
 .selectSection h3 {
-  margin: 0 0 12px 0;
-  color: var(--color-primary);
-  font-size: 14px;
+  margin: 0 0 16px 0;
+  color: #ffd700;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .cardGrid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .card {
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(0, 255, 65, 0.3);
-  border-radius: 8px;
-  padding: 12px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  border: 2px solid rgba(201, 162, 39, 0.3);
+  border-radius: 14px;
+  padding: 18px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .card:hover {
-  border-color: var(--color-primary);
-  background: rgba(0, 255, 65, 0.1);
+  border-color: rgba(201, 162, 39, 0.6);
+  transform: translateX(6px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover::before {
+  transform: scaleX(1);
 }
 
 .card.selected {
-  border-color: var(--color-primary);
-  background: rgba(0, 255, 65, 0.2);
-  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
 }
 
 .card.enemy {
-  border-color: rgba(255, 68, 68, 0.3);
+  border-color: rgba(231, 76, 60, 0.4);
+}
+
+.card.enemy::before {
+  background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+}
+
+.card.enemy:hover {
+  border-color: rgba(231, 76, 60, 0.6);
+  transform: translateX(-6px);
 }
 
 .card.enemy.selected {
-  border-color: #ff4444;
-  background: rgba(255, 68, 68, 0.2);
+  border-color: #e74c3c;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
+  box-shadow: 0 0 25px rgba(231, 76, 60, 0.2);
 }
 
 .cardName {
-  font-weight: bold;
+  font-weight: 700;
   color: #fff;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .cardStats {
   display: flex;
-  gap: 12px;
-  font-size: 12px;
-  color: #999;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cardStats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card.enemy .cardName {
+  color: #ff6b6b;
 }
 
 .vs {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #ff4444, #ff8800);
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   border-radius: 50%;
   color: #fff;
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
+  box-shadow: 0 4px 20px rgba(231, 76, 60, 0.4);
+  margin-top: 40px;
 }
 
 .empty {
   text-align: center;
-  padding: 20px;
-  color: #666;
-  font-size: 14px;
+  padding: 30px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px dashed rgba(201, 162, 39, 0.2);
+  border-radius: 14px;
 }
 
 .battleBtn {
   width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #000;
-  background: linear-gradient(135deg, #ff4444, #ff8800);
+  padding: 18px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
+  position: relative;
+  overflow: hidden;
+}
+
+.battleBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
 }
 
 .battleBtn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(255, 68, 68, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 35px rgba(231, 76, 60, 0.4);
+}
+
+.battleBtn:hover::before {
+  left: 100%;
 }
 
 .battleBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .result {
-  margin-top: 20px;
-  border-radius: 12px;
+  margin-top: 24px;
+  border-radius: 16px;
   overflow: hidden;
+  animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result.win {
-  background: rgba(76, 175, 80, 0.2);
-  border: 2px solid #4CAF50;
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%);
+  border: 2px solid rgba(76, 175, 80, 0.5);
 }
 
 .result.lose {
-  background: rgba(244, 67, 54, 0.2);
-  border: 2px solid #f44336;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.15) 0%, rgba(231, 76, 60, 0.05) 100%);
+  border: 2px solid rgba(231, 76, 60, 0.5);
 }
 
 .resultTitle {
-  padding: 16px;
-  font-size: 24px;
-  font-weight: bold;
+  padding: 20px;
+  font-size: 1.8rem;
+  font-weight: 700;
   text-align: center;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .result.win .resultTitle {
-  color: #4CAF50;
+  color: #69db7c;
+  text-shadow: 0 0 20px rgba(105, 219, 124, 0.3);
 }
 
 .result.lose .resultTitle {
-  color: #f44336;
+  color: #ff6b6b;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
 }
 
-.battleLog {
-  max-height: 300px;
-  overflow-y: auto;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.3);
+.resultDetails {
+  padding: 0 20px 20px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.6;
 }
 
-.logItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 14px;
-  color: #ccc;
+.resultRewards {
+  padding: 16px 20px;
+  background: rgba(201, 162, 39, 0.1);
+  border-top: 1px solid rgba(201, 162, 39, 0.2);
 }
 
-.logItem:last-child {
-  border-bottom: none;
-}
-
-.logStart { font-size: 16px; }
-.logAttack { font-size: 16px; }
-.logDamage { font-size: 16px; }
-.logWin { font-size: 18px; }
-.logLose { font-size: 18px; }
-.logLevelup { font-size: 18px; }
-
-.rewards {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  padding: 16px;
+.resultRewards h4 {
+  margin: 0 0 12px 0;
+  color: #ffd700;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .rewardItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #FFD700;
-}
-
-.loading {
-  text-align: center;
-  padding: 48px;
-  color: #999;
+  padding: 8px 16px;
+  background: rgba(201, 162, 39, 0.15);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 20px;
+  color: #ffd700;
+  margin: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
 }

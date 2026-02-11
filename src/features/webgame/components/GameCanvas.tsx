@@ -22,7 +22,7 @@ const GameCanvas: React.FC<GameCanvasProps> = memo(({ onCellClick }) => {
     
     for (let y = 0; y < GAME_CONFIG.MAP_HEIGHT; y++) {
       for (let x = 0; x < GAME_CONFIG.MAP_WIDTH; x++) {
-        const unit = units.find(u => u.x === x && u.y === y);
+        const unit = (Array.isArray(units) ? units : []).find(u => u.x === x && u.y === y);
         const isSelected = unit && unit.id === selectedUnit;
         
         cells.push(

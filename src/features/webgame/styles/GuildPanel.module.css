@@ -1,67 +1,89 @@
 /**
- * 帮派面板样式
+ * 帮派面板样式 - 古风版本
  */
 
 .container {
-  padding: 16px;
+  padding: 20px;
   max-width: 700px;
   margin: 0 auto;
 }
 
 .section {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .section h3 {
-  margin: 0 0 12px;
-  color: #fff;
-  font-size: 16px;
+  margin: 0 0 16px;
+  color: #ffd700;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 /* 我的帮派卡片 */
 .myGuildCard {
-  background: rgba(30, 30, 45, 0.7);
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.myGuildCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
 }
 
 .guildHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.15);
 }
 
 .guildName {
-  font-size: 18px;
+  font-size: 1.3rem;
   font-weight: 700;
   color: #fff;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .memberCount {
-  font-size: 14px;
-  color: #888;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 6px 14px;
+  background: rgba(201, 162, 39, 0.1);
+  border-radius: 20px;
 }
 
 .notice {
   background: rgba(102, 126, 234, 0.1);
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #a0a0c0;
-  margin-bottom: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 18px;
+  line-height: 1.6;
+  border: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 .memberList {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .memberItem {
   display: flex;
   align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(100, 100, 120, 0.2);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .memberItem:last-child {
@@ -70,142 +92,193 @@
 
 .memberName {
   flex: 1;
-  font-size: 14px;
+  font-size: 0.95rem;
   color: #fff;
+  font-weight: 500;
 }
 
 .roleBadge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: #fff;
   margin-right: 12px;
+  text-transform: uppercase;
+}
+
+.roleBadge.leader {
+  background: linear-gradient(135deg, #ffd700, #f4d03f);
+  color: #1a1a2e;
+}
+
+.roleBadge.vice {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.roleBadge.member {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .contribution {
-  font-size: 12px;
-  color: #ffaa32;
+  font-size: 0.9rem;
+  color: #ffd700;
+  font-weight: 600;
+  padding: 4px 12px;
+  background: rgba(201, 162, 39, 0.1);
+  border-radius: 15px;
 }
 
 .guildActions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .leaveBtn,
 .disbandBtn {
   flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 14px;
+  border-radius: 25px;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
 }
 
 .leaveBtn {
-  background: rgba(60, 60, 80, 0.8);
-  border: 1px solid rgba(100, 100, 120, 0.5);
-  color: #a0a0c0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.leaveBtn:hover {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: rgba(201, 162, 39, 0.5);
+  color: #ffd700;
 }
 
 .disbandBtn {
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  color: #ff6b6b;
+}
+
+.disbandBtn:hover {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.5);
 }
 
 /* 未加入帮派 */
 .noGuild {
   text-align: center;
-  padding: 30px;
-  background: rgba(30, 30, 45, 0.5);
-  border-radius: 12px;
-  border: 1px dashed rgba(100, 100, 120, 0.3);
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+  border-radius: 16px;
+  border: 2px dashed rgba(201, 162, 39, 0.3);
 }
 
 .noGuild p {
-  color: #888;
-  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 20px;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .createBtn {
-  padding: 12px 24px;
+  padding: 16px 32px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
-  border-radius: 8px;
+  border-radius: 30px;
   color: #fff;
-  font-size: 14px;
+  font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.createBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
 }
 
 /* 创建表单 */
 .createForm {
-  background: rgba(30, 30, 45, 0.7);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(201, 162, 39, 0.3);
 }
 
 .createForm h4 {
-  margin: 0 0 16px;
-  color: #fff;
-  font-size: 16px;
+  margin: 0 0 20px;
+  color: #ffd700;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .formGroup {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .formGroup label {
   display: block;
-  margin-bottom: 6px;
-  color: #888;
-  font-size: 13px;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
 }
 
 .formGroup input,
 .formGroup textarea {
   width: 100%;
-  padding: 12px;
-  background: rgba(20, 20, 35, 0.8);
-  border: 1px solid rgba(100, 100, 120, 0.3);
-  border-radius: 8px;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 12px;
   color: #fff;
-  font-size: 14px;
+  font-size: 1rem;
   outline: none;
+  transition: all 0.3s ease;
 }
 
 .formGroup input:focus,
 .formGroup textarea:focus {
-  border-color: #667eea;
+  border-color: rgba(201, 162, 39, 0.5);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.1);
 }
 
 .formGroup textarea {
   resize: vertical;
+  min-height: 100px;
 }
 
 .formActions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .cancelBtn,
 .confirmBtn {
   flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 14px;
+  border-radius: 25px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .cancelBtn {
-  background: rgba(60, 60, 80, 0.8);
-  border: 1px solid rgba(100, 100, 120, 0.5);
-  color: #a0a0c0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.cancelBtn:hover {
+  background: rgba(201, 162, 39, 0.1);
+  border-color: rgba(201, 162, 39, 0.4);
+  color: #ffd700;
 }
 
 .confirmBtn {
@@ -214,90 +287,133 @@
   color: #fff;
 }
 
+.confirmBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
 .confirmBtn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* 帮派列表 */
 .searchBar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 .searchBar input {
   flex: 1;
-  padding: 10px 14px;
-  background: rgba(30, 30, 45, 0.5);
-  border: 1px solid rgba(100, 100, 120, 0.3);
-  border-radius: 8px;
+  padding: 14px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: 25px;
   color: #fff;
-  font-size: 14px;
+  font-size: 1rem;
   outline: none;
+  transition: all 0.3s ease;
+}
+
+.searchBar input:focus {
+  border-color: rgba(201, 162, 39, 0.5);
+}
+
+.searchBar input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .searchBar button {
-  padding: 10px 16px;
-  background: rgba(102, 126, 234, 0.2);
-  border: 1px solid #667eea;
-  border-radius: 8px;
-  color: #667eea;
+  padding: 14px 24px;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 25px;
+  color: #ffd700;
   cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.searchBar button:hover {
+  background: rgba(201, 162, 39, 0.2);
+  border-color: rgba(201, 162, 39, 0.5);
 }
 
 .guildList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .guildItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
-  background: rgba(30, 30, 45, 0.5);
-  border-radius: 10px;
-  border: 1px solid rgba(100, 100, 120, 0.2);
+  padding: 18px 20px;
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+  border-radius: 14px;
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  transition: all 0.3s ease;
+}
+
+.guildItem:hover {
+  border-color: rgba(201, 162, 39, 0.4);
+  transform: translateX(6px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .guildInfo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .guildItem .guildName {
-  font-size: 15px;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #fff;
+  font-family: var(--gufeng-font-primary, 'KaiTi', serif);
 }
 
 .guildItem .memberCount {
-  font-size: 12px;
-  color: #888;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0;
+  background: none;
 }
 
 .joinBtn {
-  padding: 8px 16px;
-  background: rgba(74, 222, 128, 0.2);
-  border: 1px solid #4ade80;
-  border-radius: 6px;
-  color: #4ade80;
-  font-size: 13px;
+  padding: 10px 22px;
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 25px;
+  color: #69db7c;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.joinBtn:hover {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.5);
+  transform: translateY(-2px);
 }
 
 .empty {
   text-align: center;
-  padding: 30px;
-  color: #666;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1rem;
 }
 
 .loading {
   text-align: center;
-  padding: 40px;
-  color: #888;
+  padding: 50px;
+  color: #ffd700;
+  font-size: 1.1rem;
 }

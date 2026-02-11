@@ -49,11 +49,11 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const getCurrentCategory = () => {
-    return categories.find((c) => c.id === selectedCategory);
+    return (Array.isArray(categories) ? categories : []).find((c) => c.id === selectedCategory);
   };
 
   const getArticlesForCategory = (categoryId: string) => {
-    const category = helpData.find((c) => c.id === categoryId);
+    const category = (Array.isArray(helpData) ? helpData : []).find((c) => c.id === categoryId);
     return category?.articles || [];
   };
 
@@ -87,7 +87,7 @@ const HelpPanel: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   {searchResults.length > 0 ? (
                     <ul>
                       {searchResults.map((article) => {
-                        const category = helpData.find((c) =>
+                        const category = (Array.isArray(helpData) ? helpData : []).find((c) =>
                           c.articles.some((a) => a.id === article.id)
                         );
                         return (

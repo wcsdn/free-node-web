@@ -166,9 +166,9 @@ class ResourceProductionService {
   }
 
   // 与服务器同步
-  async syncWithServer() {
+  async syncWithServer(cityId: number = 1) {
     try {
-      const res = await fetch(`${getApiBase()}/api/game/city/interior/1`, {
+      const res = await fetch(`${getApiBase()}/api/game/city/interior-info/${cityId}`, {
         method: 'POST',
         headers: getAuthHeaders()
       });
