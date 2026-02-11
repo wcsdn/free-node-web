@@ -36,6 +36,8 @@ app.get('/waiting', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
+  const { warfare_type, area } = c.req.query();
+
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
@@ -51,6 +53,8 @@ app.get('/waiting', async (c) => {
 app.get('/user-battle', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -68,8 +72,7 @@ app.get('/detail', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { battleID } = c.req.query();
-  if (!battleID) return error(c, 'Missing battleID');
+  const { warfare_id } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -87,15 +90,14 @@ app.post('/cancel', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { battleID } = await c.req.json();
-  if (!battleID) return error(c, 'Missing battleID');
+  const { pos, city_id } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
     // TODO: 实现取消战斗逻辑
-    return success(c, { message: 'Battle cancelled', battleID });
+    return success(c, { message: 'Battle cancelled' });
   } catch (err: any) {
     return error(c, err.message);
   }

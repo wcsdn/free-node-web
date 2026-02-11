@@ -1535,7 +1535,7 @@ window.API_MAPPING = {
   
   // ==================== 邮件相关（补充）====================
   AddnewMail: {
-    endpoint: '/mail/send',
+    endpoint: '/mail/new',  // 修正：与 SendMessage 分开，避免端点冲突
     httpMethod: 'POST',
     params: ['to_user', 'title', 'content', 'mail_type'],
     auth: true

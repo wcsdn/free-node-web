@@ -20,8 +20,7 @@ app.get('/persist-group', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { objType, objID } = c.req.query();
-  if (!objType || !objID) return error(c, 'Missing objType or objID');
+  const { city_id } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -39,9 +38,6 @@ app.get('/over-array', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { objType, objID } = c.req.query();
-  if (!objType || !objID) return error(c, 'Missing objType or objID');
-
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
@@ -57,6 +53,8 @@ app.get('/over-array', async (c) => {
 app.post('/process-overdue', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { cityID, eventID } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);

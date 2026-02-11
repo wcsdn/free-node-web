@@ -65,7 +65,7 @@ app.get('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { search } = c.req.query();
+  const { search_word, page, page_size } = c.req.query();
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
@@ -78,9 +78,9 @@ app.get('/list', async (c) => {
     `;
     const params: any[] = [];
 
-    if (search) {
+    if (search_word) {
       query += ' WHERE g.name LIKE ?';
-      params.push(`%${search}%`);
+      params.push(`%${search_word}%`);
     }
 
     query += ' ORDER BY g.level DESC, g.id ASC LIMIT 50';
@@ -108,7 +108,8 @@ app.post('/create', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { name } = await c.req.json();
+  
+  const { city_id, name, intro } = await c.req.json();;
   if (!name || name.length < 2 || name.length > 10) {
     return error(c, '帮派名称必须为2-10个字符');
   }

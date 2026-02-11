@@ -12,5 +12,5 @@ export { itemRepo } from './item.repo';
 export { corpsRepo } from './corps.repo';
 export { npcFloorRepo } from './npc-floor.repo';
 export { mailRepo } from './mail.repo';
-export { chessRepo } from './chess.repo';
+// export { chessRepo } from './chess.repo'; // TODO: 待实现
 export { serverRepo } from './server.repo';

@@ -157,15 +157,15 @@ app.post('/send', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 SendMessage 逻辑
+    // TODO: 实现 SendMessage 逻辑（发送帮会消息）
     return success(c, { message: 'Not implemented yet' });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
 
-// AddnewMail - POST /mail/send
-app.post('/send', async (c) => {
+// AddnewMail - POST /mail/new
+app.post('/new', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
@@ -175,7 +175,7 @@ app.post('/send', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 AddnewMail 逻辑
+    // TODO: 实现 AddnewMail 逻辑（创建新邮件）
     return success(c, { message: 'Not implemented yet' });
   } catch (err: any) {
     return error(c, err.message);

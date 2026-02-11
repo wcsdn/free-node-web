@@ -134,8 +134,8 @@ app.post('/use', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { item_id, count = 1 } = await c.req.json();
-  if (!item_id) return error(c, 'Missing item_id');
+  const { cityID, itemID } = await c.req.json();
+  if (!itemID) return error(c, 'Missing itemID');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -143,13 +143,13 @@ app.post('/use', async (c) => {
   try {
     const inv: any = await db.prepare(`
       SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, item_id).first();
+    `).bind(walletAddress, itemID).first();
 
-    if (!inv || (inv.count || 1) < count) {
+    if (!inv || (inv.count || 1) < 1) {
       return error(c, 'Not enough items');
     }
 
-    const itemConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === parseInt(item_id));
+    const itemConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === parseInt(itemID));
     if (!itemConfig) return error(c, 'Item config not found');
 
     // 应用效果
@@ -157,27 +157,27 @@ app.post('/use', async (c) => {
     if (itemConfig.EffectType) {
       switch (itemConfig.EffectType) {
         case 1: // 恢复生命
-          effects.hp_recovery = itemConfig.EffectValue * count;
+          effects.hp_recovery = itemConfig.EffectValue;
           break;
         case 2: // 增加经验
-          effects.exp = itemConfig.EffectValue * count;
+          effects.exp = itemConfig.EffectValue;
           break;
         case 3: // 增加金币
-          effects.gold = itemConfig.EffectValue * count;
+          effects.gold = itemConfig.EffectValue;
           break;
         case 4: // 增加资源
-          effects.resources = itemConfig.EffectValue * count;
+          effects.resources = itemConfig.EffectValue;
           break;
         case 5: // 增加兵力
-          effects.men = itemConfig.EffectValue * count;
+          effects.men = itemConfig.EffectValue;
           break;
       }
     }
 
     // 消耗物品
     await db.prepare(`
-      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
-    `).bind(count, walletAddress, item_id).run();
+      UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?
+    `).bind(walletAddress, itemID).run();
 
     // 如果有效果，发放
     if (effects.exp) {
@@ -212,11 +212,11 @@ app.post('/use', async (c) => {
     }
 
     return success(c, {
-      itemId: item_id,
+      itemId: itemID,
       name: itemConfig.Name,
-      count,
+      count: 1,
       effects,
-      message: `使用了 ${count} 个 ${itemConfig.Name}`,
+      message: `使用了 1 个 ${itemConfig.Name}`,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -269,7 +269,7 @@ app.post('/disassemble', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { item_id, count = 1 } = await c.req.json();
+  const { city_id, item_id, static_index } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
 
   const db = c.env.DB;
@@ -280,7 +280,7 @@ app.post('/disassemble', async (c) => {
       SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
     `).bind(walletAddress, item_id).first();
 
-    if (!inv || (inv.count || 1) < count) {
+    if (!inv || (inv.count || 1) < 1) {
       return error(c, 'Not enough items');
     }
 
@@ -292,13 +292,13 @@ app.post('/disassemble', async (c) => {
 
     // 扣除物品
     await db.prepare(`
-      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
-    `).bind(count, walletAddress, item_id).run();
+      UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?
+    `).bind(walletAddress, item_id).run();
 
     // 添加分解产物
     const rewards: any[] = [];
     if (recipe.ToItemID) {
-      const rewardCount = count * (recipe.ToItemNum || 1);
+      const rewardCount = recipe.ToItemNum || 1;
       
       await db.prepare(`
         INSERT INTO items (wallet_address, config_id, count, source)
@@ -316,9 +316,9 @@ app.post('/disassemble', async (c) => {
 
     return success(c, {
       itemId: item_id,
-      count,
+      count: 1,
       rewards,
-      message: `分解 ${count} 个物品成功`,
+      message: `分解 1 个物品成功`,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -397,7 +397,7 @@ app.post('/sell', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { item_id, count = 1 } = await c.req.json();
+  const { city_id, item_id, price } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
 
   const db = c.env.DB;
@@ -411,17 +411,17 @@ app.post('/sell', async (c) => {
       WHERE i.wallet_address = ? AND i.config_id = ?
     `).bind(walletAddress, item_id).first();
 
-    if (!inv || (inv.count || 1) < count) {
+    if (!inv || (inv.count || 1) < 1) {
       return error(c, 'Not enough items');
     }
 
-    const sellPrice = (inv as any).SellMoney || 10;
-    const totalPrice = sellPrice * count;
+    const sellPrice = price || (inv as any).SellMoney || 10;
+    const totalPrice = sellPrice;
 
     // 扣除物品
     await db.prepare(`
-      UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
-    `).bind(count, walletAddress, item_id).run();
+      UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?
+    `).bind(walletAddress, item_id).run();
 
     // 增加金币
     await db.prepare(`
@@ -433,7 +433,7 @@ app.post('/sell', async (c) => {
     return success(c, {
       itemId: item_id,
       name: itemConfig?.Name || '物品',
-      count,
+      count: 1,
       pricePerItem: sellPrice,
       totalPrice,
       message: `出售成功，获得 ${totalPrice} 金条`,

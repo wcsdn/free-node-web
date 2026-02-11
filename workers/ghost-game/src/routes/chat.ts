@@ -100,8 +100,8 @@ app.post('/send', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { content, type } = await c.req.json();
-  if (!content) return error(c, 'Missing content');
+  const { message } = await c.req.json();
+  if (!message) return error(c, 'Missing message');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -114,7 +114,7 @@ app.post('/send', async (c) => {
     await db.prepare(`
       INSERT INTO chat_messages (sender, sender_name, content, type)
       VALUES (?, ?, ?, ?)
-    `).bind(walletAddress, (char as any)?.name || '玩家', content, type || 0).run();
+    `).bind(walletAddress, (char as any)?.name || '玩家', message, 0).run();
 
     return success(c, { message: 'Message sent' });
   } catch (err: any) {

@@ -20,19 +20,12 @@ app.post('/kick-user', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { targetUser, reason } = await c.req.json();
-  if (!targetUser) return error(c, 'Missing targetUser');
-
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现踢出用户逻辑
-    return success(c, { 
-      message: 'User kicked',
-      targetUser,
-      reason: reason || 'No reason provided'
-    });
+    // TODO: 实现踢出用户逻辑（KickUser 在 C# 中无参数）
+    return success(c, { message: 'User kicked' });
   } catch (err: any) {
     return error(c, err.message);
   }
