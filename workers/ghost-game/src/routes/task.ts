@@ -686,8 +686,43 @@ app.post('/compose/quick-get', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 合成任务系统暂未实现
-    return error(c, 'Compose tasks not implemented yet');
+    // 快速获取合成任务
+    const existingTask: any = await db.prepare(`
+      SELECT * FROM compose_tasks 
+      WHERE wallet_address = ? AND status = 0
+      ORDER BY created_at DESC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (existingTask) {
+      return success(c, { 
+        task: {
+          id: existingTask.id,
+          taskId: existingTask.task_id,
+          materialsRequired: JSON.parse(existingTask.materials_required || '[]'),
+          status: existingTask.status,
+          createdAt: existingTask.created_at,
+        }
+      });
+    }
+
+    // 创建新合成任务
+    const composeTasks = [
+      { id: 101, name: '精炼铁矿', materials: { iron: 10 }, reward: { gold: 50 } },
+      { id: 102, name: '锻造精钢', materials: { iron: 20, coal: 10 }, reward: { gold: 100 } },
+      { id: 103, name: '制作皮甲', materials: { leather: 15 }, reward: { gold: 80 } },
+      { id: 104, name: '纺织丝绸', materials: { silk: 10 }, reward: { gold: 60 } },
+    ];
+
+    const newTask = composeTasks[Math.floor(Math.random() * composeTasks.length)];
+    const result = await db.prepare(`
+      INSERT INTO compose_tasks (wallet_address, task_id, materials_required, status, created_at)
+      VALUES (?, ?, ?, 0, datetime('now'))
+    `).bind(walletAddress, newTask.id, JSON.stringify(newTask.materials)).run();
+
+    return success(c, {
+      task: { id: result.meta.last_row_id, taskId: newTask.id, name: newTask.name,
+              materialsRequired: newTask.materials, reward: newTask.reward, status: 0 }
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -703,8 +738,43 @@ app.post('/compose/reward', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 合成任务系统暂未实现
-    return error(c, 'Compose tasks not implemented yet');
+    // 快速获取合成任务
+    const existingTask: any = await db.prepare(`
+      SELECT * FROM compose_tasks 
+      WHERE wallet_address = ? AND status = 0
+      ORDER BY created_at DESC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (existingTask) {
+      return success(c, { 
+        task: {
+          id: existingTask.id,
+          taskId: existingTask.task_id,
+          materialsRequired: JSON.parse(existingTask.materials_required || '[]'),
+          status: existingTask.status,
+          createdAt: existingTask.created_at,
+        }
+      });
+    }
+
+    // 创建新合成任务
+    const composeTasks = [
+      { id: 101, name: '精炼铁矿', materials: { iron: 10 }, reward: { gold: 50 } },
+      { id: 102, name: '锻造精钢', materials: { iron: 20, coal: 10 }, reward: { gold: 100 } },
+      { id: 103, name: '制作皮甲', materials: { leather: 15 }, reward: { gold: 80 } },
+      { id: 104, name: '纺织丝绸', materials: { silk: 10 }, reward: { gold: 60 } },
+    ];
+
+    const newTask = composeTasks[Math.floor(Math.random() * composeTasks.length)];
+    const result = await db.prepare(`
+      INSERT INTO compose_tasks (wallet_address, task_id, materials_required, status, created_at)
+      VALUES (?, ?, ?, 0, datetime('now'))
+    `).bind(walletAddress, newTask.id, JSON.stringify(newTask.materials)).run();
+
+    return success(c, {
+      task: { id: result.meta.last_row_id, taskId: newTask.id, name: newTask.name,
+              materialsRequired: newTask.materials, reward: newTask.reward, status: 0 }
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -720,8 +790,38 @@ app.post('/feast/reward', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 节日任务系统暂未实现
-    return error(c, 'Feast tasks not implemented yet');
+    // 领取节日任务奖励
+    const feastTasks: any = await db.prepare(`
+      SELECT * FROM feast_tasks WHERE id = ? AND wallet_address = ?
+    `).bind(task_id, walletAddress).first();
+
+    if (!feastTasks) {
+      const feastConfig = [
+        { id: 201, name: '春节任务', reward: { gold: 200, item: '福袋' } },
+        { id: 202, name: '元宵任务', reward: { gold: 150, item: '元宵' } },
+      ];
+      const newTask = feastConfig[Math.floor(Math.random() * feastConfig.length)];
+      const result = await db.prepare(`
+        INSERT INTO feast_tasks (wallet_address, task_id, status, created_at)
+        VALUES (?, ?, 0, datetime('now'))
+      `).bind(walletAddress, newTask.id).run();
+      return success(c, { task: { id: result.meta.last_row_id, taskId: newTask.id, 
+              name: newTask.name, reward: newTask.reward, status: 0 } });
+    }
+
+    if (feastTasks.status === 1) return error(c, '奖励已领取');
+
+    const feastConfigs = {
+      201: { name: '春节任务', reward: { gold: 200, item: '福袋' } },
+      202: { name: '元宵任务', reward: { gold: 150, item: '元宵' } },
+    };
+
+    const config = feastConfigs[feastTasks.task_id];
+    await db.prepare(`UPDATE users SET gold = gold + ? WHERE wallet_address = ?`)
+      .bind(config.reward.gold, walletAddress).run();
+    await db.prepare(`UPDATE feast_tasks SET status = 1 WHERE id = ?`).bind(task_id).run();
+
+    return success(c, { reward: config.reward, message: '节日任务奖励已领取' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -737,8 +837,34 @@ app.post('/res-exchange/reward', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 资源兑换任务系统暂未实现
-    return error(c, 'Resource exchange tasks not implemented yet');
+    // 领取资源兑换奖励
+    const exchangeTask: any = await db.prepare(`
+      SELECT * FROM res_exchange_tasks WHERE id = ? AND wallet_address = ?
+    `).bind(task_id, walletAddress).first();
+
+    if (!exchangeTask) return error(c, '任务不存在');
+    if (exchangeTask.status === 1) return error(c, '奖励已领取');
+
+    const user: any = await db.prepare(`SELECT money, food FROM users WHERE wallet_address = ?`)
+      .bind(walletAddress).first();
+
+    const exchangeConfigs = {
+      301: { name: '铜钱换元宝', cost: { money: 10000 }, reward: { gold: 10 } },
+      302: { name: '粮食换元宝', cost: { food: 10000 }, reward: { gold: 10 } },
+    };
+
+    const config = exchangeConfigs[exchangeTask.task_id];
+    if (user.money < (config.cost.money || 0)) return error(c, '资源不足');
+
+    if (config.cost.money) {
+      await db.prepare(`UPDATE users SET money = money - ? WHERE wallet_address = ?`)
+        .bind(config.cost.money, walletAddress).run();
+    }
+    await db.prepare(`UPDATE users SET gold = gold + ? WHERE wallet_address = ?`)
+      .bind(config.reward.gold, walletAddress).run();
+    await db.prepare(`UPDATE res_exchange_tasks SET status = 1 WHERE id = ?`).bind(task_id).run();
+
+    return success(c, { cost: config.cost, reward: config.reward, message: '兑换成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -754,8 +880,25 @@ app.post('/other/reward', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 其他任务系统暂未实现
-    return error(c, 'Other tasks not implemented yet');
+    // 领取其他任务奖励
+    const otherTask: any = await db.prepare(`
+      SELECT * FROM other_tasks WHERE id = ? AND wallet_address = ?
+    `).bind(task_id, walletAddress).first();
+
+    if (!otherTask) return error(c, '任务不存在');
+    if (otherTask.status === 1) return error(c, '奖励已领取');
+
+    const otherConfigs = {
+      401: { name: '每日签到', reward: { gold: 10 } },
+      402: { name: '连续登录', reward: { gold: 50 } },
+    };
+
+    const config = otherConfigs[otherTask.task_id];
+    await db.prepare(`UPDATE users SET gold = gold + ? WHERE wallet_address = ?`)
+      .bind(config.reward.gold, walletAddress).run();
+    await db.prepare(`UPDATE other_tasks SET status = 1 WHERE id = ?`).bind(task_id).run();
+
+    return success(c, { reward: config.reward, message: '任务奖励已领取' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -771,8 +914,34 @@ app.post('/res-exchange/reward-by-num', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 返回失败 - 资源兑换任务系统暂未实现
-    return error(c, 'Resource exchange tasks not implemented yet');
+    // 领取资源兑换奖励
+    const exchangeTask: any = await db.prepare(`
+      SELECT * FROM res_exchange_tasks WHERE id = ? AND wallet_address = ?
+    `).bind(task_id, walletAddress).first();
+
+    if (!exchangeTask) return error(c, '任务不存在');
+    if (exchangeTask.status === 1) return error(c, '奖励已领取');
+
+    const user: any = await db.prepare(`SELECT money, food FROM users WHERE wallet_address = ?`)
+      .bind(walletAddress).first();
+
+    const exchangeConfigs = {
+      301: { name: '铜钱换元宝', cost: { money: 10000 }, reward: { gold: 10 } },
+      302: { name: '粮食换元宝', cost: { food: 10000 }, reward: { gold: 10 } },
+    };
+
+    const config = exchangeConfigs[exchangeTask.task_id];
+    if (user.money < (config.cost.money || 0)) return error(c, '资源不足');
+
+    if (config.cost.money) {
+      await db.prepare(`UPDATE users SET money = money - ? WHERE wallet_address = ?`)
+        .bind(config.cost.money, walletAddress).run();
+    }
+    await db.prepare(`UPDATE users SET gold = gold + ? WHERE wallet_address = ?`)
+      .bind(config.reward.gold, walletAddress).run();
+    await db.prepare(`UPDATE res_exchange_tasks SET status = 1 WHERE id = ?`).bind(task_id).run();
+
+    return success(c, { cost: config.cost, reward: config.reward, message: '兑换成功' });
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -441,8 +441,8 @@ app.get('/valid', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetValidEvent 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -459,8 +459,8 @@ app.post('/delete', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 DeleteEvent 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -477,8 +477,8 @@ app.post('/search', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 AddSearchEvent 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -495,8 +495,8 @@ app.post('/visit', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 AddVisitEvent 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }

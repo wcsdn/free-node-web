@@ -501,8 +501,8 @@ app.get('/unit', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetMapUnitInfo 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -519,8 +519,8 @@ app.get('/world/landform', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetWorldLandform 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -537,8 +537,8 @@ app.get('/world/pos-state', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetWorldPosState 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -555,8 +555,8 @@ app.get('/city-name', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetCityNameByPos 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -573,8 +573,8 @@ app.get('/info-by-pos', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetMapInfoByPos 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }

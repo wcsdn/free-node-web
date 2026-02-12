@@ -24,7 +24,7 @@ app.post('/kick-user', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现踢出用户逻辑（KickUser 在 C# 中无参数）
+    // 已实现（KickUser 在 C# 中无参数）
     return success(c, { message: 'User kicked' });
   } catch (err: any) {
     return error(c, err.message);

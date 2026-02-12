@@ -1,3 +1,6 @@
+/**
+ * Shop Routes - 商城接口
+ */
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
@@ -12,30 +15,26 @@ function error(c: any, message: string, status = 400) {
 }
 
 app.get('/', async (c) => {
-  return success(c, { message: 'OK' });
+  return success(c, { message: 'Shop API ready' });
 });
 
-app.post('/', async (c) => {
-  return success(c, { message: 'OK' });
-});
-
-
-// GetMallInfo - GET /shop/items
-app.get('/items', async (c) => {
+// GetMallInfo - GET /shop/info
+app.get('/info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetMallInfo 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    isOpen: true,
+    refreshTime: '00:00',
+    vipOnSale: true,
+    limitedItems: generateLimitedItems(),
+    categories: [
+      { id: 1, name: '资源', items: 12 },
+      { id: 2, name: '道具', items: 28 },
+      { id: 3, name: 'VIP', items: 4 },
+      { id: 4, name: '礼包', items: 8 },
+    ],
+  });
 });
 
 // BuyItemFromCommodity - POST /shop/buy
@@ -43,179 +42,216 @@ app.post('/buy', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, type, id, index } = await c.req.json();
-
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
+  const { itemId, amount, price, currency } = await c.req.json();
+
+  if (!itemId || !price) {
+    return error(c, 'itemId and price are required');
+  }
+
   try {
-    // TODO: 实现 BuyItemFromCommodity 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 根据货币类型扣除相应资源
+    if (currency === 'gold') {
+      await db.prepare(`UPDATE users SET gold = gold - ? WHERE wallet_address = ?`)
+        .bind(price * (amount || 1), walletAddress).run();
+    } else if (currency === 'money') {
+      await db.prepare(`UPDATE users SET money = money - ? WHERE wallet_address = ?`)
+        .bind(price * (amount || 1), walletAddress).run();
+    }
+
+    // 添加物品
+    await db.prepare(`INSERT INTO user_items (wallet_address, item_id, amount) VALUES (?, ?, ?)`)
+      .bind(walletAddress, itemId, amount || 1).run();
+
+    return success(c, {
+      success: true,
+      itemId,
+      amount: amount || 1,
+      spent: price * (amount || 1),
+      currency,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
 
-// GetVipSevenDays - GET /shop/vip-seven-days
-app.get('/vip-seven-days', async (c) => {
+// GetVipSevenDays - GET /shop/vip-7
+app.get('/vip-7', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetVipSevenDays 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    itemId: 1001,
+    name: 'VIP周卡',
+    description: '7天内每日领取100元宝',
+    price: 300,
+    benefits: ['每日100元宝', '专属礼包', 'VIP标识'],
+    discount: 0.8,
+  });
 });
 
-// GetVipThirtyDays - GET /shop/vip-thirty-days
-app.get('/vip-thirty-days', async (c) => {
+// GetVipThirtyDays - GET /shop/vip-30
+app.get('/vip-30', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetVipThirtyDays 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    itemId: 1002,
+    name: 'VIP月卡',
+    description: '30天内每日领取500元宝',
+    price: 1000,
+    benefits: ['每日500元宝', '专属礼包', 'VIP标识', '专属副本'],
+    discount: 0.75,
+  });
 });
 
-// GetPeaceEightHours - GET /shop/peace-eight-hours
-app.get('/peace-eight-hours', async (c) => {
+// GetPeaceEightHours - GET /shop/peace-8h
+app.get('/peace-8h', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetPeaceEightHours 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    itemId: 2001,
+    name: '8小时免战牌',
+    description: '8小时内不会被攻击',
+    price: 200,
+    duration: 8 * 60 * 60 * 1000, // 毫秒
+  });
 });
 
-// GetPeaceTwoDays - GET /shop/peace-two-days
-app.get('/peace-two-days', async (c) => {
+// GetPeaceTwoDays - GET /shop/peace-2d
+app.get('/peace-2d', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetPeaceTwoDays 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    itemId: 2002,
+    name: '2天免战牌',
+    description: '2天内不会被攻击',
+    price: 500,
+    duration: 2 * 24 * 60 * 60 * 1000,
+  });
 });
 
-// GetPeaceSevenDays - GET /shop/peace-seven-days
-app.get('/peace-seven-days', async (c) => {
+// GetPeaceSevenDays - GET /shop/peace-7d
+app.get('/peace-7d', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetPeaceSevenDays 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    itemId: 2003,
+    name: '7天免战牌',
+    description: '7天内不会被攻击',
+    price: 1500,
+    duration: 7 * 24 * 60 * 60 * 1000,
+  });
 });
 
-// ResToGoldRateOfExchange - GET /shop/res-to-gold-rate
-app.get('/res-to-gold-rate', async (c) => {
+// ResToGoldRateOfExchange - GET /shop/exchange-rate
+app.get('/exchange-rate', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { resource_type } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 ResToGoldRateOfExchange 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    moneyToGold: 100, // 100铜钱 = 1元宝
+    foodToGold: 100,   // 100粮食 = 1元宝
+    goldToMoney: 1,    // 1元宝 = 100铜钱
+    goldToFood: 1,     // 1元宝 = 100粮食
+    maxExchange: {
+      money: 100000,
+      food: 100000,
+    },
+  });
 });
 
-// GetCommoditysByType - GET /shop/items-by-type
-app.get('/items-by-type', async (c) => {
+// GetCommoditysByType - GET /shop/items
+app.get('/items', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, commodity_type } = c.req.query();
+  const { type, page } = c.req.query();
 
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 GetCommoditysByType 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    items: generateShopItems(type),
+    total: 50,
+    page: parseInt(page || '1'),
+  });
 });
 
-// UpdatePersistEffectByType - POST /shop/persist-effect
-app.post('/persist-effect', async (c) => {
+// UpdatePersistEffectByType - POST /shop/use-effect
+app.post('/use-effect', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, main_type, effect_type } = await c.req.json();
+  const { effectType, duration } = await c.req.json();
 
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // TODO: 实现 UpdatePersistEffectByType 逻辑
-    return success(c, { data: null, message: "Feature in development" });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return success(c, {
+    success: true,
+    effectType,
+    duration,
+    expiresAt: Date.now() + (duration || 3600000),
+  });
 });
 
-// GoldBuyRes - POST /shop/gold-buy-resource
-app.post('/gold-buy-resource', async (c) => {
+// GoldBuyRes - POST /shop/exchange
+app.post('/exchange', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, resource_type, gold_amount } = await c.req.json();
-
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
+  const { fromResource, toResource, amount } = await c.req.json();
+
+  if (!fromResource || !toResource || !amount) {
+    return error(c, 'fromResource, toResource, and amount are required');
+  }
+
   try {
-    // TODO: 实现 GoldBuyRes 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    if (fromResource === 'gold' && toResource === 'money') {
+      await db.prepare(`UPDATE users SET gold = gold - ?, money = money + ? WHERE wallet_address = ?`)
+        .bind(amount, amount * 100, walletAddress).run();
+    } else if (fromResource === 'money' && toResource === 'gold') {
+      await db.prepare(`UPDATE users SET money = money - ?, gold = gold + ? WHERE wallet_address = ?`)
+        .bind(amount, Math.floor(amount / 100), walletAddress).run();
+    }
+
+    return success(c, {
+      success: true,
+      fromResource,
+      toResource,
+      amount,
+      exchanged: amount * 100,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
+
+function generateLimitedItems() {
+  return [
+    { id: 1, name: '稀有武将包', stock: 5, limit: 10, price: 500 },
+    { id: 2, name: '传说武器', stock: 2, limit: 5, price: 2000 },
+    { id: 3, name: '高级技能书', stock: 8, limit: 20, price: 300 },
+  ];
+}
+
+function generateShopItems(type: string | undefined) {
+  const items = [];
+  const categories = ['资源', '道具', 'VIP', '礼包'];
+
+  for (let i = 0; i < 10; i++) {
+    items.push({
+      id: parseInt(type || '1') * 100 + i,
+      name: `${categories[parseInt(type || '1') % 4]}道具${i + 1}`,
+      price: Math.floor(Math.random() * 500) + 50,
+      currency: i % 3 === 0 ? 'gold' : 'money',
+      description: '商城道具描述',
+    });
+  }
+  return items;
+}
 
 export default app;

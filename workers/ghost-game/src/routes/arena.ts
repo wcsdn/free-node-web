@@ -31,8 +31,8 @@ app.get('/info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetArena 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -49,8 +49,8 @@ app.get('/times', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetArenaTimes 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -35,7 +35,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        jxweb: resolve(__dirname, 'src/features/jx-web/index.html'),
       },
     },
   },

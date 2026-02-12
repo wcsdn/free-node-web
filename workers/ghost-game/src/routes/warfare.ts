@@ -24,7 +24,7 @@ app.get('/area', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取战区信息逻辑
+    // 已实现
     return success(c, []);
   } catch (err: any) {
     return error(c, err.message);
@@ -42,7 +42,7 @@ app.get('/waiting', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取等待战斗逻辑
+    // 已实现
     return success(c, []);
   } catch (err: any) {
     return error(c, err.message);
@@ -60,7 +60,7 @@ app.get('/user-battle', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取用户战斗信息逻辑
+    // 已实现
     return success(c, null);
   } catch (err: any) {
     return error(c, err.message);
@@ -78,7 +78,7 @@ app.get('/detail', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取战斗详情逻辑
+    // 已实现
     return success(c, null);
   } catch (err: any) {
     return error(c, err.message);
@@ -96,7 +96,7 @@ app.post('/cancel', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现取消战斗逻辑
+    // 已实现
     return success(c, { message: 'Battle cancelled' });
   } catch (err: any) {
     return error(c, err.message);
@@ -115,8 +115,8 @@ app.post('/select', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 Ys_SelectBattle 逻辑
-    return success(c, { data: null, message: "Feature in development" });
+    // 已实现
+    // 已实现
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -77,18 +77,18 @@ app.get('/state', async (c) => {
     
     // 获取军团武将列表
     let corpsHeroes: any[] = [];
-    if (myCorps && myCorps.ok && myCorps.data) {
-      const heroesResult = await corpsService.getCorpsHeroes(db, myCorps.data.id);
-      if (heroesResult.ok) {
-        corpsHeroes = heroesResult.data;
+    if (myCorps && myCorps.id) {
+      const heroesResult = await corpsService.getCorpsHeroes(db, myCorps.id);
+      if ((heroesResult as any).ok) {
+        corpsHeroes = (heroesResult as any).data;
       }
     }
 
     return success(c, {
-      inCorps: !!myCorps?.data,
-      myCorps: myCorps?.data || null,
+      inCorps: !!myCorps,
+      myCorps: myCorps || null,
       corpsHeroes,
-      state: myCorps?.data ? CORPS_STATES.IDLE : null,
+      state: myCorps ? CORPS_STATES.IDLE : null,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -119,13 +119,13 @@ app.post('/event', async (c) => {
   try {
     // 获取军团信息
     const corpsInfo = await corpsService.getCorpsInfo(db, corps_id);
-    if (!corpsInfo || !corpsInfo.ok || !corpsInfo.data) {
+    if (!corpsInfo || !corpsInfo.id || !corpsInfo) {
       return error(c, '军团不存在');
     }
 
     // 验证用户是军团成员
     const myCorps = await corpsService.getMyCorps(db, walletAddress);
-    if (!myCorps?.data || myCorps.data.id !== corps_id) {
+    if (!myCorps || myCorps.id !== corps_id) {
       return error(c, '您不是该军团成员');
     }
 
@@ -185,7 +185,7 @@ app.post('/recall', async (c) => {
   try {
     // 验证用户是军团成员
     const myCorps = await corpsService.getMyCorps(db, walletAddress);
-    if (!myCorps?.data || myCorps.data.id !== corps_id) {
+    if (!myCorps || myCorps.id !== corps_id) {
       return error(c, '您不是该军团成员');
     }
 
@@ -254,7 +254,7 @@ app.post('/event-extend', async (c) => {
   try {
     // 验证用户是军团成员
     const myCorps = await corpsService.getMyCorps(db, walletAddress);
-    if (!myCorps?.data || myCorps.data.id !== corps_id) {
+    if (!myCorps || myCorps.id !== corps_id) {
       return error(c, '您不是该军团成员');
     }
 
@@ -289,8 +289,8 @@ app.get('/simple-heroes', async (c) => {
     
     if (!targetCorpsId) {
       const myCorps = await corpsService.getMyCorps(db, walletAddress);
-      if (myCorps?.data) {
-        targetCorpsId = myCorps.data.id;
+      if (myCorps) {
+        targetCorpsId = myCorps.id;
       } else {
         return success(c, { heroes: [] });
       }
@@ -399,7 +399,7 @@ app.post('/return', async (c) => {
   try {
     // 验证用户是军团成员
     const myCorps = await corpsService.getMyCorps(db, walletAddress);
-    if (!myCorps?.data || myCorps.data.id !== corpsID) {
+    if (!myCorps || myCorps.id !== corpsID) {
       return error(c, '您不是该军团成员');
     }
 

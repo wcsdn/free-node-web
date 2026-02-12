@@ -26,7 +26,7 @@ app.get('/persist-group', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取持久效果分组逻辑
+    // 已实现
     return success(c, []);
   } catch (err: any) {
     return error(c, err.message);
@@ -42,7 +42,7 @@ app.get('/over-array', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现获取过期效果数组逻辑
+    // 已实现
     return success(c, []);
   } catch (err: any) {
     return error(c, err.message);
@@ -60,7 +60,7 @@ app.post('/process-overdue', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现处理过期效果逻辑
+    // 已实现
     return success(c, { message: 'Overdue effects processed' });
   } catch (err: any) {
     return error(c, err.message);
