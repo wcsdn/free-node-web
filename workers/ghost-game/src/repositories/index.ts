@@ -12,5 +12,17 @@ export { itemRepo } from './item.repo';
 export { corpsRepo } from './corps.repo';
 export { npcFloorRepo } from './npc-floor.repo';
 export { mailRepo } from './mail.repo';
-// export { chessRepo } from './chess.repo'; // TODO: 待实现
+export { taskRepo } from './task.repo';
+export { battleRepo } from './battle.repo';
+export { arenaRepo } from './arena.repo';
 export { serverRepo } from './server.repo';
+export { AppendantNPCRepository } from './appendant-npc.repo';
+// export { chessRepo } from './chess.repo'; // TODO: 待实现
+
+// 创建 appendantNpcRepo 实例导出
+import { AppendantNPCRepository } from './appendant-npc.repo';
+export const appendantNpcRepo = {
+  create(db: any) {
+    return new AppendantNPCRepository(db);
+  }
+};

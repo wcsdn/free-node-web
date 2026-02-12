@@ -32,7 +32,7 @@ app.get('/chessboard', async (c) => {
 
   try {
     // TODO: 实现 GetChessboardPos 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -50,7 +50,7 @@ app.get('/chess/status', async (c) => {
 
   try {
     // TODO: 实现 ChessIsOpen 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -68,7 +68,7 @@ app.get('/chess/board', async (c) => {
 
   try {
     // TODO: 实现 GetChessboard 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -86,7 +86,7 @@ app.get('/chess/event', async (c) => {
 
   try {
     // TODO: 实现 GetChessEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -104,7 +104,7 @@ app.get('/chess/num', async (c) => {
 
   try {
     // TODO: 实现 GetChessNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -122,7 +122,7 @@ app.post('/chess/move', async (c) => {
 
   try {
     // TODO: 实现 ChessActionMove 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -140,7 +140,7 @@ app.post('/chess/attack', async (c) => {
 
   try {
     // TODO: 实现 ChessActionAttack 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -158,7 +158,7 @@ app.get('/chess/rank', async (c) => {
 
   try {
     // TODO: 实现 GetChessRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -176,7 +176,7 @@ app.get('/chess/rank-by-user', async (c) => {
 
   try {
     // TODO: 实现 GetChessRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -194,7 +194,7 @@ app.get('/state', async (c) => {
 
   try {
     // TODO: 实现 GetBattleState 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -212,7 +212,7 @@ app.post('/change-state', async (c) => {
 
   try {
     // TODO: 实现 ChangeBattleState 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -230,7 +230,7 @@ app.post('/change-hero-list-type', async (c) => {
 
   try {
     // TODO: 实现 ChangeHeroListType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

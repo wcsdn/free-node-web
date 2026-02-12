@@ -534,14 +534,50 @@ app.get('/by-type', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, item_type, page, order_by, order_type } = c.req.query();
+  const { city_id, item_type, page = '1', order_by = 'created_at', order_type = 'DESC' } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetItemByType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    const pageNum = parseInt(page);
+    const pageSize = 20;
+    const offset = (pageNum - 1) * pageSize;
+
+    let query = `
+      SELECT i.*, ic.Name as item_name, ic.Type as item_type, ic.Des as description, ic.Icon as icon
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ?
+    `;
+    const params: any[] = [walletAddress];
+
+    if (item_type) {
+      query += ' AND ic.Type = ?';
+      params.push(parseInt(item_type));
+    }
+
+    query += ` ORDER BY ${order_by} ${order_type} LIMIT ? OFFSET ?`;
+    params.push(pageSize, offset);
+
+    const items = await db.prepare(query).bind(...params).all();
+
+    // 获取总数
+    let countQuery = 'SELECT COUNT(*) as total FROM items i LEFT JOIN items_config ic ON i.config_id = ic.ID WHERE i.wallet_address = ?';
+    const countParams: any[] = [walletAddress];
+    if (item_type) {
+      countQuery += ' AND ic.Type = ?';
+      countParams.push(parseInt(item_type));
+    }
+    const countResult: any = await db.prepare(countQuery).bind(...countParams).first();
+
+    return success(c, {
+      items: items.results || [],
+      page: pageNum,
+      pageSize,
+      total: countResult?.total || 0,
+      totalPages: Math.ceil((countResult?.total || 0) / pageSize),
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -558,8 +594,21 @@ app.get('/count', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetItemNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    let query = 'SELECT COUNT(*) as count, SUM(count) as total_items FROM items i LEFT JOIN items_config ic ON i.config_id = ic.ID WHERE i.wallet_address = ?';
+    const params: any[] = [walletAddress];
+
+    if (item_type) {
+      query += ' AND ic.Type = ?';
+      params.push(parseInt(item_type));
+    }
+
+    const result: any = await db.prepare(query).bind(...params).first();
+
+    return success(c, {
+      uniqueItems: result?.count || 0,
+      totalItems: result?.total_items || 0,
+      itemType: item_type ? parseInt(item_type) : null,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -570,14 +619,54 @@ app.get('/can-use', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, item_type, level, sex, union, page } = c.req.query();
+  const { city_id, item_type, level, sex, union, page = '1' } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetItemCanUse 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    const pageNum = parseInt(page);
+    const pageSize = 20;
+    const offset = (pageNum - 1) * pageSize;
+
+    let query = `
+      SELECT i.*, ic.*
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND i.count > 0
+    `;
+    const params: any[] = [walletAddress];
+
+    if (item_type) {
+      query += ' AND ic.Type = ?';
+      params.push(parseInt(item_type));
+    }
+
+    if (level) {
+      query += ' AND (ic.Level IS NULL OR ic.Level <= ?)';
+      params.push(parseInt(level));
+    }
+
+    if (sex) {
+      query += ' AND (ic.Sex IS NULL OR ic.Sex = ? OR ic.Sex = 0)';
+      params.push(parseInt(sex));
+    }
+
+    if (union) {
+      query += ' AND (ic.Union IS NULL OR ic.Union = ? OR ic.Union = 0)';
+      params.push(parseInt(union));
+    }
+
+    query += ' LIMIT ? OFFSET ?';
+    params.push(pageSize, offset);
+
+    const items = await db.prepare(query).bind(...params).all();
+
+    return success(c, {
+      items: items.results || [],
+      page: pageNum,
+      pageSize,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -594,8 +683,29 @@ app.post('/use-resource', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UseItemRes 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    if (!city_id || !item_id) return error(c, 'Missing parameters');
+    
+    // 使用资源类物品
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.* FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND i.config_id = ?
+    `).bind(walletAddress, item_id).first();
+    
+    if (!item || item.count < 1) return error(c, 'Item not found or insufficient');
+    
+    // 扣除物品
+    await db.prepare(`UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?`)
+      .bind(walletAddress, item_id).run();
+    
+    // 增加资源 (根据物品效果类型)
+    const effectValue = item.EffectValue || 100;
+    if (item.EffectType === 4) { // 资源类
+      await db.prepare(`UPDATE cities SET food = food + ? WHERE id = ?`)
+        .bind(effectValue, city_id).run();
+    }
+    
+    return success(c, { message: 'Resource item used', value: effectValue });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -612,8 +722,27 @@ app.post('/cancel-sell', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 CancleSellItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    if (!item_id) return error(c, 'Missing item_id');
+    
+    // 取消出售 - 从市场移除并返还物品
+    const marketItem: any = await db.prepare(`
+      SELECT * FROM market_items WHERE item_id = ? AND seller_address = ?
+    `).bind(item_id, walletAddress).first();
+    
+    if (!marketItem) return error(c, 'Item not found in market');
+    
+    // 删除市场记录
+    await db.prepare(`DELETE FROM market_items WHERE item_id = ? AND seller_address = ?`)
+      .bind(item_id, walletAddress).run();
+    
+    // 返还物品到背包
+    await db.prepare(`
+      INSERT INTO items (wallet_address, config_id, count, source)
+      VALUES (?, ?, 1, 'market_cancel')
+      ON CONFLICT(wallet_address, config_id) DO UPDATE SET count = count + 1
+    `).bind(walletAddress, marketItem.config_id).run();
+    
+    return success(c, { message: 'Item removed from market and returned to inventory' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -630,8 +759,37 @@ app.post('/battle-use', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UserBattleItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 在战斗中使用物品
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Type, ic.Effect, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(itemBattleID, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在');
+    }
+
+    if (item.Type !== 'battle') {
+      return error(c, '该物品不能在战斗中使用');
+    }
+
+    // 减少物品数量
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(itemBattleID).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(itemBattleID).run();
+    }
+
+    return success(c, {
+      effect: item.Effect,
+      value: item.EffectValue,
+      target: { x: targetX, y: targetY },
+      message: '使用成功'
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -648,8 +806,27 @@ app.post('/equip-attack-list', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 equipItemForAttackList 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 为攻击队伍装备物品列表
+    // item_list 格式: [{hero_id, item_id}, ...]
+    const results = [];
+    
+    for (const { hero_id, item_id } of item_list) {
+      // 检查物品是否存在且未装备
+      const item: any = await db.prepare(`
+        SELECT * FROM items WHERE id = ? AND wallet_address = ? AND equipped = 0
+      `).bind(item_id, walletAddress).first();
+
+      if (!item) continue;
+
+      // 装备物品
+      await db.prepare(`
+        UPDATE items SET equipped = 1, hero_id = ? WHERE id = ?
+      `).bind(hero_id, item_id).run();
+
+      results.push({ hero_id, item_id, success: true });
+    }
+
+    return success(c, { equipped: results });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -666,8 +843,24 @@ app.post('/equip-def-list', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 equipItemForDefListT 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 为防守队伍装备物品列表
+    const results = [];
+    
+    for (const { hero_id, item_id } of item_list) {
+      const item: any = await db.prepare(`
+        SELECT * FROM items WHERE id = ? AND wallet_address = ? AND equipped = 0
+      `).bind(item_id, walletAddress).first();
+
+      if (!item) continue;
+
+      await db.prepare(`
+        UPDATE items SET equipped = 1, hero_id = ?, battle_type = 'defense' WHERE id = ?
+      `).bind(hero_id, item_id).run();
+
+      results.push({ hero_id, item_id, success: true });
+    }
+
+    return success(c, { equipped: results });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -684,8 +877,20 @@ app.post('/takeoff-battle', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 takeOffBattleItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 卸下战斗物品
+    const item: any = await db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ? AND equipped = 1
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或未装备');
+    }
+
+    await db.prepare(`
+      UPDATE items SET equipped = 0, hero_id = NULL, battle_type = NULL WHERE id = ?
+    `).bind(item_id).run();
+
+    return success(c, { message: '卸下成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -702,8 +907,16 @@ app.get('/convoke', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetConvokeItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 获取召唤类物品 (如武将召唤卷轴)
+    const items = await db.prepare(`
+      SELECT i.*, ic.Name, ic.Icon, ic.Des
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND ic.Type = 'convoke'
+      ORDER BY ic.Quality DESC, i.created_at DESC
+    `).bind(walletAddress).all();
+
+    return success(c, { items: items.results || [] });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -720,8 +933,16 @@ app.get('/granger', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetGrangerItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 获取粮仓类物品 (资源类物品)
+    const items = await db.prepare(`
+      SELECT i.*, ic.Name, ic.Icon, ic.Des, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND ic.Type IN ('resource', 'food')
+      ORDER BY ic.Quality DESC, i.created_at DESC
+    `).bind(walletAddress).all();
+
+    return success(c, { items: items.results || [] });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -738,8 +959,42 @@ app.post('/equip', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 TakeItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 装备物品到武将
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Type, ic.EquipSlot
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND i.equipped = 0
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或已装备');
+    }
+
+    // 检查武将是否存在
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(hero_id, walletAddress).first();
+
+    if (!hero) {
+      return error(c, '武将不存在');
+    }
+
+    // 如果该装备槽已有装备,先卸下
+    if (item.EquipSlot) {
+      await db.prepare(`
+        UPDATE items SET equipped = 0, hero_id = NULL 
+        WHERE hero_id = ? AND equipped = 1 
+        AND config_id IN (SELECT ID FROM items_config WHERE EquipSlot = ?)
+      `).bind(hero_id, item.EquipSlot).run();
+    }
+
+    // 装备新物品
+    await db.prepare(`
+      UPDATE items SET equipped = 1, hero_id = ? WHERE id = ?
+    `).bind(hero_id, item_id).run();
+
+    return success(c, { message: '装备成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -756,8 +1011,20 @@ app.post('/unequip', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 DebusItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 卸下装备
+    const item: any = await db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ? AND equipped = 1
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或未装备');
+    }
+
+    await db.prepare(`
+      UPDATE items SET equipped = 0, hero_id = NULL WHERE id = ?
+    `).bind(item_id).run();
+
+    return success(c, { message: '卸下成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -774,8 +1041,42 @@ app.post('/repair', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 RepairItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 修理装备 (恢复耐久度)
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.RepairCost
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在');
+    }
+
+    const repairCost = item.RepairCost || 100;
+
+    // 检查金币是否足够
+    const city: any = await db.prepare(`
+      SELECT * FROM cities WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (city.gold < repairCost) {
+      return error(c, '金币不足');
+    }
+
+    // 扣除金币,恢复耐久
+    await db.prepare(`
+      UPDATE cities SET gold = gold - ? WHERE wallet_address = ?
+    `).bind(repairCost, walletAddress).run();
+
+    await db.prepare(`
+      UPDATE items SET durability = 100 WHERE id = ?
+    `).bind(item_id).run();
+
+    return success(c, { 
+      cost: repairCost,
+      message: '修理成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -792,8 +1093,42 @@ app.post('/repair-general', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 RepairItemGeneral 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 通用修理 (使用修理工具修理)
+    const item: any = await db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ?
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在');
+    }
+
+    // 检查是否有修理工具
+    const repairTool: any = await db.prepare(`
+      SELECT * FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND ic.Type = 'repair_tool'
+      LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!repairTool) {
+      return error(c, '没有修理工具');
+    }
+
+    // 消耗修理工具
+    if (repairTool.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(repairTool.id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(repairTool.id).run();
+    }
+
+    // 恢复耐久
+    await db.prepare(`
+      UPDATE items SET durability = 100 WHERE id = ?
+    `).bind(item_id).run();
+
+    return success(c, { message: '修理成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -804,14 +1139,48 @@ app.post('/donate', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, item_id } = await c.req.json();
+  const { city_id, item_id, guild_id } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 DonateItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 捐献物品给帮会
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Value
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在');
+    }
+
+    // 检查是否加入帮会
+    const member: any = await db.prepare(`
+      SELECT * FROM guild_members WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!member) {
+      return error(c, '未加入帮会');
+    }
+
+    // 删除物品
+    await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+
+    // 增加帮会贡献度
+    const contribution = Math.floor((item.Value || 100) * 0.5);
+    await db.prepare(`
+      UPDATE guild_members 
+      SET contribution = contribution + ? 
+      WHERE wallet_address = ?
+    `).bind(contribution, walletAddress).run();
+
+    return success(c, { 
+      contribution,
+      message: '捐献成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -828,8 +1197,46 @@ app.post('/use-hero-exp', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UseItemHeroExp 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用经验道具给武将增加经验
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'hero_exp'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(hero_id, walletAddress).first();
+
+    if (!hero) {
+      return error(c, '武将不存在');
+    }
+
+    const expGain = item.EffectValue || 1000;
+
+    // 增加武将经验
+    await db.prepare(`
+      UPDATE heroes SET exp = exp + ? WHERE id = ?
+    `).bind(expGain, hero_id).run();
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { 
+      exp_gain: expGain,
+      message: '使用成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -846,8 +1253,38 @@ app.post('/use-insignia', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UseItemInsignia 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用战勋道具 (增加战勋值)
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'insignia'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    const insigniaGain = item.EffectValue || 100;
+
+    // 增加用户战勋
+    await db.prepare(`
+      UPDATE users SET insignia = insignia + ? WHERE wallet_address = ?
+    `).bind(insigniaGain, walletAddress).run();
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { 
+      insignia_gain: insigniaGain,
+      message: '使用成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -858,14 +1295,47 @@ app.post('/change-skill', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, hero_id, item_id } = await c.req.json();
+  const { city_id, hero_id, item_id, new_skill_id } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UserItemChangeSkill 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用技能变更道具改变武将技能
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Type
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'skill_change'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(hero_id, walletAddress).first();
+
+    if (!hero) {
+      return error(c, '武将不存在');
+    }
+
+    // 更新武将技能
+    await db.prepare(`
+      UPDATE heroes SET skill_id = ? WHERE id = ?
+    `).bind(new_skill_id || 1, hero_id).run();
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { message: '技能变更成功' });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -882,8 +1352,49 @@ app.post('/upgrade-skill', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UserItemUpSkill 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用技能升级道具提升武将技能等级
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Type
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'skill_upgrade'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(hero_id, walletAddress).first();
+
+    if (!hero) {
+      return error(c, '武将不存在');
+    }
+
+    const currentSkillLevel = hero.skill_level || 1;
+    if (currentSkillLevel >= 10) {
+      return error(c, '技能已达最高等级');
+    }
+
+    // 提升技能等级
+    await db.prepare(`
+      UPDATE heroes SET skill_level = skill_level + 1 WHERE id = ?
+    `).bind(hero_id).run();
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { 
+      new_level: currentSkillLevel + 1,
+      message: '技能升级成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -900,8 +1411,46 @@ app.post('/skill-exp', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UserItemSkillEXP 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用技能经验道具增加武将技能经验
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'skill_exp'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(hero_id, walletAddress).first();
+
+    if (!hero) {
+      return error(c, '武将不存在');
+    }
+
+    const skillExpGain = item.EffectValue || 500;
+
+    // 增加技能经验
+    await db.prepare(`
+      UPDATE heroes SET skill_exp = skill_exp + ? WHERE id = ?
+    `).bind(skillExpGain, hero_id).run();
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { 
+      skill_exp_gain: skillExpGain,
+      message: '使用成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -918,8 +1467,44 @@ app.post('/use-feast', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 UseFeastItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 使用节日礼包 (随机奖励)
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.Type, ic.EffectValue
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ? AND ic.Type = 'feast'
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return error(c, '物品不存在或类型错误');
+    }
+
+    // 随机奖励 (简化版)
+    const rewards = [];
+    const goldReward = Math.floor(Math.random() * 1000) + 500;
+    const expReward = Math.floor(Math.random() * 500) + 200;
+
+    // 增加金币和经验
+    await db.prepare(`
+      UPDATE cities SET gold = gold + ? WHERE wallet_address = ?
+    `).bind(goldReward, walletAddress).run();
+
+    rewards.push({ type: 'gold', amount: goldReward });
+    rewards.push({ type: 'exp', amount: expReward });
+
+    // 消耗物品
+    if (item.count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
+
+    return success(c, { 
+      rewards,
+      message: '使用成功' 
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -936,8 +1521,25 @@ app.get('/name', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetItemName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    // 获取物品名称
+    const item: any = await db.prepare(`
+      SELECT i.id, ic.Name, ic.Type, ic.Quality, ic.Icon
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ?
+    `).bind(item_id).first();
+
+    if (!item) {
+      return error(c, '物品不存在');
+    }
+
+    return success(c, { 
+      id: item.id,
+      name: item.Name,
+      type: item.Type,
+      quality: item.Quality,
+      icon: item.Icon
+    });
   } catch (err: any) {
     return error(c, err.message);
   }

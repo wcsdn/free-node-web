@@ -173,7 +173,7 @@ app.post('/add', async (c) => {
 
   try {
     // TODO: 实现 mock 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -191,7 +191,7 @@ app.get('/list', async (c) => {
 
   try {
     // TODO: 实现 GetAllAppendantNpcInfo 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -209,7 +209,7 @@ app.post('/delete', async (c) => {
 
   try {
     // TODO: 实现 DelAppendantNPC 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

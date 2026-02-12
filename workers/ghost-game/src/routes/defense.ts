@@ -107,7 +107,7 @@ app.get('/landform', async (c) => {
 
   try {
     // TODO: 实现 GetDefenceLandform 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -125,7 +125,7 @@ app.get('/count', async (c) => {
 
   try {
     // TODO: 实现 GetDefenceNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -143,7 +143,7 @@ app.get('/pos-hero', async (c) => {
 
   try {
     // TODO: 实现 GetDefencePosHero 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -161,7 +161,7 @@ app.get('/npc-corps', async (c) => {
 
   try {
     // TODO: 实现 GetDefenceNpcCorps 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

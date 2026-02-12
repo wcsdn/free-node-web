@@ -6,6 +6,13 @@ import type { D1Database } from '@cloudflare/workers-types';
 import type { Technic, TechnicConfig, ServiceResult } from '../types/models';
 import { technicRepo } from '../repositories';
 
+// 科技配置
+export const TECHNIC_CONFIG = {
+  MAX_LEVEL: 20,
+  BASE_COST: 100,
+  COST_MULTIPLIER: 1.5,
+};
+
 export const technicService = {
   /** 获取科技列表 */
   async getList(db: D1Database, walletAddress: string): Promise<ServiceResult<Technic[]>> {

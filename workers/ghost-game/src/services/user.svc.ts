@@ -37,17 +37,12 @@ export const userService = {
       
       // 然后确保城市存在
       const cityResult = await cityService.getOrCreate(db, walletAddress);
-      
-      if (!cityResult.ok) {
-        const errorResult = cityResult as { ok: false; error: string; status?: number };
-        return { ok: false, error: errorResult.error || 'Unknown error', status: errorResult.status || 500 };
-      }
 
       return {
         ok: true,
         data: {
           user: user,
-          cities: [cityResult.data.city],
+          cities: [cityResult.city],
           cityCount: 1,
         },
       };

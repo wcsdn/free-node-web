@@ -32,7 +32,7 @@ app.get('/new-count', async (c) => {
 
   try {
     // TODO: 实现 GetNewMailNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -50,7 +50,7 @@ app.get('/count', async (c) => {
 
   try {
     // TODO: 实现 GetMailNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -68,7 +68,7 @@ app.get('/new', async (c) => {
 
   try {
     // TODO: 实现 GetNewMail 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -86,7 +86,7 @@ app.get('/by-type', async (c) => {
 
   try {
     // TODO: 实现 GetMailByType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -104,7 +104,7 @@ app.get('/detail', async (c) => {
 
   try {
     // TODO: 实现 GetMailByID 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -122,7 +122,7 @@ app.get('/fight', async (c) => {
 
   try {
     // TODO: 实现 GetFightMailByID 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -140,7 +140,7 @@ app.post('/delete', async (c) => {
 
   try {
     // TODO: 实现 DeleteMails 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -158,7 +158,7 @@ app.post('/send', async (c) => {
 
   try {
     // TODO: 实现 SendMessage 逻辑（发送帮会消息）
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -176,7 +176,7 @@ app.post('/new', async (c) => {
 
   try {
     // TODO: 实现 AddnewMail 逻辑（创建新邮件）
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

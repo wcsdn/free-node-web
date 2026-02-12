@@ -32,7 +32,7 @@ app.get('/info', async (c) => {
 
   try {
     // TODO: 实现 GetMarketInfo 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -50,7 +50,7 @@ app.get('/items', async (c) => {
 
   try {
     // TODO: 实现 GetSellItemByType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -68,7 +68,7 @@ app.get('/count', async (c) => {
 
   try {
     // TODO: 实现 GetSellItemNum 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -86,7 +86,7 @@ app.post('/buy', async (c) => {
 
   try {
     // TODO: 实现 BuyItem 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -104,7 +104,7 @@ app.get('/count-by-name', async (c) => {
 
   try {
     // TODO: 实现 GetSellItemNumByItemName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -122,7 +122,7 @@ app.get('/items-by-name', async (c) => {
 
   try {
     // TODO: 实现 GetSellItemByItemName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -502,7 +502,7 @@ app.get('/unit', async (c) => {
 
   try {
     // TODO: 实现 GetMapUnitInfo 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -520,7 +520,7 @@ app.get('/world/landform', async (c) => {
 
   try {
     // TODO: 实现 GetWorldLandform 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -538,7 +538,7 @@ app.get('/world/pos-state', async (c) => {
 
   try {
     // TODO: 实现 GetWorldPosState 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -556,7 +556,7 @@ app.get('/city-name', async (c) => {
 
   try {
     // TODO: 实现 GetCityNameByPos 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -574,7 +574,7 @@ app.get('/info-by-pos', async (c) => {
 
   try {
     // TODO: 实现 GetMapInfoByPos 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

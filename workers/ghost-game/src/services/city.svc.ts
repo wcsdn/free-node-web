@@ -1,219 +1,226 @@
 /**
- * City Service - 城市业务逻辑层
+ * City Service - 城市服务层
  * 从 jx/BLL/City.cs 迁移
- * 原则：处理业务规则，调用 Repository 执行数据操作
  */
 import type { D1Database } from '@cloudflare/workers-types';
-import type { City, CityCreate, Building, ServiceResult } from '../types/models';
+import type { City, ServiceResult } from '../types/models';
 import { cityRepo, buildingRepo } from '../repositories';
 
-// ============ Constants ============
-const MAX_CITIES_PER_ACCOUNT = 3;
-const DEFAULT_CITY_NAME = '主城';
+// 城市配置
+export const CITY_CONFIG = {
+  MAX_CITIES: 3,
+  DEFAULT_NAME: '主城',
+  MAX_PROSPERITY: 10000,
+  MONEY_RATE: 99,
+  FOOD_RATE: 99,
+  POP_RATE: 99,
+};
 
-// ============ Service Operations ============
-export const cityService = {
+// 繁荣度等级映射
+export const PROSPERITY_LEVELS = [
+  { level: 1, minProsperity: 0, name: '村镇' },
+  { level: 2, minProsperity: 500, name: '小镇' },
+  { level: 3, minProsperity: 2000, name: '城池' },
+  { level: 4, minProsperity: 5000, name: '名城' },
+  { level: 5, minProsperity: 8000, name: '都城' },
+];
+
+class CityService {
+  private db: D1Database;
+
+  constructor(db: D1Database) {
+    this.db = db;
+  }
+
+  // ============ 城市查询 ============
+
   /**
    * 获取城市列表
    */
-  async getList(db: D1Database, walletAddress: string): Promise<ServiceResult<City[]>> {
-    try {
-      const cities = await cityRepo.findByWallet(db, walletAddress);
-      return { ok: true, data: cities };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
-    }
-  },
+  async getList(walletAddress: string) {
+    const cities = await cityRepo.findByWallet(this.db, walletAddress);
+    return { cities };
+  }
 
   /**
-   * 获取城市详情 (包含建筑)
+   * 获取城市详情
    */
-  async getDetail(
-    db: D1Database,
-    walletAddress: string,
-    cityId?: number
-  ): Promise<ServiceResult<{
-    city: City;
-    buildings: Building[];
-    cityId: number;
-  }>> {
-    try {
-      let targetCityId = cityId;
+  async getDetail(walletAddress: string, cityId?: number) {
+    let targetId = cityId;
 
-      // 如果没有指定城市 ID，查找第一个城市
-      if (!targetCityId) {
-        const firstCity = await cityRepo.findFirst(db, walletAddress);
-        if (!firstCity) {
-          return { ok: false, error: 'No cities found', status: 404 };
-        }
-        targetCityId = firstCity.id;
-      }
-
-      // 验证城市属于用户
-      const isOwner = await cityRepo.isOwner(db, targetCityId, walletAddress);
-      if (!isOwner) {
-        return { ok: false, error: 'City not found', status: 404 };
-      }
-
-      const city = await cityRepo.findById(db, targetCityId);
-      if (!city) {
-        return { ok: false, error: 'City not found', status: 404 };
-      }
-
-      const buildings = await buildingRepo.findByCity(db, targetCityId);
-
-      return { ok: true, data: { city, buildings, cityId: targetCityId } };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
+    if (!targetId) {
+      const first = await cityRepo.findFirst(this.db, walletAddress);
+      if (!first) return null;
+      targetId = first.id;
     }
-  },
+
+    const city = await cityRepo.findById(this.db, targetId);
+    if (!city || city.wallet_address !== walletAddress) return null;
+
+    const buildings = await buildingRepo.findByCity(this.db, targetId);
+
+    return { city, buildings };
+  }
 
   /**
-   * 获取或创建城市 (自动注册时调用)
+   * 获取城市资源
    */
-  async getOrCreate(
-    db: D1Database,
-    walletAddress: string
-  ): Promise<ServiceResult<{
-    city: City;
-    buildings: Building[];
-    isNew: boolean;
-  }>> {
-    try {
-      let city = await cityRepo.findFirst(db, walletAddress);
-      const isNew = !city;
+  async getResources(walletAddress: string, cityId: number) {
+    const city: any = await this.db.prepare(`
+      SELECT money, food, population, prosperity FROM cities 
+      WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
 
-      if (isNew) {
-        // 检查城市数量限制
-        const count = await cityRepo.countByWallet(db, walletAddress);
-        if (count >= MAX_CITIES_PER_ACCOUNT) {
-          return { ok: false, error: 'Max cities reached', status: 400 };
-        }
+    if (!city) return null;
 
-        // 创建新城市
-        city = await cityRepo.create(db, {
-          wallet_address: walletAddress,
-          name: DEFAULT_CITY_NAME,
-        } as CityCreate);
-
-        // 创建初始建筑(只有聚义厅)
-        await createInitialBuildings(db, city.id, buildingRepo);
-      }
-
-      const buildings = await buildingRepo.findByCity(db, city!.id);
-
-      return { ok: true, data: { city: city!, buildings, isNew } };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
-    }
-  },
+    return {
+      money: city.money,
+      food: city.food,
+      population: city.population,
+      prosperity: city.prosperity,
+      moneyRate: city.money_rate,
+      foodRate: city.food_rate,
+      popRate: city.population_rate,
+    };
+  }
 
   /**
-   * 创建新城市
+   * 获取繁荣等级
    */
-  async create(
-    db: D1Database,
-    walletAddress: string,
-    name: string
-  ): Promise<ServiceResult<City>> {
-    try {
-      // 检查城市数量限制
-      const count = await cityRepo.countByWallet(db, walletAddress);
-      if (count >= MAX_CITIES_PER_ACCOUNT) {
-        return { ok: false, error: 'Max 3 cities per account', status: 400 };
+  getProsperityLevel(prosperity: number) {
+    for (let i = PROSPERITY_LEVELS.length - 1; i >= 0; i--) {
+      if (prosperity >= PROSPERITY_LEVELS[i].minProsperity) {
+        return PROSPERITY_LEVELS[i];
       }
-
-      // 验证名称长度
-      if (name.length < 1 || name.length > 10) {
-        return { ok: false, error: 'City name must be 1-10 characters', status: 400 };
-      }
-
-      // 检查名称是否重复
-      const existing = await cityRepo.findByName(db, name);
-      if (existing) {
-        return { ok: false, error: 'City name already exists', status: 400 };
-      }
-
-      const city = await cityRepo.create(db, {
-        wallet_address: walletAddress,
-        name,
-      } as CityCreate);
-
-      return { ok: true, data: city };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
     }
-  },
+    return PROSPERITY_LEVELS[0];
+  }
 
   /**
-   * 收集资源
+   * 收取资源
    */
-  async collect(
-    db: D1Database,
-    walletAddress: string,
-    cityId: number
-  ): Promise<ServiceResult<{
-    collected: { money: number; food: number };
-    total: { money: number; food: number };
-  }>> {
-    try {
-      // 验证城市属于用户
-      const isOwner = await cityRepo.isOwner(db, cityId, walletAddress);
-      if (!isOwner) {
-        return { ok: false, error: 'City not found', status: 404 };
-      }
+  async collectResources(walletAddress: string, cityId: number) {
+    const city: any = await this.db.prepare(`
+      SELECT money, food, population FROM cities 
+      WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
 
-      const result = await cityRepo.collectResources(db, cityId);
-      if (!result) {
-        return { ok: false, error: 'Too soon to collect', status: 400 };
-      }
-
-      return {
-        ok: true,
-        data: {
-          collected: { money: result.moneyCollected, food: result.foodCollected },
-          total: { money: result.newMoney, food: result.newFood },
-        },
-      };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
+    if (!city) {
+      return { success: false, error: '城市不存在' };
     }
-  },
+
+    // 更新收取时间
+    await this.db.prepare(`
+      UPDATE cities SET last_collect = datetime('now') WHERE id = ?
+    `).bind(cityId).run();
+
+    return {
+      success: true,
+      money: city.money,
+      food: city.food,
+      population: city.population,
+    };
+  }
 
   /**
-   * 获取城市数量
+   * 计算资源产量
    */
-  async count(db: D1Database, walletAddress: string): Promise<ServiceResult<number>> {
-    try {
-      const count = await cityRepo.countByWallet(db, walletAddress);
-      return { ok: true, data: count };
-    } catch (error) {
-      return { ok: false, error: (error as Error).message, status: 500 };
+  calculateProduction(city: any) {
+    const now = new Date();
+    const lastCollect = new Date(city.last_collect);
+    const hours = Math.max(0, (now.getTime() - lastCollect.getTime()) / (1000 * 60 * 60));
+
+    return {
+      money: Math.floor(city.money * city.money_rate / 100 * hours),
+      food: Math.floor(city.food * city.food_rate / 100 * hours),
+      population: Math.floor(city.population * city.population_rate / 100 * hours),
+    };
+  }
+
+  /**
+   * 修改城市名称
+   */
+  async rename(walletAddress: string, cityId: number, newName: string) {
+    if (newName.length < 2 || newName.length > 10) {
+      return { success: false, error: '城市名称必须为2-10个字符' };
     }
+
+    await this.db.prepare(`
+      UPDATE cities SET name = ? WHERE id = ? AND wallet_address = ?
+    `).bind(newName, cityId, walletAddress).run();
+
+    return { success: true };
+  }
+
+  /**
+   * 获取或创建用户城市
+   */
+  async getOrCreate(walletAddress: string) {
+    // 检查是否已有城市
+    const existing = await cityRepo.findByWallet(this.db, walletAddress);
+    if (existing && existing.length > 0) {
+      const city = existing[0];
+      const buildings = await buildingRepo.findByCity(this.db, city.id!);
+      return { city, buildings, isNew: false };
+    }
+
+    // 创建新城市
+    const newCity = await cityRepo.create(this.db, {
+      wallet_address: walletAddress,
+      name: '主城',
+      position: 0,
+      prosperity: 0,
+      money: 10000,
+      food: 10000,
+      population: 100,
+      money_rate: 100,
+      food_rate: 100,
+      population_rate: 100,
+    });
+
+    return { city: newCity, buildings: [], isNew: true };
+  }
+}
+
+export const cityService = {
+  create(db: D1Database) {
+    return new CityService(db);
+  },
+
+  async getList(db: D1Database, walletAddress: string) {
+    const service = new CityService(db);
+    return service.getList(walletAddress);
+  },
+
+  async getDetail(db: D1Database, walletAddress: string, cityId?: number) {
+    const service = new CityService(db);
+    return service.getDetail(walletAddress, cityId);
+  },
+
+  async getResources(db: D1Database, walletAddress: string, cityId: number) {
+    const service = new CityService(db);
+    return service.getResources(walletAddress, cityId);
+  },
+
+  async collectResources(db: D1Database, walletAddress: string, cityId: number) {
+    const service = new CityService(db);
+    return service.collectResources(walletAddress, cityId);
+  },
+
+  async rename(db: D1Database, walletAddress: string, cityId: number, newName: string) {
+    const service = new CityService(db);
+    return service.rename(walletAddress, cityId, newName);
+  },
+
+  getProsperityLevel(prosperity: number) {
+    const service = new CityService(null as any);
+    return service.getProsperityLevel(prosperity);
+  },
+
+  async getOrCreate(db: D1Database, walletAddress: string) {
+    const service = new CityService(db);
+    return service.getOrCreate(walletAddress);
   },
 };
 
-// ============ Helper Functions ============
-
-/**
- * 创建初始建筑 (私有辅助函数)
- * 新号只创建聚义厅(位置10),其他建筑需要玩家自己建造
- */
-async function createInitialBuildings(db: D1Database, cityId: number, buildingRepo: any): Promise<void> {
-  // 检查是否已有建筑
-  const existing = await db.prepare(`
-    SELECT id FROM buildings WHERE city_id = ? AND position = 10
-  `).bind(cityId).first();
-
-  // 只创建聚义厅(config_id: 1, position: 10)
-  if (!existing) {
-    await buildingRepo.create(db, {
-      city_id: cityId,
-      type: 'interior' as const,
-      level: 1,
-      position: 10,
-      state: 0,
-      config_id: 1, // 聚义厅
-    });
-  }
-}
+export default cityService;

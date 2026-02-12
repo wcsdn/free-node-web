@@ -442,7 +442,7 @@ app.get('/valid', async (c) => {
 
   try {
     // TODO: 实现 GetValidEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -460,7 +460,7 @@ app.post('/delete', async (c) => {
 
   try {
     // TODO: 实现 DeleteEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -478,7 +478,7 @@ app.post('/search', async (c) => {
 
   try {
     // TODO: 实现 AddSearchEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -496,7 +496,7 @@ app.post('/visit', async (c) => {
 
   try {
     // TODO: 实现 AddVisitEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

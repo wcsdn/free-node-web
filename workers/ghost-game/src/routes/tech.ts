@@ -375,7 +375,7 @@ app.get('/by-building', async (c) => {
 
   try {
     // TODO: 实现 GetTechnicByBuilding 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

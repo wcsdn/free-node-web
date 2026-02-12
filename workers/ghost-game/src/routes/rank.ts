@@ -71,7 +71,7 @@ app.get('/list', async (c) => {
 
   try {
     // TODO: 实现 GetRankList 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -89,7 +89,7 @@ app.get('/user', async (c) => {
 
   try {
     // TODO: 实现 GetUserRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -107,7 +107,7 @@ app.get('/hero', async (c) => {
 
   try {
     // TODO: 实现 GetHeroRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -125,7 +125,7 @@ app.get('/fame', async (c) => {
 
   try {
     // TODO: 实现 GetFameRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -143,7 +143,7 @@ app.get('/fame-by-user', async (c) => {
 
   try {
     // TODO: 实现 GetFameRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -161,7 +161,7 @@ app.get('/fame-count', async (c) => {
 
   try {
     // TODO: 实现 GetFameRankCount 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -179,7 +179,7 @@ app.get('/prestige', async (c) => {
 
   try {
     // TODO: 实现 GetPrestigeRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -197,7 +197,7 @@ app.get('/prestige-by-user', async (c) => {
 
   try {
     // TODO: 实现 GetPrestigeRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -215,7 +215,7 @@ app.get('/prestige-count', async (c) => {
 
   try {
     // TODO: 实现 GetPrestigeRankCount 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -233,7 +233,7 @@ app.get('/insignia', async (c) => {
 
   try {
     // TODO: 实现 GetInsigniaRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -251,7 +251,7 @@ app.get('/insignia-by-user', async (c) => {
 
   try {
     // TODO: 实现 GetInsigniaRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -269,7 +269,7 @@ app.get('/territory', async (c) => {
 
   try {
     // TODO: 实现 GetTerritoryRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -287,7 +287,7 @@ app.get('/territory-by-user', async (c) => {
 
   try {
     // TODO: 实现 GetTerritoryRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -305,7 +305,7 @@ app.get('/union', async (c) => {
 
   try {
     // TODO: 实现 GetUnionRankByPage 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -323,7 +323,7 @@ app.get('/union-by-name', async (c) => {
 
   try {
     // TODO: 实现 GetUnionRankByUnionName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -341,7 +341,7 @@ app.get('/user-by-name', async (c) => {
 
   try {
     // TODO: 实现 GetUserRankByUserName 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

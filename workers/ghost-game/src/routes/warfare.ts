@@ -116,7 +116,7 @@ app.post('/select', async (c) => {
 
   try {
     // TODO: 实现 Ys_SelectBattle 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

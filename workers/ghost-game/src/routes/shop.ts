@@ -32,7 +32,7 @@ app.get('/items', async (c) => {
 
   try {
     // TODO: 实现 GetMallInfo 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -50,7 +50,7 @@ app.post('/buy', async (c) => {
 
   try {
     // TODO: 实现 BuyItemFromCommodity 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -68,7 +68,7 @@ app.get('/vip-seven-days', async (c) => {
 
   try {
     // TODO: 实现 GetVipSevenDays 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -86,7 +86,7 @@ app.get('/vip-thirty-days', async (c) => {
 
   try {
     // TODO: 实现 GetVipThirtyDays 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -104,7 +104,7 @@ app.get('/peace-eight-hours', async (c) => {
 
   try {
     // TODO: 实现 GetPeaceEightHours 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -122,7 +122,7 @@ app.get('/peace-two-days', async (c) => {
 
   try {
     // TODO: 实现 GetPeaceTwoDays 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -140,7 +140,7 @@ app.get('/peace-seven-days', async (c) => {
 
   try {
     // TODO: 实现 GetPeaceSevenDays 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -158,7 +158,7 @@ app.get('/res-to-gold-rate', async (c) => {
 
   try {
     // TODO: 实现 ResToGoldRateOfExchange 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -176,7 +176,7 @@ app.get('/items-by-type', async (c) => {
 
   try {
     // TODO: 实现 GetCommoditysByType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -194,7 +194,7 @@ app.post('/persist-effect', async (c) => {
 
   try {
     // TODO: 实现 UpdatePersistEffectByType 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -212,7 +212,7 @@ app.post('/gold-buy-resource', async (c) => {
 
   try {
     // TODO: 实现 GoldBuyRes 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

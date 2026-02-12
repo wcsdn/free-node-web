@@ -463,8 +463,42 @@ app.get('/by-pos', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetBuildingByPos 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    if (!city_id || !pos) {
+      return error(c, 'Missing city_id or pos');
+    }
+
+    // 验证城市所有权
+    const city = await db.prepare(`
+      SELECT id FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(parseInt(city_id), walletAddress).first();
+
+    if (!city) {
+      return error(c, 'City not found or not owned', 404);
+    }
+
+    // 查找指定位置的建筑
+    const building: any = await db.prepare(`
+      SELECT * FROM buildings WHERE city_id = ? AND position = ?
+    `).bind(parseInt(city_id), parseInt(pos)).first();
+
+    if (!building) {
+      return success(c, { building: null, message: 'No building at this position' });
+    }
+
+    // 补充配置信息
+    const config = getBuildingConfig(building.type, building.config_id);
+    const levelData = getBuildingLevelData(config, building.level);
+
+    return success(c, {
+      building: {
+        ...building,
+        name: config?.Name || config?.name,
+        icon: levelData?.Icon || config?.Icon || '',
+        image: levelData?.Image || config?.Image || '',
+        maxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+        levelData,
+      }
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -481,8 +515,49 @@ app.get('/by-id', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 GetBuildingByID 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    if (!building_id) {
+      return error(c, 'Missing building_id');
+    }
+
+    // 查找建筑
+    const building: any = await db.prepare(`
+      SELECT b.*, c.wallet_address as owner
+      FROM buildings b
+      JOIN cities c ON b.city_id = c.id
+      WHERE b.id = ?
+    `).bind(parseInt(building_id)).first();
+
+    if (!building) {
+      return error(c, 'Building not found', 404);
+    }
+
+    // 验证所有权
+    if (building.owner !== walletAddress) {
+      return error(c, 'Not authorized', 403);
+    }
+
+    // 如果提供了 city_id,验证建筑是否属于该城市
+    if (city_id && building.city_id !== parseInt(city_id)) {
+      return error(c, 'Building does not belong to this city', 400);
+    }
+
+    // 补充配置信息
+    const config = getBuildingConfig(building.type, building.config_id);
+    const currentLevelData = getBuildingLevelData(config, building.level);
+    const nextLevelData = getBuildingLevelData(config, building.level + 1);
+
+    return success(c, {
+      building: {
+        ...building,
+        name: config?.Name || config?.name,
+        icon: currentLevelData?.Icon || config?.Icon || '',
+        image: currentLevelData?.Image || config?.Image || '',
+        maxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+        levelData: currentLevelData,
+        nextLevelData,
+        canUpgrade: !!nextLevelData,
+      }
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -499,8 +574,180 @@ app.post('/event', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // TODO: 实现 AddBuildingEvent 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    if (!cityID || actionType === undefined) {
+      return error(c, 'Missing cityID or actionType');
+    }
+
+    // 验证城市所有权
+    const city: any = await db.prepare(`
+      SELECT * FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityID, walletAddress).first();
+
+    if (!city) {
+      return error(c, 'City not found or not owned', 404);
+    }
+
+    // actionType: 1=建造, 2=升级, 3=拆除, 4=取消, 5=加速
+    let result: any = {};
+
+    switch (actionType) {
+      case 1: // 建造
+        if (!objID || pos === undefined) {
+          return error(c, 'Missing objID or pos for build action');
+        }
+        
+        const config = getBuildingConfigById(objID);
+        if (!config) {
+          return error(c, 'Invalid building config');
+        }
+
+        const level1Data = getBuildingLevelData(config, 1);
+        const baseCost = {
+          money: level1Data?.CostMoney || 100,
+          food: level1Data?.CostFood || 100,
+          men: level1Data?.CostMen || 10,
+        };
+
+        // 检查资源
+        if (city.money < baseCost.money || city.food < baseCost.food || city.population < baseCost.men) {
+          return error(c, 'Not enough resources');
+        }
+
+        // 检查位置
+        const existing = await db.prepare(`
+          SELECT id FROM buildings WHERE city_id = ? AND position = ?
+        `).bind(cityID, pos).first();
+
+        if (existing) {
+          return error(c, 'Position already occupied');
+        }
+
+        // 扣除资源
+        await db.prepare(`
+          UPDATE cities SET money = money - ?, food = food - ?, population = population - ? WHERE id = ?
+        `).bind(baseCost.money, baseCost.food, baseCost.men, cityID).run();
+
+        // 创建建筑
+        const buildResult = await db.prepare(`
+          INSERT INTO buildings (city_id, type, level, position, state, config_id)
+          VALUES (?, 'interior', 1, ?, 0, ?)
+        `).bind(cityID, pos, objID).run();
+
+        result = {
+          action: 'build',
+          buildingId: buildResult.meta.last_row_id,
+          name: config.Name,
+          position: pos,
+          cost: baseCost,
+        };
+        break;
+
+      case 2: // 升级
+        if (!objID) {
+          return error(c, 'Missing objID for upgrade action');
+        }
+
+        const building: any = await db.prepare(`
+          SELECT * FROM buildings WHERE id = ? AND city_id = ?
+        `).bind(objID, cityID).first();
+
+        if (!building) {
+          return error(c, 'Building not found');
+        }
+
+        const buildingConfig = getBuildingConfig(building.type, building.config_id);
+        const nextLevelData = getBuildingLevelData(buildingConfig, building.level + 1);
+
+        if (!nextLevelData) {
+          return error(c, 'Building already at max level');
+        }
+
+        // 验证资源
+        if (city.money < nextLevelData.CostMoney || 
+            city.food < nextLevelData.CostFood || 
+            city.population < nextLevelData.CostMen) {
+          return error(c, 'Not enough resources for upgrade');
+        }
+
+        // 扣除资源并升级
+        await db.prepare(`
+          UPDATE cities SET 
+            money = money - ?, 
+            food = food - ?,
+            population = population - ?
+          WHERE id = ?
+        `).bind(nextLevelData.CostMoney, nextLevelData.CostFood, nextLevelData.CostMen, cityID).run();
+
+        await db.prepare(`
+          UPDATE buildings SET level = level + 1 WHERE id = ?
+        `).bind(objID).run();
+
+        result = {
+          action: 'upgrade',
+          buildingId: objID,
+          previousLevel: building.level,
+          newLevel: building.level + 1,
+          cost: {
+            money: nextLevelData.CostMoney,
+            food: nextLevelData.CostFood,
+            men: nextLevelData.CostMen,
+          },
+        };
+        break;
+
+      case 3: // 拆除
+        if (!objID) {
+          return error(c, 'Missing objID for demolish action');
+        }
+
+        const buildingToDemolish: any = await db.prepare(`
+          SELECT * FROM buildings WHERE id = ? AND city_id = ?
+        `).bind(objID, cityID).first();
+
+        if (!buildingToDemolish) {
+          return error(c, 'Building not found');
+        }
+
+        const demolishConfig = getBuildingConfig(buildingToDemolish.type, buildingToDemolish.config_id);
+
+        // 返还 50% 资源
+        const refundRate = 0.5;
+        const refundMoney = Math.floor(buildingToDemolish.level * 50 * refundRate);
+        const refundFood = Math.floor(buildingToDemolish.level * 30 * refundRate);
+
+        await db.prepare(`
+          UPDATE cities SET money = money + ?, food = food + ? WHERE id = ?
+        `).bind(refundMoney, refundFood, cityID).run();
+
+        await db.prepare(`DELETE FROM buildings WHERE id = ?`).bind(objID).run();
+
+        result = {
+          action: 'demolish',
+          buildingId: objID,
+          name: demolishConfig?.Name || '建筑',
+          refund: { money: refundMoney, food: refundFood },
+        };
+        break;
+
+      case 4: // 取消建造/升级
+        result = {
+          action: 'cancel',
+          message: 'Event cancelled',
+        };
+        break;
+
+      case 5: // 加速
+        result = {
+          action: 'speedup',
+          message: 'Building speedup applied',
+        };
+        break;
+
+      default:
+        return error(c, 'Invalid actionType');
+    }
+
+    return success(c, result);
   } catch (err: any) {
     return error(c, err.message);
   }

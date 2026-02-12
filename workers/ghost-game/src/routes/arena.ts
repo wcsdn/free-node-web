@@ -32,7 +32,7 @@ app.get('/info', async (c) => {
 
   try {
     // TODO: 实现 GetArena 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -50,7 +50,7 @@ app.get('/times', async (c) => {
 
   try {
     // TODO: 实现 GetArenaTimes 逻辑
-    return success(c, { message: 'Not implemented yet' });
+    return success(c, { data: null, message: "Feature in development" });
   } catch (err: any) {
     return error(c, err.message);
   }

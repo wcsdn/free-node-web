@@ -499,6 +499,30 @@ export interface DungeonProgress {
   updated_at?: string;
 }
 
+// ============ Guild (公会/军团) ============
+export interface Guild {
+  id: number;
+  name: string;
+  leader_id: string;
+  level: number;
+  exp: number;
+  member_count: number;
+  max_members: number;
+  notice?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface GuildMember {
+  id: number;
+  guild_id: number;
+  wallet_address: string;
+  name: string;
+  position: number; // 1: leader, 2: officer, 3: member
+  contribution: number;
+  joined_at: string;
+}
+
 // ============ Arena (竞技场) ============
 export interface ArenaRanking {
   id: number;

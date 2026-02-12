@@ -1,184 +1,567 @@
 /**
- * Corps Service - 军团业务逻辑层
+ * Corps Service - 军团服务层
  * 从 jx/BLL/Corps.cs 迁移
  */
 import type { D1Database } from '@cloudflare/workers-types';
-import type { ServiceResult } from '../types/models';
+
+// 军团状态
+const CORPS_STATES = {
+  IDLE: 0,           // 空闲
+  MARCHING: 1,        // 行军中
+  GARRISON: 2,        // 驻扎
+  FIGHTING: 3,        // 战斗中
+  RETURNING: 4,       // 返回中
+};
+
+// 军团配置
+const CORPS_CONFIG = {
+  MAX_HEROES: 10,         // 最大武将数
+  MARCH_SPEED: 100,       // 行军速度
+  GARRISON_TIME: 3600,    // 驻扎时间（秒）
+  RETURN_TIME: 1800,      // 返回时间（秒）
+};
+
+class CorpsService {
+  private db: D1Database;
+
+  constructor(db: D1Database) {
+    this.db = db;
+  }
+
+  // ============ 军团查询 ============
+
+  /**
+   * 获取军团列表
+   */
+  async getCorpsList(walletAddress: string, page = 1, pageSize = 20) {
+    const offset = (page - 1) * pageSize;
+
+    const corps: any = await this.db.prepare(`
+      SELECT c.*, 
+        (SELECT COUNT(*) FROM corps_members WHERE corps_id = c.id) as member_count
+      FROM corps_system c
+      ORDER BY c.level DESC, c.exp DESC
+      LIMIT ? OFFSET ?
+    `).bind(pageSize, offset).all();
+
+    const totalCount: any = await this.db.prepare(`
+      SELECT COUNT(*) as count FROM corps_system
+    `).first();
+
+    return {
+      corps: (corps.results || []).map(this.formatCorps),
+      total: (totalCount as any).count,
+      page,
+      pageSize,
+    };
+  }
+
+  /**
+   * 获取我的军团
+   */
+  async getMyCorps(walletAddress: string) {
+    const member: any = await this.db.prepare(`
+      SELECT cm.*, c.* 
+      FROM corps_members cm
+      JOIN corps_system c ON cm.corps_id = c.id
+      WHERE cm.wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!member) return null;
+
+    return {
+      id: member.corps_id,
+      name: member.name,
+      level: member.level,
+      exp: member.exp,
+      role: member.role,
+      contribution: member.contribution,
+      joinedAt: member.joined_at,
+    };
+  }
+
+  /**
+   * 获取军团详情
+   */
+  async getCorpsInfo(corpsId: number) {
+    const corps: any = await this.db.prepare(`
+      SELECT c.*,
+        (SELECT COUNT(*) FROM corps_members WHERE corps_id = c.id) as member_count,
+        (SELECT wallet_address FROM corps_members WHERE corps_id = c.id AND role = 'leader') as leader_address
+      FROM corps_system c WHERE c.id = ?
+    `).bind(corpsId).first();
+
+    if (!corps) return null;
+
+    return {
+      ...this.formatCorps(corps),
+      leaderAddress: corps.leader_address,
+    };
+  }
+
+  /**
+   * 获取军团成员列表
+   */
+  async getCorpsMembers(corpsId: number, page = 1, pageSize = 20) {
+    const offset = (page - 1) * pageSize;
+
+    const members: any = await this.db.prepare(`
+      SELECT cm.*, c.name as character_name, c.level as character_level
+      FROM corps_members cm
+      LEFT JOIN characters c ON cm.wallet_address = c.wallet_address
+      WHERE cm.corps_id = ?
+      ORDER BY 
+        CASE cm.role 
+          WHEN 'leader' THEN 1 
+          WHEN 'deputy' THEN 2 
+          ELSE 3 
+        END,
+        cm.contribution DESC
+      LIMIT ? OFFSET ?
+    `).bind(corpsId, pageSize, offset).all();
+
+    const totalCount: any = await this.db.prepare(`
+      SELECT COUNT(*) as count FROM corps_members WHERE corps_id = ?
+    `).bind(corpsId).first();
+
+    return {
+      members: (members.results || []).map((m: any) => ({
+        walletAddress: m.wallet_address,
+        characterName: m.character_name,
+        characterLevel: m.character_level,
+        role: m.role,
+        contribution: m.contribution,
+        joinedAt: m.joined_at,
+      })),
+      total: (totalCount as any).count,
+    };
+  }
+
+  // ============ 军团操作 ============
+
+  /**
+   * 创建军团
+   */
+  async createCorps(walletAddress: string, name: string) {
+    // 检查是否已有军团
+    const existingMember: any = await this.db.prepare(`
+      SELECT corps_id FROM corps_members WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (existingMember) {
+      return { success: false, error: '您已加入其他军团' };
+    }
+
+    // 检查名称唯一性
+    const existingName: any = await this.db.prepare(`
+      SELECT id FROM corps_system WHERE name = ?
+    `).bind(name).first();
+
+    if (existingName) {
+      return { success: false, error: '军团名称已被占用' };
+    }
+
+    // 创建军团
+    const result = await this.db.prepare(`
+      INSERT INTO corps_system (name, leader_id, member_count)
+      VALUES (?, ?, 1)
+    `).bind(name, walletAddress).run();
+
+    const corpsId = result.meta.last_row_id;
+
+    // 创建者自动成为军团长
+    await this.db.prepare(`
+      INSERT INTO corps_members (corps_id, wallet_address, role, contribution)
+      VALUES (?, ?, 'leader', 0)
+    `).bind(corpsId, walletAddress).run();
+
+    return { success: true, corpsId };
+  }
+
+  /**
+   * 申请加入军团
+   */
+  async applyJoinCorps(walletAddress: string, corpsId: number, message?: string) {
+    // 检查是否已有军团
+    const existingMember: any = await this.db.prepare(`
+      SELECT corps_id FROM corps_members WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (existingMember) {
+      return { success: false, error: '您已加入军团' };
+    }
+
+    // 检查军团是否存在
+    const corps: any = await this.db.prepare(`
+      SELECT * FROM corps_system WHERE id = ?
+    `).bind(corpsId).first();
+
+    if (!corps) {
+      return { success: false, error: '军团不存在' };
+    }
+
+    // 创建申请
+    await this.db.prepare(`
+      INSERT INTO corps_applies (corps_id, wallet_address, message, status)
+      VALUES (?, ?, ?, 0)
+    `).bind(corpsId, walletAddress, message || '').run();
+
+    return { success: true };
+  }
+
+  /**
+   * 处理入团申请
+   */
+  async handleApply(walletAddress: string, applyWallet: string, corpsId: number, approved: boolean) {
+    // 检查权限
+    const member: any = await this.db.prepare(`
+      SELECT role FROM corps_members 
+      WHERE corps_id = ? AND wallet_address = ?
+    `).bind(corpsId, walletAddress).first();
+
+    if (!member || (member.role !== 'leader' && member.role !== 'deputy')) {
+      return { success: false, error: '权限不足' };
+    }
+
+    if (approved) {
+      // 检查成员数量
+      const memberCount: any = await this.db.prepare(`
+        SELECT COUNT(*) as count FROM corps_members WHERE corps_id = ?
+      `).bind(corpsId).first();
+
+      if ((memberCount as any).count >= 50) {
+        return { success: false, error: '军团人数已满' };
+      }
+
+      // 添加成员
+      await this.db.prepare(`
+        INSERT INTO corps_members (corps_id, wallet_address, role, contribution)
+        VALUES (?, ?, 'member', 0)
+      `).bind(corpsId, applyWallet).run();
+
+      await this.db.prepare(`
+        UPDATE corps_system SET member_count = member_count + 1 WHERE id = ?
+      `).bind(corpsId).run();
+    }
+
+    // 更新申请状态
+    await this.db.prepare(`
+      UPDATE corps_applies SET status = ? WHERE corps_id = ? AND wallet_address = ?
+    `).bind(approved ? 1 : 2, corpsId, applyWallet).run();
+
+    return { success: true };
+  }
+
+  /**
+   * 退出军团
+   */
+  async quitCorps(walletAddress: string) {
+    const member: any = await this.db.prepare(`
+      SELECT * FROM corps_members WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!member) {
+      return { success: false, error: '您未加入军团' };
+    }
+
+    if (member.role === 'leader') {
+      return { success: false, error: '军团长无法直接退出' };
+    }
+
+    await this.db.prepare(`
+      DELETE FROM corps_members WHERE wallet_address = ?
+    `).bind(walletAddress).run();
+
+    await this.db.prepare(`
+      UPDATE corps_system SET member_count = member_count - 1 WHERE id = ?
+    `).bind(member.corps_id).run();
+
+    return { success: true };
+  }
+
+  /**
+   * 解散军团
+   */
+  async disbandCorps(walletAddress: string, corpsId: number) {
+    const member: any = await this.db.prepare(`
+      SELECT * FROM corps_members WHERE corps_id = ? AND wallet_address = ?
+    `).bind(corpsId, walletAddress).first();
+
+    if (!member || member.role !== 'leader') {
+      return { success: false, error: '只有军团长可以解散' };
+    }
+
+    const memberCount: any = await this.db.prepare(`
+      SELECT COUNT(*) as count FROM corps_members WHERE corps_id = ?
+    `).bind(corpsId).first();
+
+    if ((memberCount as any).count > 1) {
+      return { success: false, error: '请先移除所有成员' };
+    }
+
+    await this.db.prepare(`DELETE FROM corps_members WHERE corps_id = ?`).bind(corpsId).run();
+    await this.db.prepare(`DELETE FROM corps_applies WHERE corps_id = ?`).bind(corpsId).run();
+    await this.db.prepare(`DELETE FROM corps_system WHERE id = ?`).bind(corpsId).run();
+
+    return { success: true };
+  }
+
+  // ============ 军团武将管理 ============
+
+  /**
+   * 分配武将到军团
+   */
+  async assignHero(walletAddress: string, corpsId: number, heroId: number) {
+    // 验证成员身份
+    const member: any = await this.db.prepare(`
+      SELECT * FROM corps_members 
+      WHERE corps_id = ? AND wallet_address = ?
+    `).bind(corpsId, walletAddress).first();
+
+    if (!member) {
+      return { success: false, error: '您不是军团成员' };
+    }
+
+    // 检查武将是否可用
+    const hero: any = await this.db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
+
+    if (!hero) {
+      return { success: false, error: '武将不存在' };
+    }
+
+    // 检查军团武将数量
+    const assignedCount: any = await this.db.prepare(`
+      SELECT COUNT(*) as count FROM corps_heroes WHERE corps_id = ?
+    `).bind(corpsId).first();
+
+    if ((assignedCount as any).count >= CORPS_CONFIG.MAX_HEROES) {
+      return { success: false, error: '军团武将数量已达上限' };
+    }
+
+    // 分配武将
+    await this.db.prepare(`
+      INSERT INTO corps_heroes (corps_id, hero_id, status, position)
+      VALUES (?, ?, 0, 0)
+    `).bind(corpsId, heroId).run();
+
+    // 更新武将状态
+    await this.db.prepare(`
+      UPDATE heroes SET state = 2 WHERE id = ?
+    `).bind(heroId).run();
+
+    return { success: true };
+  }
+
+  /**
+   * 从军团移除武将
+   */
+  async removeHero(walletAddress: string, corpsId: number, heroId: number) {
+    const member: any = await this.db.prepare(`
+      SELECT role FROM corps_members 
+      WHERE corps_id = ? AND wallet_address = ?
+    `).bind(corpsId, walletAddress).first();
+
+    if (!member || (member.role !== 'leader' && member.role !== 'deputy')) {
+      return { success: false, error: '权限不足' };
+    }
+
+    // 获取武将归属
+    const corpsHero: any = await this.db.prepare(`
+      SELECT ch.*, h.wallet_address as hero_owner
+      FROM corps_heroes ch
+      JOIN heroes h ON ch.hero_id = h.id
+      WHERE ch.hero_id = ? AND ch.corps_id = ?
+    `).bind(heroId, corpsId).first();
+
+    if (!corpsHero) {
+      return { success: false, error: '武将不在军团中' };
+    }
+
+    // 只有军团长可以移除非自己武将
+    if (member.role !== 'leader' && corpsHero.hero_owner !== walletAddress) {
+      return { success: false, error: '权限不足' };
+    }
+
+    await this.db.prepare(`
+      DELETE FROM corps_heroes WHERE hero_id = ? AND corps_id = ?
+    `).bind(heroId, corpsId).run();
+
+    await this.db.prepare(`
+      UPDATE heroes SET state = 0 WHERE id = ?
+    `).bind(heroId).run();
+
+    return { success: true };
+  }
+
+  /**
+   * 获取军团武将列表
+   */
+  async getCorpsHeroes(corpsId: number) {
+    const heroes: any = await this.db.prepare(`
+      SELECT ch.*, h.name as hero_name, h.level, h.quality, h.atk, h.def, h.hp
+      FROM corps_heroes ch
+      JOIN heroes h ON ch.hero_id = h.id
+      WHERE ch.corps_id = ?
+      ORDER BY ch.position ASC, h.quality DESC
+    `).bind(corpsId).all();
+
+    return (heroes.results || []).map((h: any) => ({
+      id: h.hero_id,
+      name: h.hero_name,
+      level: h.level,
+      quality: h.quality,
+      atk: h.atk,
+      def: h.def,
+      hp: h.hp,
+      status: h.status,
+      position: h.position,
+    }));
+  }
+
+  // ============ 军团资源 ============
+
+  /**
+   * 获取军团资源信息
+   */
+  async getCorpsResources(corpsId: number) {
+    const resources: any = await this.db.prepare(`
+      SELECT * FROM corps_resources WHERE corps_id = ?
+    `).bind(corpsId).first();
+
+    if (!resources) {
+      return {
+        money: 0,
+        food: 0,
+        men: 0,
+        contribution: 0,
+      };
+    }
+
+    return {
+      money: resources.money,
+      food: resources.food,
+      men: resources.men,
+      contribution: resources.contribution,
+    };
+  }
+
+  /**
+   * 捐献资源
+   */
+  async donate(walletAddress: string, corpsId: number, type: 'money' | 'food' | 'men', amount: number) {
+    const member: any = await this.db.prepare(`
+      SELECT role FROM corps_members 
+      WHERE corps_id = ? AND wallet_address = ?
+    `).bind(corpsId, walletAddress).first();
+
+    if (!member) {
+      return { success: false, error: '您不是军团成员' };
+    }
+
+    // 计算贡献度
+    let contribution = 0;
+    let resourceType = '';
+
+    switch (type) {
+      case 'money':
+        contribution = Math.floor(amount / 100);
+        resourceType = 'money';
+        break;
+      case 'food':
+        contribution = Math.floor(amount / 100);
+        resourceType = 'food';
+        break;
+      case 'men':
+        contribution = amount;
+        resourceType = 'men';
+        break;
+    }
+
+    // 更新军团资源
+    await this.db.prepare(`
+      UPDATE corps_resources 
+      SET ${resourceType} = ${resourceType} + ?, contribution = contribution + ?
+      WHERE corps_id = ?
+    `).bind(amount, contribution, corpsId).run();
+
+    // 更新成员贡献
+    await this.db.prepare(`
+      UPDATE corps_members 
+      SET contribution = contribution + ?
+      WHERE corps_id = ? AND wallet_address = ?
+    `).bind(contribution, corpsId, walletAddress).run();
+
+    return { success: true, contribution };
+  }
+
+  // ============ 格式化 ============
+
+  private formatCorps(corps: any) {
+    return {
+      id: corps.id,
+      name: corps.name,
+      level: corps.level,
+      exp: corps.exp,
+      memberCount: corps.member_count,
+      notice: corps.notice,
+      targetPosition: corps.target_position,
+      arriveTime: corps.arrive_time,
+    };
+  }
+}
 
 export const corpsService = {
-  /** 获取军团列表 */
-  async getList(db: D1Database, limit = 100): Promise<ServiceResult<any[]>> {
-    try {
-      const result = await db.prepare(`
-        SELECT id, name, leader_id, city_id, level, exp, state, notice, member_count, created_at
-        FROM corps_system ORDER BY member_count DESC LIMIT ?
-      `).bind(limit).all();
-      
-      const corps: any[] = [];
-      if (result.results) {
-        for (const row of result.results) {
-          corps.push({
-            id: Number(row.id),
-            name: String(row.name || ''),
-            leaderId: String(row.leader_id || ''),
-            cityId: Number(row.city_id || 0),
-            level: Number(row.level || 1),
-            exp: Number(row.exp || 0),
-            state: Number(row.state || 0),
-            notice: String(row.notice || ''),
-            memberCount: Number(row.member_count || 0),
-            createdAt: String(row.created_at || ''),
-          });
-        }
-      }
-      
-      return { ok: true, data: corps };
-    } catch (error) {
-      console.error('getList error:', error);
-      return { ok: false, error: 'Database query failed', status: 500 };
-    }
+  create(db: D1Database) {
+    return new CorpsService(db);
   },
 
-  /** 获取军团详情 */
-  async getDetail(db: D1Database, corpsId: number): Promise<ServiceResult<any>> {
-    try {
-      const result = await db.prepare(`
-        SELECT id, name, leader_id, city_id, level, exp, state, notice, member_count, created_at
-        FROM corps_system WHERE id = ?
-      `).bind(corpsId).first();
-      
-      if (!result) {
-        return { ok: false, error: 'Corps not found', status: 404 };
-      }
-      
-      const corps = {
-        id: Number(result.id),
-        name: String(result.name || ''),
-        leaderId: String(result.leader_id || ''),
-        cityId: Number(result.city_id || 0),
-        level: Number(result.level || 1),
-        exp: Number(result.exp || 0),
-        state: Number(result.state || 0),
-        notice: String(result.notice || ''),
-        memberCount: Number(result.member_count || 0),
-        createdAt: String(result.created_at || ''),
-      };
-      
-      // 获取成员列表
-      const membersResult = await db.prepare(`
-        SELECT id, corps_id, wallet_address, role, contribution, joined_at
-        FROM corps_members WHERE corps_id = ? ORDER BY role, joined_at
-      `).bind(corpsId).all();
-      
-      const members: any[] = [];
-      if (membersResult.results) {
-        for (const m of membersResult.results) {
-          members.push({
-            id: Number(m.id),
-            corpsId: Number(m.corps_id),
-            walletAddress: String(m.wallet_address || ''),
-            role: String(m.role || 'member'),
-            contribution: Number(m.contribution || 0),
-            joinedAt: String(m.joined_at || ''),
-          });
-        }
-      }
-      
-      return { ok: true, data: { corps, members } };
-    } catch (error) {
-      console.error('getDetail error:', error);
-      return { ok: false, error: 'Database query failed', status: 500 };
-    }
+  async getCorpsList(db: D1Database, walletAddress: string, page?: number, pageSize?: number) {
+    const service = new CorpsService(db);
+    return service.getCorpsList(walletAddress, page, pageSize);
   },
 
-  /** 创建军团 */
-  async create(db: D1Database, walletAddress: string, name: string, notice?: string): Promise<ServiceResult<any>> {
-    try {
-      const now = new Date().toISOString();
-      
-      await db.prepare(`
-        INSERT INTO corps_system (name, leader_id, city_id, level, exp, state, notice, member_count, created_at)
-        VALUES (?, ?, 0, 1, 0, 0, ?, 1, ?)
-      `).bind(name, walletAddress, notice || '欢迎加入军团', now).run();
-
-      const idResult = await db.prepare('SELECT last_insert_rowid() as id').first();
-      const id = Number(idResult.id);
-      
-      return { ok: true, data: { id, name, leaderId: walletAddress, notice: notice || '欢迎加入军团' } };
-    } catch (error) {
-      console.error('create error:', error);
-      return { ok: false, error: 'Failed to create corps', status: 500 };
-    }
+  async getMyCorps(db: D1Database, walletAddress: string) {
+    const service = new CorpsService(db);
+    return service.getMyCorps(walletAddress);
   },
 
-  /** 申请加入军团 */
-  async apply(db: D1Database, walletAddress: string, corpsId: number, message?: string): Promise<ServiceResult<void>> {
-    try {
-      return { ok: true, data: undefined };
-    } catch (error) {
-      return { ok: false, error: 'Failed to apply', status: 500 };
-    }
+  async getCorpsInfo(db: D1Database, corpsId: number) {
+    const service = new CorpsService(db);
+    return service.getCorpsInfo(corpsId);
   },
 
-  /** 离开军团 */
-  async leave(db: D1Database, walletAddress: string): Promise<ServiceResult<void>> {
-    try {
-      const result = await db.prepare(`
-        DELETE FROM corps_members WHERE wallet_address = ?
-      `).bind(walletAddress).run();
-      
-      return { ok: true, data: undefined };
-    } catch (error) {
-      return { ok: false, error: 'Failed to leave corps', status: 500 };
-    }
+  async createCorps(db: D1Database, walletAddress: string, name: string) {
+    const service = new CorpsService(db);
+    return service.createCorps(walletAddress, name);
   },
 
-  /** 获取我的军团信息 */
-  async getMyCorps(db: D1Database, walletAddress: string): Promise<ServiceResult<any>> {
-    try {
-      const memberResult = await db.prepare(`
-        SELECT cm.*, cs.name, cs.leader_id
-        FROM corps_members cm
-        LEFT JOIN corps_system cs ON cm.corps_id = cs.id
-        WHERE cm.wallet_address = ?
-      `).bind(walletAddress).first();
-      
-      if (!memberResult) {
-        return { ok: true, data: null };
-      }
-      
-      const membersResult = await db.prepare(`
-        SELECT id, corps_id, wallet_address, role, contribution, joined_at
-        FROM corps_members WHERE corps_id = ?
-      `).bind(Number(memberResult.corps_id)).all();
-      
-      const members: any[] = [];
-      if (membersResult.results) {
-        for (const m of membersResult.results) {
-          members.push({
-            id: Number(m.id),
-            walletAddress: String(m.wallet_address || ''),
-            role: String(m.role || 'member'),
-            contribution: Number(m.contribution || 0),
-          });
-        }
-      }
-      
-      return {
-        ok: true,
-        data: {
-          corps: {
-            id: Number(memberResult.corps_id),
-            name: String(memberResult.name || ''),
-            leaderId: String(memberResult.leader_id || ''),
-            memberCount: members.length,
-          },
-          members,
-        }
-      };
-    } catch (error) {
-      console.error('getMyCorps error:', error);
-      return { ok: false, error: 'Database query failed', status: 500 };
-    }
+  async assignHero(db: D1Database, walletAddress: string, corpsId: number, heroId: number) {
+    const service = new CorpsService(db);
+    return service.assignHero(walletAddress, corpsId, heroId);
+  },
+
+  async removeHero(db: D1Database, walletAddress: string, corpsId: number, heroId: number) {
+    const service = new CorpsService(db);
+    return service.removeHero(walletAddress, corpsId, heroId);
+  },
+
+  async donate(db: D1Database, walletAddress: string, corpsId: number, type: string, amount: number) {
+    const service = new CorpsService(db);
+    return service.donate(walletAddress, corpsId, type as any, amount);
+  },
+
+  async getCorpsHeroes(db: D1Database, corpsId: number) {
+    const service = new CorpsService(db);
+    return service.getCorpsHeroes(corpsId);
+  },
+
+  async getCorpsResources(db: D1Database, corpsId: number) {
+    const service = new CorpsService(db);
+    return service.getCorpsResources(corpsId);
   },
 };
+
+export { CORPS_STATES, CORPS_CONFIG };
+export default corpsService;
