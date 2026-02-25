@@ -3,9 +3,24 @@
  * 根据 api-config.js 中的配置自动生成所有 API 方法
  */
 
+// 开发模式自动认证 - 方便测试
+const DEV_WALLET = '0x1234567890abcdef1234567890abcdef12345678';
+
 // 全局变量 - 从 iframe 父窗口接收
-window.walletAddress = null;
-window.authHeader = null;
+window.walletAddress = DEV_WALLET;
+window.authHeader = DEV_WALLET ? DEV_WALLET + ':test_signature' : null;
+
+if (isDevelopment) {
+  console.log('🔧 开发模式：自动认证');
+}
+
+// 开发模式：禁用 alert 弹窗，改为 console
+window._originalAlert = window.alert;
+window.alert = function(msg) {
+  console.log('[Alert]', msg);
+  // 不跳转页面
+  return;
+};
 
 // 监听来自父窗口的认证信息
 window.addEventListener('message', function(event) {
@@ -21,11 +36,8 @@ window.addEventListener('message', function(event) {
   }
 });
 
-// API 基础配置
-const API_CONFIG = {
-  baseURL: window.API_BASE_URL || 'http://localhost:8788',
-  timeout: 30000
-};
+// API 基础配置 (使用 config.js 中定义的全局变量)
+const API_TIMEOUT = 30000;
 
 /**
  * 通用 API 请求函数
@@ -44,40 +56,45 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
   }
 
   // 构建完整 URL
-  const url = window.getApiUrl ? window.getApiUrl(endpoint) : (API_CONFIG.baseURL + '/api' + endpoint);
-  
+  const url = window.getApiUrl ? window.getApiUrl(endpoint) : (window.API_BASE_URL + '/api' + endpoint);
+
   // 准备请求配置
   const ajaxConfig = {
     url: url,
     type: method,
-    timeout: API_CONFIG.timeout,
+    timeout: API_TIMEOUT,
+    crossDomain: true,  // 解决 CORS 问题
+    // 使用 beforeSend 正确设置请求头
+    beforeSend: function(xhr, settings) {
+      if (needAuth && window.authHeader) {
+        xhr.setRequestHeader('X-Wallet-Auth', window.authHeader);
+      }
+    },
     success: function(response) {
       if (callback) {
         // 兼容原始回调格式：前端期望 result.value 包含数据
         if (response.success && response.data) {
           callback({ value: response.data });
-        } else {
+        } else if (response.value !== undefined) {
+          // 已经有 value
           callback(response);
+        } else {
+          // 其他情况包装
+          callback({ value: response });
         }
       }
     },
     error: function(xhr, status, error) {
       console.error('❌ API 请求失败:', endpoint, error);
       if (callback) {
-        // 错误时也返回 value: null 格式
+        // 错误时返回 value: null 供 DataValidate 检查
+        // 注意：不要返回 error 字段，否则会触发登录弹窗
         callback({
-          value: null,
-          success: false,
-          message: xhr.responseJSON?.error || xhr.responseJSON?.message || '请求失败'
+          value: null
         });
       }
     }
   };
-
-  // 添加认证头
-  if (needAuth && window.authHeader) {
-    ajaxConfig.headers = { 'Authorization': window.authHeader };
-  }
 
   // 根据 HTTP 方法处理数据
   if (method === 'GET') {
@@ -187,6 +204,15 @@ function initializeMainObject() {
   });
   
   console.log('✅ API 适配器已初始化，共生成', Object.keys(window.Main).length, '个方法');
+
+  // 开发模式：自动调用 InitGame 启动游戏
+  if (isDevelopment && typeof InitGame === 'function') {
+    console.log('🔧 开发模式：自动启动游戏');
+    // 延迟一点确保 DOM 完全就绪
+    setTimeout(function() {
+      InitGame();
+    }, 100);
+  }
 }
 
 // 页面加载完成后初始化

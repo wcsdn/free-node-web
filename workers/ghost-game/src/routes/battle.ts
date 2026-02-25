@@ -29,7 +29,7 @@ app.get('/chessboard', async (c) => {
   const city_id = parseInt(c.req.query('city_id') || '0');
   const chess_type = c.req.query('chess_type') || 'pve';
 
-  if (!city_id) return error(c, 'city_id is required');
+  if (city_id === undefined || city_id === null || isNaN(city_id)) return error(c, 'city_id is required');
 
   try {
     // 获取棋盘位置信息 - 直接返回默认棋盘

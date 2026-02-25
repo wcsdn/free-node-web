@@ -92,10 +92,11 @@ function DataValidate(result)
      
     //如果session过期,返回登陆页面...
     else if(result.value==null || result.value==-100)
-    { 
-        var msg="";
-        alert(Lang["Common_1"]);
-        window.location=ToMain;                
+    {
+        console.log('[DataValidate] session过期, result:', result);
+        // 开发模式禁用跳转
+        // alert(Lang["Common_1"]);
+        // window.location=ToMain;
         DataTranslateEnd();
         return false;
     }    

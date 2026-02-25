@@ -33,6 +33,14 @@ app.get('/', async (c) => {
   });
 });
 
+// 获取页面状态 - 前端初始化需要
+app.get('/page-info', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  // 返回默认城市和页面状态
+  return success(c, { value: "1_0" });
+});
+
 // 获取服务器状态
 app.get('/status', async (c) => {
   const db = c.env.DB;
@@ -44,7 +52,13 @@ app.get('/status', async (c) => {
     return error(c, r.error || 'Failed to get stats', r.status || 500);
   }
 
+  // 返回前端期望的格式
+  const now = new Date();
+  const timeStr = now.toTimeString().split(' ')[0]; // "14:22:43"
+
   return success(c, {
+    Time: timeStr,
+    ServerUnit: '1',
     online: true,
     playerCount: r.data?.totalUsers || 0,
     cityCount: r.data?.totalCities || 0,

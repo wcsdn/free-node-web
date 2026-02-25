@@ -39,22 +39,21 @@ window.API_MAPPING = {
     params: [],
     auth: true
   },
-  
+
   GetServerInfo: {
     endpoint: '/game/status',
     httpMethod: 'GET',
     params: [],
     auth: false
   },
-  
+
   GetServerTimeNow: {
     endpoint: '/game/status',
     httpMethod: 'GET',
     params: [],
-    auth: false,
-    transform: (data) => ({ serverTime: data.serverTime || new Date().toISOString() })
+    auth: false
   },
-  
+
   UpdateUserOnline: {
     endpoint: '/game/user/online',
     httpMethod: 'POST',
@@ -449,10 +448,9 @@ window.API_MAPPING = {
     endpoint: '/arena/times',
     httpMethod: 'GET',
     params: [],
-    auth: false,
-    mock: { value: [9, 21] } // 9:00-21:00
+    auth: false
   },
-  
+
   // ==================== 聊天相关 ====================
   GetserverChatWords: {
     endpoint: '/chat/messages',
@@ -678,10 +676,9 @@ window.API_MAPPING = {
     endpoint: '/battle/chess/status',
     httpMethod: 'GET',
     params: [],
-    auth: true,
-    mock: { value: 0 } // 0: 开启, 1: 关闭
+    auth: true
   },
-  
+
   GetWarfareArea: {
     endpoint: '/warfare/area',
     httpMethod: 'GET',
@@ -922,16 +919,14 @@ window.API_MAPPING = {
     endpoint: '/game/version',
     httpMethod: 'GET',
     params: [],
-    auth: false,
-    mock: { value: '1.0.0' }
+    auth: false
   },
-  
+
   GetPageInfo: {
     endpoint: '/game/page-info',
     httpMethod: 'GET',
     params: [],
-    auth: true,
-    mock: { CityNum: 0, PageNum: 0 }
+    auth: true
   },
   
   SetPageInfo: {
@@ -946,10 +941,9 @@ window.API_MAPPING = {
     endpoint: '/appendant-npc/list',
     httpMethod: 'GET',
     params: [],
-    auth: true,
-    mock: { value: [] }
+    auth: true
   },
-  
+
   AddAppendantNPC: {
     endpoint: '/appendant-npc/add',
     httpMethod: 'POST',
