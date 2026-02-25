@@ -366,19 +366,27 @@ app.get('/effects', async (c) => {
 // GetTechnicByBuilding - GET /tech/by-building
 app.get('/by-building', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
 
   const { city_id, building_type } = c.req.query();
 
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  // 返回模拟科技数据
+  const techs = [
+    { id: 1, name: '建筑学', icon: 'tech1', level: 0, maxLevel: 10, effect: '建筑速度+10%' },
+    { id: 2, name: '训练学', icon: 'tech2', level: 0, maxLevel: 10, effect: '训练速度+10%' },
+    { id: 3, name: '攻击学', icon: 'tech3', level: 0, maxLevel: 10, effect: '攻击力+10%' },
+  ];
 
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
-  }
+  return c.json({
+    success: true,
+    data: {
+      buildingType: parseInt(building_type as string || '0'),
+      cityId: parseInt(city_id as string || '0'),
+      techs
+    }
+  });
 });
 
 export default app;

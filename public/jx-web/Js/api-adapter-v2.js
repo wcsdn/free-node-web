@@ -6,12 +6,15 @@
 // 开发模式自动认证 - 方便测试
 const DEV_WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 
+// 强制开发模式 - 用于测试（生产环境也使用测试钱包）
+const FORCE_DEV_MODE = true;
+
 // 全局变量 - 从 iframe 父窗口接收
 window.walletAddress = DEV_WALLET;
 window.authHeader = DEV_WALLET ? DEV_WALLET + ':test_signature' : null;
 
-if (isDevelopment) {
-  console.log('🔧 开发模式：自动认证');
+if (isDevelopment || FORCE_DEV_MODE) {
+  console.log('🔧 开发模式：自动认证 (测试钱包)');
 }
 
 // 开发模式：禁用 alert 弹窗，改为 console

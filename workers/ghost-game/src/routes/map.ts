@@ -493,55 +493,89 @@ app.get('/npcs', async (c) => {
 // GetMapUnitInfo - GET /map/unit
 app.get('/unit', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, map_type, pos } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
+
+  const { city_id = '1', map_type = '1', pos = '0' } = c.req.query();
+
+  // 返回模拟单位数据
+  const units = [
+    { type: 'building', id: 1, name: '主城', position: 0, level: 1 },
+    { type: 'building', id: 2, name: '民居', position: 1, level: 1 },
+    { type: 'building', id: 3, name: '集市', position: 2, level: 1 },
+  ];
+
+  return c.json({
+    success: true,
+    data: {
+      cityId: parseInt(city_id as string),
+      mapType: parseInt(map_type as string),
+      pos: parseInt(pos as string),
+      units
+    }
+  });
 });
 
 // GetWorldLandform - GET /map/world/landform
 app.get('/world/landform', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, pos } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
+
+  const { city_id, pos = '0' } = c.req.query();
+  const position = parseInt(pos as string) || 0;
+
+  // 返回模拟地形数据
+  const landforms = [];
+  for (let y = 0; y < 9; y++) {
+    for (let x = 0; x < 9; x++) {
+      const posIndex = y * 9 + x;
+      landforms.push({
+        x,
+        y,
+        pos: posIndex,
+        type: posIndex === position ? 'city' : 'plain',
+        name: posIndex === position ? '主城' : `地区${posIndex}`,
+        level: Math.floor(Math.random() * 10) + 1,
+        owner: posIndex === position ? walletAddress : null,
+      });
+    }
+  }
+
+  return c.json({
+    success: true,
+    data: {
+      landforms,
+      size: { width: 9, height: 9 }
+    }
+  });
 });
 
 // GetWorldPosState - GET /map/world/pos-state
 app.get('/world/pos-state', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, pos } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
+
+  const { city_id, pos = '0' } = c.req.query();
+  const position = parseInt(pos as string) || 0;
+
+  return c.json({
+    success: true,
+    data: {
+      pos: position,
+      type: position === 1 ? 'player_city' : 'npc_city',
+      owner: position === 1 ? walletAddress : null,
+      name: position === 1 ? '主城' : `城池${position}`,
+      level: Math.floor(Math.random() * 20) + 1,
+      prosperity: Math.floor(Math.random() * 1000),
+      isProtected: position <= 3,
+      canAttack: position > 5,
+    }
+  });
 });
 
 // GetCityNameByPos - GET /map/city-name

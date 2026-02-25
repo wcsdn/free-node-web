@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build)",
+      "Bash(for f in user.repo.ts organize.repo.ts event.repo.ts mission.repo.ts hero.repo.ts persist-effect.repo.ts item.repo.ts battle.repo.ts userdata.repo.ts mail.repo.ts)",
+      "Bash(do sed -i '' \"s|from ''../base.repo''|from ''./base.repo''|g\" \"$f\")",
+      "Bash(done)",
+      "Bash(npm run build -- --skipLibCheck)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(ls /Users/a12345/h5/free-node-web/workers/ghost-game/*.js)"
+    ]
+  }
+}

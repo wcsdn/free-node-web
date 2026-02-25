@@ -143,28 +143,28 @@ window.API_MAPPING = {
   // ==================== 英雄相关 ====================
   GetCityHero: {
     endpoint: '/hero/list',
-    httpMethod: 'POST',
+    httpMethod: 'GET',
     params: ['city_id'],
     auth: true
   },
   
   GetHeroByID: {
     endpoint: '/hero/detail',
-    httpMethod: 'POST',
+    httpMethod: 'GET',
     params: ['city_id', 'hero_id'],
     auth: true
   },
   
   GetCanEenageHero: {
     endpoint: '/hero/can-engage',
-    httpMethod: 'POST',
+    httpMethod: 'GET',
     params: ['city_id', 'building_type'],
     auth: true
   },
   
   GetCanUseHero: {
     endpoint: '/hero/can-use',
-    httpMethod: 'POST',
+    httpMethod: 'GET',
     params: ['city_id', 'level', 'sex', 'union'],
     auth: true
   },
@@ -284,13 +284,6 @@ window.API_MAPPING = {
     auth: true
   },
   
-  GetFightMailByID: {
-    endpoint: '/mail/fight',
-    httpMethod: 'GET',
-    params: ['mail_id'],
-    auth: true
-  },
-  
   DeleteMails: {
     endpoint: '/mail/delete',
     httpMethod: 'POST',
@@ -307,7 +300,7 @@ window.API_MAPPING = {
   
   // ==================== 任务相关 ====================
   GetTask: {
-    endpoint: '/task/',
+    endpoint: '/task/list',
     httpMethod: 'GET',
     params: ['city_id'],
     auth: true
@@ -336,7 +329,7 @@ window.API_MAPPING = {
   
   // ==================== 物品相关 ====================
   GetItemByType: {
-    endpoint: '/item/',
+    endpoint: '/item/by-type',
     httpMethod: 'GET',
     params: ['city_id', 'item_type', 'page', 'order_by', 'order_type'],
     auth: true
@@ -460,9 +453,23 @@ window.API_MAPPING = {
 
   // ==================== 聊天相关 ====================
   GetserverChatWords: {
-    endpoint: '/chat/list',
+    endpoint: '/chat/messages',
     httpMethod: 'GET',
     params: ['last_id'],
+    auth: true
+  },
+  
+  SendChatMessage: {
+    endpoint: '/chat/send',
+    httpMethod: 'POST',
+    params: ['message'],
+    auth: true
+  },
+  
+  AddServerChatWords: {
+    endpoint: '/chat/send',
+    httpMethod: 'POST',
+    params: ['message'],
     auth: true
   },
   

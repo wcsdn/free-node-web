@@ -1,59 +1,62 @@
+/**
+ * 竞技场路由 - 简化版
+ */
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 
 const app = new Hono<{ Bindings: Env }>();
 
-function success(c: any, data: any) {
-  return c.json({ success: true, data });
-}
-function error(c: any, message: string, status = 400) {
-  return c.json({ success: false, error: message }, status);
-}
-
 app.get('/', async (c) => {
-  return success(c, { message: 'OK' });
+  return c.json({ success: true, data: { message: 'OK' } });
 });
 
 app.post('/', async (c) => {
-  return success(c, { message: 'OK' });
+  return c.json({ success: true, data: { message: 'OK' } });
 });
-
 
 // GetArena - GET /arena/info
 app.get('/info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { pos } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
+
+  const { pos = '1' } = c.req.query();
+
+  return c.json({
+    success: true,
+    data: {
+      position: parseInt(pos as string) || 1,
+      status: 'open',
+      opponents: [
+        { name: '挑战者A', level: 10, power: 5000 },
+        { name: '挑战者B', level: 15, power: 8000 },
+        { name: '挑战者C', level: 20, power: 12000 },
+      ],
+      myRank: 999,
+      challengeTimes: 10,
+      maxTimes: 10,
+    }
+  });
 });
 
 // GetArenaTimes - GET /arena/times
 app.get('/times', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
   }
+
+  return c.json({
+    success: true,
+    data: {
+      remaining: 10,
+      max: 10,
+      lastChallengeTime: null,
+      resetTime: '00:00:00'
+    }
+  });
 });
 
 export default app;

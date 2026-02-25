@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 测试 - 剑侠情缘</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #eee;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 { text-align: center; color: #ffd700; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    .test-panel {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+      transition: transform 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn.success { background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); }
+    .btn.danger { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); }
+    
+    #log {
+      background: #0d1117;
+      border-radius: 8px;
+      padding: 15px;
+      height: 500px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .log-entry { margin: 5px 0; }
+    .log-pass { color: #4ade80; }
+    .log-fail { color: #f87171; }
+    .log-info { color: #60a5fa; }
+    .log-warn { color: #fbbf24; }
+    .log-error { color: #f87171; font-weight: bold; }
+    
+    .summary {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .summary-item { text-align: center; }
+    .summary-num { font-size: 36px; font-weight: bold; }
+    .summary-label { font-size: 14px; color: #999; }
+    .passed .summary-num { color: #4ade80; }
+    .failed .summary-num { color: #f87171; }
+    .total .summary-num { color: #60a5fa; }
+    
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 API 一致性测试</h1>
+    
+    <div class="test-panel">
+      <h3>📊 测试控制</h3>
+      <button class="btn" onclick="runCoreTests()">🚀 运行核心 API 测试</button>
+      <button class="btn success" onclick="runFullTests()">📋 运行全部 API 测试</button>
+      <button class="btn danger" onclick="clearLog()">🗑️ 清空日志</button>
+      <button class="btn" onclick="testSingle()">🔍 测试单个 API</button>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress" style="width: 0%"></div>
+      </div>
+    </div>
+    
+    <div class="summary">
+      <div class="summary-item passed">
+        <div class="summary-num" id="passed">0</div>
+        <div class="summary-label">✅ 通过</div>
+      </div>
+      <div class="summary-item failed">
+        <div class="summary-num" id="failed">0</div>
+        <div class="summary-label">❌ 失败</div>
+      </div>
+      <div class="summary-item total">
+        <div class="summary-num" id="total">0</div>
+        <div class="summary-label">📈 总计</div>
+      </div>
+    </div>
+    
+    <div id="log"></div>
+  </div>
+
+  <!-- 引入必要的配置 -->
+  <script src="config.js"></script>
+  <script src="Js/api-config.js"></script>
+  <script src="Js/api-tester.js"></script>
+  
+  <script>
+    const logEl = document.getElementById('log');
+    const progressEl = document.getElementById('progress');
+    const passedEl = document.getElementById('passed');
+    const failedEl = document.getElementById('failed');
+    const totalEl = document.getElementById('total');
+    
+    let testResults = { passed: 0, failed: 0, total: 0 };
+    
+    function log(msg, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `log-entry log-${type}`;
+      div.textContent = msg;
+      logEl.appendChild(div);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+    
+    function updateSummary(passed, failed, total) {
+      passedEl.textContent = passed;
+      failedEl.textContent = failed;
+      totalEl.textContent = total;
+      progressEl.style.width = total > 0 ? `${(passed/total)*100}%` : '0%';
+    }
+    
+    function clearLog() {
+      logEl.innerHTML = '';
+      testResults = { passed: 0, failed: 0, total: 0 };
+      updateSummary(0, 0, 0);
+    }
+    
+    async function runCoreTests() {
+      clearLog();
+      log('🚀 开始核心 API 测试...', 'info');
+      
+      const result = await window.APITestRunner.runCoreAPITests();
+      
+      result.details.forEach(r => {
+        log(`${r.status === 'passed' ? '✅' : '❌'} ${r.name}: ${r.endpoint}`, r.status);
+        if (r.error) log(`   错误: ${r.error}`, 'error');
+      });
+      
+      testResults = { passed: result.passed, failed: result.failed, total: result.total };
+      updateSummary(result.passed, result.failed, result.total);
+    }
+    
+    async function runFullTests() {
+      clearLog();
+      log('⚠️ 完整测试可能需要几分钟...', 'warn');
+      
+      const result = await window.APITestRunner.runAllAPITests();
+      
+      testResults = { passed: result.passed, failed: result.failed, total: result.total };
+      updateSummary(result.passed, result.failed, result.total);
+    }
+    
+    function testSingle() {
+      const name = prompt('请输入要测试的 API 名称（如 GetUserInfo）:');
+      if (name) {
+        clearLog();
+        window.APITestRunner.testAPIDetail(name).then(result => {
+          if (result) {
+            log(`状态: ${result.status}`, result.success ? 'pass' : 'fail');
+            log(`响应: ${JSON.stringify(result.data, null, 2)}`, 'info');
+          }
+        });
+      }
+    }
+    
+    // 页面加载完成后提示
+    log('✅ 测试环境已就绪', 'pass');
+    log('点击上面的按钮开始测试', 'info');
+  </script>
+</body>
+</html>

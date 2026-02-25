@@ -45,13 +45,16 @@ app.post('/detail', async (c) => {
   const { hero_id } = await c.req.json<{ hero_id?: number }>();
   if (!hero_id) return error(c, 'hero_id is required');
 
-  const result = await heroService.getDetail(db, hero_id);
-  const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to get hero', r.status || 500);
+  try {
+    const result = await heroService.getDetail(db, hero_id);
+    const r = result as any;
+    if (!r || !r.ok) {
+      return error(c, r?.error || 'Failed to get hero', r?.status || 500);
+    }
+    return success(c, r.data);
+  } catch (err: any) {
+    return error(c, err.message || 'Failed to get hero');
   }
-
-  return success(c, r.data);
 });
 
 // 招募武将
