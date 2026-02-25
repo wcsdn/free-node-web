@@ -369,6 +369,145 @@ class ItemService {
     return { success: true };
   }
 
+  /**
+   * 物品合成
+   */
+  async synthesize(walletAddress: string, recipeId: number) {
+    // 获取合成配方
+    const recipe: any = await this.db.prepare(`
+      * FROM items_synthesis WHERE id = ?
+    `).bind(recipeId).first();
+
+    if (!recipe) {
+      return { success: false, error: '合成配方不存在' };
+    }
+
+    // 检查材料是否足够
+    const materials = JSON.parse(recipe.materials || '[]');
+    for (const mat of materials) {
+      const existing: any = await this.db.prepare(`
+        SELECT * FROM items WHERE wallet_address = ? AND config_id = ? AND count >= ?
+      `).bind(walletAddress, mat.configId, mat.count).first();
+
+      if (!existing) {
+        return { success: false, error: `材料不足: ${mat.configId}` };
+      }
+    }
+
+    // 扣除材料
+    for (const mat of materials) {
+      await this.db.prepare(`
+        UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
+      `).bind(mat.count, walletAddress, mat.configId).run();
+
+      // 删除数量为0的物品
+      await this.db.prepare(`
+        DELETE FROM items WHERE wallet_address = ? AND config_id = ? AND count <= 0
+      `).bind(walletAddress, mat.configId).run();
+    }
+
+    // 添加成品
+    const result = await this.add(walletAddress, {
+      configId: recipe.resultId,
+      count: 1,
+      type: 'equipment',
+      source: 'synthesis',
+    });
+
+    return {
+      success: true,
+      resultItem: result,
+      message: '合成成功',
+    };
+  }
+
+  /**
+   * 物品强化
+   */
+  async enhance(walletAddress: string, itemId: number, materials: { configId: number; count: number }[]) {
+    const item: any = await this.db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ?
+    `).bind(itemId, walletAddress).first();
+
+    if (!item) {
+      return { success: false, error: '物品不存在' };
+    }
+
+    if (item.type !== 'equipment') {
+      return { success: false, error: '只有装备可以强化' };
+    }
+
+    // 检查强化材料
+    for (const mat of materials) {
+      const existing: any = await this.db.prepare(`
+        SELECT * FROM items WHERE wallet_address = ? AND config_id = ? AND count >= ?
+      `).bind(walletAddress, mat.configId, mat.count).first();
+
+      if (!existing) {
+        return { success: false, error: `强化材料不足` };
+      }
+    }
+
+    // 扣除材料
+    for (const mat of materials) {
+      await this.db.prepare(`
+        UPDATE items SET count = count - ? WHERE wallet_address = ? AND config_id = ?
+      `).bind(mat.count, walletAddress, mat.configId).run();
+    }
+
+    // 增加装备属性（简化版）
+    const enhanceBonus = 10; // 每次强化增加10%属性
+    await this.db.prepare(`
+      UPDATE items SET durability = COALESCE(durability, 0) + ? WHERE id = ?
+    `).bind(enhanceBonus, itemId).run();
+
+    return { success: true, message: '强化成功' };
+  }
+
+  /**
+   * 宝石镶嵌
+   */
+  async inlay(walletAddress: string, equipmentId: number, gemId: number) {
+    const equipment: any = await this.db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ?
+    `).bind(equipmentId, walletAddress).first();
+
+    if (!equipment) {
+      return { success: false, error: '装备不存在' };
+    }
+
+    if (equipment.type !== 'equipment') {
+      return { success: false, error: '只有装备可以镶嵌宝石' };
+    }
+
+    const gem: any = await this.db.prepare(`
+      SELECT * FROM items WHERE id = ? AND wallet_address = ?
+    `).bind(gemId, walletAddress).first();
+
+    if (!gem || gem.type !== 'gem') {
+      return { success: false, error: '宝石不存在' };
+    }
+
+    // 获取已有镶嵌槽
+    const sockets = JSON.parse(equipment.sockets || '[]');
+    if (sockets.length >= 4) {
+      return { success: false, error: '镶嵌槽已满' };
+    }
+
+    // 添加镶嵌
+    sockets.push(gem.config_id);
+    await this.db.prepare(`
+      UPDATE items SET sockets = ? WHERE id = ?
+    `).bind(JSON.stringify(sockets), equipmentId).run();
+
+    // 消耗宝石
+    await this.db.prepare(`
+      DELETE FROM items WHERE id = ?
+    `).bind(gemId).run();
+
+    return { success: true, message: '镶嵌成功' };
+  }
+
   // ============ 内部方法 ============
 
   private applyItemEffect(config: any) {

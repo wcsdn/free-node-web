@@ -4,7 +4,7 @@
  */
 import type { D1Database } from '@cloudflare/workers-types';
 import type { Building, BuildingConfig, ServiceResult } from '../types/models';
-import { buildingRepo } from '../repositories';
+// import { buildingRepo } from '../repositories';/////
 
 // 建筑类型
 export const BUILDING_TYPES = {

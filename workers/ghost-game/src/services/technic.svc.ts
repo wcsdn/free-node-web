@@ -3,8 +3,8 @@
  * 从 jx/BLL/Technic.cs 迁移
  */
 import type { D1Database } from '@cloudflare/workers-types';
-import type { Technic, TechnicConfig, ServiceResult } from '../types/models';
-import { technicRepo } from '../repositories';
+import type { ServiceResult } from '../types/models';
+import { Technic, technicRepo } from '../repositories';
 
 // 科技配置
 export const TECHNIC_CONFIG = {
@@ -49,14 +49,21 @@ export const technicService = {
         return { ok: false, error: 'Already have this technic', status: 400 };
       }
 
-      const technic = await technicRepo.create(db, {
+      // 创建科技记录
+      const newId = await technicRepo.create(db, {
         wallet_address: walletAddress,
         technic_id: technicId,
         technic_level: 1,
         technic_point: 0,
       } as Technic);
 
-      return { ok: true, data: technic! };
+      // 获取创建的科技
+      const technic = await technicRepo.findById(db, newId);
+      if (!technic) {
+        return { ok: false, error: 'Failed to create technic', status: 500 };
+      }
+
+      return { ok: true, data: technic };
     } catch (error) {
       return { ok: false, error: (error as Error).message, status: 500 };
     }

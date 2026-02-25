@@ -1,77 +1,170 @@
 /**
  * Mail Repository - 邮件数据访问层
- * 从 jx/DALEX/MailExAccess.cs 迁移
+ * 参考原版 jx/DAL/MailAccess.cs (273 行)
  */
 import type { D1Database } from '@cloudflare/workers-types';
-import type { Mail, MailCreate } from '../types/models';
+import { BaseRepository, type BaseEntity } from './base.repo';
 
-export const mailRepo = {
-  /** 根据 ID 查找邮件 */
-  async findById(db: D1Database, mailId: number): Promise<Mail | null> {
-    const result = await db.prepare(`
-      SELECT * FROM mails WHERE id = ?
-    `).bind(mailId).first();
-    return result as unknown as Mail | null;
-  },
+export interface Mail extends BaseEntity {
+  id: number;
+  wallet_address: string;
+  type: number;
+  title: string;
+  content: string;
+  sender: string;
+  has_attachment: number;
+  attachment_gold: number;
+  attachment_items: string;
+  is_read: number;
+  is_claim: number;
+  expire_time: string;
+  created_at: string;
+}
 
-  /** 根据钱包地址获取邮件列表 */
-  async findByWallet(db: D1Database, walletAddress: string): Promise<Mail[]> {
-    const result = await db.prepare(`
-      SELECT * FROM mails WHERE wallet_address = ? ORDER BY created_at DESC
-    `).bind(walletAddress).all();
-    return (result.results || []) as unknown as Mail[];
-  },
+export class MailRepository extends BaseRepository<Mail> {
+  constructor(db: D1Database) {
+    super(db, 'mails');
+  }
 
-  /** 获取未读邮件数量 */
-  async countUnread(db: D1Database, walletAddress: string): Promise<number> {
-    const result = await db.prepare(`
-      SELECT COUNT(*) as count FROM mails WHERE wallet_address = ? AND is_read = 0
-    `).bind(walletAddress).first() as { count: number };
-    return result.count;
-  },
+  // ==================== 查询操作 ====================
 
-  /** 创建邮件 */
-  async create(db: D1Database, data: MailCreate): Promise<Mail | null> {
-    const now = new Date().toISOString();
-    
-    await db.prepare(`
-      INSERT INTO mails (wallet_address, title, content, type, is_read, has_attachment, attachment, created_at)
-      VALUES (?, ?, ?, ?, 0, ?, ?, ?)
+  /** 查询用户未读邮件 */
+  async findUnread(walletAddress: string): Promise<Mail[]> {
+    return await this.where({ wallet_address: walletAddress, is_read: 0 });
+  }
+
+  /** 查询未领取附件邮件 */
+  async findUnclaimed(walletAddress: string): Promise<Mail[]> {
+    return await this.db.prepare(
+      `SELECT * FROM mails WHERE wallet_address = ? AND has_attachment = 1 AND is_claim = 0`
+    ).bind(walletAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
+  }
+
+  /** 查询过期邮件 */
+  async findExpired(walletAddress: string): Promise<Mail[]> {
+    return await this.db.prepare(
+      `SELECT * FROM mails WHERE wallet_address = ? AND expire_time <= datetime('now')`
+    ).bind(walletAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
+  }
+
+  // ==================== 写入操作 ====================
+
+  /** 发送邮件 */
+  async send(walletAddress: string, data: {
+    type: number;
+    title: string;
+    content: string;
+    sender?: string;
+    attachmentGold?: number;
+    attachmentItems?: string;
+    expireHours?: number;
+  }): Promise<number> {
+    const now = new Date();
+    const expireTime = data.expireHours 
+      ? new Date(now.getTime() + data.expireHours * 3600 * 1000).toISOString()
+      : null;
+
+    const result = await this.db.prepare(`
+      INSERT INTO mails (
+        wallet_address, type, title, content, sender, has_attachment,
+        attachment_gold, attachment_items, is_read, is_claim, expire_time, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, datetime('now'), datetime('now'))
     `).bind(
-      data.wallet_address,
-      data.title,
-      data.content,
-      data.type ?? 0,
-      data.has_attachment ?? 0,
-      data.attachment ?? '',
-      now
+      walletAddress, data.type, data.title, data.content, 
+      data.sender || '系统', data.attachmentGold ? 1 : 0,
+      data.attachmentGold || 0, data.attachmentItems || '[]', expireTime
     ).run();
 
-    const id = await this.getLastInsertId(db);
-    return this.findById(db, id);
-  },
+    return result.meta.last_row_id;
+  }
+
+  /** 批量发送邮件 */
+  async bulkSend(walletAddresses: string[], data: {
+    type: number;
+    title: string;
+    content: string;
+    sender?: string;
+  }): Promise<Map<string, number>> {
+    const results = new Map();
+    
+    for (const wallet of walletAddresses) {
+      const id = await this.send(wallet, data);
+      results.set(wallet, id);
+    }
+    
+    return results;
+  }
 
   /** 标记已读 */
-  async markAsRead(db: D1Database, mailId: number): Promise<boolean> {
-    const result = await db.prepare(`
-      UPDATE mails SET is_read = 1, updated_at = ? WHERE id = ?
-    `).bind(new Date().toISOString(), mailId).run();
-    return result.success;
-  },
+  async markRead(mailId: number): Promise<void> {
+    await this.db.prepare(
+      `UPDATE mails SET is_read = 1, updated_at = datetime('now') WHERE id = ?`
+    ).bind(mailId).run();
+  }
+
+  /** 标记已领取 */
+  async markClaimed(mailId: number): Promise<void> {
+    await this.db.prepare(
+      `UPDATE mails SET is_claim = 1, updated_at = datetime('now') WHERE id = ?`
+    ).bind(mailId).run();
+  }
+
+  /** 领取附件 */
+  async claimAttachment(mailId: number): Promise<{
+    gold: number;
+    items: string;
+  } | null> {
+    const mail = await this.findById(mailId);
+    if (!mail || mail.is_claim) return null;
+
+    await this.markClaimed(mailId);
+    return {
+      gold: mail.attachment_gold,
+      items: mail.attachment_items,
+    };
+  }
 
   /** 删除邮件 */
-  async delete(db: D1Database, mailId: number): Promise<boolean> {
-    const result = await db.prepare(`
-      DELETE FROM mails WHERE id = ?
-    `).bind(mailId).run();
-    return result.success;
-  },
+  async deleteMail(mailId: number): Promise<boolean> {
+    return await this.delete(mailId);
+  }
 
-  /** 获取最后插入 ID */
-  async getLastInsertId(db: D1Database): Promise<number> {
-    const result = await db.prepare(`
-      SELECT last_insert_rowid() as id
-    `).first() as { id: number };
-    return result.id;
+  /** 删除过期邮件 */
+  async cleanupExpired(): Promise<number> {
+    const result = await this.db.prepare(
+      `DELETE FROM mails WHERE expire_time IS NOT NULL AND expire_time <= datetime('now')`
+    ).run();
+    return result.meta.changes;
+  }
+
+  // ==================== 统计查询 ====================
+
+  /** 获取未读邮件数 */
+  async getUnreadCount(walletAddress: string): Promise<number> {
+    return await this.count({ wallet_address: walletAddress, is_read: 0 });
+  }
+
+  /** 获取未领取附件数 */
+  async getUnclaimedCount(walletAddress: string): Promise<number> {
+    const result = await this.db.prepare(`
+      SELECT COUNT(*) as count FROM mails WHERE wallet_address = ? AND has_attachment = 1 AND is_claim = 0
+    `).bind(walletAddress).first<{ count: number }>();
+    return result?.count || 0;
+  }
+}
+
+// 导出便捷使用对象
+export const mailRepo = {
+  async findByWallet(db: D1Database, walletAddress: string) {
+    const repo = new MailRepository(db);
+    return repo.findByWallet(walletAddress);
+  },
+  async findById(db: D1Database, id: number) {
+    const repo = new MailRepository(db);
+    return repo.findById(id);
+  },
+  async create(db: D1Database, data: Partial<Mail>) {
+    const repo = new MailRepository(db);
+    return repo.insert(data);
   },
 };
