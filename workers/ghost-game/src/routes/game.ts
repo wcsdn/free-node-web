@@ -64,23 +64,18 @@ app.get('/user-info', async (c) => {
   try {
     // 获取或创建用户和城市
     const result = await cityService.getOrCreate(db, walletAddress);
-    const r = result as any;
-    
-    if (!r.ok) {
-      return error(c, r.error || 'Failed', r.status || 500);
-    }
 
     return success(c, {
-      walletAddress: r.data.city.wallet_address,
+      walletAddress: result.city?.wallet_address,
       character: {
         name: '玩家',
         level: 1,
         gold: 1000,
       },
-      city: r.data.city,
-      buildings: r.data.buildings,
+      city: result.city,
+      buildings: result.buildings,
       heroes: [],
-      isNew: r.data.isNew,
+      isNew: result.isNew,
     });
   } catch (err: any) {
     return error(c, err.message);

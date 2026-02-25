@@ -13,7 +13,7 @@ window.addEventListener('message', function(event) {
     window.walletAddress = event.data.walletAddress;
     window.authHeader = event.data.authHeader;
     console.log('✅ 收到认证信息:', window.walletAddress);
-    
+
     // 认证信息到达后,初始化游戏
     if (typeof InitGame === 'function') {
       InitGame();

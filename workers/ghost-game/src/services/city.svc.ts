@@ -38,8 +38,8 @@ class CityService {
    * 获取城市列表
    */
   async getList(walletAddress: string) {
-    const cities = await cityRepo.findByWallet(this.db, walletAddress);
-    return { cities };
+    const city = await cityRepo.findByWallet(this.db, walletAddress);
+    return { cities: city ? [city] : [] };
   }
 
   /**
@@ -157,26 +157,40 @@ class CityService {
    */
   async getOrCreate(walletAddress: string) {
     // 检查是否已有城市
-    const existing = await cityRepo.findByWallet(this.db, walletAddress);
-    if (existing && existing.length > 0) {
-      const city = existing[0];
-      const buildings = await buildingRepo.findByCity(this.db, city.id!);
-      return { city, buildings, isNew: false };
+    const existingCity = await this.db.prepare(
+      `SELECT * FROM cities WHERE wallet_address = ?`
+    ).bind(walletAddress).first();
+
+    if (existingCity) {
+      return { city: existingCity, buildings: [], isNew: false };
+    }
+
+    // 确保角色存在 (自动注册)
+    const existingChar = await this.db.prepare(
+      `SELECT wallet_address FROM characters WHERE wallet_address = ?`
+    ).bind(walletAddress).first();
+
+    if (!existingChar) {
+      const now = new Date().toISOString();
+      await this.db.prepare(`
+        INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level, last_login, created_at)
+        VALUES (?, ?, 1, 0, 1000, 0, ?, ?)
+      `).bind(walletAddress, `玩家_${walletAddress.slice(2, 8)}`, now, now).run();
     }
 
     // 创建新城市
-    const newCity = await cityRepo.create(this.db, {
-      wallet_address: walletAddress,
-      name: '主城',
-      position: 0,
-      prosperity: 0,
-      money: 10000,
-      food: 10000,
-      population: 100,
-      money_rate: 100,
-      food_rate: 100,
-      population_rate: 100,
-    });
+    const result = await this.db.prepare(`
+      INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population,
+        money_rate, food_rate, population_rate, map_image, created_at, updated_at)
+      VALUES (?, ?, ?, 0, 10000, 10000, 100, 99, 99, 99, 'm1.JPG', datetime('now'), datetime('now'))
+    `).bind(walletAddress, '主城', 1).run();
+
+    const newCityId = result.meta.last_row_id;
+
+    // 获取创建的城市
+    const newCity = await this.db.prepare(
+      `SELECT * FROM cities WHERE id = ?`
+    ).bind(newCityId).first();
 
     return { city: newCity, buildings: [], isNew: true };
   }

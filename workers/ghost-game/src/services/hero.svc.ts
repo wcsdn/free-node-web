@@ -87,9 +87,11 @@ class HeroService {
       SELECT COUNT(*) as count FROM heroes WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
+    const heroes = (result.results || []).map((h: any) => this.formatHero(h));
+
     return {
-      heroes: (result.results || []).map(this.formatHero),
-      total: (totalCount as any).count,
+      heroes,
+      total: (totalCount as any)?.count || 0,
       page,
       pageSize,
     };

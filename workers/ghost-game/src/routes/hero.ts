@@ -26,13 +26,12 @@ app.post('/list', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const result = await heroService.getList(db, walletAddress);
-  const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to get heroes', r.status || 500);
+  try {
+    const result = await heroService.getList(db, walletAddress);
+    return success(c, result);
+  } catch (err: any) {
+    return error(c, err.message || 'Failed to get heroes');
   }
-
-  return success(c, r.data);
 });
 
 // 获取武将详情
