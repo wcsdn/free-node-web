@@ -53,16 +53,22 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
     timeout: API_CONFIG.timeout,
     success: function(response) {
       if (callback) {
-        // 兼容原始回调格式
-        callback(response.data || response);
+        // 兼容原始回调格式：前端期望 result.value 包含数据
+        if (response.success && response.data) {
+          callback({ value: response.data });
+        } else {
+          callback(response);
+        }
       }
     },
     error: function(xhr, status, error) {
       console.error('❌ API 请求失败:', endpoint, error);
       if (callback) {
-        callback({ 
-          success: false, 
-          message: xhr.responseJSON?.error || xhr.responseJSON?.message || '请求失败' 
+        // 错误时也返回 value: null 格式
+        callback({
+          value: null,
+          success: false,
+          message: xhr.responseJSON?.error || xhr.responseJSON?.message || '请求失败'
         });
       }
     }
