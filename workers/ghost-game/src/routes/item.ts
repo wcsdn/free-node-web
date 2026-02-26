@@ -77,8 +77,27 @@ app.get('/list', async (c) => {
 
     const items = await db.prepare(query).bind(...params).all();
 
+    // 格式化为C# DBItem字段
+    const formattedItems = (items.results || []).map((item: any) => ({
+      ItemID: item.id,
+      StaticIndex: item.config_id,
+      UserName: item.wallet_address,
+      CityID: 1,
+      HeroID: item.hero_id || 0,
+      CorpsID: 0,
+      ItemName: item.item_name || '物品',
+      ItemType: item.type || 1,
+      State: item.equipped ? 1 : 0,
+      Price: 0,
+      Durability: item.durability || 100,
+      SellDate: item.created_at,
+      UseGetExp: 0,
+      HitPoint: 0,
+      ItemLevel: 1,
+    }));
+
     return success(c, {
-      items: items.results || [],
+      items: formattedItems,
       total: items.results?.length || 0,
     });
   } catch (err: any) {
