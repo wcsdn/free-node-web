@@ -37,8 +37,8 @@ app.get('/', async (c) => {
 app.get('/page-info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
-  // 前端期望直接返回字符串 "CityNum_PageNum"
-  return success(c, "1_0");
+  // 前端期望直接返回字符串 "CityNum_PageNum"，城市索引从0开始
+  return success(c, "0_0");
 });
 
 // 获取服务器状态
@@ -78,18 +78,45 @@ app.get('/user-info', async (c) => {
   try {
     // 获取或创建用户和城市
     const result = await cityService.getOrCreate(db, walletAddress);
+    const city = result.city as any;
+
+    // 构建CityList (C# CityShotInfo[])
+    const CityList = city ? [{
+      ID: city.id,
+      Name: city.name,
+      Pos: city.position,
+      Num: city.id,
+      State: 1,
+      BackImg: city.map_image || 'm1.JPG',
+      UserName: walletAddress,
+      Money: city.money,
+      Food: city.food,
+      Population: city.population,
+    }] : [];
 
     return success(c, {
-      walletAddress: result.city?.wallet_address,
-      character: {
-        name: '玩家',
-        level: 1,
-        gold: 1000,
-      },
-      city: result.city,
+      walletAddress: city?.wallet_address,
+      Name: city?.name || '玩家',
+      Level: 1,
+      Gold: city?.money || 1000,
+      CityList: CityList,
+      city: city,
       buildings: result.buildings,
       heroes: [],
       isNew: result.isNew,
+      Organise: '',
+      State: 1,
+      Insignia: 0,
+      InteriorBuildingQueueNum: 0,
+      DefanceBuildingQueueNum: 0,
+      FastUpDateNeedTimePercent: 100,
+      DegradeNeedResPercent: 100,
+      DegradeNeedTimePercent: 100,
+      EventBreakReturnResPercent: 100,
+      ItemCount: 0,
+      EndProtect: '',
+      CreateDate: '2026-01-01',
+      ServerUnit: '1',
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -112,17 +139,45 @@ app.post('/user-info', async (c) => {
       return error(c, r.error || 'Failed', r.status || 500);
     }
 
+    const city = r.data.city as any;
+    
+    // 构建CityList
+    const CityList = city ? [{
+      ID: city.id,
+      Name: city.name,
+      Pos: city.position,
+      Num: city.id,
+      State: 1,
+      BackImg: city.map_image || 'm1.JPG',
+      UserName: walletAddress,
+      Money: city.money,
+      Food: city.food,
+      Population: city.population,
+    }] : [];
+
     return success(c, {
-      walletAddress: r.data.city.wallet_address,
-      character: {
-        name: '玩家',
-        level: 1,
-        gold: 1000,
-      },
-      city: r.data.city,
+      walletAddress: city.wallet_address,
+      Name: city.name || '玩家',
+      Level: 1,
+      Gold: city.money || 1000,
+      CityList: CityList,
+      city: city,
       buildings: r.data.buildings,
       heroes: [],
       isNew: r.data.isNew,
+      Organise: '',
+      State: 1,
+      Insignia: 0,
+      InteriorBuildingQueueNum: 0,
+      DefanceBuildingQueueNum: 0,
+      FastUpDateNeedTimePercent: 100,
+      DegradeNeedResPercent: 100,
+      DegradeNeedTimePercent: 100,
+      EventBreakReturnResPercent: 100,
+      ItemCount: 0,
+      EndProtect: '',
+      CreateDate: '2026-01-01',
+      ServerUnit: '1',
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -227,24 +282,31 @@ app.get('/user/sub', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { username } = c.req.query();
+  // 支持 username 或 wallet_address 参数
+  const { username, wallet_address } = c.req.query();
+  const searchKey = username || wallet_address;
+
+  if (!searchKey) {
+    return error(c, 'username is required');
+  }
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 查询用户是否存在
+    // 查询用户是否存在 (支持用户名或钱包地址)
     const user = await db.prepare(`
       SELECT wallet_address, name, level FROM characters
-      WHERE name = ?
-    `).bind(username).first();
+      WHERE name = ? OR wallet_address = ?
+    `).bind(searchKey, searchKey).first();
 
     if (!user) {
-      return success(c, { exists: false });
+      return success(c, { exists: false, Age: -1 });
     }
 
     return success(c, {
       exists: true,
+      Age: 1,
       walletAddress: (user as any).wallet_address,
       name: (user as any).name,
       level: (user as any).level,
@@ -265,18 +327,31 @@ app.post('/city/interior-info/:cityID', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
+    // 获取城市真实数据
+    const city = await db.prepare(`
+      SELECT * FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityID, walletAddress).first();
+
+    if (!city) {
+      return error(c, 'City not found', 404);
+    }
+
     const buildings = await db.prepare(`
       SELECT * FROM buildings 
       WHERE city_id = ? AND type = 'interior'
       ORDER BY position ASC
     `).bind(cityID).all();
 
+    // 使用真实数据库数据
     return success(c, {
       cityId: cityID,
       Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
-      Gold: 9890, Money: 9890, MoneyRoom: 1000000, Food: 9920, FoodRoom: 1000000,
-      Population: 92, PopulationRoom: 1000, ProductionMoney: 100, ProductionFood: 100,
-      Level: 1, Men: 92, MenRoom: 1000, MoneySpeed: 100, FoodSpeed: 100, MenSpeed: 100,
+      Gold: (city as any).money, Money: (city as any).money, MoneyRoom: 1000000, 
+      Food: (city as any).food, FoodRoom: 1000000,
+      Population: (city as any).population, PopulationRoom: 1000, 
+      ProductionMoney: (city as any).money_rate, ProductionFood: (city as any).food_rate,
+      Level: 1, Men: (city as any).population, MenRoom: 1000, 
+      MoneySpeed: (city as any).money_rate, FoodSpeed: (city as any).food_rate, MenSpeed: 100,
       IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
       EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
       AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
@@ -299,18 +374,31 @@ app.get('/city/interior-info/:cityID', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
+    // 获取城市真实数据
+    const city = await db.prepare(`
+      SELECT * FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityID, walletAddress).first();
+
+    if (!city) {
+      return error(c, 'City not found', 404);
+    }
+
     const buildings = await db.prepare(`
       SELECT * FROM buildings 
       WHERE city_id = ? AND type = 'interior'
       ORDER BY position ASC
     `).bind(cityID).all();
 
+    // 使用真实数据库数据
     return success(c, {
       cityId: cityID,
       Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
-      Gold: 9890, Money: 9890, MoneyRoom: 1000000, Food: 9920, FoodRoom: 1000000,
-      Population: 92, PopulationRoom: 1000, ProductionMoney: 100, ProductionFood: 100,
-      Level: 1, Men: 92, MenRoom: 1000, MoneySpeed: 100, FoodSpeed: 100, MenSpeed: 100,
+      Gold: (city as any).money, Money: (city as any).money, MoneyRoom: 1000000, 
+      Food: (city as any).food, FoodRoom: 1000000,
+      Population: (city as any).population, PopulationRoom: 1000, 
+      ProductionMoney: (city as any).money_rate, ProductionFood: (city as any).food_rate,
+      Level: 1, Men: (city as any).population, MenRoom: 1000, 
+      MoneySpeed: (city as any).money_rate, FoodSpeed: (city as any).food_rate, MenSpeed: 100,
       IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
       EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
       AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
