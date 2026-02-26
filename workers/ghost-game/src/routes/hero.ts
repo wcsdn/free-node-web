@@ -18,7 +18,7 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 获取武将列表
+// 获取武将列表 - 支持 city_id 参数
 app.post('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -26,15 +26,18 @@ app.post('/list', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
+  // 支持 city_id 参数 (与前端一致)
+  const { city_id } = await c.req.json<{ city_id?: number }>();
+
   try {
-    const result = await heroService.getList(db, walletAddress);
+    const result = await heroService.getList(db, walletAddress, { cityId: city_id });
     return success(c, result);
   } catch (err: any) {
     return error(c, err.message || 'Failed to get heroes');
   }
 });
 
-// 获取武将详情
+// 获取武将详情 - 支持 city_id, hero_id 参数
 app.post('/detail', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -42,7 +45,8 @@ app.post('/detail', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { hero_id } = await c.req.json<{ hero_id?: number }>();
+  // 支持 city_id, hero_id (与前端一致)
+  const { city_id, hero_id } = await c.req.json<{ city_id?: number; hero_id?: number }>();
   if (!hero_id) return error(c, 'hero_id is required');
 
   try {
@@ -250,7 +254,9 @@ app.post('/engage', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, heroID } = await c.req.json();
+  const { cityID, heroID, city_id, hero_id } = await c.req.json();
+  const cityId = cityID || city_id;
+  const heroId = heroID || hero_id;
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -260,7 +266,7 @@ app.post('/engage', async (c) => {
     await db.prepare(`
       UPDATE heroes SET state = 1, updated_at = datetime('now')
       WHERE id = ? AND wallet_address = ?
-    `).bind(heroID, walletAddress).run();
+    `).bind(heroId, walletAddress).run();
 
     return success(c, { message: '武将已雇佣' });
   } catch (err: any) {
@@ -321,7 +327,7 @@ app.post('/event', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, actionType, objType, objID, subjoin } = await c.req.json();
+  const { cityID, actionType, objType, objID, subjoin, city_id } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -359,7 +365,7 @@ app.post('/event-ex', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, actionType, objType, objID, subjoin, flag } = await c.req.json();
+  const { cityID, actionType, objType, objID, subjoin, flag, city_id } = await c.req.json();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -471,7 +477,9 @@ app.get('/auto-exp-break', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, heroID } = c.req.query();
+  const { cityID, heroID, city_id, hero_id } = c.req.query();
+  const cityId = cityID || city_id;
+  const heroId = heroID || hero_id;
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -480,7 +488,7 @@ app.get('/auto-exp-break', async (c) => {
     // 获取武将自动升级突破信息
     const hero = await db.prepare(`
       SELECT level, exp FROM heroes WHERE id = ? AND wallet_address = ?
-    `).bind(heroID, walletAddress).first();
+    `).bind(heroId, walletAddress).first();
 
     if (!hero) {
       return error(c, '武将不存在');
@@ -629,7 +637,9 @@ app.post('/unequip', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { cityID, heroID } = await c.req.json();
+  const { cityID, heroID, city_id, hero_id } = await c.req.json();
+  const cityId = cityID || city_id;
+  const heroId = heroID || hero_id;
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -639,7 +649,7 @@ app.post('/unequip', async (c) => {
     await db.prepare(`
       UPDATE items SET hero_id = NULL, equipped = 0, updated_at = datetime('now')
       WHERE hero_id = ? AND wallet_address = ?
-    `).bind(heroID, walletAddress).run();
+    `).bind(heroId, walletAddress).run();
 
     return success(c, { message: '装备已卸载' });
   } catch (err: any) {

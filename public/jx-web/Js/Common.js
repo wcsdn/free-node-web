@@ -83,22 +83,26 @@ function IntToTime(sec){
 //Ajax数据返回验证
 function DataValidate(result)
 {
+    console.log('[DataValidate] result:', JSON.stringify(result).substring(0, 200));
+    
     //如果获取数据错误,定位到错误页面
-    if(result.error!=null)
+    if(result && result.error!=null)
     { 
+        console.log('[DataValidate] has error, returning false');
         DataTranslateEnd(); 
         return false;
     }
      
     //如果session过期,返回登陆页面...
-    else if(result.value==null || result.value==-100)
+    else if(result==null || result.value==null || result.value==-100)
     {
-        console.log('[DataValidate] session过期, result:', result);
-        // 开发模式禁用跳转
+        console.log('[DataValidate] session过期/value为空, result.value:', result && result.value);
+        // 开发模式禁用跳转，返回 true 继续执行
         // alert(Lang["Common_1"]);
         // window.location=ToMain;
         DataTranslateEnd();
-        return false;
+        // 返回 true 允许继续执行（使用默认数据）
+        return true;
     }    
     else 
         return true;

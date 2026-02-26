@@ -101,9 +101,24 @@ app.get('/city/:cityId', async (c) => {
       SELECT * FROM buildings WHERE city_id = ? ORDER BY position
     `).bind(cityId).all();
 
+    // 格式化建筑信息
+    const formattedBuildings = (buildings.results || []).map((b: any) => ({
+      id: b.id, ID: b.id,
+      cityId: b.city_id, CityID: b.city_id,
+      type: b.type, BuildingType: b.type,
+      level: b.level || 1, Level: b.level || 1,
+      position: b.position, Position: b.position,
+      state: b.state, State: b.state,
+      configId: b.config_id, ConfigID: b.config_id,
+      configName: '建筑' + b.config_id, Name: '建筑' + b.config_id,
+      UpNeedMoney: 1000, UpNeedFood: 1000, UpNeedMen: 100, UpNeedTime: 60,
+      EffectType: 1, EffectValue: 10,
+      CreateTime: b.created_at, UpdateTime: b.updated_at || b.created_at,
+    }));
+
     return success(c, {
       city,
-      buildings: buildings.results || [],
+      buildings: formattedBuildings,
     });
   } catch (err: any) {
     return error(c, err.message);

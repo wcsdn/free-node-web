@@ -65,6 +65,7 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
   const ajaxConfig = {
     url: url,
     type: method,
+    dataType: 'json',  // 自动解析 JSON 响应
     timeout: API_TIMEOUT,
     crossDomain: true,  // 解决 CORS 问题
     // 使用 beforeSend 正确设置请求头
@@ -74,17 +75,24 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
       }
     },
     success: function(response) {
+      console.log('📡 API success:', endpoint, JSON.stringify(response).substring(0, 200));
       if (callback) {
-        // 兼容原始回调格式：前端期望 result.value 包含数据
-        if (response.success && response.data) {
-          callback({ value: response.data });
-        } else if (response.value !== undefined) {
-          // 已经有 value
-          callback(response);
+        var result;
+        // 强制处理各种情况
+        if (response && typeof response === 'object') {
+          if (response.data) {
+            result = { value: response.data };
+          } else if (response.value) {
+            result = response;
+          } else {
+            result = { value: response };
+          }
         } else {
-          // 其他情况包装
-          callback({ value: response });
+          result = { value: response };
         }
+        
+        console.log('📡 callback result:', endpoint, JSON.stringify(result).substring(0, 200));
+        callback(result);
       }
     },
     error: function(xhr, status, error) {

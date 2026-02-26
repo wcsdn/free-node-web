@@ -190,7 +190,7 @@ export const userService = {
     if (!validation.valid) return validation;
 
     const existing = await db.prepare(`
-      SELECT id FROM characters WHERE name = ?
+      SELECT wallet_address FROM characters WHERE name = ?
     `).bind(username).first();
 
     if (existing) {
@@ -222,12 +222,29 @@ export const userService = {
 
     if (!user) {
       const now = new Date().toISOString();
-      const name = `玩家_${walletAddress.slice(2, 8)}`;
+      // 生成随机名称，确保唯一性
+      let charName = `玩家_${walletAddress.slice(2, 8)}`;
+      let retryCount = 0;
+      const maxRetries = 10;
+      
+      while (retryCount < maxRetries) {
+        const existingName = await db.prepare(
+          `SELECT wallet_address FROM characters WHERE name = ?`
+        ).bind(charName).first();
+        
+        if (!existingName) {
+          break; // 名字可用
+        }
+        // 名字重复，随机换一个
+        const randomSuffix = Math.floor(Math.random() * 9000) + 1000;
+        charName = `玩家_${randomSuffix}`;
+        retryCount++;
+      }
 
       await db.prepare(`
         INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level, last_login, created_at)
         VALUES (?, ?, 1, 0, 1000, 0, ?, ?)
-      `).bind(walletAddress, name, now, now).run();
+      `).bind(walletAddress, charName, now, now).run();
 
       user = await this.getByWallet(db, walletAddress);
     }

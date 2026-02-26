@@ -49,7 +49,44 @@ app.get('/configs', async (c) => {
   return success(c, { items, total: items.length });
 });
 
-// 获取背包
+// 获取背包 /item/list (alias for /)
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { type } = c.req.query();
+
+  try {
+    let query = `
+      SELECT i.*, ic.Name as item_name, ic.Type as item_type, ic.Des as description, ic.Icon as icon
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ?
+    `;
+    const params: any[] = [walletAddress];
+
+    if (type) {
+      query += ' AND ic.Type = ?';
+      params.push(parseInt(type));
+    }
+
+    query += ' ORDER BY i.id DESC';
+
+    const items = await db.prepare(query).bind(...params).all();
+
+    return success(c, {
+      items: items.results || [],
+      total: items.results?.length || 0,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 获取背包 (alias for /list)
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);

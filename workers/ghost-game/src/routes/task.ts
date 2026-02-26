@@ -1,6 +1,71 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
+
+// 格式化TaskInfo (C# TaskInfo字段)
+const formatTask = (task: any) => ({
+  // C# TaskInfo 完整字段
+  ID: task.id,
+  TaskType: task.type || 1,
+  SubType: task.sub_type || 1,
+  Name: task.name || '任务',
+  NameColor: 1,
+  Description: task.description || '',
+  ConditionType: 1,
+  ConditionValue: task.target || 0,
+  ConditionTarget: task.target || 0,
+  GainType: task.gain_type || 1,
+  GainValue: task.gain_value || 0,
+  GainIndex: task.gain_index || 0,
+  State: task.state || 1,
+  HasCondition: 1,
+  taskItemNum: task.progress || 0,
+  hasTaskItemNum: task.progress || 0,
+  hasCondition: task.progress || 0,
+  CostInsignia: 0,
+  GetTaskGroupName: '',
+  ConditonTargetName: '',
+  ConditonTargetPos: 0,
+  OverTime: '',
+  GetTaskIndex: '',
+  AppendItemProbability: 0,
+  AppendItemIndex: 0,
+  TaskItemProbability: 0,
+  TaskItemCondition: 0,
+  OverFlag: 0,
+});
+
+// 格式化EventInfo (C# EventInfo字段)
+const formatEvent = (event: any) => ({
+  ID: event.id,
+  EventType: event.type || 1,
+  ActionType: event.action_type || 1,
+  State: event.state || 1,
+  ObjType: event.obj_type || 1,
+  ObjID: event.obj_id || 0,
+  ObjLevel: event.obj_level || 1,
+  TargetCity: event.target_city || 1,
+  RemainTime: event.remain_time || 3600,
+  BeginTime: event.begin_time || '',
+  OverTime: event.over_time || '',
+  ObjImg: event.obj_img || '',
+  ObjName: event.obj_name || '',
+  EventPos: event.event_pos || 0,
+  EventQueue: event.event_queue || 0,
+  FromCityName: event.from_city_name || '',
+});
+
+// 格式化MailInfo (C# MailInfo字段)
+const formatMail = (mail: any) => ({
+  MailID: mail.id,
+  UserName: mail.wallet_address || '',
+  ReadTag: mail.read || 0,
+  MailType: mail.type || 1,
+  Title: mail.title || '',
+  MailFrom: mail.from_user || '',
+  Text: mail.content || '',
+  DateTime: mail.created_at || '',
+});
 import { taskService } from '../services/task.service';
 
 const app = new Hono<{ Bindings: Env }>();

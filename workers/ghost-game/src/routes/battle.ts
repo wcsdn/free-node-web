@@ -54,8 +54,8 @@ app.get('/chess/status', async (c) => {
     // 检查今日战斗次数
     const today = new Date().toISOString().split('T')[0];
     const battleCount: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM battle_records 
-      WHERE wallet_address = ? AND DATE(created_at) = ?
+      SELECT COUNT(*) as count FROM battles 
+      WHERE attacker_address = ? AND DATE(created_at) = ?
     `).bind(walletAddress, today).first();
 
     const isOpen = (battleCount as any).count < BATTLE_CONFIG.MAX_DAILY_BATTLES;
@@ -142,18 +142,18 @@ app.get('/chess/num', async (c) => {
     // 获取今日战斗次数
     const today = new Date().toISOString().split('T')[0];
     const battleCount: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM battle_records 
-      WHERE wallet_address = ? AND DATE(created_at) = ?
+      SELECT COUNT(*) as count FROM battles 
+      WHERE attacker_address = ? AND DATE(created_at) = ?
     `).bind(walletAddress, today).first();
 
     const winCount: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM battle_records 
-      WHERE wallet_address = ? AND DATE(created_at) = ? AND result = 'win'
+      SELECT COUNT(*) as count FROM battles 
+      WHERE attacker_address = ? AND DATE(created_at) = ? AND result = 'win'
     `).bind(walletAddress, today).first();
 
     const loseCount: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM battle_records 
-      WHERE wallet_address = ? AND DATE(created_at) = ? AND result = 'lose'
+      SELECT COUNT(*) as count FROM battles 
+      WHERE attacker_address = ? AND DATE(created_at) = ? AND result = 'lose'
     `).bind(walletAddress, today).first();
 
     return success(c, {

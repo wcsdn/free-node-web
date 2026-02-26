@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>剑侠情缘Web</title>
 
+<!-- vconsole CDN -->
+<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+<script>
+  try {
+    window.vConsole = new VConsole();
+    console.log('✅ vconsole 已启用');
+  } catch(e) {
+    console.log('vconsole 加载失败:', e);
+  }
+</script>
+
 <!-- CSS -->
 <link href="Css/Common.css" rel="stylesheet" type="text/css" />
 

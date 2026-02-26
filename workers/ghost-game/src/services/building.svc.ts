@@ -319,16 +319,34 @@ class BuildingService {
   private formatBuilding(building: any) {
     const config = INTERIOR_BUILDINGS[building.config_id as keyof typeof INTERIOR_BUILDINGS];
     return {
+      // C# BuildingInfo 完整字段
       id: building.id,
+      ID: building.id,
       cityId: building.city_id,
+      CityID: building.city_id,
       type: building.type,
+      BuildingType: building.type,
       level: building.level || 1,
+      Level: building.level || 1,
       position: building.position,
+      Position: building.position,
       state: building.state,
+      State: building.state,
       configId: building.config_id,
+      ConfigID: building.config_id,
       configName: config?.name || building.config_name,
+      Name: config?.name || building.config_name,
       configIcon: config?.icon || building.config_icon,
-      createdAt: building.created_at,
+      Image: config?.icon || building.config_icon,
+      // C# 额外字段
+      UpNeedMoney: 1000,
+      UpNeedFood: 1000,
+      UpNeedMen: 100,
+      UpNeedTime: 60,
+      EffectType: 1,
+      EffectValue: 10,
+      CreateTime: building.created_at,
+      UpdateTime: building.updated_at || building.created_at,
     };
   }
 }

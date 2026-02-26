@@ -5,6 +5,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
+// 添加 vconsole 用于移动端调试
+import VConsole from 'vconsole';
+// 只在非生产环境启用 vconsole
+if (import.meta.env.DEV || window.location.hostname.includes('localhost')) {
+  new VConsole();
+}
+
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RainbowKitProvider, darkTheme, type Locale } from '@rainbow-me/rainbowkit';

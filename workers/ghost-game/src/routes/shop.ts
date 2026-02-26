@@ -18,6 +18,19 @@ app.get('/', async (c) => {
   return success(c, { message: 'Shop API ready' });
 });
 
+// Shop list - GET /shop/list (alias for /info)
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  return success(c, {
+    isOpen: true,
+    refreshTime: '00:00',
+    vipOnSale: true,
+    limitedItems: generateLimitedItems(),
+  });
+});
+
 // GetMallInfo - GET /shop/info
 app.get('/info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -45,31 +58,34 @@ app.post('/buy', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { itemId, amount, price, currency } = await c.req.json();
+  // 支持 itemID/item_id/config_id 双格式
+  const { itemId, itemID, config_id, amount, price, currency } = await c.req.json();
+  const finalItemId = itemId || itemID || config_id;
+  const finalAmount = amount || 1;
 
-  if (!itemId || !price) {
+  if (!finalItemId || !price) {
     return error(c, 'itemId and price are required');
   }
 
   try {
     // 根据货币类型扣除相应资源
     if (currency === 'gold') {
-      await db.prepare(`UPDATE users SET gold = gold - ? WHERE wallet_address = ?`)
-        .bind(price * (amount || 1), walletAddress).run();
+      await db.prepare(`UPDATE characters SET gold = gold - ? WHERE wallet_address = ?`)
+        .bind(price * finalAmount, walletAddress).run();
     } else if (currency === 'money') {
-      await db.prepare(`UPDATE users SET money = money - ? WHERE wallet_address = ?`)
-        .bind(price * (amount || 1), walletAddress).run();
+      await db.prepare(`UPDATE characters SET money = money - ? WHERE wallet_address = ?`)
+        .bind(price * finalAmount, walletAddress).run();
     }
 
-    // 添加物品
-    await db.prepare(`INSERT INTO user_items (wallet_address, item_id, amount) VALUES (?, ?, ?)`)
-      .bind(walletAddress, itemId, amount || 1).run();
+    // 添加物品 (使用 config_id 列)
+    await db.prepare(`INSERT INTO items (wallet_address, config_id, count) VALUES (?, ?, ?)`)
+      .bind(walletAddress, finalItemId, finalAmount).run();
 
     return success(c, {
       success: true,
-      itemId,
-      amount: amount || 1,
-      spent: price * (amount || 1),
+      finalItemId,
+      amount: finalAmount,
+      spent: price * finalAmount,
       currency,
     });
   } catch (err: any) {
@@ -211,10 +227,10 @@ app.post('/exchange', async (c) => {
 
   try {
     if (fromResource === 'gold' && toResource === 'money') {
-      await db.prepare(`UPDATE users SET gold = gold - ?, money = money + ? WHERE wallet_address = ?`)
+      await db.prepare(`UPDATE characters SET gold = gold - ?, money = money + ? WHERE wallet_address = ?`)
         .bind(amount, amount * 100, walletAddress).run();
     } else if (fromResource === 'money' && toResource === 'gold') {
-      await db.prepare(`UPDATE users SET money = money - ?, gold = gold + ? WHERE wallet_address = ?`)
+      await db.prepare(`UPDATE characters SET money = money - ?, gold = gold + ? WHERE wallet_address = ?`)
         .bind(amount, Math.floor(amount / 100), walletAddress).run();
     }
 

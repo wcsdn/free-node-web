@@ -172,10 +172,29 @@ class CityService {
 
     if (!existingChar) {
       const now = new Date().toISOString();
+      // 生成随机名称，确保唯一性
+      let charName = `玩家_${walletAddress.slice(2, 8)}`;
+      let retryCount = 0;
+      const maxRetries = 10;
+      
+      while (retryCount < maxRetries) {
+        const existingName = await this.db.prepare(
+          `SELECT wallet_address FROM characters WHERE name = ?`
+        ).bind(charName).first();
+        
+        if (!existingName) {
+          break; // 名字可用
+        }
+        // 名字重复，随机换一个
+        const randomSuffix = Math.floor(Math.random() * 9000) + 1000;
+        charName = `玩家_${randomSuffix}`;
+        retryCount++;
+      }
+      
       await this.db.prepare(`
         INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level, last_login, created_at)
         VALUES (?, ?, 1, 0, 1000, 0, ?, ?)
-      `).bind(walletAddress, `玩家_${walletAddress.slice(2, 8)}`, now, now).run();
+      `).bind(walletAddress, charName, now, now).run();
     }
 
     // 创建新城市

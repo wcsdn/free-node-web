@@ -91,21 +91,23 @@ app.post('/buy', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { itemID, price } = await c.req.json();
+  // 支持 cityID/city_id 和 itemID/config_id 双格式
+  const { cityID, itemID, price, city_id, config_id } = await c.req.json();
+  const finalItemID = itemID || config_id;
 
-  if (!itemID || !price) {
+  if (!finalItemID || !price) {
     return error(c, 'itemID and price are required');
   }
 
   try {
     // 简化：扣除金币并添加物品
-    await db.prepare(`UPDATE users SET gold = gold - ? WHERE wallet_address = ?`)
+    await db.prepare(`UPDATE characters SET gold = gold - ? WHERE wallet_address = ?`)
       .bind(price, walletAddress).run();
 
-    await db.prepare(`INSERT INTO user_items (wallet_address, item_id, amount) VALUES (?, ?, 1)`)
-      .bind(walletAddress, itemID).run();
+    await db.prepare(`INSERT INTO items (wallet_address, config_id, count) VALUES (?, ?, 1)`)
+      .bind(walletAddress, finalItemID).run();
 
-    return success(c, { success: true, itemId: itemID, spent: price });
+    return success(c, { success: true, itemId: finalItemID, spent: price });
   } catch (err: any) {
     return error(c, err.message);
   }

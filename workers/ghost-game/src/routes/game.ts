@@ -37,8 +37,8 @@ app.get('/', async (c) => {
 app.get('/page-info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
-  // 返回默认城市和页面状态
-  return success(c, { value: "1_0" });
+  // 前端期望直接返回字符串 "CityNum_PageNum"
+  return success(c, "1_0");
 });
 
 // 获取服务器状态
@@ -152,11 +152,29 @@ app.get('/user', async (c) => {
     CityList: r.data.cities.map((city: any) => ({
       ID: city.id,
       Name: city.name,
-      Position: city.position,
+      Pos: city.position,
+      Num: city.id,
+      State: 1,
+      BackImg: "m1.JPG",
+      UserName: walletAddress,
       Money: city.money,
       Food: city.food,
       Population: city.population,
     })),
+    // C# UserInfo 补充字段
+    Organise: '',
+    State: 1,
+    InteriorBuildingQueueNum: 0,
+    DefanceBuildingQueueNum: 0,
+    FastUpDateNeedTimePercent: 100,
+    DegradeNeedResPercent: 100,
+    DegradeNeedTimePercent: 100,
+    EventBreakReturnResPercent: 100,
+    Insignia: 0,
+    ItemCount: 0,
+    EndProtect: '',
+    CreateDate: '2026-01-01',
+    ServerUnit: '1',
   });
 });
 
@@ -247,7 +265,6 @@ app.post('/city/interior-info/:cityID', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取城市内政建筑信息
     const buildings = await db.prepare(`
       SELECT * FROM buildings 
       WHERE city_id = ? AND type = 'interior'
@@ -256,6 +273,48 @@ app.post('/city/interior-info/:cityID', async (c) => {
 
     return success(c, {
       cityId: cityID,
+      Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
+      Gold: 9890, Money: 9890, MoneyRoom: 1000000, Food: 9920, FoodRoom: 1000000,
+      Population: 92, PopulationRoom: 1000, ProductionMoney: 100, ProductionFood: 100,
+      Level: 1, Men: 92, MenRoom: 1000, MoneySpeed: 100, FoodSpeed: 100, MenSpeed: 100,
+      IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
+      EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
+      AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
+      TechnicLevel: [0,0,0,0,0,0,0,0,0,0], EventBreakReturnResPercent: 100,
+      buildings: buildings.results || [],
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GET 版本
+app.get('/city/interior-info/:cityID', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const cityID = c.req.param('cityID');
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const buildings = await db.prepare(`
+      SELECT * FROM buildings 
+      WHERE city_id = ? AND type = 'interior'
+      ORDER BY position ASC
+    `).bind(cityID).all();
+
+    return success(c, {
+      cityId: cityID,
+      Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
+      Gold: 9890, Money: 9890, MoneyRoom: 1000000, Food: 9920, FoodRoom: 1000000,
+      Population: 92, PopulationRoom: 1000, ProductionMoney: 100, ProductionFood: 100,
+      Level: 1, Men: 92, MenRoom: 1000, MoneySpeed: 100, FoodSpeed: 100, MenSpeed: 100,
+      IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
+      EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
+      AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
+      TechnicLevel: [0,0,0,0,0,0,0,0,0,0], EventBreakReturnResPercent: 100,
       buildings: buildings.results || [],
     });
   } catch (err: any) {
@@ -286,13 +345,8 @@ app.post('/city/name', async (c) => {
 
 // GetVersionInfo - GET /game/version
 app.get('/version', async (c) => {
-  return success(c, {
-    version: '1.0.0',
-    buildDate: '2026-02-12',
-    minClientVersion: '1.0.0',
-    updateUrl: '',
-    updateRequired: false,
-  });
+  // 前端期望数组格式: [region, serverId, "who|key|sign", chargeUrl, recommendUrl, serviceUrl]
+  return success(c, ['cn', '1', '0|0|0', '', '', '']);
 });
 
 // GetPlayerNum - GET /game/player-count

@@ -9,6 +9,18 @@ import { mailService, MAIL_TYPES, MAIL_STATUS, MAIL_CONFIG } from '../services';
 
 const app = new Hono<{ Bindings: Env }>();
 
+// 格式化MailInfo (C# MailInfo字段)
+const formatMail = (mail: any) => ({
+  MailID: mail.id,
+  UserName: mail.wallet_address || '',
+  ReadTag: mail.read || 0,
+  MailType: mail.type || 1,
+  Title: mail.title || '',
+  MailFrom: mail.from_user || '',
+  Text: mail.content || '',
+  DateTime: mail.created_at || '',
+});
+
 // 辅助函数
 function success(c: any, data: any) {
   return c.json({ success: true, data });
@@ -84,6 +96,31 @@ app.get('/count', async (c) => {
     return success(c, {
       total: r.total || 0,
       unread: await mailService.getUnreadCount(db, walletAddress),
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetMailList - 获取邮件列表 (alias for /new)
+app.get('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const page = parseInt(c.req.query('page') || '1');
+  const pageSize = parseInt(c.req.query('pageSize') || '20');
+
+  try {
+    const result = await mailService.getMailList(db, walletAddress, { page, pageSize });
+    const r = result as any;
+
+    return success(c, {
+      mails: r.mails || [],
+      total: r.total || 0,
+      page: r.page || 1,
     });
   } catch (err: any) {
     return error(c, err.message);

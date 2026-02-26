@@ -55,15 +55,16 @@ app.get('/pending', async (c) => {
     let query = `
       SELECT te.*, c.name as city_name
       FROM time_events te
-      JOIN cities c ON te.wallet_address = c.wallet_address AND c.id = te.city_id
+      JOIN cities c ON te.wallet_address = c.wallet_address
       WHERE te.wallet_address = ? AND te.end_time > datetime('now')
     `;
     const params: any[] = [walletAddress];
 
-    if (cityId) {
-      query += ' AND te.city_id = ?';
-      params.push(parseInt(cityId));
-    }
+    // Note: time_events table doesn't have city_id column, so we can't filter by cityId
+    // if (cityId) {
+    //   query += ' AND te.city_id = ?';
+    //   params.push(parseInt(cityId));
+    // }
 
     query += ' ORDER BY te.end_time ASC';
 
@@ -104,7 +105,7 @@ app.get('/:id', async (c) => {
     const event: any = await db.prepare(`
       SELECT te.*, c.name as city_name
       FROM time_events te
-      JOIN cities c ON te.wallet_address = c.wallet_address AND c.id = te.city_id
+      JOIN cities c ON te.wallet_address = c.wallet_address 
       WHERE te.id = ? AND te.wallet_address = ?
     `).bind(eventId, walletAddress).first();
 
@@ -311,7 +312,7 @@ app.post('/:id/speedup', async (c) => {
     const event: any = await db.prepare(`
       SELECT te.*, c.gold
       FROM time_events te
-      JOIN cities c ON te.city_id = c.id
+      JOIN cities c ON te.wallet_address = c.wallet_address
       WHERE te.id = ? AND te.wallet_address = ?
     `).bind(eventId, walletAddress).first();
 
@@ -441,8 +442,17 @@ app.get('/valid', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 已实现
-    // 已实现
+    // 获取当前进行中的事件
+    const events = await db.prepare(`
+      SELECT * FROM time_events 
+      WHERE wallet_address = ? AND end_time > datetime('now')
+      ORDER BY end_time ASC
+    `).bind(walletAddress).all();
+
+    return success(c, {
+      events: events.results || [],
+      total: events.results?.length || 0,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -12,7 +12,7 @@ var ChessIsOpen = 0;//0:开启战场 1:关闭战场
 //承接服务器的下传的数据
 var EventInfo; 
 var UserInfo;
-var ServerInfo;
+var ServerInfo = { Time: "12:00:00", ServerUnit: "1", online: true, playerCount: 0, cityCount: 0, corpsCount: 0, uptime: 0 };
 var MapUnitInfo;
 var CityInteriorInfo;
 var LandformInfo;
@@ -94,7 +94,7 @@ var WorldPicSize=46;
 var DefencePicSize=32;
 
 var ClientTime;
-var ServerTime;
+var ServerTime = 43200;
 
 var AppendantNpcInfos;//从属山寨列表
 var OccupationGold=20;//占领山寨所需元宝
@@ -161,13 +161,22 @@ function cb_GetPageInfo(result)
 }
 
 //获得服务器信息
-function cb_GetServerInfo(result)
-{
-    if(DataValidate(result)==false) return;
+function cb_GetServerInfo(result) { 
+    console.log("cb_GetServerInfo called, result:", JSON.stringify(result).substring(0, 500));
+    if(DataValidate(result)==false) {
+        console.log("DataValidate failed, using default");
+        result = { value: { Time: "12:00:00", ServerUnit: "1", online: true, playerCount: 0, cityCount: 0, corpsCount: 0, uptime: 0 } };
+    }
     
     ServerInfo=result.value;
+    console.log("ServerInfo after assignment:", JSON.stringify(ServerInfo).substring(0, 200));
     
-    if(ServerInfo!=null)
+    if(!ServerInfo) { 
+        console.log("ServerInfo is null, using default"); 
+        ServerInfo = { Time: "12:00:00", ServerUnit: "1", online: true, playerCount: 0, cityCount: 0, corpsCount: 0, uptime: 0 }; 
+    }
+    
+    if(ServerInfo && ServerInfo.Time)
     {
         ClientTime=Date();
         var times=ServerInfo.Time.split(":");

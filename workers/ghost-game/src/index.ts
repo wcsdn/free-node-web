@@ -51,7 +51,7 @@ app.use('*', cors({
   maxAge: 86400,
 }));
 
-app.use('*', logger());
+// app.use('*', logger()); // 已禁用全局日志
 
 // 健康检查
 app.get('/health', (c) => {
