@@ -35,9 +35,9 @@ async function initializeNewUser(db: any, walletAddress: string) {
 
   // 创建主城
   await db.prepare(`
-    INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population, money_rate, food_rate, population_rate, map_image)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(walletAddress, '主城', newPosition, 100, 10000, 10000, 500, 100, 100, 50, 'm1.JPG').run();
+    INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population, money_rate, food_rate, population_rate)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(walletAddress, '主城', newPosition, 100, 10000, 10000, 500, 100, 100, 50).run();
 
   // 获取刚创建的城市ID
   const cityResult: any = await db.prepare(`
