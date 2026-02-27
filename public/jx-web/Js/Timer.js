@@ -213,7 +213,7 @@ function GetAttChessState()
 {
     if(CityInAttChessSign==0)
         Main.GetChessboardPos(CityID,2,cb_GetAttChessState);
-    ChessAtcTimer = setTimeout("GetAttChessState()",3000);
+    ChessAtcTimer = setTimeout("GetAttChessState()",60000); // 改为 60 秒（1 分钟）
 }
 
 /*chess*/

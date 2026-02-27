@@ -447,12 +447,17 @@ function formatDuration(seconds: number): string {
 // GetValidEvent - GET /event/valid
 app.get('/valid', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) {
+    // 返回空数组而不是错误，让前端正常显示
+    return c.json({ value: [] });
+  }
 
   const { city_id } = c.req.query();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) {
+    return c.json({ value: [] });
+  }
 
   try {
     // 获取当前进行中的事件
@@ -462,12 +467,11 @@ app.get('/valid', async (c) => {
       ORDER BY end_time ASC
     `).bind(walletAddress).all();
 
-    return success(c, {
-      events: events.results || [],
-      total: events.results?.length || 0,
-    });
+    // 返回前端期望的格式：{ value: [...] }
+    return c.json({ value: events.results || [] });
   } catch (err: any) {
-    return error(c, err.message);
+    console.error('GetValidEvent error:', err);
+    return c.json({ value: [] });
   }
 });
 

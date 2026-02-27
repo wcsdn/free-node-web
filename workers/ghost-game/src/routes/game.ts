@@ -82,6 +82,20 @@ app.get('/page-info', async (c) => {
   return success(c, "0_1");
 });
 
+// 设置页面状态 - POST /game/page-info
+app.post('/page-info', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const body = await c.req.json();
+  const { city_num, page_num } = body;
+
+  // 前端调用: Main.SetPageInfo(CityNum, pageNum, callback)
+  // 这个接口主要用于切换页面时保存状态
+  // 返回格式: 字符串 "CityNum_PageNum"
+  return success(c, `${city_num || 0}_${page_num || 1}`);
+});
+
 // 获取服务器状态
 app.get('/status', async (c) => {
   const db = c.env.DB;

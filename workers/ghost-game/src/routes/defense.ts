@@ -145,34 +145,36 @@ app.get('/landform', async (c) => {
 });
 
 // GetDefenceNum - GET /defense/count
+// C# 返回: int (城防建筑数量)
 app.get('/count', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
+  const { city_id } = c.req.query();
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    const city = await db.prepare(`
-      SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
-    `).bind(walletAddress).first();
+    // 如果没有指定 city_id，使用第一个城市
+    let cityId = city_id;
+    if (!cityId) {
+      const city = await db.prepare(`
+        SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+      `).bind(walletAddress).first();
+      
+      if (!city) return error(c, 'City not found', 404);
+      cityId = (city as any).id;
+    }
 
-    if (!city) return error(c, 'City not found', 404);
+    // 查询城防建筑数量
+    const result: any = await db.prepare(`
+      SELECT COUNT(*) as count FROM buildings 
+      WHERE city_id = ? AND type = 'defense'
+    `).bind(cityId).first();
 
-    const defenses: any = await db.prepare(`
-      SELECT COUNT(*) as count, SUM(defence_level) as totalLevel FROM defence_buildings WHERE city_id = ?
-    `).bind((city as any).id).first();
-
-    return success(c, {
-      count: (defenses as any).count || 0,
-      totalLevel: (defenses as any).totalLevel || 0,
-      maxDefenses: 20, // 假设最大防御建筑数
-      defenseBuildings: [
-        { type: '城墙', count: 5, level: 3 },
-        { type: '箭塔', count: 3, level: 2 },
-        { type: '陷阱', count: 7, level: 1 },
-      ]
-    });
+    // 前端期望: result.value = int (数字)
+    // C# 返回: int GetDefenceNum(int cityID)
+    return success(c, result?.count || 0);
   } catch (err: any) {
     return error(c, err.message);
   }

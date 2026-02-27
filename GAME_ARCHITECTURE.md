@@ -231,6 +231,173 @@ async function initializeNewUser(db: any, walletAddress: string) {
 ```
 
 
+## 事件系统 (Event System)
+
+### 概述
+
+事件系统是游戏的核心机制，处理所有需要时间的操作（建造、升级、训练、战斗等）。
+
+### 前端事件显示
+
+#### rightpanel 结构
+```html
+<div id="rightpanel">
+  <div id="eventinfo"></div>  <!-- 事件列表头部 -->
+  <div id="trees"></div>       <!-- 事件列表内容 -->
+  <div id="main">...</div>     <!-- 聊天窗口 -->
+</div>
+```
+
+#### 事件数据流
+```
+后端 API → { value: [...] } → cb_GetValidEvent() → ShowEvent() → 渲染到 rightpanel
+```
+
+### API 接口
+
+#### GET /api/event/valid
+获取当前进行中的事件列表
+
+**请求参数**:
+- `city_id`: 城市 ID (可选，查询参数)
+- 认证: `X-Wallet-Auth` 请求头
+
+**返回格式**:
+```json
+{
+  "value": [
+    {
+      "ID": 1,
+      "ActionType": 1,
+      "State": 1,
+      "ObjType": 1,
+      "ObjID": 1,
+      "ObjLevel": 1,
+      "TargetCity": 0,
+      "RemainTime": 3600,
+      "BeginTime": "10:00:00",
+      "OverTime": "11:00:00",
+      "ObjImg": "1/1.GIF",
+      "ObjName": "聚义厅",
+      "EventPos": 10,
+      "EventQueue": 0,
+      "EventType": 1,
+      "FromCityName": ""
+    }
+  ]
+}
+```
+
+**重要**: 必须返回 `{ value: [...] }` 格式，前端才能正确处理！
+
+### 前端处理逻辑
+
+#### cb_GetValidEvent 函数
+```javascript
+// public/jx-web/Js/Event.js
+function cb_GetValidEvent(result) {
+  if(DataValidate(result)==false) return;
+  
+  EventInfo = result.value;  // 提取事件数组
+  
+  // 空数组检查
+  if(EventInfo!=null && EventInfo.length > 0 && EventInfo[0].ID==-1)
+    EventInfo = null;
+  
+  ShowEvent();           // 显示事件列表
+  ShowEventMapUnit();    // 显示事件地图标记
+  UpdateControlTarget(); // 更新控制目标
+  // ...
+}
+```
+
+#### 空状态处理
+- 当 `EventInfo` 为 null 或空数组时，rightpanel 不显示内容
+- 这是**正常行为**，不是 bug
+- 用户执行操作（建造、升级等）后会创建事件
+
+### EventInfo 字段说明
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| ID | long | 事件 ID |
+| ActionType | int | 动作类型 (1=建造, 2=升级, 3=研究, 4=训练...) |
+| State | int | 状态 (1=进行中, 2=等待中) |
+| ObjType | int | 对象类型 (1=建筑, 2=科技, 3=防御, 4=英雄, 5=军团) |
+| ObjID | int | 对象 ID |
+| ObjLevel | int | 对象等级 |
+| TargetCity | int | 目标城市 |
+| RemainTime | int | 剩余时间（秒） |
+| BeginTime | string | 开始时间 |
+| OverTime | string | 结束时间 |
+| ObjImg | string | 对象图片路径 |
+| ObjName | string | 对象名称 |
+| EventPos | int | 事件位置 |
+| EventQueue | int | 事件队列 |
+| EventType | int | 事件类型 (1=内政, 2=城防, 3=军团) |
+| FromCityName | string | 来源城市名称 |
+
+### C# 源码参考
+
+#### BLL 层
+```csharp
+// jx/BLL/Event.cs
+public static EventInfo[] GetValidEvent(string userName, int cityID)
+{
+    EventInfo[] eventArray = EventExAccess.GetValidEvent(userName, cityID, time);
+    
+    // 计算剩余时间
+    for (int i = 0; i < eventArray.Length; i++) {
+        TimeSpan spaceTime = DateTime.Parse(eventArray[i].OverTime) - DateTime.Now;
+        eventArray[i].RemainTime = (int)(spaceTime.TotalSeconds);
+        // ... 填充 ObjName, ObjImg 等字段
+    }
+    
+    return eventArray;
+}
+```
+
+#### Model 层
+```csharp
+// jx/Model/EventInfo.cs
+public class EventInfo {
+    public long ID { get; set; }
+    public int ActionType { get; set; }
+    public int State { get; set; }
+    public int ObjType { get; set; }
+    // ... 其他字段
+}
+```
+
+### 常见问题
+
+#### rightpanel 不显示内容
+
+**原因**: 数据库中没有事件数据
+
+**验证**:
+```bash
+npx wrangler d1 execute ghost-game-db --local \
+  --command="SELECT COUNT(*) FROM time_events"
+```
+
+**解决**: 这是正常的空状态，不是 bug。用户执行操作后会创建事件。
+
+#### API 返回格式错误
+
+**错误格式**:
+```json
+{ "success": true, "data": { "events": [], "total": 0 } }
+```
+
+**正确格式**:
+```json
+{ "value": [] }
+```
+
+**修复**: 确保后端返回 `{ value: [...] }` 格式。
+
+
 ## 数据库设计
 
 ### 核心表结构
@@ -278,6 +445,23 @@ CREATE TABLE buildings (
   FOREIGN KEY (city_id) REFERENCES cities(id)
 );
 ```
+
+#### time_events (事件表)
+```sql
+CREATE TABLE time_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  wallet_address TEXT NOT NULL,     -- 所属玩家
+  event_type TEXT NOT NULL,         -- 事件类型
+  target_id INTEGER NOT NULL,       -- 目标对象 ID
+  start_time DATETIME NOT NULL,     -- 开始时间
+  end_time DATETIME NOT NULL,       -- 结束时间
+  state INTEGER DEFAULT 0,          -- 状态
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (wallet_address) REFERENCES characters(wallet_address)
+);
+```
+
+**注意**: 当前表结构较简化，完整版应包含更多字段（参考 C# DBEvent 模型）。
 
 
 ## 前端架构

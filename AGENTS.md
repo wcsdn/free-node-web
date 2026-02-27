@@ -13,8 +13,53 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+5. **For project work**: Read relevant architecture docs (用中文回复):
+   - `GAME_ARCHITECTURE.md` — 游戏项目架构、API、数据库设计
+   - `MIGRATION_DALEX_PLAN.md` — 迁移计划和进度
+   - `API_VERIFICATION_GUIDE.md` — API 验证指南
 
 Don't ask permission. Just do it.
+
+## 🔍 遇事不决，查 C# 老项目
+
+**核心原则**: 前端是真理，C# 是参考
+
+当遇到以下情况时，**必须**去查看 C# 源码：
+- API 接口返回格式不确定
+- 前端期望的数据结构不清楚
+- 业务逻辑不明确
+- 接口参数含义模糊
+- 数据库字段映射关系不清楚
+
+**C# 项目位置**: `jx/` 目录
+- `jx/Web/Main.aspx.cs` - 主要 API 接口（AjaxPro 方法）
+- `jx/BLL/` - 业务逻辑层
+- `jx/Model/` - 数据模型
+- `jx/DAL/` - 数据访问层
+
+**查看步骤**:
+1. 在前端 JS 中找到 API 调用（例如 `Main.GetDefenceNum()`）
+2. 去 `jx/Web/Main.aspx.cs` 中搜索对应的方法名
+3. 查看方法签名、参数、返回值类型
+4. 如果涉及复杂业务逻辑，继续查看 BLL 层
+5. 确认数据模型结构，查看 Model 层
+
+**示例**:
+```javascript
+// 前端调用
+Main.GetDefenceNum(CityID, cb_GetDefenceNum);
+
+// 去 C# 查找
+// jx/Web/Main.aspx.cs
+[AjaxPro.AjaxMethod]
+public int GetDefenceNum(int cityID) {
+    return Defence.GetDefenceNum(userName, cityID);
+}
+```
+
+**不要猜测**！C# 源码是唯一的真相来源。
+
+**Language**: This user prefers Chinese (中文) for technical discussions and documentation.
 
 ## Memory
 
