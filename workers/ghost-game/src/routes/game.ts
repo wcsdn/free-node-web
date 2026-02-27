@@ -18,6 +18,46 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
+// 初始化新用户（自动创建角色、城市和初始建筑）
+async function initializeNewUser(db: any, walletAddress: string) {
+  // 创建角色
+  await db.prepare(`
+    INSERT INTO characters (wallet_address, name, level, gold)
+    VALUES (?, ?, ?, ?)
+  `).bind(walletAddress, '玩家', 1, 10000).run();
+
+  // 查找一个未被占用的 position（从 1000 开始，避免与系统预留位置冲突）
+  const maxPositionResult: any = await db.prepare(`
+    SELECT MAX(position) as max_pos FROM cities WHERE position >= 1000
+  `).first();
+  
+  const newPosition = (maxPositionResult?.max_pos || 999) + 1;
+
+  // 创建主城
+  await db.prepare(`
+    INSERT INTO cities (wallet_address, name, position, prosperity, money, food, population, money_rate, food_rate, population_rate, map_image)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(walletAddress, '主城', newPosition, 100, 10000, 10000, 500, 100, 100, 50, 'm1.JPG').run();
+
+  // 获取刚创建的城市ID
+  const cityResult: any = await db.prepare(`
+    SELECT id FROM cities WHERE wallet_address = ? ORDER BY id DESC LIMIT 1
+  `).bind(walletAddress).first();
+
+  if (cityResult) {
+    // 创建初始建筑：聚义厅（位置10）和义舍（位置14）
+    await db.prepare(`
+      INSERT INTO buildings (city_id, type, level, position, state, config_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(cityResult.id, 'interior', 1, 10, 0, 1).run();
+
+    await db.prepare(`
+      INSERT INTO buildings (city_id, type, level, position, state, config_id)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(cityResult.id, 'interior', 1, 14, 0, 2).run();
+  }
+}
+
 // 根路径 - 获取游戏状态
 app.get('/', async (c) => {
   return success(c, {
@@ -78,10 +118,18 @@ app.get('/user-info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取用户信息
-    const character = await db.prepare(`
+    // 获取或创建用户
+    let character = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
+
+    // 如果用户不存在，自动初始化
+    if (!character) {
+      await initializeNewUser(db, walletAddress);
+      character = await db.prepare(`
+        SELECT * FROM characters WHERE wallet_address = ?
+      `).bind(walletAddress).first();
+    }
 
     // 获取城市列表
     const cities = await db.prepare(`
@@ -133,10 +181,18 @@ app.post('/user-info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取用户信息
-    const character = await db.prepare(`
+    // 获取或创建用户
+    let character = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
+
+    // 如果用户不存在，自动初始化
+    if (!character) {
+      await initializeNewUser(db, walletAddress);
+      character = await db.prepare(`
+        SELECT * FROM characters WHERE wallet_address = ?
+      `).bind(walletAddress).first();
+    }
 
     // 获取城市列表
     const cities = await db.prepare(`

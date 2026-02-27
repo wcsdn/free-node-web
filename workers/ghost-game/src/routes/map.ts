@@ -527,6 +527,7 @@ app.get('/unit', async (c) => {
         const levelData = getBuildingLevelData(config, b.level);
         
         // 从配置文件读取路径 (配置文件中的路径已经是大写 .GIF)
+        // 直接使用配置文件中的路径，不做任何转换
         const image = levelData?.Image || config?.Image || '';
         const icon = levelData?.Icon || config?.Icon || '';
         
