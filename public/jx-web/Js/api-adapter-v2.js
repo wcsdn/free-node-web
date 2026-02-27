@@ -75,7 +75,7 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
       }
     },
     success: function(response) {
-      console.log('📡 API success:', endpoint, JSON.stringify(response).substring(0, 200));
+      // console.log('📡 API success:', endpoint, JSON.stringify(response).substring(0, 200));
       if (callback) {
         var result;
         // 强制处理各种情况
@@ -91,7 +91,7 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
           result = { value: response };
         }
         
-        console.log('📡 callback result:', endpoint, JSON.stringify(result).substring(0, 200));
+        // console.log('📡 callback result:', endpoint, JSON.stringify(result).substring(0, 200));
         callback(result);
       }
     },

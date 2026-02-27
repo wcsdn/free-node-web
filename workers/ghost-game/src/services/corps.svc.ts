@@ -500,6 +500,23 @@ class CorpsService {
 
   private formatCorps(corps: any) {
     return {
+      // C# CorpsInfo 字段 (驼峰)
+      CorpsID: corps.id,
+      CorpsName: corps.name || '',
+      State: corps.state || 1,
+      UserName: corps.leader_address || '',
+      CityID: corps.city_id || 0,
+      CityPos: corps.city_position || 0,
+      TargetCity: corps.target_city_id || 0,
+      ArriveTime: corps.arrive_time || '',
+      SchlepMoney: 0,
+      SchlepFood: 0,
+      SchlepMen: 0,
+      Insignia: 0,
+      Seconds: 0,
+      IsVIP: 0,
+      GarrisonID: 0,
+      // 额外字段 (兼容)
       id: corps.id,
       name: corps.name,
       level: corps.level,

@@ -38,7 +38,8 @@ app.get('/page-info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
   // 前端期望直接返回字符串 "CityNum_PageNum"，城市索引从0开始
-  return success(c, "0_0");
+  // PageNum=1 表示内政页面（显示建筑）
+  return success(c, "0_1");
 });
 
 // 获取服务器状态
@@ -68,6 +69,7 @@ app.get('/status', async (c) => {
 });
 
 // 获取用户信息 (包含城市列表) - 自动注册
+// 对应 C# UserInfo 结构
 app.get('/user-info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -76,12 +78,18 @@ app.get('/user-info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取或创建用户和城市
-    const result = await cityService.getOrCreate(db, walletAddress);
-    const city = result.city as any;
+    // 获取用户信息
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
 
-    // 构建CityList (C# CityShotInfo[])
-    const CityList = city ? [{
+    // 获取城市列表
+    const cities = await db.prepare(`
+      SELECT * FROM cities WHERE wallet_address = ?
+    `).bind(walletAddress).all();
+
+    // 构建 CityList (C# CityShotInfo[])
+    const CityList = (cities.results || []).map((city: any) => ({
       ID: city.id,
       Name: city.name,
       Pos: city.position,
@@ -89,41 +97,34 @@ app.get('/user-info', async (c) => {
       State: 1,
       BackImg: city.map_image || 'm1.JPG',
       UserName: walletAddress,
-      Money: city.money,
-      Food: city.food,
-      Population: city.population,
-    }] : [];
+    }));
 
+    // 返回 C# UserInfo 结构
     return success(c, {
-      walletAddress: city?.wallet_address,
-      Name: city?.name || '玩家',
-      Level: 1,
-      Gold: city?.money || 1000,
-      CityList: CityList,
-      city: city,
-      buildings: result.buildings,
-      heroes: [],
-      isNew: result.isNew,
-      Organise: '',
-      State: 1,
-      Insignia: 0,
-      InteriorBuildingQueueNum: 0,
-      DefanceBuildingQueueNum: 0,
-      FastUpDateNeedTimePercent: 100,
-      DegradeNeedResPercent: 100,
-      DegradeNeedTimePercent: 100,
-      EventBreakReturnResPercent: 100,
-      ItemCount: 0,
-      EndProtect: '',
-      CreateDate: '2026-01-01',
-      ServerUnit: '1',
+      ID: (character as any)?.id || 0,
+      Name: (character as any)?.name || '玩家',
+      Organise: '',                           // 帮会名称
+      Level: (character as any)?.level || 1,
+      State: 1,                               // 用户状态
+      InteriorBuildingQueueNum: 0,            // 内政建筑队列数
+      DefanceBuildingQueueNum: 0,             // 城防建筑队列数
+      FastUpDateNeedTimePercent: 100,         // 快速升级需要时间百分比
+      DegradeNeedResPercent: 100,             // 降级需要资源百分比
+      DegradeNeedTimePercent: 100,           // 降级需要时间百分比
+      EventBreakReturnResPercent: 100,        // 事件打断返还资源百分比
+      CityList: CityList,                     // 城市列表 (CityShotInfo[])
+      ItemCount: 0,                          // 物品数量
+      EndProtect: '',                        // 保护结束时间
+      CreateDate: (character as any)?.created_at || new Date().toISOString(),
+      ServerUnit: '1',                       // 服务器单位
+      Insignia: 0,                          // 勋章值
     });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
 
-// POST 版本也支持 (兼容某些客户端)
+// POST 版本 - 对应 C# UserInfo 结构
 app.post('/user-info', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -132,17 +133,18 @@ app.post('/user-info', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    const result = await cityService.getOrCreate(db, walletAddress);
-    const r = result as any;
-    
-    if (!r.ok) {
-      return error(c, r.error || 'Failed', r.status || 500);
-    }
+    // 获取用户信息
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
 
-    const city = r.data.city as any;
-    
-    // 构建CityList
-    const CityList = city ? [{
+    // 获取城市列表
+    const cities = await db.prepare(`
+      SELECT * FROM cities WHERE wallet_address = ?
+    `).bind(walletAddress).all();
+
+    // 构建 CityList (C# CityShotInfo[])
+    const CityList = (cities.results || []).map((city: any) => ({
       ID: city.id,
       Name: city.name,
       Pos: city.position,
@@ -150,34 +152,27 @@ app.post('/user-info', async (c) => {
       State: 1,
       BackImg: city.map_image || 'm1.JPG',
       UserName: walletAddress,
-      Money: city.money,
-      Food: city.food,
-      Population: city.population,
-    }] : [];
+    }));
 
+    // 返回 C# UserInfo 结构
     return success(c, {
-      walletAddress: city.wallet_address,
-      Name: city.name || '玩家',
-      Level: 1,
-      Gold: city.money || 1000,
-      CityList: CityList,
-      city: city,
-      buildings: r.data.buildings,
-      heroes: [],
-      isNew: r.data.isNew,
+      ID: (character as any)?.id || 0,
+      Name: (character as any)?.name || '玩家',
       Organise: '',
+      Level: (character as any)?.level || 1,
       State: 1,
-      Insignia: 0,
       InteriorBuildingQueueNum: 0,
       DefanceBuildingQueueNum: 0,
       FastUpDateNeedTimePercent: 100,
       DegradeNeedResPercent: 100,
       DegradeNeedTimePercent: 100,
       EventBreakReturnResPercent: 100,
+      CityList: CityList,
       ItemCount: 0,
       EndProtect: '',
-      CreateDate: '2026-01-01',
+      CreateDate: (character as any)?.created_at || new Date().toISOString(),
       ServerUnit: '1',
+      Insignia: 0,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -342,20 +337,43 @@ app.post('/city/interior-info/:cityID', async (c) => {
       ORDER BY position ASC
     `).bind(cityID).all();
 
-    // 使用真实数据库数据
+    // 获取角色信息 (包含元宝)
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    // 使用真实数据库数据 (匹配 C# CityInteriorInfo 结构)
     return success(c, {
       cityId: cityID,
+      // 资源相关 (C# 字段名)
+      Men: (city as any).population,           // 当前人口
+      Food: (city as any).food,               // 当前粮食
+      Money: (city as any).money,             // 当前铜钱
+      Gold: (character as any).gold || 0,     // ⚠️ 元宝 (不是铜钱!)
+      // 存储上限
+      MenRoom: 1000,                          // 人口上限
+      FoodRoom: 1000000,                      // 粮食上限
+      MoneyRoom: 1000000,                     // 铜钱上限
+      // 产量速度 (C# 字段名)
+      MenSpeed: 100,                          // 人口增长速度
+      FoodSpeed: (city as any).food_rate || 100,  // 粮食生产速度
+      MoneySpeed: (city as any).money_rate || 100, // 铜钱生产速度
+      // 其他字段
       Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
-      Gold: (city as any).money, Money: (city as any).money, MoneyRoom: 1000000, 
-      Food: (city as any).food, FoodRoom: 1000000,
-      Population: (city as any).population, PopulationRoom: 1000, 
-      ProductionMoney: (city as any).money_rate, ProductionFood: (city as any).food_rate,
-      Level: 1, Men: (city as any).population, MenRoom: 1000, 
-      MoneySpeed: (city as any).money_rate, FoodSpeed: (city as any).food_rate, MenSpeed: 100,
-      IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
-      EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
-      AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
-      TechnicLevel: [0,0,0,0,0,0,0,0,0,0], EventBreakReturnResPercent: 100,
+      Level: 1, 
+      IsLord: 1, CityPos: parseInt(cityID), 
+      ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
+      EngageHeroNum: 0, MaxEngageHeroNum: 5, 
+      CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
+      AverageTrainingPer: 100, 
+      InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      TechnicLevel: [0,0,0,0,0,0,0,0,0,0,0,0], 
+      EventBreakReturnResPercent: 100,
+      // 兼容字段 (旧版)
+      Population: (city as any).population,
+      PopulationRoom: 1000,
+      ProductionMoney: (city as any).money_rate,
+      ProductionFood: (city as any).food_rate,
       buildings: buildings.results || [],
     });
   } catch (err: any) {
@@ -389,20 +407,43 @@ app.get('/city/interior-info/:cityID', async (c) => {
       ORDER BY position ASC
     `).bind(cityID).all();
 
-    // 使用真实数据库数据
+    // 获取角色信息 (包含元宝)
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    // 使用真实数据库数据 (匹配 C# CityInteriorInfo 结构)
     return success(c, {
       cityId: cityID,
+      // 资源相关 (C# 字段名)
+      Men: (city as any).population,           // 当前人口
+      Food: (city as any).food,               // 当前粮食
+      Money: (city as any).money,             // 当前铜钱
+      Gold: (character as any).gold || 0,     // ⚠️ 元宝 (不是铜钱!)
+      // 存储上限
+      MenRoom: 1000,                          // 人口上限
+      FoodRoom: 1000000,                      // 粮食上限
+      MoneyRoom: 1000000,                     // 铜钱上限
+      // 产量速度 (C# 字段名)
+      MenSpeed: 100,                          // 人口增长速度
+      FoodSpeed: (city as any).food_rate || 100,  // 粮食生产速度
+      MoneySpeed: (city as any).money_rate || 100, // 铜钱生产速度
+      // 其他字段
       Area: 300, AreaRoom: 0, Child: 0, Bloom: 0, ChildRate: 100,
-      Gold: (city as any).money, Money: (city as any).money, MoneyRoom: 1000000, 
-      Food: (city as any).food, FoodRoom: 1000000,
-      Population: (city as any).population, PopulationRoom: 1000, 
-      ProductionMoney: (city as any).money_rate, ProductionFood: (city as any).food_rate,
-      Level: 1, Men: (city as any).population, MenRoom: 1000, 
-      MoneySpeed: (city as any).money_rate, FoodSpeed: (city as any).food_rate, MenSpeed: 100,
-      IsLord: 1, CityPos: cityID, ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
-      EngageHeroNum: 0, MaxEngageHeroNum: 5, CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
-      AverageTrainingPer: 100, InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0],
-      TechnicLevel: [0,0,0,0,0,0,0,0,0,0], EventBreakReturnResPercent: 100,
+      Level: 1, 
+      IsLord: 1, CityPos: parseInt(cityID), 
+      ChangeMapFlag: 0, MaxItemNum: 100, NewEmailNum: 0,
+      EngageHeroNum: 0, MaxEngageHeroNum: 5, 
+      CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
+      AverageTrainingPer: 100, 
+      InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      TechnicLevel: [0,0,0,0,0,0,0,0,0,0,0,0], 
+      EventBreakReturnResPercent: 100,
+      // 兼容字段 (旧版)
+      Population: (city as any).population,
+      PopulationRoom: 1000,
+      ProductionMoney: (city as any).money_rate,
+      ProductionFood: (city as any).food_rate,
       buildings: buildings.results || [],
     });
   } catch (err: any) {

@@ -26,7 +26,7 @@ function cb_GetValidEvent(result)
     if(DataValidate(result)==false) return;
         
     EventInfo=result.value;
-    if(EventInfo!=null && EventInfo[0].ID==-1)
+    if(EventInfo!=null && EventInfo.length > 0 && EventInfo[0].ID==-1)
         EventInfo=null;    
           
     ShowEvent();
@@ -52,9 +52,9 @@ function cb_GetPersistEffectGroup(result)
 {
     if(DataValidate(result)==false) return false;
     PersistEffectGroupInfo=result.value;
-    if(PersistEffectGroupInfo!=null && PersistEffectGroupInfo[0].EffectID==-1)
+    if(PersistEffectGroupInfo!=null && PersistEffectGroupInfo.length > 0 && PersistEffectGroupInfo[0].EffectID==-1)
     PersistEffectGroupInfo=null;
-    if(PersistEffectGroupInfo!=null)
+    if(PersistEffectGroupInfo!=null && PersistEffectGroupInfo.length > 0)
     {
         CreateVipEffect();
     }
@@ -73,9 +73,9 @@ function cb_GetOverEffectArray(result)
 {
   if(DataValidate(result)==false) return false;
   OverdueEffectFlagInfo=result.value;
-  if(OverdueEffectFlagInfo!=null && OverdueEffectFlagInfo[0].Flag==-1)
+  if(OverdueEffectFlagInfo!=null && OverdueEffectFlagInfo.length > 0 && OverdueEffectFlagInfo[0].Flag==-1)
   OverdueEffectFlagInfo=null;
-  if(OverdueEffectFlagInfo!=null)
+  if(OverdueEffectFlagInfo!=null && OverdueEffectFlagInfo.length > 0)
   ShowOverInfoPop();
   Main.GetCityInteriorInfo(CityID,cb_EffectUpdate);
 }
@@ -146,7 +146,10 @@ function cb_EffectUpdate(result)
         $("#menSpeed").html(CityInteriorInfo.MenSpeed.toString());
         $("#userLevel").html(UserLevel[CityInteriorInfo.Level-1]);       
     }
-    $("#userIns").html(Main.GetUserInfo().value.Insignia.toString());//刷新用户战勋值
+    // 刷新用户战勋值 - 使用全局变量 UserInfo
+    if (UserInfo && UserInfo.Insignia !== undefined) {
+        $("#userIns").html(UserInfo.Insignia.toString());
+    }
     DataTranslateEnd();//数据传输完毕;
 }
 
@@ -754,7 +757,10 @@ function cb_AddAppendantNPC(result)
     if(DataValidate(result)==false) return false;
     if(result.value==0)
     {
-        $("#userIns").html(Main.GetUserInfo().value.Insignia.toString());//刷新用户战勋值
+        // 刷新用户战勋值 - 使用全局变量 UserInfo
+        if (UserInfo && UserInfo.Insignia !== undefined) {
+            $("#userIns").html(UserInfo.Insignia.toString());
+        }
         Main.GetCityInteriorInfo(CityID,cb_GetCityInteriorInfo);//请求内政信息
     }    
     else if(result.value==30086)

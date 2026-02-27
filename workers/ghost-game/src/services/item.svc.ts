@@ -542,6 +542,18 @@ class ItemService {
 
   private formatItem(item: any) {
     return {
+      // C# ItemInfo 字段 (驼峰)
+      ID: item.id,
+      UserName: item.wallet_address,
+      CityID: item.city_id,
+      Name: item.config_name || '',
+      ItemType: item.type,
+      Des: item.description || '',
+      State: item.state || 0,
+      Price: item.price || 0,
+      Level: item.level || 1,
+      Quality: item.quality || 1,
+      // 额外字段
       id: item.id,
       configId: item.config_id,
       configName: item.config_name,

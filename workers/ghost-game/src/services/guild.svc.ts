@@ -45,6 +45,18 @@ class GuildService {
     if (!guild) return null;
 
     return {
+      // C# DBOrganize 字段 (驼峰)
+      UID: guild.id,
+      OrgName: guild.name || '',
+      OrgLevel: guild.level || 1,
+      OrgState: guild.state || 1,
+      Affiche: guild.notice || '',
+      Intro: guild.description || '',
+      Membership: guild.member_count || 0,
+      MaxMembership: GUILD_LEVEL_CONFIG[guild.level as keyof typeof GUILD_LEVEL_CONFIG]?.maxMembers || 50,
+      BattleWinNum: guild.battle_wins || 0,
+      BattleFailNum: guild.battle_losses || 0,
+      // 额外字段 (兼容)
       id: guild.id,
       name: guild.name,
       level: guild.level,
@@ -63,7 +75,7 @@ class GuildService {
    */
   async getMyGuild(walletAddress: string) {
     const member: any = await this.db.prepare(`
-      SELECT gm.*, g.name as guild_name, g.level, g.notice, g.insignia, g.exp
+      SELECT gm.*, g.name as guild_name, g.level, g.notice, g.insignia, g.exp, g.state
       FROM guild_members gm
       JOIN guilds g ON gm.guild_id = g.id
       WHERE gm.wallet_address = ?
@@ -76,6 +88,13 @@ class GuildService {
     `).bind(member.guild_id).first();
 
     return {
+      // C# 字段
+      UID: member.guild_id,
+      OrgName: member.guild_name || '',
+      OrgLevel: member.level || 1,
+      OrgState: member.state || 1,
+      Membership: (memberCount as any).count || 0,
+      // 兼容字段
       guildId: member.guild_id,
       guildName: member.guild_name,
       guildLevel: member.level,

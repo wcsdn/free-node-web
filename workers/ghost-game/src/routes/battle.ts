@@ -95,6 +95,15 @@ app.get('/chess/board', async (c) => {
       isMyTurn: true,
       round: 1,
       phase: 'placement', // placement, action, resolution
+      // C# ChessboardInfo 字段
+      Pos: 1,
+      Height: 8,
+      Width: 8,
+      Time: 300,
+      State: 1,
+      TotalSecondsNow: 300,
+      BattleSeconds: 300,
+      WaitSeconds: 60,
     };
 
     return success(c, board);

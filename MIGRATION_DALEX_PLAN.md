@@ -1,103 +1,70 @@
-# DAL + DALEX 数据访问层迁移计划
+# C# to Workers Migration Plan
 
-## 📊 概述
+## 目标
+将 C# 后端逻辑迁移到 Cloudflare Workers，保持前端 HTML/JS 不变
 
-**DAL 原版位置**: `/jx/DAL/` (基础数据访问)  
-**DALEX 原版位置**: `/jx/DALEX/` (扩展数据访问)  
-**目标位置**: `ghost-game/src/repositories/`
+## 核心原则
+1. **前端是真理** - 前端 JS 调用决定接口契约
+2. **C# 是参考** - C# 代码提供业务逻辑实现
+3. **字段名必须匹配** - 前端期望什么字段，后端就返回什么字段
+4. **真实逻辑，不要 Mock** - 迁移真实的数据库查询和业务计算
 
----
+## 迁移状态
 
-## 📁 DALEX 扩展数据访问层（⭐⭐⭐ 核心工程）
+### 已完成 (基础架构)
+- ✅ 认证系统
+- ✅ 用户信息接口 (GetUserInfo)
+- ✅ 城市内政接口 (GetCityInteriorInfo)
+- ✅ 基础路由结构
 
-### ⭐⭐⭐ DALEX_P0 - 超级大头（静态数据）
-| 文件 | 行数 | 说明 | 优先级 |
-|------|------|------|--------|
-| **StaticDataAccess.cs** | 147,157 | 静态数据访问（装备表、配置表、掉落表等） | P0 |
-| **EventExAccess.cs** | 130,245 | 事件扩展（剧情、随机、日常、限时事件） | P0 |
-| **BuildingExAccess.cs** | 54,912 | 建筑扩展（建筑升级、功能解锁、城防设施） | P0 |
+### 进行中 (本次任务)
+- 🔄 分析前端 API 调用
+- 🔄 对比 C# 实现
+- 🔄 迁移核心业务逻辑
 
-### ⭐⭐ DALEX_P1 - 业务扩展
-| 文件 | 行数 | 说明 | 优先级 |
-|------|------|------|--------|
-| **CorpsExAccess.cs** | 33,020 | 兵团扩展（兵种、科技、阵型） | P1 |
-| **NPCFloorAccess.cs** | 20,913 | NPC关卡（副本、爬塔、试炼） | P1 |
-| **ChessExAccess.cs** | 12,570 | 棋局系统（残局、闯关、挑战） | P1 |
-| **AppendantNPCExAccess.cs** | 13,897 | 随从NPC（获取、培养、技能） | P1 |
+## API 优先级列表
 
-### ⭐ DALEX_P2 - 辅助扩展
-| 文件 | 行数 | 说明 | 优先级 |
-|------|------|------|--------|
-| **ServerExAccess.cs** | 5,373 | 服务器扩展（配置、管理、日志） | P2 |
+基于前端调用频率和重要性：
 
----
+### P0 - 核心功能 (必须先完成)
+1. GetCityHero - 获取武将列表
+2. GetBuildingByPos - 获取建筑信息
+3. GetValidEvent - 获取事件列表
+4. GetTask - 获取任务列表
+5. GetNewMailNum - 获取新邮件数量
 
-## 🎯 DAL 基础数据访问层
+### P1 - 重要功能
+6. AddBuildingEvent - 添加建筑事件
+7. AddHeroEvent - 添加武将事件
+8. EngageHero - 雇佣武将
+9. GetItemByType - 获取物品列表
+10. GetTechnicByBuilding - 获取科技列表
 
-### ✅ P0 - 核心数据访问 (已完成)
-| 文件 | 行数 | 说明 | 状态 |
-|------|------|------|--------|
-| UserAccess.cs | 1,204 | 用户数据访问 | ✅ 完成 |
-| HeroAccess.cs | 1,414 | 武将数据访问 | ✅ 完成 |
-| ItemAccess.cs | 1,378 | 物品数据访问 | ✅ 完成 |
-| CityInteriorAccess.cs | 215 | 城市数据访问 | ✅ 完成 |
-| BattleAccess.cs | 243 | 战斗数据访问 | ✅ 完成 |
+### P2 - 次要功能
+11. GetMarketInfo - 市场信息
+12. GetMallInfo - 商城信息
+13. GetRankList - 排行榜
+14. GetMyOrgnizeInfo - 帮会信息
 
-### ✅ P1 - 业务数据访问 (已完成)
-| 文件 | 行数 | 说明 | 状态 |
-|------|------|------|--------|
-| OrganizeAccess.cs | 1,480 | 军团数据访问 | ✅ 完成 |
-| EventAccess.cs | 133 | 事件数据访问 | ✅ 完成 |
-| MailAccess.cs | 273 | 邮件数据访问 | ✅ 完成 |
-| PersistEffectAccess.cs | 266 | 持久效果访问 | ✅ 完成 |
-| MissionAccess.cs | 621 | 任务数据访问 | ✅ 完成 |
+## 执行计划
 
-### ⬜ P3 - 其他数据访问 (待迁移)
-| 文件 | 行数 | 说明 | 优先级 |
-|------|------|------|--------|
-| LogAccess.cs | 687 | 日志访问 | P3 |
-| TechnicAccess.cs | 136 | 科技访问 | P3 |
-| FestivalActiveAccess.cs | 80 | 节日活动访问 | P3 |
-| MapUnitAccess.cs | 178 | 地图单位访问 | P3 |
-| OccupationAccess.cs | 249 | 职业访问 | P3 |
+1. **Phase 1: 分析阶段** (当前)
+   - 读取前端 JS，找出所有 API 调用
+   - 记录每个 API 的参数和返回值期望
+   - 读取对应的 C# 代码，理解业务逻辑
 
----
+2. **Phase 2: 实现阶段**
+   - 按优先级逐个实现 API
+   - 确保字段名 100% 匹配
+   - 实现真实的数据库查询
 
-## 📈 总进度统计
+3. **Phase 3: 验证阶段**
+   - 对比 Worker 返回和前端期望
+   - 测试核心流程
 
-| 层级 | 模块 | 文件数 | 代码行数 | 状态 |
-|------|------|--------|----------|------|
-| **DAL** | 基础数据 | 10 | ~6,000 | ✅ 完成 |
-| **DAL_P3** | 辅助数据 | 5 | ~1,330 | ⬜ 待开始 |
-| **DALEX_P0** | 静态数据 | 3 | **332,314** | ⬜ 待开始 |
-| **DALEX_P1** | 业务扩展 | 4 | ~80,000 | ⬜ 待开始 |
-| **DALEX_P2** | 辅助扩展 | 1 | ~5,000 | ⬜ 待开始 |
-| **合计** | | **23** | **~424,644** | |
-
----
-
-## ⚠️ 重要提醒
-
-**DALEX 才是大头！**
-- StaticDataAccess.cs **alone 就 147,157 行**
-- EventExAccess.cs **130,245 行**
-- 扩展层代码量是基础层的 **50+ 倍**
-
-**建议优先级**：
-1. 先完成 P3 辅助（1-2天）
-2. 再 DALEX_P0 静态数据（1-2周）
-3. 然后 DALEX_P1 业务扩展（1周）
-4. 最后 DALEX_P2 辅助扩展（1天）
-
----
-
-## 🎯 当前任务：P3 辅助数据访问
-
-### 待迁移文件
-1. `log.repo.ts` - 日志访问
-2. `technic.repo.ts` - 科技访问
-3. `festival.repo.ts` - 节日活动
-4. `map-unit.repo.ts` - 地图单位
-5. `occupation.repo.ts` - 职业访问
-
----
+## 当前进度
+- [ ] 分析 Main.js 中的 API 调用
+- [ ] 分析 Hero.js 中的 API 调用
+- [ ] 分析 Building.js 中的 API 调用
+- [ ] 实现 GetCityHero
+- [ ] 实现 GetBuildingByPos

@@ -27,6 +27,13 @@ app.get('/info', async (c) => {
   return c.json({
     success: true,
     data: {
+      // C# 字段 (驼峰)
+      Position: parseInt(pos as string) || 1,
+      State: 1,
+      MyRank: 999,
+      ChallengeTimes: 10,
+      MaxTimes: 10,
+      // 兼容字段
       position: parseInt(pos as string) || 1,
       status: 'open',
       opponents: [

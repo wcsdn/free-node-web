@@ -77,6 +77,19 @@ app.get('/pending', async (c) => {
       const remainSeconds = Math.max(0, Math.floor((endTime.getTime() - now.getTime()) / 1000));
 
       return {
+        // C# DBEvent 字段 (驼峰)
+        UserName: event.wallet_address,
+        CityID: event.city_id,
+        EventQueue: event.event_queue || 0,
+        ActionType: event.action_type || 0,
+        EventPos: event.event_pos || 0,
+        EventType: event.event_type || 0,
+        EventState: event.state || 0,
+        ObjectID: event.object_id || 0,
+        ObjectType: event.object_type || 0,
+        ObjectLevel: event.object_level || 0,
+        TargetCity: event.target_city || 0,
+        // 兼容字段
         ...event,
         remain_seconds: remainSeconds,
         remain_time: formatDuration(remainSeconds),

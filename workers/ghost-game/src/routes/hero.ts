@@ -18,7 +18,9 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 获取武将列表 - 支持 city_id 参数
+// GetCityHero - POST /hero/list
+// C# 签名: public HeroInfo[] GetCityHero(int cityID)
+// 返回: HeroInfo[] (数组，不是对象)
 app.post('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -30,14 +32,96 @@ app.post('/list', async (c) => {
   const { city_id } = await c.req.json<{ city_id?: number }>();
 
   try {
-    const result = await heroService.getList(db, walletAddress, { cityId: city_id });
-    return success(c, result);
+    // C# 逻辑: GetHero(userName, cityID) 排除 state=6 (未雇佣)
+    // SELECT * FROM heroes WHERE wallet_address = ? AND city_id = ? AND state != 6
+    const heroes = await db.prepare(`
+      SELECT * FROM heroes 
+      WHERE wallet_address = ? AND city_id = ? AND state != 6
+      ORDER BY level DESC, quality DESC
+    `).bind(walletAddress, city_id).all();
+
+    // 如果没有武将，返回包含 ID=-1 的数组 (C# 约定)
+    if (!heroes.results || heroes.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    // 格式化为 C# HeroInfo 结构
+    const heroList = (heroes.results || []).map((h: any) => ({
+      // 核心字段 (C# 驼峰命名)
+      ID: h.id,
+      Name: h.name,
+      Level: h.level,
+      Sex: h.sex || 1,
+      Junta: h.junta || 1,
+      Icon: h.icon || '/hero/1.gif',
+      Image: h.image || '/hero/1.png',
+      PortraitIndex: h.portrait_index || 1,
+      AbilityIndex: h.ability_index || 1,
+      CityID: h.city_id,
+      UserName: walletAddress,
+      Training: h.training || 0,
+      DefencePos: h.defence_pos || -1,
+      PrenticeNum: h.prentice_num || 0,
+      HeroType: h.hero_type || 0,
+      Quality: h.quality || 1,
+      ExpCount: h.exp || 0,
+      NoSkillReason: 0,
+      PropertyCounteract: [0,0,0,0,0],
+      WuXing: h.wu_xing || 1,
+      UpTraining: h.up_training || 10,
+      AutoExpGold: 0,
+      AutoExpCount: 0,
+      AutoExpResFood: 0,
+      AutoExpResMoney: 0,
+      AutoExpResMen: 0,
+      AutoExpNum: 0,
+      State: h.state || 0,
+      CorpsID: h.corps_id || 0,
+      LevelExp: h.exp || 0,
+      Attack: h.attack || 10,
+      Defence: h.defense || 5,
+      CrushBlow: h.crush_blow || 0,
+      Dodge: h.dodge || 0,
+      MaxPrenticeNum: 5,
+      AttackRange: h.attack_range || 1,
+      MoveRange: h.move_range || 3,
+      ResumeCostTime: 0,
+      ResumeCostGold: 0,
+      // 训练/招募成本
+      TrainCostMoney: 100,
+      TrainCostFood: 100,
+      TrainCostMen: 10,
+      TrainCostGold: 0,
+      TrainCostTime: 3600,
+      ConscriptionCostMoney: 200,
+      ConscriptionCostFood: 200,
+      ConscriptionCostMen: 20,
+      ConscriptionCostGold: 0,
+      ConscriptionCostTime: 7200,
+      FastTrainCostMoney: 50,
+      FastTrainCostFood: 50,
+      FastTrainCostMen: 5,
+      FastTrainCostGold: 10,
+      FastTrainCostTime: 0,
+      FastConscriptionCostMoney: 100,
+      FastConscriptionCostFood: 100,
+      FastConscriptionCostMen: 10,
+      FastConscriptionCostGold: 20,
+      FastConscriptionCostTime: 0,
+      // 技能和装备列表
+      SkillList: [],
+      ItemList: [],
+    }));
+
+    return success(c, heroList);
   } catch (err: any) {
     return error(c, err.message || 'Failed to get heroes');
   }
 });
 
-// 获取武将详情 - 支持 city_id, hero_id 参数
+// GetHeroByID - POST /hero/detail
+// C# 签名: public HeroInfo GetHeroByID(int cityID, int heroID)
+// 返回: HeroInfo (单个对象，不是数组)
 app.post('/detail', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -50,12 +134,83 @@ app.post('/detail', async (c) => {
   if (!hero_id) return error(c, 'hero_id is required');
 
   try {
-    const result = await heroService.getDetail(db, hero_id);
-    const r = result as any;
-    if (!r || !r.ok) {
-      return error(c, r?.error || 'Failed to get hero', r?.status || 500);
+    // C# 逻辑: GetHeroByID(userName, cityID, heroID)
+    const hero = await db.prepare(`
+      SELECT * FROM heroes 
+      WHERE id = ? AND wallet_address = ? AND city_id = ?
+    `).bind(hero_id, walletAddress, city_id).first();
+
+    if (!hero) {
+      return error(c, 'Hero not found', 404);
     }
-    return success(c, r.data);
+
+    // 格式化为 C# HeroInfo 结构
+    const h = hero as any;
+    const heroInfo = {
+      ID: h.id,
+      Name: h.name,
+      Level: h.level,
+      Sex: h.sex || 1,
+      Junta: h.junta || 1,
+      Icon: h.icon || '/hero/1.gif',
+      Image: h.image || '/hero/1.png',
+      PortraitIndex: h.portrait_index || 1,
+      AbilityIndex: h.ability_index || 1,
+      CityID: h.city_id,
+      UserName: walletAddress,
+      Training: h.training || 0,
+      DefencePos: h.defence_pos || -1,
+      PrenticeNum: h.prentice_num || 0,
+      HeroType: h.hero_type || 0,
+      Quality: h.quality || 1,
+      ExpCount: h.exp || 0,
+      NoSkillReason: 0,
+      PropertyCounteract: [0,0,0,0,0],
+      WuXing: h.wu_xing || 1,
+      UpTraining: h.up_training || 10,
+      AutoExpGold: 0,
+      AutoExpCount: 0,
+      AutoExpResFood: 0,
+      AutoExpResMoney: 0,
+      AutoExpResMen: 0,
+      AutoExpNum: 0,
+      State: h.state || 0,
+      CorpsID: h.corps_id || 0,
+      LevelExp: h.exp || 0,
+      Attack: h.attack || 10,
+      Defence: h.defense || 5,
+      CrushBlow: h.crush_blow || 0,
+      Dodge: h.dodge || 0,
+      MaxPrenticeNum: 5,
+      AttackRange: h.attack_range || 1,
+      MoveRange: h.move_range || 3,
+      ResumeCostTime: 0,
+      ResumeCostGold: 0,
+      TrainCostMoney: 100,
+      TrainCostFood: 100,
+      TrainCostMen: 10,
+      TrainCostGold: 0,
+      TrainCostTime: 3600,
+      ConscriptionCostMoney: 200,
+      ConscriptionCostFood: 200,
+      ConscriptionCostMen: 20,
+      ConscriptionCostGold: 0,
+      ConscriptionCostTime: 7200,
+      FastTrainCostMoney: 50,
+      FastTrainCostFood: 50,
+      FastTrainCostMen: 5,
+      FastTrainCostGold: 10,
+      FastTrainCostTime: 0,
+      FastConscriptionCostMoney: 100,
+      FastConscriptionCostFood: 100,
+      FastConscriptionCostMen: 10,
+      FastConscriptionCostGold: 20,
+      FastConscriptionCostTime: 0,
+      SkillList: [],
+      ItemList: [],
+    };
+
+    return success(c, heroInfo);
   } catch (err: any) {
     return error(c, err.message || 'Failed to get hero');
   }

@@ -114,6 +114,23 @@ app.get('/', async (c) => {
         isUnlocked: currentLevel > 0,
         state: playerTech?.state || 0,
         
+        // C# TechnicInfo 字段 (驼峰)
+        ID: techConfig.ID,
+        Index: techConfig.ID,
+        Name: techConfig.Name || '',
+        Des: techConfig.Des || '',
+        Level: playerTech?.level || 0,
+        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+        UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+        UpNeedFood: nextLevelData?.CostFood || 0,
+        UpNeedMoney: nextLevelData?.CostMoney || 0,
+        UpNeedMen: nextLevelData?.CostMen || 0,
+        UpNeedGold: nextLevelData?.CostGold || 0,
+        UpNeedArea: nextLevelData?.NeedArea || 0,
+        EffID: techConfig.EffectID || 0,
+        
         // 当前等级升级消耗
         upgradeCost: nextLevelData ? {
           money: nextLevelData.CostMoney || 0,

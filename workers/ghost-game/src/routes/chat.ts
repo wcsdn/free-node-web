@@ -32,9 +32,18 @@ app.get('/list', async (c) => {
       ORDER BY created_at DESC LIMIT ?
     `).bind(channel, channel, limitNum).all();
 
+    // 添加 C# ChatInfo 字段
+    const chatMessages = (messages.results || []).reverse().map((msg: any) => ({
+      // C# 字段 (驼峰)
+      ID: msg.id,
+      UserName: msg.sender,
+      // 兼容字段
+      ...msg,
+    }));
+
     return success(c, {
       channel,
-      messages: (messages.results || []).reverse(),
+      messages: chatMessages,
       total: messages.results?.length || 0,
     });
   } catch (err: any) {

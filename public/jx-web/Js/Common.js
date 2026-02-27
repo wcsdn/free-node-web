@@ -1,6 +1,6 @@
 ﻿
 //特定图片路径
-var PicPath="Img";
+var PicPath="img";
 var PicClarity = "/2/b/m/22.gif"; 
 var PicPlus = "/o/2.gif";
 var PicReduce = "/o/3.gif";
@@ -83,12 +83,12 @@ function IntToTime(sec){
 //Ajax数据返回验证
 function DataValidate(result)
 {
-    console.log('[DataValidate] result:', JSON.stringify(result).substring(0, 200));
+    // console.log('[DataValidate] result:', JSON.stringify(result).substring(0, 200));
     
     //如果获取数据错误,定位到错误页面
     if(result && result.error!=null)
     { 
-        console.log('[DataValidate] has error, returning false');
+        // console.log('[DataValidate] has error, returning false');
         DataTranslateEnd(); 
         return false;
     }
@@ -96,7 +96,7 @@ function DataValidate(result)
     //如果session过期,返回登陆页面...
     else if(result==null || result.value==null || result.value==-100)
     {
-        console.log('[DataValidate] session过期/value为空, result.value:', result && result.value);
+        // console.log('[DataValidate] session过期/value为空, result.value:', result && result.value);
         // 开发模式禁用跳转，返回 true 继续执行
         // alert(Lang["Common_1"]);
         // window.location=ToMain;

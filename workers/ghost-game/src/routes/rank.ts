@@ -58,9 +58,19 @@ app.get('/list', async (c) => {
   const pageNum = parseInt(page as string) || 1;
   const pageSize = parseInt(page_size as string) || 20;
 
+  // 生成排行榜数据 (C# UserRank 字段)
   const rankings = [];
   for (let i = 0; i < pageSize; i++) {
     rankings.push({
+      // C# UserRank 字段 (驼峰)
+      Rank: (pageNum - 1) * pageSize + i + 1,
+      UserName: `0x${(i + 1).toString().padStart(40, '0')}`,
+      CityName: `玩家${pageNum * pageSize + i + 1}`,
+      CityPos: (pageNum - 1) * pageSize + i + 1,
+      Organise: '',
+      Bloom: Math.max(1, 50 - i),
+      MySelf: 0,
+      // 兼容字段
       address: `0x${(i + 1).toString().padStart(40, '0')}`,
       name: `玩家${pageNum * pageSize + i + 1}`,
       level: Math.max(1, 50 - i),

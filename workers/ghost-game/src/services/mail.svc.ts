@@ -355,6 +355,16 @@ class MailService {
 
   private formatMail(mail: any) {
     return {
+      // C# MailInfo 字段 (驼峰)
+      MailID: mail.id,
+      UserName: mail.receiver_address,
+      ReadTag: mail.is_read || 0,
+      MailType: mail.type || 1,
+      Title: mail.title || '',
+      MailFrom: mail.sender_name || mail.sender_address || '',
+      Text: mail.content || '',
+      DateTime: mail.created_at || '',
+      // 额外字段 (兼容)
       id: mail.id,
       title: mail.title,
       content: mail.content,

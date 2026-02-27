@@ -1957,7 +1957,10 @@ function cb_PouUpItemCommand(result)
     {
         //刷新物品列表
         FreshItemPage(true);
-        $("#userIns").html(Main.GetUserInfo().value.Insignia.toString());//刷新用户战勋值
+        // 刷新用户战勋值 - 使用全局变量 UserInfo
+        if (UserInfo && UserInfo.Insignia !== undefined) {
+            $("#userIns").html(UserInfo.Insignia.toString());
+        }
         if(GetMessage!="")
             PopUpGetBox();
     }

@@ -468,6 +468,8 @@ function getBuildingLevelData(config: any, level: number): any {
 
 
 // GetBuildingByPos - GET /building/by-pos
+// C# 签名: public BuildingInfo[] GetBuildingByPos(int cityID, int buildingType, int pos)
+// 返回: BuildingInfo[] (数组，不是单个对象)
 app.get('/by-pos', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -496,24 +498,125 @@ app.get('/by-pos', async (c) => {
       SELECT * FROM buildings WHERE city_id = ? AND position = ?
     `).bind(parseInt(city_id), parseInt(pos)).first();
 
+    // 如果位置没有建筑，返回可建造建筑列表
     if (!building) {
-      return success(c, { building: null, message: 'No building at this position' });
+      // 获取可建造建筑配置
+      const buildingType = parseInt(map_type || '1');
+      const availableConfigs = buildingType === 1 
+        ? (buildingConfigs.InteriorBuilding || [])
+        : (buildingConfigs.DefenceBuilding || []);
+
+      // 返回可建造建筑列表 (BuildingInfo[] 格式)
+      const availableBuildings = availableConfigs.slice(0, 10).map((config: any) => {
+        const levelData = getBuildingLevelData(config, 1);
+        return {
+          ID: 0,
+          CityID: parseInt(city_id),
+          Index: config.ID,
+          State: 0,
+          UserName: walletAddress,
+          Name: config.Name || '',
+          Des: config.Des || '',
+          Pos: parseInt(pos),
+          Level: 0,
+          UpNeedBuildingID: 0,
+          UpNeedBuildingLevel: 0,
+          UpNeedTechnicID: 0,
+          UpNeedTechnicLevel: 0,
+          UpNeedFood: levelData?.CostFood || 0,
+          UpNeedMoney: levelData?.CostMoney || 0,
+          UpNeedMen: levelData?.CostMen || 0,
+          UpNeedGold: 0,
+          UpNeedArea: 0,
+          UpNeedTime: levelData?.CostTime || 0,
+          DownNeedFood: 0,
+          DownNeedMen: 0,
+          DownNeedMoney: 0,
+          DownReturnArea: 0,
+          EffID: config.EffectID || 0,
+          Area: 0,
+          CurrentEff: 0,
+          NextEff: levelData?.EffectValue || 0,
+          OldEff: 0,
+          EventID: 0,
+          Type: buildingType,
+          Image: levelData?.Image || config.Image || '',
+          Icon: levelData?.Icon || config.Icon || '',
+          Attack: 0,
+          HitPoint: 0,
+          AttackRange: 0,
+          EffRange: 0,
+          MaxLevel: config.InteriorData?.length || config.DefenseData?.length || 10,
+          UpNeedBuildingName: '',
+          UpNeedTechnicName: '',
+          SnapSwitch: 0,
+          SnapGold: 0,
+          TradeRes: null,
+          EffectArray: [],
+        };
+      });
+
+      return success(c, availableBuildings);
     }
 
     // 补充配置信息
     const config = getBuildingConfig(building.type, building.config_id);
     const levelData = getBuildingLevelData(config, building.level);
+    const nextLevelData = getBuildingLevelData(config, building.level + 1);
 
-    return success(c, {
-      building: {
-        ...building,
-        name: config?.Name || config?.name,
-        icon: levelData?.Icon || config?.Icon || '',
-        image: levelData?.Image || config?.Image || '',
-        maxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
-        levelData,
-      }
-    });
+    // 返回 C# BuildingInfo[] 数组格式 (只有一个元素)
+    return success(c, [{
+      // C# 字段名 (驼峰)
+      ID: building.id,
+      CityID: building.city_id,
+      Index: building.config_id,
+      State: building.state,
+      UserName: walletAddress,
+      Name: config?.Name || config?.name || '',
+      Des: config?.Des || config?.Description || '',
+      Pos: building.position,
+      Level: building.level,
+      // 升级所需资源
+      UpNeedBuildingID: 0,
+      UpNeedBuildingLevel: 0,
+      UpNeedTechnicID: 0,
+      UpNeedTechnicLevel: 0,
+      UpNeedFood: nextLevelData?.CostFood || 0,
+      UpNeedMoney: nextLevelData?.CostMoney || 0,
+      UpNeedMen: nextLevelData?.CostMen || 0,
+      UpNeedGold: 0,
+      UpNeedArea: 0,
+      UpNeedTime: nextLevelData?.CostTime || 0,
+      // 拆除所需资源
+      DownNeedFood: 0,
+      DownNeedMen: 0,
+      DownNeedMoney: 0,
+      DownReturnArea: 0,
+      // 效果
+      EffID: config?.EffectID || 0,
+      Area: levelData?.Area || 0,
+      CurrentEff: levelData?.EffectValue || 0,
+      NextEff: nextLevelData?.EffectValue || 0,
+      OldEff: 0,
+      EventID: 0,
+      Type: building.type === 'interior' ? 1 : 2,
+      // 图片
+      Image: levelData?.Image || config?.Image || '',
+      Icon: levelData?.Icon || config?.Icon || '',
+      // 战斗属性
+      Attack: levelData?.Attack || 0,
+      HitPoint: levelData?.HitPoint || 0,
+      AttackRange: levelData?.AttackRange || 0,
+      EffRange: levelData?.EffRange || 0,
+      MaxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+      // 附加
+      UpNeedBuildingName: '',
+      UpNeedTechnicName: '',
+      SnapSwitch: 0,
+      SnapGold: 0,
+      TradeRes: null,
+      EffectArray: [],
+    }]);
   } catch (err: any) {
     return error(c, err.message);
   }

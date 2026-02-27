@@ -7,6 +7,7 @@ import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import worldNpcs from '../config/world_npcs.json';
 import landforms from '../config/landforms.json';
+import buildingConfigs from '../config/buildings.json';
 
 // 类型定义
 interface WorldNPC {
@@ -55,6 +56,10 @@ const TERRAIN_TYPES = {
 // 获取地图配置
 app.get('/config', async (c) => {
   return success(c, {
+    // C# 字段 (驼峰)
+    Width: MAP_CONFIG.WIDTH,
+    Height: MAP_CONFIG.HEIGHT,
+    // 兼容字段
     width: MAP_CONFIG.WIDTH,
     height: MAP_CONFIG.HEIGHT,
     worldSize: MAP_CONFIG.WORLD_SIZE,
@@ -491,31 +496,148 @@ app.get('/npcs', async (c) => {
 
 
 // GetMapUnitInfo - GET /map/unit
+// C# 签名: public MapUnitInfo[] GetMapUnitInfo(int cityID, int unitType, int pos)
+// 返回: MapUnitInfo[] (数组)
+// unitType: 1=内政, 2=城防, 3=大地图
 app.get('/unit', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) {
-    return c.json({ success: false, error: 'Unauthorized' }, 401);
-  }
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id = '1', map_type = '1', pos = '0' } = c.req.query();
+  const { city_id, map_type, pos } = c.req.query();
+  const cityId = parseInt(city_id || '1');
+  const unitType = parseInt(map_type || '1');
+  const position = parseInt(pos || '0');
 
-  // 返回模拟单位数据
-  const units = [
-    { type: 'building', id: 1, name: '主城', position: 0, level: 1 },
-    { type: 'building', id: 2, name: '民居', position: 1, level: 1 },
-    { type: 'building', id: 3, name: '集市', position: 2, level: 1 },
-  ];
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
 
-  return c.json({
-    success: true,
-    data: {
-      cityId: parseInt(city_id as string),
-      mapType: parseInt(map_type as string),
-      pos: parseInt(pos as string),
-      units
+  try {
+    let mapUnits: any[] = [];
+
+    if (unitType === 1) {
+      // 内政地图: 返回所有建筑
+      const buildings = await db.prepare(`
+        SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+      `).bind(cityId).all();
+
+      mapUnits = (buildings.results || []).map((b: any) => {
+        // 根据建筑类型获取配置 (interior 或 defense)
+        const buildingType = b.type || 'interior';
+        const config = getBuildingConfig(buildingType, b.config_id);
+        const levelData = getBuildingLevelData(config, b.level);
+        
+        // 从配置文件读取路径 (配置文件中的路径已经是大写 .GIF)
+        const image = levelData?.Image || config?.Image || '';
+        const icon = levelData?.Icon || config?.Icon || '';
+        
+        return {
+          ID: b.id,
+          Type: 1,  // 建筑类型
+          EventID: 0,
+          Name: config?.Name || '建筑',
+          Level: b.level,
+          Pos: b.position,
+          Image: image,
+          Icon: icon,
+          Index: b.config_id,
+          State: b.state,
+          AttackCount: 0,
+          UniteCount: 0,
+          SubLevel: 0,
+          UserName: walletAddress,
+          ImageArray: [],
+          StateFlag: [],
+          Quality: 1,
+          CityName: '',
+          ArriveTime: '',
+          DefeceFlag: 0,
+          JuntaName: '',
+          JuntaState: 0,
+          LevelDifferenceFlag: 0,
+          ImageIndex: 0,
+          NpcFloor: 0,
+          NpcFloorMax: 0,
+          NpcFloorJunta: 0,
+          EspecialType: 0,
+          StartTime: '',
+          EndTime: '',
+          IsAppendantNPC: 0,
+          AppendantNPCSingle: null,
+          IsLord: 0,
+          OccupationInfo: null,
+          LordEndTime: '',
+        };
+      });
+    } else if (unitType === 2) {
+      // 城防地图: 返回城防建筑和驻守武将
+      const defenseBuildings = await db.prepare(`
+        SELECT * FROM buildings WHERE city_id = ? AND type = 'defense' ORDER BY position
+      `).bind(cityId).all();
+
+      const defenseHeroes = await db.prepare(`
+        SELECT * FROM heroes WHERE city_id = ? AND state = 2 ORDER BY defence_pos
+      `).bind(cityId).all();
+
+      // 建筑单元
+      mapUnits = (defenseBuildings.results || []).map((b: any) => ({
+        ID: b.id,
+        Type: 1,
+        Name: '城防建筑',
+        Level: b.level,
+        Pos: b.position,
+        Index: b.config_id,
+        State: b.state,
+        // ... 其他字段
+      }));
+
+      // 武将单元
+      const heroUnits = (defenseHeroes.results || []).map((h: any) => ({
+        ID: h.id,
+        Type: 2,  // 武将类型
+        Name: h.name,
+        Level: h.level,
+        Pos: h.defence_pos,
+        Index: h.id,
+        State: h.state,
+        Quality: h.quality || 1,
+        // ... 其他字段
+      }));
+
+      mapUnits = [...mapUnits, ...heroUnits];
+    } else if (unitType === 3) {
+      // 大地图: 返回周围城市和NPC
+      // 简化实现: 返回空数组或模拟数据
+      mapUnits = [];
     }
-  });
+
+    // 如果没有数据，返回特殊标记 (C# 约定)
+    if (mapUnits.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    return success(c, mapUnits);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
 });
+
+// 辅助函数: 获取建筑配置
+function getBuildingConfig(type: string, configId: number): any {
+  const configs = type === 'interior' 
+    ? (buildingConfigs as any).InteriorBuilding 
+    : (buildingConfigs as any).DefenseBuilding;
+  
+  if (!configs) return null;
+  return configs.find((b: any) => b.ID === configId) || null;
+}
+
+// 辅助函数: 获取建筑等级数据
+function getBuildingLevelData(config: any, level: number): any {
+  if (!config) return null;
+  const dataKey = config.InteriorData ? 'InteriorData' : 'DefenseData';
+  const dataArray = config[dataKey] || [];
+  return dataArray[level - 1] || null;
+}
 
 // GetWorldLandform - GET /map/world/landform
 app.get('/world/landform', async (c) => {

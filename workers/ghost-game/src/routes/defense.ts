@@ -34,10 +34,27 @@ app.get('/', async (c) => {
       SELECT * FROM defence_buildings WHERE city_id = ?
     `).bind((city as any).id).all();
 
+    // 返回 C# DBDefenceBuilding 格式
+    const defenseList = (defenses.results || []).map((d: any) => ({
+      // C# 字段
+      DefenceID: d.id,
+      UserName: d.user_name,
+      CityID: d.city_id,
+      Position: d.position,
+      State: d.state || 1,
+      DefenceLevel: d.defence_level || 1,
+      StaticIndex: d.static_index,
+      Durability: d.durability || 100,
+      // 兼容字段
+      id: d.id,
+      type: d.type,
+      level: d.defence_level,
+    }));
+
     return success(c, {
       wallLevel: 1,
       trapCount: defenses.results?.length || 0,
-      defenses: defenses.results || [],
+      defenses: defenseList,
       totalDefense: defenses.results?.reduce((sum: number, d: any) => sum + (d.defence_level || 0), 0) || 0
     });
   } catch (err: any) {
