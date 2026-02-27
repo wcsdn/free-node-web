@@ -27,7 +27,7 @@ a:hover,a:active{font-weight:bold;text-decoration:underline;}
 #usercity ul{margin-top:5px;line-height:14px;}
 #info_out{height: 126px;padding-top:8px;}
 #info_out ul,#info_sever ul{line-height: 18px;}
-#info_sever{height: 122px;padding-top:30px;}
+#info_sever{height: 122px;padding-top:8px;}
 
 #mainnav{width:552px;height: 80px;position: absolute;bottom: -80px;left: 0px;}
 #mainnav li{float:left;margin: 0px;padding: 0px;}

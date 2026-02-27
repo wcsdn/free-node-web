@@ -60,13 +60,10 @@
 
 <body onkeydown="KeyDo(event)" oncontextmenu="return false;">
 <div id="wrapper">
-<div id="line"></div>
-<div id="line1"></div>
-
 <div id="leftpanel">
-	<div id="logo" onclick="window.location.reload()"></div>
+	<div id="panel_close_btn" onclick="toggleAboutPanel()">×</div>
 	<div id="info_user">
-	 
+	 	<div id="logo" onclick="window.location.reload()"></div>
 		<div id="userlevel">
 		<span><a id="userName" class="font_bold" onmousedown="GetMyInfo()" href="#"></a></span>
 		<div id="vipeffect"></div>
@@ -79,6 +76,9 @@
 		</div>
 		<div id="usercity">
 		</div>
+		<table style="width:100%">
+		<tr>
+		<td style="width:50%; vertical-align:top;">
 		<div id="info_out">
 		    <ul>
 			    <li><a id="to_main" onmouseover="ShowTips(event,'common_1_11')" onmouseout="HideTips()" target="_blank" href="#">首页</a></li>
@@ -90,6 +90,8 @@
 			    <li><a onmouseover="ShowTips(event,'common_1_14')" onmouseout="HideTips()" href="#" id="exit_4" onmousedown="ShowPopUp(this.id)">退出</a></li>
 		    </ul>
 		</div>
+		</td>
+		<td style="width:50%; vertical-align:top;">
 		<div id="info_sever">
 		<ul>
 			<li>服务器名称</li>
@@ -101,6 +103,9 @@
 			<li>经验倍率:<span id="expPer"></span>倍</li> 
 		</ul>
 		</div>
+		</td>
+		</tr>
+		</table>
 	</div>
 </div>
 
@@ -116,6 +121,7 @@
 	<li><a id="p_10" class="nav_a_10" onmouseover="ShowTips(event,'common_1_8')" onmouseout="HideTips()" onmousedown="ChangePage(this.id)" href="#">任务</a></li>
 	<li><a id="p_11" class="nav_a_11" onmousedown="ChangePage(this.id)" href="#">排行</a></li>
 	<li><a onmouseover="ShowTips(event,'common_1_10')" onmouseout="HideTips()" href="tyro_help_CN.html" target="_blank">帮助</a></li>
+	<li><a id="about_btn" onclick="toggleAboutPanel()" href="#">关于</a></li>
 	</ul>
 </div>
 	

@@ -10,15 +10,42 @@
 	width: 552px;
 	position: absolute;
 	top: 0px;
-	left: 128px;
+	left: 0px;
 	height: 600px;
 }
 #leftpanel{
-	width:128px;
+	width: 400px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: auto;
+	max-height: 80vh;
+	background: #E9E9E9;
+	border: 2px solid #B0B0B0;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+	z-index: 9999;
+	display: none;
+	padding: 20px;
+	overflow-y: auto;
+}
+#panel_close_btn{
 	position: absolute;
-	top:0px;
-	left: 0px;
-	height: 600px;
+	top: 5px;
+	right: 5px;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+	line-height: 22px;
+	color: #666;
+	background: transparent;
+	z-index: 10000;
+}
+#panel_close_btn:hover{
+	color: #000;
 }
 #rightpanel{
 	width:323px;
@@ -26,4 +53,23 @@
 	top: 0px;
 	left: 680px;
 	height: 600px;
+}
+
+#leftpanel #logo{
+	display: inline-block;
+	vertical-align: top;
+	float: left;
+}
+#leftpanel #info_user{
+	display: block;
+	vertical-align: top;
+	width: auto;
+	height: auto;
+}
+#leftpanel #userlevel{
+	margin-left: 140px;
+}
+#leftpanel #info_out,
+#leftpanel #info_sever{
+	margin-bottom: 15px;
 }

@@ -1159,3 +1159,14 @@ function GetMaxLevel()
     }
     return level;
 }
+
+
+// 切换关于面板显示/隐藏
+function toggleAboutPanel() {
+    var panel = document.getElementById('leftpanel');
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+}
