@@ -59,15 +59,15 @@ function HtmlNodeTitle(nodeObj,nodeType,index)
         if(nodeType==13)
             html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,PicPath+nodeObj.Image,"NodeControl(this.id)");
         if(nodeType==12)
-            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/b/o/24.gif","NodeControl(this.id)"); 
+            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/b/o/24.GIF","NodeControl(this.id)"); 
         if(nodeType==14)
-            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/h/h/7.gif","NodeControl(this.id)"); 
+            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/h/h/7.GIF","NodeControl(this.id)"); 
         if(nodeType==15)
-            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/h/h/8.gif","NodeControl(this.id)"); 
+            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/h/h/8.GIF","NodeControl(this.id)"); 
         if(nodeType==16)
-            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/o/56.gif","NodeControl(this.id)"); 
+            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/o/56.GIF","NodeControl(this.id)"); 
         if(nodeType==17)
-            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/m/u2.gif","NodeControl(this.id)"); 
+            html+=HtmlClickImg("tree_icon_"+nodeType+"_"+index,"node_icon_"+cssType,"img/2/m/u2.GIF","NodeControl(this.id)"); 
         if(nodeType==12)
             html+="<span class=\"node_title_span\">"+nodeObj.CorpsName+Lang["Tree_55"];
         
@@ -85,9 +85,9 @@ function HtmlNodeTitle(nodeObj,nodeType,index)
                     for(var i=0;i<TwoEffectInfo.length;i++) 
                     {
                         if(TwoEffectInfo[i]==1)
-                            html+="<img onmouseover=\"ShowTips(event,'common_1_80')\" onmouseout=\"HideTips()\" src=\"img/o/42.gif\" />";//vip
+                            html+="<img onmouseover=\"ShowTips(event,'common_1_80')\" onmouseout=\"HideTips()\" src=\"img/o/42.GIF\" />";//vip
                         if(TwoEffectInfo[i]==6)
-                            html+="<img onmouseover=\"ShowTips(event,'common_1_81')\" onmouseout=\"HideTips()\" src=\"img/o/43.gif\" />";//免战
+                            html+="<img onmouseover=\"ShowTips(event,'common_1_81')\" onmouseout=\"HideTips()\" src=\"img/o/43.GIF\" />";//免战
                     }
                 }
                 else
@@ -95,7 +95,7 @@ function HtmlNodeTitle(nodeObj,nodeType,index)
                 if(nodeObj.State==3)
                     html+=Lang["Tree_56"];//新手保护状态
                 if(nodeObj.IsAppendantNPC!=1 && nodeObj.IsLord ==1)//征服小图标
-                    html+="<a id=\"tree_handle_"+nodeType+"_-59_"+index+"\" onmouseout=\"HideTips(this.id)\" onmouseover=\"ShowTips(event,this.id)\" href=\"#\"><img style=\"padding-left:5px;\" src=\"img/o/zl.gif\" /></a>";
+                    html+="<a id=\"tree_handle_"+nodeType+"_-59_"+index+"\" onmouseout=\"HideTips(this.id)\" onmouseover=\"ShowTips(event,this.id)\" href=\"#\"><img style=\"padding-left:5px;\" src=\"img/o/zl.GIF\" /></a>";
             }
             else if(nodeObj.Type!=4 && nodeObj.Type!=5 && nodeObj.EspecialType!=1)
             {
@@ -104,28 +104,28 @@ function HtmlNodeTitle(nodeObj,nodeType,index)
                 switch(pos)
                 {
                     case 0:
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/3.gif\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/3.GIF\" />";
                         break;
                     case 1:
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/2.gif\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/2.GIF\" />";
                         break;
                     case 2:
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/1.gif\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/1.GIF\" />";
                         break;
                     case 3:
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/1.gif\" />";
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/2.gif\" />";
-                        html+="<img style=\"padding-left:5px;\" src=\"img/4/3.gif\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/1.GIF\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/2.GIF\" />";
+                        html+="<img style=\"padding-left:5px;\" src=\"img/4/3.GIF\" />";
                         break;
                 }
                 if(nodeObj.IsAppendantNPC==1 && nodeObj.IsLord!=1)//占领小图标
-                    html+="<a id=\"tree_handle_"+nodeType+"_-57_"+index+"\" onmouseout=\"HideTips(this.id)\" onmouseover=\"ShowTips(event,this.id)\" href=\"#\"><img style=\"padding-left:5px;\" src=\"img/o/zl.gif\" /></a>";
+                    html+="<a id=\"tree_handle_"+nodeType+"_-57_"+index+"\" onmouseout=\"HideTips(this.id)\" onmouseover=\"ShowTips(event,this.id)\" href=\"#\"><img style=\"padding-left:5px;\" src=\"img/o/zl.GIF\" /></a>";
             }
             
             else if(nodeObj.EspecialType==1)
             {
                 html+="<span class=\"node_title_span\">"+nodeObj.Name+" "+m+Lang["Tree_57"];
-                html+="<img style=\"padding-left:5px;\" src=\"img/o/76.gif\" />";
+                html+="<img style=\"padding-left:5px;\" src=\"img/o/76.GIF\" />";
             }
             else
             {
@@ -578,7 +578,7 @@ function HtmlHeroItem(nodeObj)
     if(itemList[2]!=null)   
         img=itemList[2].Image;
     else 
-        img="/2/h/h/4.gif";    
+        img="/2/h/h/4.GIF";    
         
         
     
@@ -600,7 +600,7 @@ function HtmlHeroItem(nodeObj)
     if(itemList[3]!=null)
        img=itemList[3].Image;
     else
-       img="/2/h/h/5.gif";    
+       img="/2/h/h/5.GIF";    
         
     
     if(nodeObj.State!=5 && nodeObj.State!=7)
@@ -619,7 +619,7 @@ function HtmlHeroItem(nodeObj)
     if(itemList[4]!=null)
        img=itemList[4].Image
     else
-       img="/2/h/h/6.gif";
+       img="/2/h/h/6.GIF";
               
     if(nodeObj.State!=5 && nodeObj.State!=7)
     {
@@ -673,11 +673,11 @@ function HtmlRetrunEvent(eventIndex)
                     html+="<li>"+Lang["Tree_109"]+"</li>";
                     html+="<li>";
                     if(food>0)
-                    html+="<img src=\"img/4/2.gif\" />"+food+"";
+                    html+="<img src=\"img/4/2.GIF\" />"+food+"";
                     if(men>0)
-                    html+="<img src=\"img/4/3.gif\" />"+men+"";
+                    html+="<img src=\"img/4/3.GIF\" />"+men+"";
                     if(money>0)
-                    html+="<img src=\"img/4/1.gif\" />"+money+"";
+                    html+="<img src=\"img/4/1.GIF\" />"+money+"";
                     html+="</li>";
                 }
             }

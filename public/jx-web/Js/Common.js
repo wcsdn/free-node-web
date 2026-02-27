@@ -1,28 +1,28 @@
 ﻿
 //特定图片路径
 var PicPath="img";
-var PicClarity = "/2/b/m/22.gif"; 
-var PicPlus = "/o/2.gif";
-var PicReduce = "/o/3.gif";
-var PicSinker = new Array("/2/b/o/22.gif","/2/d/0.gif");
-var PicDelete= "/5/1.gif";
-var PicBlankLandform = "/2/d/14.gif";
-var PicHeroList = new Array("/o/21.gif","/o/19.gif","/o/20.gif");
-var PicFlag = "/2/b/o/23.gif";
-var PicSelect2="/2/d/23.gif"; 
-var PicSelect5="/2/m/0.gif"
-var PicSelect4="/2/i/0.gif"
+var PicClarity = "/2/b/m/22.GIF"; 
+var PicPlus = "/o/2.GIF";
+var PicReduce = "/o/3.GIF";
+var PicSinker = new Array("/2/b/o/22.GIF","/2/d/0.GIF");
+var PicDelete= "/5/1.GIF";
+var PicBlankLandform = "/2/d/14.GIF";
+var PicHeroList = new Array("/o/21.GIF","/o/19.GIF","/o/20.GIF");
+var PicFlag = "/2/b/o/23.GIF";
+var PicSelect2="/2/d/23.GIF"; 
+var PicSelect5="/2/m/0.GIF"
+var PicSelect4="/2/i/0.GIF"
 
 var PicMoney="/4/1.GIF";
 var PicFood="/4/2.GIF";
 var PicMen="/4/3.GIF";
 var PicGold="/4/4.GIF";
 
-var PicNewMail="/o/33.gif";
+var PicNewMail="/o/33.GIF";
 
 //侠客经验
-var PicHeroExp="/2/h/h/7e.gif";
-var PicHeroExpBack="/2/h/h/7g.gif";
+var PicHeroExp="/2/h/h/7e.GIF";
+var PicHeroExpBack="/2/h/h/7g.GIF";
 var PicHeroExpMultiples;//侠客经验倍数
 
 //鼠标位置对象
@@ -318,7 +318,7 @@ function PopUpSeeUserInfo()
             $("#popup").css("top","150px");         
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>"; 
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>"; 
         html+="<div style=\"padding-top:5px;\">";
         html+="<div style=\"text-align:center;\"><img src=\""+ImgUrl+"o/48b.GIF\"/></div>";
          
@@ -625,27 +625,27 @@ function GetResByGold(type)
         $("#popup").css("top","224px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         switch(type)
         {
             case 42:
             html+="<p style=\"text-align:center;\">"+Lang["Common_12"]+"</p>";
-            src="img/4/1.gif";
+            src="img/4/1.GIF";
             resType=1;
             levelres=TheBuildingInfo.TradeRes.LevelMoney;
             levelper=TheBuildingInfo.TradeRes.MoneyPer;
             break
             case 43:
             html+="<p style=\"text-align:center;\">"+Lang["Common_13"]+"</p>";
-            src="img/4/2.gif";
+            src="img/4/2.GIF";
             levelres=TheBuildingInfo.TradeRes.LevelFood;
             levelper=TheBuildingInfo.TradeRes.FoodPer;
             resType=2;
             break
             case 44:
             html+="<p style=\"text-align:center;\">"+Lang["Common_14"]+"</p>";
-            src="img/4/3.gif";
+            src="img/4/3.GIF";
             levelres=TheBuildingInfo.TradeRes.LevelMen;
             levelper=TheBuildingInfo.TradeRes.MenPer;
             resType=3;
@@ -657,7 +657,7 @@ function GetResByGold(type)
         html+="<li>";
         html+="<table width=\"174\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>"
         html+="<td width=\"44\"><input id=\"input_getgold\" class=\"input_getgold\" onkeydown=\"OnlyNum(event)\" onkeyup=\"ChangeInputGold()\"  /></td>"
-        html+="<td width=\"37\"><img style=\"margin-right:5px;\" src=\"img/4/4.gif\" />=</td>"
+        html+="<td width=\"37\"><img style=\"margin-right:5px;\" src=\"img/4/4.GIF\" />=</td>"
         html+="<td width=\"56\"><span id=\"totalres\">0</span></td>"
         html+="<td width=\"37\"><img src=\""+src+"\" /></td></tr>"
         html+="</table>"
@@ -810,17 +810,17 @@ function CannelEventNeedGold(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if(type==11 || type==12 || type==16 || type==25 || type==28)//征服玩家
     {
         html+="<p>"+Lang["Common_22"]+"？</p>";
-        html+="<p><img style=\"padding-right:10px;\" src=\"img/4/4.gif\" />1</p>";
+        html+="<p><img style=\"padding-right:10px;\" src=\"img/4/4.GIF\" />1</p>";
     }
     else if(type==13)
     {
         html+="<p>"+Lang["Common_23"]+"？</p>";
-        html+="<p><img style=\"padding-right:10px;\" src=\"img/4/4.gif\" />5</p>";
+        html+="<p><img style=\"padding-right:10px;\" src=\"img/4/4.GIF\" />5</p>";
     }
     html+="</div>";
     html+="<div class=\"popup_button\">";
@@ -910,7 +910,7 @@ function PopUpAutoExp(id)
     $("#popup").css("top","164px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<div id=\"autoexp\">";
     html+="<p style=\"text-align:center;\">"+Lang["Common_26"]+"</p>";
@@ -923,9 +923,9 @@ function PopUpAutoExp(id)
     html+="<li><p style=\"margin-left:53px;\"><input id=\"ChangeAutoExp\" onclick=\"ChangeAutoExpType(this.id)\" type=\"checkbox\" name=\""+Lang["Common_34"]+"\" /> <span class=\"purple\">"+Lang["Common_35"]+"</span><p></li>";
     html+="<li>"+Lang["Common_36"]+"</li>";
     html+="<li><div id=\"HideRes\"><table width=\"200\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
-    html+="<tr><td><img src=\"img/4/1.gif\" /></td><td><span id=\"AutoNeedMoneyNum\">0</span></td><td><img src=\"img/4/2.GIF\" /></td><td><span id=\"AutoNeedFoodNum\">0</span></td>";
+    html+="<tr><td><img src=\"img/4/1.GIF\" /></td><td><span id=\"AutoNeedMoneyNum\">0</span></td><td><img src=\"img/4/2.GIF\" /></td><td><span id=\"AutoNeedFoodNum\">0</span></td>";
     html+="<td><img src=\"img/4/3.GIF\" /></td><td><span id=\"AutoNeedMenNum\">0</span></td></tr></table></div></li>";
-    html+="<li><span id=\"AutoNeedGold\" style=\"display:none;\"><img src=\"img/4/4.gif\" /><span id=\"AutoNeedGoldNum\">0</span></span></li>";
+    html+="<li><span id=\"AutoNeedGold\" style=\"display:none;\"><img src=\"img/4/4.GIF\" /><span id=\"AutoNeedGoldNum\">0</span></span></li>";
     html+="<li>"+Lang["Common_37"]+"<span id=\"AutoGetExp\"></span></li>";
     html+="</ul></div>";
     html+="</div>";
@@ -1066,7 +1066,7 @@ function PopUpLookAutoExp(id)
     $("#popup").css("top","164px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<div id=\"autoexp\">";
     html+="<p style=\"text-align:center;\">"+Lang["Common_26"]+"</p>";

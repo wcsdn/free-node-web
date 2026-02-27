@@ -41,7 +41,7 @@ function PopItemMall(id){
     $("#popup").css("top","110px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div id=\"ItemMall\">";
     html+="<h4>"+Lang["Mall_1"]+"</h4>";
     html+="<div class=\"malltitle\"><table width=\"480\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>";
@@ -87,24 +87,24 @@ function CreateMallContent()
         if(MallItemInfo[i].Usetype==1)//usetype 1:可购买类型
         {
             if(MallItemInfo[i].BuyType==1)//buytype 1:道具,2:持续状态,3:资源购买
-            html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].Type+"_"+MallItemInfo[i].Id+"_"+MallItemInfo[i].Index+"_"+i+"_"+MallItemInfo[i].BuyType+"\" onmousedown=\"ShowMallPop(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
+            html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].Type+"_"+MallItemInfo[i].Id+"_"+MallItemInfo[i].Index+"_"+i+"_"+MallItemInfo[i].BuyType+"\" onmousedown=\"ShowMallPop(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
             else if(MallItemInfo[i].BuyType==2)
             {
                 if(MallItemInfo[i].IsUsed==0)//0:没效果,1:有效果
-                html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].MainEffectType+"_"+MallItemInfo[i].EffectType+"_"+i+"_"+MallItemInfo[i].BuyType+"\" onmousedown=\"ShowMallPop(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
+                html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].MainEffectType+"_"+MallItemInfo[i].EffectType+"_"+i+"_"+MallItemInfo[i].BuyType+"\" onmousedown=\"ShowMallPop(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
                 else
-                html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a title=\""+Lang["Tips_131"]+"\" class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";
+                html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /><span>"+MallItemInfo[i].Gold+"</span></td><td width=\"55\"><a title=\""+Lang["Tips_131"]+"\" class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";
             }
             else
             {
                 if((MallItemInfo[i].BuyType==3 && MallItemInfo[i].TradeRes.LevelMen>0) || (MallItemInfo[i].BuyType==4 && MallItemInfo[i].TradeRes.LevelMoney>0) || (MallItemInfo[i].BuyType==5 && MallItemInfo[i].TradeRes.LevelFood>0))
-                    html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].BuyType+"_"+i+"\" onmousedown=\"BuyMallRes(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
+                    html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /></td><td width=\"55\"><a href=\"#\" id=\"item_"+MallItemInfo[i].BuyType+"_"+i+"\" onmousedown=\"BuyMallRes(this.id)\" class=\"linkstyle_mall\">"+Lang["Mall_8"]+"</a></td></tr></table></li>";
                 else
-                    html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /></td><td width=\"55\"><a title=\""+Lang["Tips_140"]+"\" class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";    
+                    html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /></td><td width=\"55\"><a title=\""+Lang["Tips_140"]+"\" class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";    
             }
         }
         else
-        html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.gif\" /><span></td><td width=\"55\"><a class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";
+        html+="<li><table height=\"17\" width=\"115\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td width=\"60\"><img src=\"img/4/4.GIF\" /><span></td><td width=\"55\"><a class=\"linkstyle_mall\"><span style=\"color:gray;\">"+Lang["Mall_8"]+"</span></a></td></tr></table></li>";
         html+="</ul>";
         html+="</li>";
     }
@@ -139,12 +139,12 @@ function ShowMallPop(id)
         $("#otherpopup").css("top","257px");
         html+="<div class=\"common_popup\" style=\"height:94px;\">";
         html+="<div class=\"common_popup1\" style=\"height:80px;\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\" style=\"height:58px;\">";
         html+="<ul>";
         html+="<li>"+Lang["Mall_8"]+""+MallItemInfo[mallindex].TypeName+"</li>";
         html+="<li>"+Lang["Mall_9"]+"</li>";
-        html+="<li><img src=\"img/4/4.gif\" />"+MallItemInfo[mallindex].Gold+"</li>";
+        html+="<li><img src=\"img/4/4.GIF\" />"+MallItemInfo[mallindex].Gold+"</li>";
         html+="<ul>";
         html+="</div>";
         html+="<div class=\"popup_button\">";
@@ -223,7 +223,7 @@ function PopUpMallMessageBox(message)
     $("#otherpopup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p style=\"text-align:center;\">"+message+"</p>";
     html+="</div>";
@@ -249,7 +249,7 @@ function MallNeedGold()
     $("#otherpopup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_48"]+"</p>";
     html+="</div>";
@@ -306,27 +306,27 @@ function GetMallResByGold(type,index)
         $("#otherpopup").css("top","224px");
         html+="<div class=\"common_popup\" style=\"width:230px;height:152px;\">";
         html+="<div class=\"common_popup1\" style=\"width:226px;height:138px;\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall(\"0\")><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\" style=\"width:195px;height:113px;margin-left:13px;\">";
         switch(type)
         {
             case 42:
             html+="<p style=\"text-align:center;\">"+Lang["Common_12"]+"</p>";
-            src="img/4/1.gif";
+            src="img/4/1.GIF";
             resType=1;
             levelres=MallItemInfo[index].TradeRes.LevelMoney;
             levelper=MallItemInfo[index].TradeRes.MoneyPer;
             break
             case 43:
             html+="<p style=\"text-align:center;\">"+Lang["Common_13"]+"</p>";
-            src="img/4/2.gif";
+            src="img/4/2.GIF";
             levelres=MallItemInfo[index].TradeRes.LevelFood;
             levelper=MallItemInfo[index].TradeRes.FoodPer;
             resType=2;
             break
             case 44:
             html+="<p style=\"text-align:center;\">"+Lang["Common_14"]+"</p>";
-            src="img/4/3.gif";
+            src="img/4/3.GIF";
             levelres=MallItemInfo[index].TradeRes.LevelMen;
             levelper=MallItemInfo[index].TradeRes.MenPer;
             resType=3;
@@ -338,7 +338,7 @@ function GetMallResByGold(type,index)
         html+="<li>";
         html+="<table width=\"174\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>"
         html+="<td width=\"44\"><input id=\"input_getgold\" class=\"input_getgold\" onkeydown=\"OnlyNum(event)\" onkeyup=\"ChangeInputGold()\"  /></td>"
-        html+="<td width=\"37\"><img style=\"margin-right:5px;\" src=\"img/4/4.gif\" />=</td>"
+        html+="<td width=\"37\"><img style=\"margin-right:5px;\" src=\"img/4/4.GIF\" />=</td>"
         html+="<td width=\"56\"><span id=\"totalres\">0</span></td>"
         html+="<td width=\"37\"><img src=\""+src+"\" /></td></tr>"
         html+="</table>"

@@ -189,7 +189,7 @@ function PopUpMessageBox()
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p style=\"text-align:center;\">"+MessageText+"</p>";
     html+="</div>";
@@ -214,7 +214,7 @@ function PopUpGetBox()
     $("#popup").css("top","257px");
     html+="<div class=\"res_popup\">";
     html+="<div class=\"res_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"res_popup2\">";
     if(GetMoney>0 || GetMen>0 || GetGold>0 || GetFood>0)
         html+="<div style=\"text-align:center;margin-top:5px\">"+GetMessage+"</div>";
@@ -280,7 +280,7 @@ function PopUpSeeHero()
     $("#popup").css("top","195px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div style=\"padding-left:10px;padding-top:10px;\" class=\"common_popup2\">";
     html+="<span>"+Lang["PopUp_8"]+"</span>";
     html+="<div id=\"seehero\">";
@@ -329,24 +329,24 @@ function CityShow()
     $("#popup").css("top","113px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div id=\"cityshow\">";
     html+="<p>"+Lang["PopUp_13"]+"</p>";
     html+="<ul>";
-    html+="<li><img src=\""+ImgUrl+"2/b/o/m1.gif\"/></li>";
-    html+="<li><img src=\""+ImgUrl+"2/b/o/m2.gif\"/></li>";
-    html+="<li><img src=\""+ImgUrl+"2/b/o/m3.gif\"/></li>";
+    html+="<li><img src=\""+ImgUrl+"2/b/o/m1.GIF\"/></li>";
+    html+="<li><img src=\""+ImgUrl+"2/b/o/m2.GIF\"/></li>";
+    html+="<li><img src=\""+ImgUrl+"2/b/o/m3.GIF\"/></li>";
     html+="</ul>";
     html+="<div class=\"clear\"></div>";
     html+="<table width=\"418\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
-    html+="<tr><td width=\"21\"><img src=\"img/4/4.gif\" /></td><td width=\"17\">0</td>";
-    html+="<td width=\"108\"><a href=\"#\" id=\"img_1\" class=\"linkstyle_1\" onmousedown=\"ChangeBackgroundImg(this.id)\">"+Lang["PopUp_14"]+"</a></td><td width=\"21\"><img src=\"img/4/4.gif\" /></td>";
+    html+="<tr><td width=\"21\"><img src=\"img/4/4.GIF\" /></td><td width=\"17\">0</td>";
+    html+="<td width=\"108\"><a href=\"#\" id=\"img_1\" class=\"linkstyle_1\" onmousedown=\"ChangeBackgroundImg(this.id)\">"+Lang["PopUp_14"]+"</a></td><td width=\"21\"><img src=\"img/4/4.GIF\" /></td>";
     if(gold-100>=0)
     html+="<td width=\"36\">100</td>";
     else
     html+="<td width=\"36\"><span class=\"font_red\">100</span></td>";
     html+="<td width=\"103\"><a href=\"#\" id=\"img_2\" class=\"linkstyle_1\" onmousedown=\"ChangeBackgroundImg(this.id)\">"+Lang["PopUp_14"]+"</a></td>";
-    html+="<td width=\"21\"><img src=\"img/4/4.gif\" />";
+    html+="<td width=\"21\"><img src=\"img/4/4.GIF\" />";
     if(gold-100>=0)
     html+="<td width=\"36\">100</td>";
     else
@@ -418,7 +418,7 @@ function PopUpSeeGoods(id)
         $("#popup").css("top","242px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         if(food+men+money>0)
         {
@@ -426,11 +426,11 @@ function PopUpSeeGoods(id)
         html+="<li>"+Lang["PopUp_16"]+""+dtime+"</li>";
         html+="<li>"+Lang["PopUp_17"]+"</li><li>";
         if(food>0)
-        html+="<img src=\"img/4/2.gif\" />"+food+"";
+        html+="<img src=\"img/4/2.GIF\" />"+food+"";
         if(men>0)
-        html+="<img src=\"img/4/3.gif\" />"+men+"";
+        html+="<img src=\"img/4/3.GIF\" />"+men+"";
         if(money>0)
-        html+="<img src=\"img/4/1.gif\" />"+money+"";
+        html+="<img src=\"img/4/1.GIF\" />"+money+"";
         html+="</li></ul>"; 
         }
         if(insignia>0)
@@ -438,7 +438,7 @@ function PopUpSeeGoods(id)
             html+="<ul>";
             html+="<li>"+Lang["PopUp_185"]+""+dtime+"</li>";
             html+="<li>"+Lang["PopUp_17"]+"</li>";
-            html+="<li><img src=\"img/o/76.gif\" />"+insignia+"</li>";
+            html+="<li><img src=\"img/o/76.GIF\" />"+insignia+"</li>";
             html+="</ul>";
         }   
         html+="</div>";         
@@ -473,7 +473,7 @@ function PopHeroToItem(heroName,exp,itemName,itemid)
     var html=""; 
     html+="<div class=\"common_popup\" style=\"height:104px;width:200px;\">"; 
     html+="<div class=\"common_popup1\" style=\"height:90px;width:196px;\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall()><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDoMall()><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\" style=\"height:55px;padding:5px 5px 5px 5px;width:169px;\">";
     html+="确认使用<b>"+itemName+"</b>？<br/><b>"+heroName+"</b>&nbsp;&nbsp;授功后归隐山林，可保存经验值<b>"+exp+"</b>点"; 
     html+="</div>";
@@ -503,7 +503,7 @@ function PopUpChoose(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if (handleType==5)
     {
@@ -597,7 +597,7 @@ function PopUpAboutEffect(id)
         $("#popup").css("top","257px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         html+=Lang["PopUp_35"]+effect.EffectName+Lang["PopUp_36"];    
         html+="</div>";
@@ -636,7 +636,7 @@ function PopUpGoldConsumer(id)
             $("#popup").css("top","257px");
             html+="<div class=\"common_popup\">";
             html+="<div class=\"common_popup1\">";
-            html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+            html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
             html+="<div class=\"common_popup2\">";
             html+=Lang["PopUp_35"]+Lang["PopUp_211"]+Lang["PopUp_36"];//确认使用快速寻访功能?
             html+="</div>";
@@ -667,7 +667,7 @@ function PopUpGoldConsumer(id)
         $("#popup").css("top","257px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         html+="<ul>";
         html+="<li>"+Lang["PopUp_218"]+" <font style=\"font-weight:bold\">"+CityInfo.Name+"</font>("+X+","+Y+")"+"?</li>";
@@ -676,8 +676,8 @@ function PopUpGoldConsumer(id)
         html+="<li>"+Lang["Tips_425"]+"</li>";
         html+="<li>"+Lang["Tips_426"]+"</li>";
         html+="<li>"+Lang["PopUp_220"]+"</li>";
-        html+="<li><img src=\"img/4/4.gif\"> "+OccupationGold+"</li>";
-        html+="<li><img src=\"img/o/76.gif\"> "+OccupationInsignia+"</li>";
+        html+="<li><img src=\"img/4/4.GIF\"> "+OccupationGold+"</li>";
+        html+="<li><img src=\"img/o/76.GIF\"> "+OccupationInsignia+"</li>";
         html+="</ul>";
         html+="</div>";
         html+="<div class=\"popup_button\">";
@@ -706,7 +706,7 @@ function PopUpGoldConsumer(id)
         $("#popup").css("top","257px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         html+="<ul><li>"+Lang["PopUp_221"]+" <font style=\"font-weight:bold\">"+CityInfo.Name+"</font>("+X+","+Y+")"+"?</li></ul>";//确认放弃?
         html+="</div>";
@@ -729,12 +729,12 @@ function PopUpGoldConsumer(id)
         $("#popup").css("top","257px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         html+="<ul>";
         html+="<li>"+Lang["PopUp_230"]+"</li>";
-        html+="<li><input id=\"speed_1\" type=\"radio\" name=\"speed_\" checked=\"checked\" \> <img src=\"img/o/76.gif\"/><span id=\"ActionInsigniaNum\"> 500</span></li>";
-        html+="<li><input id=\"speed_2\" type=\"radio\" name=\"speed_\" \> <img src=\"img/4/4.gif\"/><span id=\"ActionUseGoldNum\"> 1</span></li>";
+        html+="<li><input id=\"speed_1\" type=\"radio\" name=\"speed_\" checked=\"checked\" \> <img src=\"img/o/76.GIF\"/><span id=\"ActionInsigniaNum\"> 500</span></li>";
+        html+="<li><input id=\"speed_2\" type=\"radio\" name=\"speed_\" \> <img src=\"img/4/4.GIF\"/><span id=\"ActionUseGoldNum\"> 1</span></li>";
         html+="</ul>";
         html+="</div>";
         html+="<div class=\"popup_button\">";
@@ -768,7 +768,7 @@ function PopUpCancelEffect(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_37"]+"<span class=\"font_bold\">"+effect.EffectName+"</span>"+Lang["PopUp_38"]+"</p>";    
     html+="</div>";
@@ -794,7 +794,7 @@ function PopUpExtendBox()
     $("#popup").css("top","257px");
     html+="<div class=\"tuiguang_popup\">";
     html+="<div class=\"tuiguang_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"tuiguang_popup2\">";
     html+="<div style=\"text-align:center;margin-top:5px\">"
     html+="<span><b>"+VName+"</b></span><span> "+Lang["PopUp_39"]+"</span>";
@@ -849,7 +849,7 @@ function ChangeNewUserState()
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_42"]+"<span class=\"font_bold\">"+Lang["PopUp_43"]+"</span>"+Lang["PopUp_38"]+"</p>";    
     html+="</div>";
@@ -897,7 +897,7 @@ function PopUpEventControl(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if (eventpop=="event")
     {   
@@ -953,7 +953,7 @@ function PopUpNeedGold(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if(what==25)
     html+="<p>"+Lang["PopUp_48"]+"</p>";
@@ -1002,7 +1002,7 @@ function PopUpAttackDecision(id)
     $("#popup").css("top",top);
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<ul style=\"line-height:16px;\">";
     html+="<li>"+Lang["PopUp_50"]+"<span style=\"mragin-right:10px;\">"+(Math.floor(pos%400))+"</span> Y=<span style=\"margin-right:10px;\">"+(Math.floor(pos/400)+1)+"</span>"+Lang["PopUp_51"]+"</li>";    
@@ -1033,12 +1033,12 @@ function PopUpAttackDecision(id)
     //html+="<li><input id=\"speed_1\" onclick=\"ChooseActionSpeed(this.id)\" type=\"radio\" name=\"speed\" value = \"快速行军\">快速行军 时间:"+IntToTime(CropsNeedTime/2)+"</li>";
     html+="<li><input id=\"speed_1\" onclick=\"ChooseActionSpeed(this.id)\" type=\"radio\" name=\"speed\" value = \""+Lang["PopUp_59"]+"\"><span class=\"purple\">"+Lang["PopUp_59"]+"</span> "+Lang["PopUp_60"]+""+IntToTime(CropsNeedTime/5)+"</li>";
     
-    html+="<li><span id=\"ActionNeedGold\" style=\"display:none;\">"+Lang["PopUp_61"]+"<img style=\"margin-right:10px;\" src=\"img/4/4.gif\"/><span id=\"ActionGoldNum\"></span></span></li>";
+    html+="<li><span id=\"ActionNeedGold\" style=\"display:none;\">"+Lang["PopUp_61"]+"<img style=\"margin-right:10px;\" src=\"img/4/4.GIF\"/><span id=\"ActionGoldNum\"></span></span></li>";
     if(type==110)//征服玩家
     {
         html+="<li>"+Lang["PopUp_228"]+"</li>";
-        html+="<li><input id=\"speed_3\" type=\"radio\" name=\"speed_\" checked=\"checked\" \> <img src=\"img/o/76.gif\"/><span id=\"ActionInsigniaNum\"> 3500</span></li>";
-        html+="<li><input id=\"speed_4\" type=\"radio\" name=\"speed_\" \> <img src=\"img/4/4.gif\"/><span id=\"ActionUseGoldNum\"> 10</span></li>";
+        html+="<li><input id=\"speed_3\" type=\"radio\" name=\"speed_\" checked=\"checked\" \> <img src=\"img/o/76.GIF\"/><span id=\"ActionInsigniaNum\"> 3500</span></li>";
+        html+="<li><input id=\"speed_4\" type=\"radio\" name=\"speed_\" \> <img src=\"img/4/4.GIF\"/><span id=\"ActionUseGoldNum\"> 10</span></li>";
     }
     html+="<li><span class=\"font_red\">"+Lang["PopUp_62"]+"</span></li>";
     if (type==29 || type==110)//征服玩家
@@ -1102,7 +1102,7 @@ function PopUpList(id)
     $("#popup").css("top",top);
     html+="<div class=\"common_popup\">";
     html+="    <div class=\"common_popup1\">";
-    html+="        <div><a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a></div>";
+    html+="        <div><a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a></div>";
     html+="        <div class=\"common_popup2\">";
     if(t[1]==105)
         html+="        <div style=\"line-height:20px;\">"+Lang["PopUp_195"]+"</div>";
@@ -1208,7 +1208,7 @@ function PoPresource()
     
     html+="<div class=\"common_popup\">";
     html+="    <div class=\"common_popup1\">";
-    html+="        <div><a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a></div>";
+    html+="        <div><a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a></div>";
     html+="        <div class=\"common_popup2\">";
     html+="            <ul style=\"margin-left:5px; line-height: 18px;\">";
     html+="                <li>"+Lang["PopUp_212"]+"</li>";
@@ -1218,7 +1218,7 @@ function PoPresource()
     if((TaskInfo[TaskNameIndex].CostMoney+TaskInfo[TaskNameIndex].CostFood+TaskInfo[TaskNameIndex].CostMen+TaskInfo[TaskNameIndex].CostGold+TaskInfo[TaskNameIndex].CostInsignia)>0)
     {
         if(TaskInfo[TaskNameIndex].CostMoney>0)
-            html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.gif\"/><span id=\"mon\">"+TaskInfo[TaskNameIndex].CostMoney+"</span>";
+            html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.GIF\"/><span id=\"mon\">"+TaskInfo[TaskNameIndex].CostMoney+"</span>";
         if(TaskNameIndex==27)
             html+=" + "
         else
@@ -1237,7 +1237,7 @@ function PoPresource()
     if((TaskInfo[TaskNameIndex].GetMoney+TaskInfo[TaskNameIndex].GetFood+TaskInfo[TaskNameIndex].GetMen)>0)
     {
         if(TaskInfo[TaskNameIndex].GetMoney>0)
-            html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.gif\"/><span id=\"summon\">"+TaskInfo[TaskNameIndex].GetMoney+"</span>";
+            html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.GIF\"/><span id=\"summon\">"+TaskInfo[TaskNameIndex].GetMoney+"</span>";
         if(TaskInfo[TaskNameIndex].GetFood>0)
             html+="<img title=\""+Lang["Task_29"]+"\" src=\"img/4/2.GIF\"/><span id=\"sumfood\">"+TaskInfo[TaskNameIndex].GetFood+"</span>";
         if(TaskInfo[TaskNameIndex].GetMen>0)
@@ -1298,7 +1298,7 @@ function PopUpConscribeChild(id)
     $("#popup").css("top","266px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<ul class=\"childtop\">";
     html+="<li>"+Lang["PopUp_69"]+"</li>";
@@ -1309,7 +1309,7 @@ function PopUpConscribeChild(id)
     html+="<td colspan=\"4\">"+Lang["PopUp_70"]+"</td>";
     html+="</tr>";
     html+="<tr>";
-    html+="<td width=\"28\"><img src=\"img/4/1.gif\"/></td>";
+    html+="<td width=\"28\"><img src=\"img/4/1.GIF\"/></td>";
     html+="<td width=\"39\">"+TheHeroInfo.ConscriptionCostMoney+"</td>";
     html+="<td width=\"25\"><img src=\"img/4/2.GIF\"/></td>";
     html+="<td width=\"38\">"+TheHeroInfo.ConscriptionCostFood+"</td>";
@@ -1320,7 +1320,7 @@ function PopUpConscribeChild(id)
     html+="<td colspan=\"4\">"+Lang["PopUp_71"]+"</td>";
     html+="</tr>";
     html+="<tr>";
-    html+="<td><img src=\"img/4/1.gif\"/></td>";
+    html+="<td><img src=\"img/4/1.GIF\"/></td>";
     html+="<td id=\"max_money\">"+TheHeroInfo.ConscriptionCostMoney+"</td>";
     html+="<td><img src=\"img/4/2.GIF\"/></td>";
     html+="<td id=\"max_food\">"+TheHeroInfo.ConscriptionCostFood+"</td>";
@@ -1381,7 +1381,7 @@ function PopUpFastConscribeChild(id)
         $("#popup").css("top","257px");
         html+="<div class=\"common_popup\">";
         html+="<div class=\"common_popup1\">";
-        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+        html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
         html+="<div class=\"common_popup2\">";
         html+="<ul class=\"childtop\">";
         html+="<li>"+Lang["PopUp_69"]+"</li>";
@@ -1392,7 +1392,7 @@ function PopUpFastConscribeChild(id)
         html+="<td colspan=\"4\">"+Lang["PopUp_70"]+"</td>";
         html+="</tr>";
         html+="<tr>";
-        html+="<td width=\"28\"><img src=\"img/4/1.gif\"/></td>";
+        html+="<td width=\"28\"><img src=\"img/4/1.GIF\"/></td>";
         html+="<td width=\"39\">"+TheHeroInfo.FastConscriptionCostMoney+"</td>";
         html+="<td width=\"25\"><img src=\"img/4/2.GIF\"/></td>";
         html+="<td width=\"38\">"+TheHeroInfo.FastConscriptionCostFood+"</td>";
@@ -1403,7 +1403,7 @@ function PopUpFastConscribeChild(id)
         html+="<td colspan=\"4\">"+Lang["PopUp_71"]+"</td>";
         html+="</tr>";
         html+="<tr>";
-        html+="<td><img src=\"img/4/1.gif\"/></td>";
+        html+="<td><img src=\"img/4/1.GIF\"/></td>";
         html+="<td id=\"max_money\">"+TheHeroInfo.FastConscriptionCostMoney+"</td>";
         html+="<td><img src=\"img/4/2.GIF\"/></td>";
         html+="<td id=\"max_food\">"+TheHeroInfo.FastConscriptionCostFood+"</td>";
@@ -1411,7 +1411,7 @@ function PopUpFastConscribeChild(id)
         html+="<td id=\"max_men\">"+TheHeroInfo.FastConscriptionCostMen+"</td>";
         html+="</tr>";
         html+="<tr>";
-        html+="<td><img src=\"img/4/4.gif\"/></td>";
+        html+="<td><img src=\"img/4/4.GIF\"/></td>";
         html+="<td id=\"max_gold\">"+TheHeroInfo.FastConscriptionCostGold+"</td>";
         html+="</tr>";
         html+="<tr>";
@@ -1487,7 +1487,7 @@ function PopUpChoiceHero(id)
     $("#popup").css("top","110px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     
     {
         html+="<li>  "+Lang["PopUp_72"]+"</li>";
@@ -1630,7 +1630,7 @@ function PopUpAboutEquip(id)
     $("#popup").css("top","253px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if (pos==33)
     {
@@ -1639,7 +1639,7 @@ function PopUpAboutEquip(id)
         html+="<li><table width=\"165\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">"
         html+="<tr>"
         html+="<td width=\"35\">"+Lang["PopUp_77"]+"</td>"
-        html+="<td width=\"25\"><img src=\"img/4/1.gif\"/></td>"
+        html+="<td width=\"25\"><img src=\"img/4/1.GIF\"/></td>"
         html+="<td width=\"40\"><span id=\"item_sell_money\"></span></td>"
         html+="<td width=\"25\"><img src=\"img/4/2.GIF\"/></td>"
         html+="<td width=\"37\"><span id=\"item_sell_food\"></span></td>"
@@ -1658,7 +1658,7 @@ function PopUpAboutEquip(id)
         {
             html+="<tr>"
             html+="<td width=\"35\">"+Lang["PopUp_79"]+"</td>"
-            html+="<td width=\"25\"><img src=\"img/4/4.gif\"/></td>"
+            html+="<td width=\"25\"><img src=\"img/4/4.GIF\"/></td>"
             html+="<td width=\"40\"><span id=\"item_use_pay\"></span></td>"
             html+="</tr>"
         }
@@ -1676,7 +1676,7 @@ function PopUpAboutEquip(id)
         {
             html+="<tr>"
             html+="<td width=\"35\">"+Lang["PopUp_79"]+"</td>"
-            html+="<td width=\"25\"><img src=\"img/4/4.gif\"/></td>"
+            html+="<td width=\"25\"><img src=\"img/4/4.GIF\"/></td>"
             html+="<td width=\"40\"><span id=\"feastitem_use_pay\"></span></td>"
             html+="</tr>"
         }
@@ -1692,7 +1692,7 @@ function PopUpAboutEquip(id)
         html+="<li><table width=\"100\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">"
         html+="<tr>"
         html+="<td width=\"35\">"+Lang["PopUp_79"]+"</td>"
-        html+="<td width=\"25\"><img src=\"img/4/4.gif\"/></td>"
+        html+="<td width=\"25\"><img src=\"img/4/4.GIF\"/></td>"
         html+="<td width=\"40\"><span id=\"item_buy_pay\"></span></td>"
         html+="</tr>"
         html+="</table>"
@@ -1860,7 +1860,7 @@ function ShowFeastItemBox()
     $("#popup").css("top","253px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_89"]+"</p>";
     html+="<p>"+GetItemInfo+"</p>";
@@ -1892,7 +1892,7 @@ function ShowDisassembleBox()
     $("#popup").css("top","253px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_90"]+"</p>";
     html+="<p>"+GetItemInfo+"</p>";
@@ -1924,7 +1924,7 @@ function ShowGetItemInfoBox()
     $("#popup").css("top","253px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p>"+Lang["PopUp_89"]+"</p>";
     for(var i=0;i<GetItemInfo.length;i++)
@@ -2000,7 +2000,7 @@ function PopUpSendMessage(id)
     $("#popup").css("top","197px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<ul style=\"margin-left:15px;\">";
     html+="<li>"+Lang["PopUp_94"]+"<input onKeyDown=\"CheckMaxInput(this,40)\" onKeyUp=\"CheckMaxInput(this,40)\" onBlur=\"CheckMaxInput(this,40)\" class=\"input_mtitle\" id=\"popup_mail_title\"><span id=\"errortitle\" class=\"font_red\"></span></li>";
     html+="<li>"+Lang["PopUp_95"]+"<input onKeyDown=\"CheckMaxInput(this,14)\" onKeyUp=\"CheckMaxInput(this,14)\" onBlur=\"CheckMaxInput(this,14)\" class=\"input_mname\"  id=\"popup_mail_to\"><span id=\"errorto\" class=\"font_red\"></span></li>";
@@ -2071,7 +2071,7 @@ function PopUpReadMessage(id)
     $("#popup").css("top","197px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<ul style=\"margin-top:10px;margin-left:15px;\">";
     html+="<li>"+Lang["PopUp_94"]+"<input readonly=\"true\" class=\"input_mtitle\" id=\"popup_mail_title\"></li>";
     html+="<li>"+Lang["PopUp_95"]+"<input readonly=\"true\" class=\"input_mname\"  id=\"popup_mail_from\"></li>";
@@ -2211,7 +2211,7 @@ function PopUpChoiceItem(id)
     $("#popup").css("top","110px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     
     {
         html+="<br>";
@@ -2281,7 +2281,7 @@ function ShowWarpaperBox()
    html+="<div id=\"warpaper\">";
    html+="<div class=\"warpaper_popup\">";
    html+="<div class=\"warpaper_popup1\">";
-   html+="<a class=\"closepic\" onmousedown=\"HideWarpaperPopup()\" href=\"#\" ><img src=\"img/o/22.gif\"/></a>";
+   html+="<a class=\"closepic\" onmousedown=\"HideWarpaperPopup()\" href=\"#\" ><img src=\"img/o/22.GIF\"/></a>";
    html+="<div id=\"warpaper_logo\">";
    html+="</div>";
    html+="<div id=\"warpaper_content\">";
@@ -2456,11 +2456,11 @@ function CreateTopMail()
             html+="<table width=\"440\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>";
             html+="<td width=\"110\"><b class=\"font_green\">"+FightInfo.Res.CityName+"</b></td>";
             if(FightInfo.Res.Money>0)
-            html+="<td width=\"22\"><img src=\"img/4/1.gif\" /></td><td width=\"60\">"+FightInfo.Res.Money+"</td>";
+            html+="<td width=\"22\"><img src=\"img/4/1.GIF\" /></td><td width=\"60\">"+FightInfo.Res.Money+"</td>";
             if(FightInfo.Res.Food>0)
-            html+="<td width=\"22\"><img src=\"img/4/2.gif\" /></td><td width=\"60\">"+FightInfo.Res.Food+"</td>";
+            html+="<td width=\"22\"><img src=\"img/4/2.GIF\" /></td><td width=\"60\">"+FightInfo.Res.Food+"</td>";
             if(FightInfo.Res.Men>0)
-            html+="<td width=\"22\"><img src=\"img/4/3.gif\" /></td><td>"+FightInfo.Res.Men+"</td>";
+            html+="<td width=\"22\"><img src=\"img/4/3.GIF\" /></td><td>"+FightInfo.Res.Men+"</td>";
             html+="</tr></table>";
             html+="</div>";
         }
@@ -2624,9 +2624,9 @@ function CreateMiddleMail()
         html+="<tr><td><b class=\"hquality_"+ahero[i].Quality+"\">"+ahero[i].HeroName+"</b></td>";
         html+="<td>"+ahero[i].ChildrenCount+"</td><td>"+ahero[i].ChildrenLoss+"</td><td>"+ahero[i].TrainingCount+"</td><td>"+ahero[i].TrainingLoss+"</td><td>"+ahero[i].GainExp+"</td><td>";
         if(ahero[i].HeroStatefFlag==1)
-        html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.gif\" />";
+        html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.GIF\" />";
         if(ahero[i].HeroUpdateFlag==1)
-        html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.gif\" />";
+        html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.GIF\" />";
         html+="</td></tr>";
     }
     html+="</table>";
@@ -2678,9 +2678,9 @@ function CreateMiddleMail()
             html+="<tr><td><b class=\"hquality_"+dhero[i].Quality+"\">"+dhero[i].HeroName+"</b></td>";
             html+="<td>"+dhero[i].ChildrenCount+"</td><td>"+dhero[i].ChildrenLoss+"</td><td>"+dhero[i].TrainingCount+"</td><td>"+dhero[i].TrainingLoss+"</td><td>"+dhero[i].GainExp+"</td><td>";
             if(dhero[i].HeroStatefFlag==1)
-            html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.gif\" />";
+            html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.GIF\" />";
             if(dhero[i].HeroUpdateFlag==1)
-            html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.gif\" />";
+            html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.GIF\" />";
             html+="</td></tr>";
         }
         html+="</table>";
@@ -2768,9 +2768,9 @@ function CreateSupportMail()
                 html+="<tr><td><b class=\"hquality_"+asupport[m].Quality+"\">"+asupport[m].HeroName+"</b></td>";
                 html+="<td>"+asupport[m].ChildrenCount+"</td><td>"+asupport[m].ChildrenLoss+"</td><td>"+asupport[m].TrainingCount+"</td><td>"+asupport[m].TrainingLoss+"</td><td>"+asupport[m].GainExp+"</td><td>";
                 if(asupport[m].HeroStatefFlag==1)
-                html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.gif\" />";
+                html+="<img title=\""+Lang["PopUp_158"]+"\" src=\"img/o/39.GIF\" />";
                 if(asupport[m].HeroUpdateFlag==1)
-                html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.gif\" />";
+                html+="<img title=\""+Lang["PopUp_159"]+"\" src=\"img/o/38.GIF\" />";
                 html+="</td></tr>";
             }
             html+="</table>";
@@ -2882,7 +2882,7 @@ function PopUpChangeName(id)
     $("#popup").css("top","248px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if(type==3)
         html+="<p>"+Lang["PopUp_229"]+"</p>";//请输入新的占领信息
@@ -2898,7 +2898,7 @@ function PopUpChangeName(id)
         html+="<p><input id=\"newname_change\" type=\"text\" class=\"input_searchitem\" maxlength=\"34\"/></p>";
         html+="<p style=\"color:#6F6F6F\">"+Lang["PopUp_231"]+"</p></p>";//名称不能超过34个汉字
         html+="<p>"+Lang["PopUp_220"]+"</p>";
-        html+="<p><img src=\"img/4/4.gif\"/> 5</p>";
+        html+="<p><img src=\"img/4/4.GIF\"/> 5</p>";
     }
     else
     {

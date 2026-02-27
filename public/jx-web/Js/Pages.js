@@ -10,8 +10,8 @@ var NextRange13=13;
 var DefenceNum=0;
 var AttackTeamState = new Array(Lang["Pages_1"],Lang["Pages_2"],Lang["Pages_3"],Lang["Pages_4"],Lang["Pages_5"],Lang["Pages_6"],Lang["Pages_7"],Lang["Pages_8"],Lang["Pages_59"],Lang["Pages_7"],Lang["Pages_60"],Lang["Pages_61"],Lang["Pages_62"]);
 //var AttackTeamState = new Array("出战队列中无侠客","出战队列闲置","出战队列目前正在行军途中","战队列目前正在行军途中","出战队列目前驻守在：","战队列目前正在行军途中","出战队列目前位于：","出战队列正在返回村镇途中","出战队列目前处于战场状态","出战队列目前位于:","出战队列处于亲临攻击途中","出战队列处于亲临支援途中","出战队列目前守擂中:");
-var DefenceBlankImg = new Array("img/2/d/14.gif","img/2/d/15.gif","img/2/d/16.gif");
-var DefenceResImg = new Array("img/2/d/10.gif","img/2/d/11.gif","img/2/d/12.gif","img/2/d/13.gif");
+var DefenceBlankImg = new Array("img/2/d/14.GIF","img/2/d/15.GIF","img/2/d/16.GIF");
+var DefenceResImg = new Array("img/2/d/10.GIF","img/2/d/11.GIF","img/2/d/12.GIF","img/2/d/13.GIF");
 //擂台坐标
 var Arena=[116303,226353,161114,282100,116345,106213,91284,241252,308252,136185];
  
@@ -261,7 +261,7 @@ function CreateInteriorPage()
     
     //圣诞gif图
     // if(PicInterBack=="/2/b/m/0.jpg")
-    // html+="<img id=\"christmas_1\" class=\"christmas_1\" src=\"img/2/b/m/mg2.gif\" />";
+    // html+="<img id=\"christmas_1\" class=\"christmas_1\" src=\"img/2/b/m/mg2.GIF\" />";
     
     //内政建筑区域透明图
     html+="<img id=\"clearpic_"+PageNum+"\" class=\"clearpic_"+PageNum+"\" src=\""+PicPath+PicClarity+"\" usemap=\"#map_"+PageNum+"\" />";
@@ -780,7 +780,7 @@ function CreateHeros()
         else
         {
             html+="<div id=\"hero_+"+i+"\" class=\"herobox\">";
-            //html+=HtmlImg("heroicon","heroicon",PicPath+"/2/h/h/3.gif");
+            //html+=HtmlImg("heroicon","heroicon",PicPath+"/2/h/h/3.GIF");
             html+="<img id=\"heroicon\" class=\"heroicon\" onmouseover=\"ShowTips(event,'common_1_60')\" onmouseout=\"HideTips()\" src=\"img/2/h/h/3.GIF\"/>";
             html+="</div>"; 
         }

@@ -146,12 +146,12 @@ function Teacher_Open()
     if(CityInteriorInfo.IsLord==1)
     {
         content=eval("teacher_content.c5_12");
-        $("#Teacher_img").attr("src","img/h/t/13b.gif");
+        $("#Teacher_img").attr("src","img/h/t/13b.GIF");
         $("#Teacher_simg").attr("src","img/h/t/14b.GIF");
     }
     else
     {
-        $("#Teacher_img").attr("src","img/h/t/13.gif");
+        $("#Teacher_img").attr("src","img/h/t/13.GIF");
         $("#Teacher_simg").attr("src","img/h/t/14.GIF");
     }
     

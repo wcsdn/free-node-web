@@ -265,9 +265,9 @@ function ShowTips(ev,tipsID)
                 tips="<p>"+Lang["Tips_265"]+"</p>";
                 tips+="<p class='font_bold'>"+Lang["Tips_266"]+"</p>";
                 if(CityInteriorInfo.Men>=50)
-                    tips+="<p><img src=\"img/4/3.gif\" /><span>   50</span></p>";
+                    tips+="<p><img src=\"img/4/3.GIF\" /><span>   50</span></p>";
                 else
-                    tips+="<p><img src=\"img/4/3.gif\" /><span class=\"font_red\">   50</span></p>";
+                    tips+="<p><img src=\"img/4/3.GIF\" /><span class=\"font_red\">   50</span></p>";
                 var needTime=1200*TimePercent/100
                 if(needTime>0)
                     tips+="<p><img src=\"img/o/18.GIF\" /><span>  "+IntToTime(needTime)+"</span></p></p>";          
@@ -281,9 +281,9 @@ function ShowTips(ev,tipsID)
                     tips="<p>"+Lang["Tips_268"]+"</p>"
                 tips+="<p class='font_bold'>"+Lang["Tips_266"]+"</p>";
                 if(CityInteriorInfo.Men>=100)
-                    tips+="<p><img src=\"img/4/3.gif\" /><span>   100</span></p>";
+                    tips+="<p><img src=\"img/4/3.GIF\" /><span>   100</span></p>";
                 else
-                    tips+="<p><img src=\"img/4/3.gif\" /><span class=\"font_red\">   100</span></p>";
+                    tips+="<p><img src=\"img/4/3.GIF\" /><span class=\"font_red\">   100</span></p>";
                 var needTime=0;
                 if(t[2]=="a")
                     needTime=1200*TimePercent/100;
@@ -292,9 +292,9 @@ function ShowTips(ev,tipsID)
                 if(t[2]=="b")
                 {
                     if(CityInteriorInfo.Gold>=1)
-                        tips+="<p><img src=\"img/4/4.gif\" /><span>   1</span></p>";             
+                        tips+="<p><img src=\"img/4/4.GIF\" /><span>   1</span></p>";             
                     else
-                        tips+="<p><img src=\"img/4/4.gif\" /><span class=\"font_red\">   1</span></p>";  
+                        tips+="<p><img src=\"img/4/4.GIF\" /><span class=\"font_red\">   1</span></p>";  
                 }
             }
         }
@@ -333,9 +333,9 @@ function ShowTips(ev,tipsID)
                         tips="<p>"+Lang["Tips_268"]+"</p>"
                     tips+="<p class='font_bold'>"+Lang["Tips_266"]+"</p>";
                     if(CityInteriorInfo.Men>=100)
-                        tips+="<p><img src=\"img/4/3.gif\" /><span>   100</span></p>";
+                        tips+="<p><img src=\"img/4/3.GIF\" /><span>   100</span></p>";
                     else
-                        tips+="<p><img src=\"img/4/3.gif\" /><span class=\"font_red\">   100</span></p>";
+                        tips+="<p><img src=\"img/4/3.GIF\" /><span class=\"font_red\">   100</span></p>";
                     var needTime=0;
                     if(t[2]=="a")
                         needTime=1200*TimePercent/100;
@@ -344,9 +344,9 @@ function ShowTips(ev,tipsID)
                     if(t[2]=="b")
                     {
                         if(CityInteriorInfo.Gold>=1)
-                            tips+="<p><img src=\"img/4/4.gif\" /><span>   1</span></p>";             
+                            tips+="<p><img src=\"img/4/4.GIF\" /><span>   1</span></p>";             
                         else
-                            tips+="<p><img src=\"img/4/4.gif\" /><span class=\"font_red\">   1</span></p>";  
+                            tips+="<p><img src=\"img/4/4.GIF\" /><span class=\"font_red\">   1</span></p>";  
                     }
                 }       
             }
@@ -453,9 +453,9 @@ function ShowTips(ev,tipsID)
             tips="";
             tips+="<p>"+Lang["Tips_283"]+"</p>";
             if(gold-1>=0)
-            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.gif\"/>1</p>";
+            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.GIF\"/>1</p>";
             else
-            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.gif\"/><span class=\"font_red\">1</span></p>";
+            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.GIF\"/><span class=\"font_red\">1</span></p>";
         }
         else if(t[0]=="returnback")
         {
@@ -464,9 +464,9 @@ function ShowTips(ev,tipsID)
             var gold=CityInteriorInfo.Gold;
             tips+="<p>"+Lang["Tips_284"]+"</p>";
             if(gold-5>=0)
-            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.gif\"/>5</p>";
+            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.GIF\"/>5</p>";
             else
-            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.gif\"/><span class=\"font_red\">5</span></p>";
+            tips+="<p><img style=\"padding-right:15px;\" src=\"img/4/4.GIF\"/><span class=\"font_red\">5</span></p>";
         }
         else if(t[0]=="heroexp")
         {
@@ -486,17 +486,17 @@ function ShowTips(ev,tipsID)
             var money = parseInt(t[3]);
             var level = parseInt(t[4])-8;
             if(men<0)
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/3.gif\" /><span class=\"font_red\">2000</span></li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/3.GIF\" /><span class=\"font_red\">2000</span></li>";
             else
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/3.gif\" />2000</li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/3.GIF\" />2000</li>";
             if(food<0)
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/2.gif\" /><span class=\"font_red\">20000</span></li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/2.GIF\" /><span class=\"font_red\">20000</span></li>";
             else
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/2.gif\" />20000</li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/2.GIF\" />20000</li>";
             if(money<0)
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/1.gif\" /><span class=\"font_red\">20000</span></li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/1.GIF\" /><span class=\"font_red\">20000</span></li>";
             else
-            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/1.gif\" />20000</li>";
+            tips+="<li><img style=\"margin-right:10px;\" src=\"img/4/1.GIF\" />20000</li>";
             if(level<0)
             tips+="<li>"+Lang["Tips_287"]+"<span class=\"font_red\">"+Lang["Tips_288"]+"</span>"+Lang["Tips_289"]+"</li>";
             else

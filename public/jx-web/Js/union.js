@@ -1017,7 +1017,7 @@ function PopUpBuildUnion()
     $("#popup").css("top","142px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div id=\"buildunion\">";       
     html+="<p>"+Lang["union_88"]+"</p><ul>"; 
     html+="<li>"+Lang["union_89"]+"<input class=\"input_orgname\" id='input_org_name' maxlength='10'/></li>"; 
@@ -1029,13 +1029,13 @@ function PopUpBuildUnion()
     html+="<li class=\"font_small\">"+Lang["union_93"]+"</li>"; 
     html+="<li class=\"headfont\">"+Lang["union_94"]+"</li><li>"; 
     html+="<table width=\"248\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr>"; 
-    html+="<td width=\"22\"><img src=\"img/4/1.gif\" /></td>"; 
+    html+="<td width=\"22\"><img src=\"img/4/1.GIF\" /></td>"; 
     html+="<td width=\"46\">20000</td>"; 
-    html+="<td width=\"22\"><img src=\"img/4/2.gif\" /></td>";
+    html+="<td width=\"22\"><img src=\"img/4/2.GIF\" /></td>";
     html+="<td width=\"46\">20000</td>"; 
-    html+="<td width=\"22\"><img src=\"img/4/3.gif\" /></td>";
+    html+="<td width=\"22\"><img src=\"img/4/3.GIF\" /></td>";
     html+="<td width=\"38\">2000</td>";
-    html+="<td width=\"22\"><img src=\"img/4/4.gif\" /></td>";
+    html+="<td width=\"22\"><img src=\"img/4/4.GIF\" /></td>";
     html+="<td width=\"27\">0</td> </tr></table></li></ul>";
     html+="<ul id=\"orgbutton\">";
     html+="<li><a href=\"#\" onmousedown=CreateOrg()>"+Lang["union_95"]+"</a></li>";
@@ -1066,7 +1066,7 @@ function PopUpUnionInformation(type)
     $("#popup").css("top","142px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div id=\"releasemessage\">";       
     html+=(type==0?"<p>"+Lang["union_97"]+"</p>":"<p>"+Lang["union_97"]+"</p>");
     html+="<ul><li></li>";
@@ -1157,7 +1157,7 @@ function UnionPopUp(id)
     $("#popup").css("top","257px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     if(index==1)
     html+="<p>"+Lang["union_101"]+"</p>";
@@ -1735,7 +1735,7 @@ function ContributeRes(id)
     $("#popup").css("top","238px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p style=\"text-align:center;\">"+Lang["union_109"]+"</p>";
     html+="<ul style=\"line-height:18px;\">";
@@ -1839,15 +1839,15 @@ function BuyOrgResGold()
     $("#popup").css("top","223px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<p style=\"text-align:center;\">"+Lang["union_111"]+"</p>";
     html+="<p style=\"text-align:center;\"><input id=\"input_getorgres\" class=\"input_getorgres\" onkeydown=\"OnlyNum(event)\" onkeyup=\"ChangeGetOrgResInputGold()\"  /></p>";
     html+="<ul>";
     html+="<li>"+Lang["union_127"]+""+OrgResName[OrgResType-1]+""+Lang["union_128"]+"</li>";
-    html+="<li><img style=\"margin-right:10px;\" src=\"img/4/4.gif\"/>"+PerNeedGold+"</li>";
+    html+="<li><img style=\"margin-right:10px;\" src=\"img/4/4.GIF\"/>"+PerNeedGold+"</li>";
     html+="<li>"+Lang["union_129"]+"</li>";
-    html+="<li><img style=\"margin-right:10px;\" src=\"img/4/4.gif\"/><span id=\"totalorgresgold\"></span></li>";
+    html+="<li><img style=\"margin-right:10px;\" src=\"img/4/4.GIF\"/><span id=\"totalorgresgold\"></span></li>";
     html+="</ul>";
     html+="</div>";
     html+="<div class=\"popup_button\">";

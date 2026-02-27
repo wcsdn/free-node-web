@@ -68,7 +68,7 @@ function CreateTaskType()
     haveNewTask=0;
     //任务类型
     html+="";
-    html+="<div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/79.gif\" /></div>";
+    html+="<div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/79.GIF\" /></div>";
     html+="    <div id=\"tasktype\">";
     if(TaskInfo!=null)
     {
@@ -100,7 +100,7 @@ function CreateTaskType()
         html+="    </ul>";
     }
     html+="    </div>";
-    html+="    <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/80.gif\" /></div>";
+    html+="    <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/80.GIF\" /></div>";
     //任务名称
     html+="    <div id=\"taskname\">";
     html+="    </div>";    
@@ -115,16 +115,16 @@ function CreateTaskType()
         if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100)
             html+="<a class=\"linkstyle_3\" id=\"task_4_a\" onmousedown=\"GetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='font_green'>"+Lang["Task_38"]+"</span></a>";//寻访名匠
         else
-            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.gif\"/></a>";
+            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.GIF\"/></a>";
         html+="</td>";
         html+="<td style=\"padding-left:0px;\" width=\"145\">"    
         if(GetComposeTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100 && CityInteriorInfo.Gold>=1)
             html+="<a class=\"linkstyle_3\" id=\"task_4_b\" onmousedown=\"QuickGetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='needgold'>"+Lang["Task_39"]+"</span></a>";//快速寻访
         else
-            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.gif\"/></a>";    
+            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.GIF\"/></a>";    
         html+="</td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.gif\"/></td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.gif\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.GIF\"/></td>";
         html+="<tr></tr></table>";   
     }
     var taskfoot = document.getElementById("taskfoot");
@@ -199,16 +199,16 @@ function CreateTaskName(id)
         if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100)
             html+="<a class=\"linkstyle_3\" id=\"task_4_a\" onmousedown=\"GetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='font_green'>"+Lang["Task_38"]+"</span></a>";//寻访名匠
         else
-            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.gif\"/></a>";
+            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.GIF\"/></a>";
         html+="</td>";
         html+="<td style=\"padding-left:0px;\" width=\"145\">"    
         if(GetComposeTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100 && CityInteriorInfo.Gold>=1)
             html+="<a class=\"linkstyle_3\" id=\"task_4_b\" onmousedown=\"QuickGetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='needgold'>"+Lang["Task_39"]+"</span></a>";//快速寻访
         else
-            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.gif\"/></a>";    
+            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.GIF\"/></a>";    
         html+="</td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.gif\"/></td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.gif\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.GIF\"/></td>";
         html+="<tr></tr></table>";   
     }
     var taskfoot = document.getElementById("taskfoot");
@@ -309,16 +309,16 @@ function CreateTaskDetail(id)
                 html+="<td class=\"taskline_2\"><p>"+Lang["Task_27"]+""+" "+UserLevel[TaskInfo[TaskNameIndex].NeedObjValue-1];
                 break;
                 case 10:
-                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.gif\"/><span>("+CityInteriorInfo.Money+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
+                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.GIF\"/><span>("+CityInteriorInfo.Money+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
                 break;
                 case 11:
-                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_29"]+"\" src=\"img/4/2.gif\"/><span>("+CityInteriorInfo.Food+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
+                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_29"]+"\" src=\"img/4/2.GIF\"/><span>("+CityInteriorInfo.Food+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
                 break;
                 case 12:
-                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_30"]+"\" src=\"img/4/3.gif\"/><span>("+CityInteriorInfo.Men+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
+                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_30"]+"\" src=\"img/4/3.GIF\"/><span>("+CityInteriorInfo.Men+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
                 break;
                 case 13:
-                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_31"]+"\" src=\"img/4/4.gif\"/><span>("+CityInteriorInfo.Gold+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
+                html+="<td class=\"taskline_2\"><img title=\""+Lang["Task_31"]+"\" src=\"img/4/4.GIF\"/><span>("+CityInteriorInfo.Gold+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")</span>";
                 break;
                 case 15:
                 html+="<td class=\"taskline_2\"><p>"+Lang["Task_32"]+""+" "+"("+TaskInfo[TaskNameIndex].HasCondition+"/"+TaskInfo[TaskNameIndex].NeedObjValue+")";
@@ -353,7 +353,7 @@ function CreateTaskDetail(id)
             if((TaskInfo[TaskNameIndex].CostMoney+TaskInfo[TaskNameIndex].CostFood+TaskInfo[TaskNameIndex].CostMen+TaskInfo[TaskNameIndex].CostGold+TaskInfo[TaskNameIndex].CostInsignia)>0)
             {
                 if(TaskInfo[TaskNameIndex].CostMoney>0)
-                    html+="<div><img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.gif\"/><span> "+TaskInfo[TaskNameIndex].CostMoney+"</span></div>";
+                    html+="<div><img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.GIF\"/><span> "+TaskInfo[TaskNameIndex].CostMoney+"</span></div>";
                 if(TaskInfo[TaskNameIndex].CostFood>0)
                     html+="<div><img title=\""+Lang["Task_29"]+"\" src=\"img/4/2.GIF\"/><span> "+TaskInfo[TaskNameIndex].CostFood+"</span></div>";
                 if(TaskInfo[TaskNameIndex].CostMen>0)
@@ -382,7 +382,7 @@ function CreateTaskDetail(id)
         {
             html+="<p id=\"taskprize\">";
             if(TaskInfo[TaskNameIndex].GetMoney>0)
-                html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.gif\"/><span>"+TaskInfo[TaskNameIndex].GetMoney+"</span>";
+                html+="<img title=\""+Lang["Task_28"]+"\" src=\"img/4/1.GIF\"/><span>"+TaskInfo[TaskNameIndex].GetMoney+"</span>";
             if(TaskInfo[TaskNameIndex].GetFood>0)
                 html+="<img title=\""+Lang["Task_29"]+"\" src=\"img/4/2.GIF\"/><span>"+TaskInfo[TaskNameIndex].GetFood+"</span>";
             if(TaskInfo[TaskNameIndex].GetMen>0)
@@ -412,7 +412,7 @@ function CreateTaskDetail(id)
         if(TaskInfo[TaskNameIndex].State==2)
         dhtml+="<td width=\"528\" align=\"center\"><a class=\"linkstyle_3\" style=\"color:#35c235;\" onmousedown=\"GetTaskGoods()\" href=\"#\">"+Lang["Task_37"]+"</a></td>";
         else if(TaskInfo[TaskNameIndex].State==1)
-        dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.gif\"/></a></td>";
+        dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></a></td>";
     }
     if(TaskInfo!=null && (TaskTwoType==2 || TaskTwoType==3 || TaskTwoType==5))
     {
@@ -421,7 +421,7 @@ function CreateTaskDetail(id)
         	dhtml+="<td width=\"528\" align=\"center\"><a class=\"linkstyle_3\" style=\"color:#35c235;\" onmousedown=\"GetOtherTaskGoods('"+id+"')\" href=\"#\">"+Lang["Task_37"]+"</a></td>";
         }
 	    else if(TaskInfo[TaskNameIndex].State==1)
-            dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.gif\"/></a></td>";
+            dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></a></td>";
     }
     //交换资源
     if(TaskInfo!=null && TaskTwoType==6)
@@ -431,32 +431,32 @@ function CreateTaskDetail(id)
         	dhtml+="<td width=\"528\" align=\"center\"><a class=\"linkstyle_3\" style=\"color:#35c235;\" onmousedown=\"GetOtherTaskGoods('"+id+"')\" href=\"#\">"+Lang["Task_37"]+"</a></td>";
         }
 	    else if(TaskInfo[TaskNameIndex].State==1)
-            dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.gif\"/></a></td>";
+            dhtml+="<td width=\"528\" align=\"center\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></a></td>";
     }
     if(TaskInfo!=null && (TaskTwoType==1 || TaskTwoType==4))
     {
         if(TaskTwoType==1)
-            dhtml+="<td style=\"padding-left:25px;\" width=\"190\"><a><img id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) src=\""+ImgUrl+"o/35.gif\"/></a></td>";
+            dhtml+="<td style=\"padding-left:25px;\" width=\"190\"><a><img id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) src=\""+ImgUrl+"o/35.GIF\"/></a></td>";
         if(TaskTwoType==4)
         {
             dhtml+="<td style=\"padding-left:0px;\" width=\"70\">"
             if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100)
                 dhtml+="<a class=\"linkstyle_3\" id=\"task_4_a\" onmousedown=\"GetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='font_green'>"+Lang["Task_38"]+"</span></a>";
             else
-                dhtml+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.gif\"/></a>";
+                dhtml+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.GIF\"/></a>";
             dhtml+="</td>";
             dhtml+="<td style=\"padding-left:0px;\" width=\"145\">"    
             if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100 && CityInteriorInfo.Gold>=1)
                 dhtml+="<a class=\"linkstyle_3\" id=\"task_4_b\" onmousedown=\"QuickGetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='needgold'>"+Lang["Task_39"]+"</span></a>";
             else
-                dhtml+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.gif\"/></a>";    
+                dhtml+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.GIF\"/></a>";    
             dhtml+="</td>";
             
         }
         if(TaskInfo[TaskNameIndex].State==2)
             dhtml+="<td width=\"129\"><a class=\"linkstyle_3\" style=\"color:#35c235;\" onmousedown=\"GetOtherTaskGoods('"+id+"')\" href=\"#\">"+Lang["Task_37"]+"</a></td>";
         else if(TaskInfo[TaskNameIndex].State==1)
-            dhtml+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.gif\"/></td>";
+            dhtml+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></td>";
                         
         dhtml+="<td><a class=\"linkstyle_3\" onmousedown=\"DeleteTask()\" href=\"#\">"+Lang["Task_40"]+"</a></td>";
     }
@@ -646,7 +646,7 @@ function GetNormalTask()
     var taskNum=GetNormalTaskNum();
     if(eventNum==0 && taskNum==0)
     {
-        var html="<a id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/35.gif\"/></a>";
+        var html="<a id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/35.GIF\"/></a>";
         $("#NormalTask").html(html);
         Main.AddDailyTaskEvent(CityID,cb_AddEvent);
     }
@@ -833,9 +833,9 @@ function CreateNullTask()
     html+="    </div>";        
     html+="    <div id=\"taskcontent\">";
     html+="        <div id=\"taskleft\">";
-    html+="            <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/79.gif\" alt=\"任务类型\" /></div>";
+    html+="            <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/79.GIF\" alt=\"任务类型\" /></div>";
     html+="            <div id=\"taskname\"></div>";
-    html+="            <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/80.gif\" alt=\"任务名称\" /></div>";
+    html+="            <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\""+ImgUrl+"o/80.GIF\" alt=\"任务名称\" /></div>";
     html+="            <div id=\"tasktype\"></div>";    
     html+="        </div>";
 
@@ -871,9 +871,9 @@ function CreateNullTask()
         if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetNormalTaskNum()==0 && CityInteriorInfo.Men>=50)
             html+="<td id=\"NormalTask\" style=\"padding-left:25px;\" onmousedown=\"GetNormalTask()\" width=\"190\"><a class=\"linkstyle_3\" id=\"task_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='font_green'>"+Lang["Task_53"]+"</span></a></td>";//收集任务
         else
-            html+="<td style=\"padding-left:25px;\" width=\"190\"><a id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/35.gif\"/></a></td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.gif\"/></td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.gif\"/></td>";
+            html+="<td style=\"padding-left:25px;\" width=\"190\"><a id=\"notask_1\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/35.GIF\"/></a></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.GIF\"/></td>";
         html+="<tr></tr></table>";   
     }
     
@@ -884,16 +884,16 @@ function CreateNullTask()
         if(GetComposeTaskEventNum()+GetTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100)
             html+="<a class=\"linkstyle_3\" id=\"task_4_a\" onmousedown=\"GetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='font_green'>"+Lang["Task_38"]+"</span></a>";//寻访名匠
         else
-            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.gif\"/></a>";
+            html+="<a id=\"notask_4_a\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/69.GIF\"/></a>";
         html+="</td>";
         html+="<td style=\"padding-left:0px;\" width=\"145\">"    
         if(GetComposeTaskEventNum()==0 && GetComposeTaskNum()<4 && CityInteriorInfo.Men>=100 && CityInteriorInfo.Gold>=1)
             html+="<a class=\"linkstyle_3\" id=\"task_4_b\" onmousedown=\"QuickGetComposeTask()\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id) href=\"#\"><span class='needgold'>"+Lang["Task_39"]+"</span></a>";//快速寻访
         else
-            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.gif\"/></a>";    
+            html+="<a id=\"notask_4_b\" onmouseout=HideTips(this.id) onmouseover=ShowTips(event,this.id)><img src=\""+ImgUrl+"o/70.GIF\"/></a>";    
         html+="</td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.gif\"/></td>";
-        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.gif\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/37.GIF\"/></td>";
+        html+="<td width=\"129\"><a><img src=\""+ImgUrl+"o/36.GIF\"/></td>";
         html+="<tr></tr></table>";   
     }
     

@@ -89,7 +89,7 @@ function ShowOverInfoPop()
     $("#popup").css("top","178px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(this.id)><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<ul>"; 
     for(var i=0;i<OverdueEffectFlagInfo.length;i++)
@@ -486,7 +486,7 @@ function HtmlEvent(eventIndex)
             {
                 html+="<li><span class=\"eventtype_"+eventObj.ObjType+"\">"+EventObjType[eventObj.ObjType-1]+"</span>"+Lang["Event_42"]+""+EventActionType[eventObj.ActionType-1]+""+Lang["Event_36"]+"</li>";
                 html+="<li class=\"event_li\">"+Lang["Event_37"]+"<span class=\"font_bold\" id=\"remainTime_"+eventObj.ID+"\">"+IntToTime(eventObj.RemainTime)+"</span> "+Lang["Event_38"]+"<span class=\"font_bold\">"+eventObj.OverTime+"</span> "+Lang["Event_41"]+""; 
-                html+="<img style=\"cursor:pointer\" src=\"img/5/1.gif\" id=\"devent_"+eventObj.ActionType+"\" onmousedown=\"CannelEventNeedGold(this.id)\" />"; 
+                html+="<img style=\"cursor:pointer\" src=\"img/5/1.GIF\" id=\"devent_"+eventObj.ActionType+"\" onmousedown=\"CannelEventNeedGold(this.id)\" />"; 
             }
         }        
         else　    
@@ -519,7 +519,7 @@ function HtmlEvent(eventIndex)
             if(eventObj.State==2)
                 html+=HtmlClickTipsImgCss("event_a_"+eventIndex+"_"+"1"+"_2","event_delete",PicPath+PicDelete,"ShowPopUp(this.id)");
             if(eventObj.ActionType==11 || eventObj.ActionType==12 || eventObj.ActionType==16 || eventObj.ActionType==13 || eventObj.ActionType==28)//征服玩家
-                html+="<img style=\"cursor:pointer\" id=\"devent_"+eventObj.ActionType+"\" onmousedown=\"CannelEventNeedGold(this.id)\" src=\"img/5/1.gif\" />";                 
+                html+="<img style=\"cursor:pointer\" id=\"devent_"+eventObj.ActionType+"\" onmousedown=\"CannelEventNeedGold(this.id)\" src=\"img/5/1.GIF\" />";                 
         }
         html+="</li></ul>";    
      }

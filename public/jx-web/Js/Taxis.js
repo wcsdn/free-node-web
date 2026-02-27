@@ -624,7 +624,7 @@ function PopUpSeeHeros()
     $("#popup").css("top","240px");
     html+="<div class=\"common_popup\">";
     html+="<div class=\"common_popup1\">";
-    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.gif\"/></a>";
+    html+="<a class=\"closepic\" href=\"#\" onmousedown=PopUpNotDo(\"0\")><img src=\"img/o/22.GIF\"/></a>";
     html+="<div class=\"common_popup2\">";
     html+="<div style=\"padding-left:10px;text-align:left;padding-top:5px;line-height:14px;\">";
     html+="<table width=\"350\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";

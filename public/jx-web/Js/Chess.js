@@ -19,23 +19,23 @@ var ChessEventState=0;//当前用户事件更新状态
 var ChessControlSpanTime=0;//用户操作间隔
 var ChessunitNotMove=100;
 var ChessCampName=new Array("己方单位","友方单位","敌方单位");
-var ChessLandformImg=new Array("Img/2/d/14.gif","Img/2/d/15.gif","Img/2/d/16.gif");
-var ChessResImg=new Array("Img/2/d/10.gif","Img/2/d/11.gif","Img/2/d/12.gif","Img/2/d/13.gif");
-var ChessMoveRangeImg="Img/2/h/a/0a.gif";
-var ChessActionRangeImg="Img/2/h/a/0b.gif";
-var ChessActonTargetImg=new Array("Img/2/h/a/7.gif","Img/2/h/a/13.gif","Img/2/h/a/21.gif")
-var ChessmanDieImg=new Array("Img/2/h/a/14.gif","Img/2/h/a/22.gif");
-var ChessHeroCampImg=new Array("Img/2/h/a/1.gif","Img/2/h/a/2.gif","Img/2/h/a/3.gif");
-var ChessHeroStateImg="Img/2/h/a/4.gif";
-var ChessActionStateImg= new Array("Img/2/h/a/12.gif","Img/2/h/a/10.gif","Img/2/h/a/11.gif");
-var ChessSkillEffImg=new Array("Img/2/h/a/15.gif","Img/2/h/a/17.gif","Img/2/h/a/18.gif","Img/2/h/a/19.gif","Img/2/h/a/20.gif","Img/2/h/a/15.gif","Img/2/h/a/16.gif","Img/2/h/a/37.gif","Img/2/h/a/38.gif");
-var ChessEffActionImg=new Array("Img/2/h/a/24.gif","Img/2/h/a/27.gif","Img/2/h/a/37.gif","Img/2/h/a/38.gif")
-var ChessActionFlagImg=new Array("Img/2/h/a/23.gif","Img/2/h/a/23.gif");
-var ChessStateImg=new Array("Img/2/h/a/28.gif","Img/2/h/a/29.gif","Img/2/h/a/30.gif","Img/2/h/a/31.gif");
-var ChessTimeShow=new Array("Img/2/h/a/33.gif","Img/2/h/a/32.gif");
-var ChessHPImg="Img/2/h/a/35.gif";
-var ChessHPBackImg="Img/2/h/a/36.gif";
-var ChessQuickSelectImg="Img/2/h/a/34.gif";
+var ChessLandformImg=new Array("Img/2/d/14.GIF","Img/2/d/15.GIF","Img/2/d/16.GIF");
+var ChessResImg=new Array("Img/2/d/10.GIF","Img/2/d/11.GIF","Img/2/d/12.GIF","Img/2/d/13.GIF");
+var ChessMoveRangeImg="Img/2/h/a/0a.GIF";
+var ChessActionRangeImg="Img/2/h/a/0b.GIF";
+var ChessActonTargetImg=new Array("Img/2/h/a/7.GIF","Img/2/h/a/13.GIF","Img/2/h/a/21.GIF")
+var ChessmanDieImg=new Array("Img/2/h/a/14.GIF","Img/2/h/a/22.GIF");
+var ChessHeroCampImg=new Array("Img/2/h/a/1.GIF","Img/2/h/a/2.GIF","Img/2/h/a/3.GIF");
+var ChessHeroStateImg="Img/2/h/a/4.GIF";
+var ChessActionStateImg= new Array("Img/2/h/a/12.GIF","Img/2/h/a/10.GIF","Img/2/h/a/11.GIF");
+var ChessSkillEffImg=new Array("Img/2/h/a/15.GIF","Img/2/h/a/17.GIF","Img/2/h/a/18.GIF","Img/2/h/a/19.GIF","Img/2/h/a/20.GIF","Img/2/h/a/15.GIF","Img/2/h/a/16.GIF","Img/2/h/a/37.GIF","Img/2/h/a/38.GIF");
+var ChessEffActionImg=new Array("Img/2/h/a/24.GIF","Img/2/h/a/27.GIF","Img/2/h/a/37.GIF","Img/2/h/a/38.GIF")
+var ChessActionFlagImg=new Array("Img/2/h/a/23.GIF","Img/2/h/a/23.GIF");
+var ChessStateImg=new Array("Img/2/h/a/28.GIF","Img/2/h/a/29.GIF","Img/2/h/a/30.GIF","Img/2/h/a/31.GIF");
+var ChessTimeShow=new Array("Img/2/h/a/33.GIF","Img/2/h/a/32.GIF");
+var ChessHPImg="Img/2/h/a/35.GIF";
+var ChessHPBackImg="Img/2/h/a/36.GIF";
+var ChessQuickSelectImg="Img/2/h/a/34.GIF";
 var ColorHong="color:#9D080D;";
 var ColorLv="color:#35c235;";
 var ColorZong="color:#a77a57;";
@@ -46,7 +46,7 @@ var ChessEventListStr="";
 var SkillAttr=new Array("普","冰","火","雷","毒","械","医","益","损");
 var CityChessState = 0 ;//1:战场开启,0:战场关闭
 var HeroEffList = new Array();//侠客效果列表:0=普抗点,1=冰抗点,2=火抗点,3=雷抗点,4=毒抗点,5=攻击点,6=移动点,7聚气加成，8侠客经验类
-var ChessItemActionImg = new Array("Img/2/h/a/39.gif","Img/2/h/a/40.gif","Img/2/h/a/41.gif","Img/2/h/a/40.gif","Img/2/h/a/39.gif");
+var ChessItemActionImg = new Array("Img/2/h/a/39.GIF","Img/2/h/a/40.GIF","Img/2/h/a/41.GIF","Img/2/h/a/40.GIF","Img/2/h/a/39.GIF");
 var ChessItemName = new Array("千里丹","金疮药","鸣金令","白驹丸","通络酒");
 var ObjItemInfo;//存储棋手道具信息
 var CityInAttChessSign = 0;//1:战场进行中
@@ -85,9 +85,9 @@ function CreateBlankBattlePate()
    //html+="<p style=\"position: absolute;top:200px;left:200px;color:#9D080D;\">战场已关闭！</p>";
    html+="<div id=\"changechess\" style=\"position: absolute;top:280px;left:440px;\">";
    //if(CityChessState==1)
-   //html+="<a href=\"#\" onmousedown=\"ChangeChessState()\"><img src=\"img/o/73.gif\" /></a>";
+   //html+="<a href=\"#\" onmousedown=\"ChangeChessState()\"><img src=\"img/o/73.GIF\" /></a>";
    //else
-   //html+="<a href=\"#\" onmousedown=\"ChangeChessState()\"><img src=\"img/o/74.gif\" /></a>";
+   //html+="<a href=\"#\" onmousedown=\"ChangeChessState()\"><img src=\"img/o/74.GIF\" /></a>";
    html+="</div></div>";
    var page=document.getElementById("mainpic");
    page.innerHTML=html;     
@@ -198,7 +198,7 @@ function CreateChessboard()
     {
         unit=Chessboard.ChessunitMap[i];
        
-        style="background: url(../img/2/b/m/22.gif) no-repeat left top;width:32px;height:32px;left:"+GetLeft(unit.X)+"px;top:"+GetTop(unit.Y)+"px;position:absolute;z-index:100;cursor:pointer;"
+        style="background: url(../img/2/b/m/22.GIF) no-repeat left top;width:32px;height:32px;left:"+GetLeft(unit.X)+"px;top:"+GetTop(unit.Y)+"px;position:absolute;z-index:100;cursor:pointer;"
         html+=HtmlDivChess("chessunit_"+i,style);
         style="left:"+GetLeft(unit.X)+"px;top:"+GetTop(unit.Y)+"px;position:absolute;z-index:1;";
         if(Math.floor(i/Chessboard.Width)<=1)
@@ -2229,7 +2229,7 @@ function ShowChessInfo(pos)
                         {
                             html+="<ul id=\"chessItem_"+i+"\" style=\"float:left;margin-left:12px;\">";
                             if(obj.EffList[8]>0)//经验效果
-                            html+="<li><img title=\"已拥有此效果\" src=\"Img/2/w/bn4.gif\" /></li>";
+                            html+="<li><img title=\"已拥有此效果\" src=\"Img/2/w/bn4.GIF\" /></li>";
                             else
                             html+="<li><a href=\"#\" id=\"citem_"+ObjItemInfo[i].ID+"_"+i+"_"+ObjItemInfo[i].UseType+"\" onmouseover=\"ShowTips(event,this.id)\" onmouseout=\"HideTips()\" onmousedown=\"UserBattleItem(event,this.id)\"><img src=\""+PicPath+ObjItemInfo[i].Cutu+"\" /></a></li>";
                             html+="<li>"+ObjItemInfo[i].Name+"</li>";
@@ -2239,7 +2239,7 @@ function ShowChessInfo(pos)
                         {
                             html+="<ul id=\"chessItem_"+i+"\" style=\"float:left;margin-left:12px;\">";
                             if(obj.EffList[7]>0)
-                            html+="<li><img title=\"已拥有此效果\" src=\"Img/2/w/bn2.gif\" /></li>";
+                            html+="<li><img title=\"已拥有此效果\" src=\"Img/2/w/bn2.GIF\" /></li>";
                             else
                             html+="<li><a href=\"#\" id=\"citem_"+ObjItemInfo[i].ID+"_"+i+"_"+ObjItemInfo[i].UseType+"\" onmouseover=\"ShowTips(event,this.id)\" onmouseout=\"HideTips()\" onmousedown=\"UserBattleItem(event,this.id)\"><img src=\""+PicPath+ObjItemInfo[i].Cutu+"\" /></a></li>";
                             html+="<li>"+ObjItemInfo[i].Name+"</li>";

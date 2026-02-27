@@ -55,7 +55,7 @@ function CreateWarfarePage()
 function CreateWarfareModels()
 {
     var html=new StringBuffer();
-    html.append("<div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\"img/o/94.gif\" alt=\"竞技模式\" /></div>");
+    html.append("<div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\"img/o/94.GIF\" alt=\"竞技模式\" /></div>");
     html.append("    <div id=\"tasktype\">");
     if(WarfareModels!=null)
     {
@@ -74,7 +74,7 @@ function CreateWarfareModels()
         html.append("     </ul>");
     }
     html.append("    </div>");
-    html.append("    <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\"img/o/95.gif\" alt=\"竞技区域\" /></div>");
+    html.append("    <div style=\"background:#E5F0F6; padding:3px 0;border-bottom:1px #808080 dashed;\"><img src=\"img/o/95.GIF\" alt=\"竞技区域\" /></div>");
     //竞技区域
     html.append("    <div id=\"taskname\">");
     html.append("    </div>");    
