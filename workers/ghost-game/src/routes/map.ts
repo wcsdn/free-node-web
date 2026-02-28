@@ -515,9 +515,9 @@ app.get('/unit', async (c) => {
     let mapUnits: any[] = [];
 
     if (unitType === 1) {
-      // 内政地图: 返回所有建筑
+      // 内政地图: 只返回内政建筑 (type = 'interior')
       const buildings = await db.prepare(`
-        SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+        SELECT * FROM buildings WHERE city_id = ? AND type = 'interior' ORDER BY position
       `).bind(cityId).all();
 
       mapUnits = (buildings.results || []).map((b: any) => {

@@ -105,6 +105,46 @@ app.get('/pending', async (c) => {
   }
 });
 
+// GetValidEvent - GET /event/valid
+// C#: public EventInfo[] GetValidEvent(int cityID)
+// 返回格式：没有事件时返回 [{ID: -1}]，不是空数组
+// 【重要】必须放在 /:id 之前，否则会被 /:id 路由匹配
+app.get('/valid', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) {
+    // 返回 [{ID: -1}] 表示没有事件（匹配 C# 行为）
+    return success(c, [{ ID: -1 }]);
+  }
+
+  const { city_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) {
+    return success(c, [{ ID: -1 }]);
+  }
+
+  try {
+    // 获取当前进行中的事件
+    const events = await db.prepare(`
+      SELECT * FROM time_events 
+      WHERE wallet_address = ? AND end_time > datetime('now')
+      ORDER BY end_time ASC
+    `).bind(walletAddress).all();
+
+    // 如果没有事件，返回 [{ID: -1}]（匹配 C# 行为）
+    if (!events.results || events.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    // 返回事件列表
+    return success(c, events.results);
+  } catch (err: any) {
+    console.error('GetValidEvent error:', err);
+    // 出错时也返回 [{ID: -1}]，不报错
+    return success(c, [{ ID: -1 }]);
+  }
+});
+
 // 获取单个事件的详细信息
 app.get('/:id', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -443,45 +483,6 @@ function formatDuration(seconds: number): string {
   }
 }
 
-
-// GetValidEvent - GET /event/valid
-// C#: public EventInfo[] GetValidEvent(int cityID)
-// 返回格式：没有事件时返回 [{ID: -1}]，不是空数组
-app.get('/valid', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) {
-    // 返回 [{ID: -1}] 表示没有事件（匹配 C# 行为）
-    return success(c, [{ ID: -1 }]);
-  }
-
-  const { city_id } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) {
-    return success(c, [{ ID: -1 }]);
-  }
-
-  try {
-    // 获取当前进行中的事件
-    const events = await db.prepare(`
-      SELECT * FROM time_events 
-      WHERE wallet_address = ? AND end_time > datetime('now')
-      ORDER BY end_time ASC
-    `).bind(walletAddress).all();
-
-    // 如果没有事件，返回 [{ID: -1}]（匹配 C# 行为）
-    if (!events.results || events.results.length === 0) {
-      return success(c, [{ ID: -1 }]);
-    }
-
-    // 返回事件列表
-    return success(c, events.results);
-  } catch (err: any) {
-    console.error('GetValidEvent error:', err);
-    // 出错时也返回 [{ID: -1}]，不报错
-    return success(c, [{ ID: -1 }]);
-  }
-});
 
 // DeleteEvent - POST /event/delete
 app.post('/delete', async (c) => {

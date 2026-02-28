@@ -234,6 +234,13 @@ app.post('/build', async (c) => {
       if (existing) return error(c, 'Position already occupied');
     }
 
+    // 检查是否已经有相同类型的建筑（同一个 config_id 只能有一个）
+    const duplicate = await db.prepare(`
+      SELECT id FROM buildings WHERE city_id = ? AND config_id = ?
+    `).bind(city_id, config_id).first();
+
+    if (duplicate) return error(c, '该建筑已存在，不能重复建造');
+
     // 扣除资源
     await db.prepare(`
       UPDATE cities SET money = money - ?, food = food - ?, population = population - ? WHERE id = ?
@@ -738,6 +745,15 @@ app.post('/event', async (c) => {
 
         if (existing) {
           return error(c, 'Position already occupied');
+        }
+
+        // 检查是否已经有相同类型的建筑（同一个 config_id 只能有一个）
+        const duplicate = await db.prepare(`
+          SELECT id FROM buildings WHERE city_id = ? AND config_id = ?
+        `).bind(cityID, objID).first();
+
+        if (duplicate) {
+          return error(c, '该建筑已存在，不能重复建造');
         }
 
         // 扣除资源

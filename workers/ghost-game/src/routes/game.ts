@@ -438,12 +438,21 @@ app.post('/city/interior-info/:cityID', async (c) => {
       SELECT * FROM buildings 
       WHERE city_id = ? AND type = 'interior'
       ORDER BY position ASC
-    `).bind(cityID).all();
+    `).bind(city.id).all();
 
     // 获取角色信息 (包含元宝)
     const character = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
+
+    // 构建 InteriorBuildingLevel 数组（长度 22，索引 = config_id - 1）
+    // C#: Interior.InteriorBuildingLevel[rdr.GetInt32(1) - 1] = rdr.GetInt32(0);
+    const interiorBuildingLevel = new Array(22).fill(0);
+    (buildings.results || []).forEach((building: any) => {
+      if (building.config_id && building.config_id >= 1 && building.config_id <= 22) {
+        interiorBuildingLevel[building.config_id - 1] = building.level || 0;
+      }
+    });
 
     // 使用真实数据库数据 (匹配 C# CityInteriorInfo 结构)
     return success(c, {
@@ -469,7 +478,7 @@ app.post('/city/interior-info/:cityID', async (c) => {
       EngageHeroNum: 0, MaxEngageHeroNum: 5, 
       CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
       AverageTrainingPer: 100, 
-      InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      InteriorBuildingLevel: interiorBuildingLevel,  // 动态生成，不再硬编码
       TechnicLevel: [0,0,0,0,0,0,0,0,0,0,0,0], 
       EventBreakReturnResPercent: 100,
       // 兼容字段 (旧版)
@@ -508,12 +517,21 @@ app.get('/city/interior-info/:cityID', async (c) => {
       SELECT * FROM buildings 
       WHERE city_id = ? AND type = 'interior'
       ORDER BY position ASC
-    `).bind(cityID).all();
+    `).bind(city.id).all();
 
     // 获取角色信息 (包含元宝)
     const character = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
+
+    // 构建 InteriorBuildingLevel 数组（长度 22，索引 = config_id - 1）
+    // C#: Interior.InteriorBuildingLevel[rdr.GetInt32(1) - 1] = rdr.GetInt32(0);
+    const interiorBuildingLevel = new Array(22).fill(0);
+    (buildings.results || []).forEach((building: any) => {
+      if (building.config_id && building.config_id >= 1 && building.config_id <= 22) {
+        interiorBuildingLevel[building.config_id - 1] = building.level || 0;
+      }
+    });
 
     // 使用真实数据库数据 (匹配 C# CityInteriorInfo 结构)
     return success(c, {
@@ -539,7 +557,7 @@ app.get('/city/interior-info/:cityID', async (c) => {
       EngageHeroNum: 0, MaxEngageHeroNum: 5, 
       CurrentDefenceBuildNum: 0, MaxDefenceBuildNum: 5,
       AverageTrainingPer: 100, 
-      InteriorBuildingLevel: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      InteriorBuildingLevel: interiorBuildingLevel,  // 动态生成，不再硬编码
       TechnicLevel: [0,0,0,0,0,0,0,0,0,0,0,0], 
       EventBreakReturnResPercent: 100,
       // 兼容字段 (旧版)

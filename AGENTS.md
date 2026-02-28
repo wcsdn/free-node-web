@@ -1,5 +1,7 @@
 # AGENTS.md - Your Workspace
 
+**📌 重要**: 这个文件是**所有 AI session 的共享规则**（包括 Claude、Minimax、OpenClaw 等）。所有 AI 在每次 session 开始时都必须读取并遵守这些规则。
+
 This folder is home. Treat it that way.
 
 ## First Run
