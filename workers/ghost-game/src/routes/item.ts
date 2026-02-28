@@ -106,6 +106,9 @@ app.get('/list', async (c) => {
 });
 
 // 获取背包 (alias for /list)
+// GetItemByType - 获取指定城市指定类型指定页数的道具列表
+// C#: public ItemInfo[] GetItemByType(int cityID, int type, int page, int orderBy, int orderType)
+// 返回: ItemInfo[] 数组，没有物品时返回 [{ID: -1}]
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -113,9 +116,13 @@ app.get('/', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { type } = c.req.query();
+  const { city_id, item_type, page = '1', order_by = '0', order_type = '0' } = c.req.query();
 
   try {
+    const pageNum = parseInt(page);
+    const pageSize = 10;  // C# 固定每页 10 个
+    const offset = (pageNum - 1) * pageSize;
+
     let query = `
       SELECT i.*, ic.Name as item_name, ic.Type as item_type, ic.Des as description, ic.Icon as icon
       FROM items i
@@ -124,39 +131,101 @@ app.get('/', async (c) => {
     `;
     const params: any[] = [walletAddress];
 
-    if (type) {
+    if (item_type) {
       query += ' AND ic.Type = ?';
-      params.push(parseInt(type));
+      params.push(parseInt(item_type));
     }
 
-    query += ' ORDER BY i.created_at DESC';
+    // 排序
+    const orderByField = order_by === '1' ? 'i.created_at' : 'i.id';
+    const orderDirection = order_type === '1' ? 'DESC' : 'ASC';
+    query += ` ORDER BY ${orderByField} ${orderDirection} LIMIT ? OFFSET ?`;
+    params.push(pageSize, offset);
 
     const items = await db.prepare(query).bind(...params).all();
 
-    // 按类型分组
-    const grouped: Record<string, any[]> = {};
-    for (const item of (items.results || [])) {
-      const typeName = (item as any).item_type || 'unknown';
-      if (!grouped[typeName]) grouped[typeName] = [];
-      grouped[typeName].push(item);
+    // 如果没有物品，返回 [{ID: -1}]（匹配 C# 行为）
+    if (!items.results || items.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
     }
 
-    // 统计
-    const stats = {
-      total: (items.results || []).length,
-      byType: Object.keys(grouped).length,
-      totalValue: (items.results || []).reduce((sum: number, item: any) => {
-        return sum + (item.count || 1) * ((item as any).price || 0);
-      }, 0),
-    };
+    // 格式化为 ItemInfo 数组（匹配 C# DBItem 字段）
+    const itemInfoList = (items.results || []).map((item: any) => ({
+      ID: item.id,
+      StaticIndex: item.config_id,
+      UserName: walletAddress,
+      CityID: parseInt(city_id || '0'),
+      HeroID: item.hero_id || 0,
+      CorpsID: 0,
+      ItemName: item.item_name || '物品',
+      ItemType: item.item_type || 1,
+      State: item.equipped ? 1 : 0,
+      Price: 0,
+      Durability: item.durability || 100,
+      SellDate: item.created_at,
+      UseGetExp: 0,
+      HitPoint: 0,
+      ItemLevel: 1,
+    }));
 
-    return success(c, { 
-      items: items.results || [],
-      grouped,
-      stats,
-    });
+    return success(c, itemInfoList);
   } catch (err: any) {
-    return error(c, err.message);
+    console.error('GetItemByType error:', err);
+    // 如果表不存在或查询失败，返回 [{ID: -1}]
+    return success(c, [{ ID: -1 }]);
+  }
+});
+
+// GetItemNum - 获取指定城市道具总个数以及各种类型道具个数
+// 对应 C#: public int[] GetItemNum(int cityID, int type)
+// 返回: int[2] - [0]=总数, [1]=指定类型的页数
+// 【新版本 - 修复了返回格式，返回数组而不是对象】
+// 【重要】必须放在 /:id 之前，否则会被 /:id 路由匹配
+app.get('/count', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_type } = c.req.query();
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 获取该用户的物品总数（不限制城市，因为 items 表可能没有 city_id 字段）
+    const totalResult = await db.prepare(`
+      SELECT COUNT(*) as count FROM items
+      WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    const totalCount = (totalResult as any)?.count || 0;
+
+    // 获取指定类型的物品数量
+    let typeCount = 0;
+    if (item_type) {
+      const typeResult = await db.prepare(`
+        SELECT COUNT(*) as count FROM items i
+        LEFT JOIN items_config ic ON i.config_id = ic.ID
+        WHERE i.wallet_address = ? AND ic.Type = ?
+      `).bind(walletAddress, parseInt(item_type)).first();
+      
+      typeCount = (typeResult as any)?.count || 0;
+    }
+
+    // 计算页数（每页 10 个）
+    let pageCount = 0;
+    if (typeCount > 0) {
+      if (typeCount % 10 === 0) {
+        pageCount = typeCount / 10;
+      } else {
+        pageCount = Math.floor(typeCount / 10) + 1;
+      }
+    }
+
+    // 返回数组 [总数, 页数]
+    return success(c, [totalCount, pageCount]);
+  } catch (err: any) {
+    console.error('GetItemNum error:', err);
+    // 如果表不存在或查询失败，返回 [0, 0]
+    return success(c, [0, 0]);
   }
 });
 
@@ -633,37 +702,6 @@ app.get('/by-type', async (c) => {
       pageSize,
       total: countResult?.total || 0,
       totalPages: Math.ceil((countResult?.total || 0) / pageSize),
-    });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// GetItemNum - GET /item/count
-app.get('/count', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, item_type } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    let query = 'SELECT COUNT(*) as count, SUM(count) as total_items FROM items i LEFT JOIN items_config ic ON i.config_id = ic.ID WHERE i.wallet_address = ?';
-    const params: any[] = [walletAddress];
-
-    if (item_type) {
-      query += ' AND ic.Type = ?';
-      params.push(parseInt(item_type));
-    }
-
-    const result: any = await db.prepare(query).bind(...params).first();
-
-    return success(c, {
-      uniqueItems: result?.count || 0,
-      totalItems: result?.total_items || 0,
-      itemType: item_type ? parseInt(item_type) : null,
     });
   } catch (err: any) {
     return error(c, err.message);

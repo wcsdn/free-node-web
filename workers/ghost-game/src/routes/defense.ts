@@ -162,7 +162,10 @@ app.get('/count', async (c) => {
         SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
       `).bind(walletAddress).first();
       
-      if (!city) return error(c, 'City not found', 404);
+      if (!city) {
+        // 没有城市时返回 0
+        return success(c, 0);
+      }
       cityId = (city as any).id;
     }
 
@@ -176,7 +179,9 @@ app.get('/count', async (c) => {
     // C# 返回: int GetDefenceNum(int cityID)
     return success(c, result?.count || 0);
   } catch (err: any) {
-    return error(c, err.message);
+    console.error('GetDefenceNum error:', err);
+    // 如果表不存在或查询失败，返回 0
+    return success(c, 0);
   }
 });
 

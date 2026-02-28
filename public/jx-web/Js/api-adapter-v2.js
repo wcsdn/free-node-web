@@ -75,14 +75,14 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
       }
     },
     success: function(response) {
-      // console.log('📡 API success:', endpoint, JSON.stringify(response).substring(0, 200));
       if (callback) {
         var result;
-        // 强制处理各种情况
+        // 处理后端返回的 {success: true, data: ...} 格式
         if (response && typeof response === 'object') {
-          if (response.data) {
+          // 优先检查 response.data（新后端格式）
+          if (response.hasOwnProperty('data')) {
             result = { value: response.data };
-          } else if (response.value) {
+          } else if (response.hasOwnProperty('value')) {
             result = response;
           } else {
             result = { value: response };
@@ -91,7 +91,6 @@ function apiRequest(endpoint, method, data, needAuth, callback) {
           result = { value: response };
         }
         
-        // console.log('📡 callback result:', endpoint, JSON.stringify(result).substring(0, 200));
         callback(result);
       }
     },

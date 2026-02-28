@@ -576,7 +576,7 @@ app.get('/unit', async (c) => {
       `).bind(cityId).all();
 
       const defenseHeroes = await db.prepare(`
-        SELECT * FROM heroes WHERE city_id = ? AND state = 2 ORDER BY defence_pos
+        SELECT * FROM heroes WHERE city_id = ? AND state = 2 ORDER BY id
       `).bind(cityId).all();
 
       // 建筑单元
@@ -585,7 +585,7 @@ app.get('/unit', async (c) => {
         Type: 1,
         Name: '城防建筑',
         Level: b.level,
-        Pos: b.position,
+        Pos: b.position || 0,
         Index: b.config_id,
         State: b.state,
         // ... 其他字段
@@ -597,7 +597,7 @@ app.get('/unit', async (c) => {
         Type: 2,  // 武将类型
         Name: h.name,
         Level: h.level,
-        Pos: h.defence_pos,
+        Pos: h.position || 0,  // 使用 position 字段而不是 defence_pos
         Index: h.id,
         State: h.state,
         Quality: h.quality || 1,

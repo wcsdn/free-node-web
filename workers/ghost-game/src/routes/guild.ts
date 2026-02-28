@@ -160,6 +160,85 @@ app.post('/create', async (c) => {
   }
 });
 
+// GetMyOrgnizeInfo - GET /guild/my-info
+// C#: public OrgInfo GetMyOrgnizeInfo()
+// 返回 OrgInfo 对象，包含 MyOrganize, MyMember, MyOrgEffectInfo, BossName
+// 注意：必须放在 /:guildId 之前，否则会被 /:guildId 路由匹配
+app.get('/my-info', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 查询用户是否有帮派
+    // 注意：数据库可能没有 guilds 表，返回 null
+    let guildMember: any = null;
+    let guild: any = null;
+    
+    try {
+      guildMember = await db.prepare(`
+        SELECT * FROM guild_members WHERE wallet_address = ?
+      `).bind(walletAddress).first();
+      
+      if (guildMember) {
+        guild = await db.prepare(`
+          SELECT * FROM guilds WHERE id = ?
+        `).bind(guildMember.guild_id).first();
+      }
+    } catch (dbErr) {
+      // 表不存在，返回 null（用户没有帮派）
+      console.log('[Guild] Tables not exist, returning null');
+    }
+    
+    // C# 当用户没有帮派时返回 null
+    // 但前端代码没有检查 null，会报错 "Cannot read properties of null"
+    // 为了兼容前端，返回一个空的 OrgInfo 对象，MyOrganize 和 MyMember 都是 null
+    if (!guildMember || !guild) {
+      return success(c, {
+        MyOrganize: null,
+        MyMember: null,
+        MyOrgEffectInfo: null,
+        BossName: null,
+      });
+    }
+    
+    // 构造 OrgInfo 对象（匹配 C# 模型）
+    const orgInfo = {
+      MyOrganize: {
+        UID: guild.id,
+        OrgName: guild.name,
+        OrgLevel: guild.level || 1,
+        Membership: guild.member_count || 1,
+        MaxMembership: 50,
+        OfficialNumber: 5,
+        Affiche: guild.notice || '',
+        Intro: guild.notice || '',
+      },
+      MyMember: {
+        UID: guildMember.id,
+        UserName: walletAddress,
+        Privilege: guildMember.role === 'leader' ? 5 : guildMember.role === 'officer' ? 3 : 1,
+        Contribution: guildMember.contribution || 0,
+        JoinTime: guildMember.joined_at,
+      },
+      MyOrgEffectInfo: {
+        MoneyPer: 0,
+        FoodPer: 0,
+        MenPer: 0,
+        AttackPer: 0,
+        DefencePer: 0,
+      },
+      BossName: 'Boss',  // TODO: 查询帮主名称
+    };
+    
+    return success(c, orgInfo);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 // 获取帮派详情
 app.get('/:guildId', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -369,24 +448,6 @@ app.post('/:guildId/donate', async (c) => {
   }
 });
 
-
-// GetMyOrgnizeInfo - GET /guild/my-info
-app.get('/my-info', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 已实现
-    // 已实现
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
 
 // ApplyJoinUnion - POST /guild/apply
 app.post('/apply', async (c) => {
@@ -767,18 +828,38 @@ app.get('/effect-by-level', async (c) => {
 });
 
 // ListMessage - GET /guild/chat/messages
+// C#: public OrganizeChatInfo[] ListMessage(int startNum)
+// 返回帮派聊天消息数组
 app.get('/chat/messages', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { start_num } = c.req.query();
+  const start_num = parseInt(c.req.query('start_num') || '0');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 已实现
-    // 已实现
+    // 查询用户是否有帮派
+    let guildMember: any = null;
+    
+    try {
+      guildMember = await db.prepare(`
+        SELECT guild_id FROM guild_members WHERE wallet_address = ?
+      `).bind(walletAddress).first();
+    } catch (dbErr) {
+      // 表不存在
+      console.log('[Guild] Tables not exist');
+    }
+    
+    if (!guildMember) {
+      // 没有帮派，返回空数组
+      return success(c, []);
+    }
+    
+    // TODO: 实现聊天消息查询
+    // 暂时返回空数组
+    return success(c, []);
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -200,33 +200,87 @@ app.post('/recall', async (c) => {
   }
 });
 
-// GetCityOtherCorps - 获取其他军团列表
+
+// GetCityOtherCorps - 获取城市其他军团
+// 对应 C#: public CorpsInfo[] GetCityOtherCorps(int cityID)
+// 【新版本 - 修复了返回格式】
 app.get('/other', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
+  const { city_id } = c.req.query();
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const city_id = parseInt(c.req.query('city_id') || '0');
-  const page = parseInt(c.req.query('page') || '1');
-  const pageSize = parseInt(c.req.query('pageSize') || '20');
-
-  if (!city_id) return error(c, 'city_id is required');
-
   try {
-    // 获取军团列表，排除用户已加入的军团
-    const result = await corpsService.getCorpsList(db, walletAddress, page, pageSize);
-    const r = result as any;
+    // 查询该城市位置的其他军团
+    // 注意：corps 表可能还不存在，先返回空数据
+    const corps = await db.prepare(`
+      SELECT * FROM corps 
+      WHERE garrison_id = ? AND wallet_address != ?
+      ORDER BY id ASC
+    `).bind(city_id, walletAddress).all();
 
-    return success(c, {
-      corps: r.data?.corps || [],
-      total: r.data?.total || 0,
-      page: r.data?.page || 1,
-      pageSize: r.data?.pageSize || 20,
-    });
+    let corpsList = (corps.results || []).map((corp: any) => ({
+      CorpsID: corp.id,
+      CorpsName: corp.name || '军团',
+      GarrisonID: corp.garrison_id,
+      State: corp.state || 1,
+      SchlepMoney: corp.schlep_money || 0,
+      SchlepFood: corp.schlep_food || 0,
+      SchlepMen: corp.schlep_men || 0,
+      CityID: corp.city_id,
+      UserName: corp.wallet_address,
+      TargetCity: corp.target_city || 0,
+      ArriveTime: corp.arrive_time || '',
+      CityPos: corp.city_pos || 0,
+      Seconds: corp.seconds || 0,
+      Insignia: corp.insignia || 0,
+      IsVIP: corp.is_vip || 0,
+    }));
+
+    // 如果没有军团，返回一个 CorpsID = -1 的空军团（匹配 C# 逻辑）
+    if (corpsList.length === 0) {
+      corpsList = [{
+        CorpsID: -1,
+        CorpsName: '',
+        GarrisonID: 0,
+        State: 0,
+        SchlepMoney: 0,
+        SchlepFood: 0,
+        SchlepMen: 0,
+        CityID: 0,
+        UserName: '',
+        TargetCity: 0,
+        ArriveTime: '',
+        CityPos: 0,
+        Seconds: 0,
+        Insignia: 0,
+        IsVIP: 0,
+      }];
+    }
+
+    return success(c, corpsList);
   } catch (err: any) {
-    return error(c, err.message);
+    console.error('GetCityOtherCorps error:', err);
+    // 如果表不存在，返回空军团
+    return success(c, [{
+      CorpsID: -1,
+      CorpsName: '',
+      GarrisonID: 0,
+      State: 0,
+      SchlepMoney: 0,
+      SchlepFood: 0,
+      SchlepMen: 0,
+      CityID: 0,
+      UserName: '',
+      TargetCity: 0,
+      ArriveTime: '',
+      CityPos: 0,
+      Seconds: 0,
+      Insignia: 0,
+      IsVIP: 0,
+    }]);
   }
 });
 

@@ -73,6 +73,8 @@ app.get('/chess/status', async (c) => {
 });
 
 // 获取棋盘信息 - GET /battle/chess/board
+// C#: public ChessboardInfo GetChessboard(int pos)
+// 返回格式：没有战场时返回 {Pos: -1}
 app.get('/chess/board', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -80,35 +82,65 @@ app.get('/chess/board', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const city_id = parseInt(c.req.query('city_id') || '0');
-
-  if (!city_id) return error(c, 'city_id is required');
+  // C#: public ChessboardInfo GetChessboard(int pos)
+  // 参数是 pos（战场位置），不是 city_id
+  const posParam = c.req.query('pos');
+  
+  // 如果参数无效（包括 [object Object]），返回 {Pos: -1} 而不是报错
+  const pos = parseInt(posParam || '0');
+  if (isNaN(pos) || !posParam) {
+    console.log('[Battle] Invalid pos parameter:', posParam, '- returning empty board');
+    return success(c, {
+      Pos: -1,  // -1 表示没有战场
+      Height: 0,
+      Width: 0,
+      Time: 0,
+      State: 0,
+      TotalSecondsNow: 0,
+      BattleSeconds: 0,
+      WaitSeconds: 0,
+      ChessunitMap: null,
+      ChessplayerList: null,
+      ChessmanList: null,
+    });
+  }
 
   try {
-    // 生成棋盘数据
+    // 查询是否有战场
+    // 暂时返回没有战场的状态（Pos = -1）
+    // TODO: 实现完整的战场逻辑
+    
     const board = {
-      width: 8,
-      height: 8,
-      cells: generateDefaultChessboard(),
-      maxUnits: 5,
-      currentUnits: 0,
-      isMyTurn: true,
-      round: 1,
-      phase: 'placement', // placement, action, resolution
-      // C# ChessboardInfo 字段
-      Pos: 1,
-      Height: 8,
-      Width: 8,
-      Time: 300,
-      State: 1,
-      TotalSecondsNow: 300,
-      BattleSeconds: 300,
-      WaitSeconds: 60,
+      Pos: -1,  // -1 表示没有战场
+      Height: 0,
+      Width: 0,
+      Time: 0,
+      State: 0,
+      TotalSecondsNow: 0,
+      BattleSeconds: 0,
+      WaitSeconds: 0,
+      ChessunitMap: null,
+      ChessplayerList: null,
+      ChessmanList: null,
     };
 
     return success(c, board);
   } catch (err: any) {
-    return error(c, err.message);
+    console.error('[Battle] GetChessboard error:', err);
+    // 出错时也返回 {Pos: -1}，不报错
+    return success(c, {
+      Pos: -1,
+      Height: 0,
+      Width: 0,
+      Time: 0,
+      State: 0,
+      TotalSecondsNow: 0,
+      BattleSeconds: 0,
+      WaitSeconds: 0,
+      ChessunitMap: null,
+      ChessplayerList: null,
+      ChessmanList: null,
+    });
   }
 });
 

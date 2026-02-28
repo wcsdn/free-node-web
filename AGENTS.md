@@ -234,3 +234,15 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
+
+
+## ⚠️ 代码删除准则
+
+**永远不要随意删除代码！**
+
+删除代码前必须：
+1. 搜索前端是否调用：`grep -r "MethodName" public/jx-web/Js/`
+2. 检查 C# 原项目是否存在：`grep -r "MethodName" jx/Web/`
+3. 如果不确定，询问用户或用注释代替删除
+
+**宁可保留多余的代码，也不要删除可能需要的代码。**

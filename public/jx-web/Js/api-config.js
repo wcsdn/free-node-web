@@ -336,7 +336,7 @@ window.API_MAPPING = {
   
   // ==================== 物品相关 ====================
   GetItemByType: {
-    endpoint: '/item/',
+    endpoint: '/item',  // 移除末尾斜杠
     httpMethod: 'GET',
     params: ['city_id', 'item_type', 'page', 'order_by', 'order_type'],
     auth: true
@@ -718,7 +718,7 @@ window.API_MAPPING = {
   GetChessboard: {
     endpoint: '/battle/chess/board',
     httpMethod: 'GET',
-    params: ['city_id'],
+    params: ['pos'],  // 修正：参数是 pos（战场位置），不是 city_id
     auth: true
   },
   

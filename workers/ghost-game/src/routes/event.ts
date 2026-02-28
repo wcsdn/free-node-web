@@ -445,18 +445,20 @@ function formatDuration(seconds: number): string {
 
 
 // GetValidEvent - GET /event/valid
+// C#: public EventInfo[] GetValidEvent(int cityID)
+// 返回格式：没有事件时返回 [{ID: -1}]，不是空数组
 app.get('/valid', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) {
-    // 返回空数组而不是错误，让前端正常显示
-    return c.json({ value: [] });
+    // 返回 [{ID: -1}] 表示没有事件（匹配 C# 行为）
+    return success(c, [{ ID: -1 }]);
   }
 
   const { city_id } = c.req.query();
 
   const db = c.env.DB;
   if (!db) {
-    return c.json({ value: [] });
+    return success(c, [{ ID: -1 }]);
   }
 
   try {
@@ -467,11 +469,17 @@ app.get('/valid', async (c) => {
       ORDER BY end_time ASC
     `).bind(walletAddress).all();
 
-    // 返回前端期望的格式：{ value: [...] }
-    return c.json({ value: events.results || [] });
+    // 如果没有事件，返回 [{ID: -1}]（匹配 C# 行为）
+    if (!events.results || events.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    // 返回事件列表
+    return success(c, events.results);
   } catch (err: any) {
     console.error('GetValidEvent error:', err);
-    return c.json({ value: [] });
+    // 出错时也返回 [{ID: -1}]，不报错
+    return success(c, [{ ID: -1 }]);
   }
 });
 
