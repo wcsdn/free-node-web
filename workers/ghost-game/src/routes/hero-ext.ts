@@ -200,7 +200,13 @@ app.get('/unit-adapt/:heroId', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   const heroId = parseInt(c.req.param('heroId'));
-  const { unit_type } = await c.req.json();
+  let body: any = {};
+  try {
+    body = await c.req.json();
+  } catch (e) {
+    // 如果没有JSON body，尝试从查询参数获取
+  }
+  const unit_type = body.unit_type || c.req.query('unit_type');
   if (!unit_type) return error(c, 'unit_type is required');
 
   const service = new HeroServiceExtension(db);
@@ -217,7 +223,13 @@ app.post('/unit-adapt/check', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { hero_id, unit_type } = await c.req.json();
+  let body: any = {};
+  try {
+    body = await c.req.json();
+  } catch (e) {
+    return error(c, 'Invalid JSON body');
+  }
+  const { hero_id, unit_type } = body;
   if (!hero_id || !unit_type) return error(c, 'hero_id and unit_type are required');
 
   const service = new HeroServiceExtension(db);

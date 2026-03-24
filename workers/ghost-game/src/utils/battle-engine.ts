@@ -718,11 +718,12 @@ export function generateDetailedReport(
 export type UnitType = 'infantry' | 'cavalry' | 'archer' | 'spearman' | 'hero';
 
 // 兵种相克矩阵 (攻击方 -> 防御方 = 加成倍数)
+// 步>骑>弓>步, 克制方伤害+20%
 const UNIT_TYPE_BONUS: Record<UnitType, Partial<Record<UnitType, number>>> = {
-  infantry: { cavalry: 1.5, archer: 0.8 },   // 枪兵克骑，被弓克
-  cavalry: { infantry: 1.5, archer: 0.8 },   // 骑克枪，被弓克
-  archer: { infantry: 1.3, cavalry: 1.5 },   // 弓对步1.3，对骑1.5
-  spearman: { cavalry: 1.4 },                 // 枪兵特殊
+  infantry: { cavalry: 1.2, archer: 0.8 },   // 步兵克骑兵(+20%)，被弓兵克
+  cavalry: { archer: 1.2, infantry: 0.8 },   // 骑兵克弓兵(+20%)，被步兵克
+  archer: { infantry: 1.2, cavalry: 0.8 },   // 弓兵克步兵(+20%)，被骑兵克
+  spearman: { cavalry: 1.2 },                 // 枪兵克骑兵(+20%)，被弓兵克
   hero: {},                                    // 英雄无相克
 };
 

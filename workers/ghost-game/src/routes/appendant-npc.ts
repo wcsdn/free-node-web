@@ -161,55 +161,114 @@ app.post('/cleanup', async (c) => {
 });
 
 
-// mock - POST /appendant-npc/add
+// 添加附庸NPC - POST /appendant-npc/add
 app.post('/add', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
   const { city_id, npc_id } = await c.req.json();
+  if (!city_id || !npc_id) return error(c, 'city_id and npc_id are required');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 已实现
-    // 已实现
+    // 获取城市信息
+    const city: any = await db.prepare(`
+      SELECT * FROM cities WHERE wallet_address = ? AND id = ?
+    `).bind(walletAddress, city_id).first();
+
+    if (!city) return error(c, '城市不存在', 404);
+
+    // 检查是否已有该附庸NPC
+    const existing: any = await db.prepare(`
+      SELECT id FROM appendant_npcs WHERE city_id = ? AND npc_id = ?
+    `).bind(city_id, npc_id).first();
+
+    if (existing) return error(c, '该NPC已是您的附庸');
+
+    // 添加附庸NPC
+    const result = await db.prepare(`
+      INSERT INTO appendant_npcs (city_id, npc_id, wallet_address, status)
+      VALUES (?, ?, ?, 1)
+    `).bind(city_id, npc_id, walletAddress).run();
+
+    return success(c, {
+      id: result.meta.last_row_id,
+      cityId: city_id,
+      npcId: npc_id,
+      message: '附庸NPC添加成功',
+    });
   } catch (err: any) {
     return error(c, err.message);
   }
 });
 
-// GetAllAppendantNpcInfo - GET /appendant-npc/list
+// GetAllAppendantNpcInfo - GET /appendant-npc/list 获取所有附庸NPC
 app.get('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-
+  const { city_id } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 已实现
-    // 已实现
+    let query = `
+      SELECT an.*, c.name as city_name
+      FROM appendant_npcs an
+      JOIN cities c ON an.city_id = c.id
+      WHERE an.wallet_address = ?
+    `;
+    const params: any[] = [walletAddress];
+
+    if (city_id) {
+      query += ' AND an.city_id = ?';
+      params.push(city_id);
+    }
+
+    query += ' ORDER BY an.created_at DESC';
+
+    const npcs = await db.prepare(query).bind(...params).all();
+
+    return success(c, npcs.results || []);
   } catch (err: any) {
-    return error(c, err.message);
+    // 表可能不存在
+    return success(c, []);
   }
 });
 
-// DelAppendantNPC - POST /appendant-npc/delete
+// DelAppendantNPC - POST /appendant-npc/delete 删除附庸NPC
 app.post('/delete', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { npc_id } = await c.req.json();
+  const { npc_id, city_id } = await c.req.json();
+  if (!npc_id) return error(c, 'npc_id is required');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 已实现
-    // 已实现
+    let query = `DELETE FROM appendant_npcs WHERE npc_id = ? AND wallet_address = ?`;
+    const params: any[] = [npc_id, walletAddress];
+
+    if (city_id) {
+      query += ' AND city_id = ?';
+      params.push(city_id);
+    }
+
+    const result = await db.prepare(query).bind(...params).run();
+
+    if (result.meta.changes === 0) {
+      return error(c, '附庸NPC不存在或无权删除');
+    }
+
+    return success(c, {
+      message: '附庸NPC已删除',
+      deletedCount: result.meta.changes,
+    });
   } catch (err: any) {
     return error(c, err.message);
   }

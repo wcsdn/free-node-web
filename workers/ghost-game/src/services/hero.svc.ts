@@ -174,9 +174,12 @@ class HeroService {
     // 获取基础属性
     const baseStats = this.getBaseStats(quality);
 
+    // config_id: 临时使用品质作为配置ID，后续有配置表后改为真实配置ID
+    const configId = quality || 1;
+
     const result = await this.db.prepare(`
-      INSERT INTO heroes (city_id, wallet_address, name, quality, level, exp, attack, defense, hp, max_hp, training, state)
-      VALUES (?, ?, ?, ?, 1, 0, ?, ?, ?, ?, 0, 0)
+      INSERT INTO heroes (city_id, wallet_address, name, quality, level, exp, attack, defense, hp, max_hp, training, state, config_id)
+      VALUES (?, ?, ?, ?, 1, 0, ?, ?, ?, ?, 0, 0, ?)
     `).bind(
       cityId,
       walletAddress,
@@ -185,7 +188,8 @@ class HeroService {
       baseStats.atk,
       baseStats.def,
       baseStats.hp,
-      baseStats.hp
+      baseStats.hp,
+      configId
     ).run();
 
     return { success: true, heroId: result.meta.last_row_id };
@@ -401,8 +405,8 @@ class HeroService {
       MaxHp: hero.max_hp,
       training: hero.training || 0,
       Training: hero.training || 0,
-      skill: hero.skill,
-      Skill: hero.skill,
+      skill: hero.skill ?? 0,
+      Skill: hero.skill ?? 0,
       state: hero.state,
       State: hero.state,
       createdAt: hero.created_at,

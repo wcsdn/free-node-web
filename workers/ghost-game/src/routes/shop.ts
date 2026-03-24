@@ -446,7 +446,84 @@ app.get('/res-to-gold-rate', async (c) => {
 
 // ========== 兼容旧端点 (保留以防万一) ==========
 app.get('/list', async (c) => {
-  return c.redirect('/shop/info');
+  return c.redirect('/api/shop/info');
+});
+
+// POST /shop/list - 商城列表
+// 对应前端: Main.GetCommoditysByType(cityID, type)
+// C#: public CommodityInfo[] GetCommoditysByType(int cityID, int type)
+app.post('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { city_id, type = 1 } = await c.req.json();
+  
+  if (!city_id) {
+    return error(c, '缺少参数: city_id');
+  }
+
+  try {
+    // 获取玩家的持续效果
+    const effects = await db.prepare(`
+      SELECT main_effect_type, effect_type FROM persist_effects
+      WHERE wallet_address = ? AND expire_time > datetime('now')
+    `).bind(walletAddress).all();
+
+    const effectSet = new Set((effects.results || []).map((e: any) => `${e.main_effect_type}_${e.effect_type}`));
+
+    // 获取玩家的资源兑换信息 (BuyResInfo)
+    const character = await db.prepare(`
+      SELECT * FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    const goldAmount = Number((character as any)?.gold || 0);
+
+    const buyResInfo = {
+      LevelMoney: goldAmount * 100,
+      MoneyPer: 100,
+      LevelFood: goldAmount * 100,
+      FoodPer: 100,
+      LevelMen: goldAmount * 100,
+      MenPer: 100,
+      UsedMoney: 0,
+      UsedFood: 0,
+      UsedMen: 0,
+    };
+
+    // 获取商城道具
+    const commodities = getCommoditiesByType(parseInt(type));
+
+    // 构建 CommodityInfo 数组 (匹配 C# CommodityInfo 结构)
+    const commodityList = commodities.map((item: any) => {
+      const isUsed = effectSet.has(`${item.MainEffectType}_${item.EffectType}`) ? 1 : 0;
+
+      return {
+        Id: item.Id,
+        Type: item.Type,
+        TypeName: item.TypeName,
+        Tips: item.Tips || '',
+        Image: item.Image || '',
+        Usetype: item.Usetype || 0,
+        Gold: item.Gold || 0,
+        BuyDes: item.BuyDes || '',
+        MainEffectType: item.MainEffectType || 0,
+        EffectType: item.EffectType || 0,
+        Index: item.Index || 0,
+        IsUsed: isUsed,
+        BuyType: item.BuyType || 1,
+        TradeRes: buyResInfo,
+        UserName: walletAddress,
+        CityID: parseInt(city_id),
+      };
+    });
+
+    return success(c, commodityList);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
 });
 
 app.get('/items', async (c) => {

@@ -19,7 +19,22 @@ export { defenceService } from './defence.svc';
 export { npcFloorService } from './npc-floor.svc';
 export { userService } from './user.svc';
 export { UserServiceExtension, SIGNIN_CONFIG, VIP_CONFIG, LEVEL_CONFIG } from './user-ext.svc';
-export { fightService, BATTLE_TYPES, BATTLE_STATUS, BATTLE_CONFIG, UNIT_COUNTER } from './fight.svc';
+export {
+  fightService,
+  BATTLE_TYPES,
+  BATTLE_STATUS,
+  BATTLE_CONFIG,
+  UNIT_COUNTER,
+  calculateDamage,
+  getChessboardByPos,
+  encodeBattleSummary,
+  decodeBattleSummary,
+  type BattleSummaryServerInfo,
+  type BattleSummaryCityInfo,
+  type BattleSummaryHero,
+  type DamageParams,
+  type ChessboardData,
+} from './fight.svc';
 export { persistEffectService, EFFECT_TYPES, EFFECT_CATEGORIES, EFFECT_SOURCES } from './persist-effect.svc';
 export { PersistEffectServiceExtension } from './persist-effect-ext.svc';
 export { eventService } from './event.svc';

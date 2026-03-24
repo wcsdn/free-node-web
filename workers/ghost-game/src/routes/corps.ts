@@ -32,7 +32,7 @@ app.get('/', async (c) => {
   const result = await corpsService.getCorpsList(db, walletAddress, page, pageSize);
   const r = result as any;
   
-  if (!r.ok) {
+  if (!r.success) {
     return error(c, r.error || 'Failed to get corps list', r.status || 500);
   }
 
@@ -53,7 +53,47 @@ app.post('/', async (c) => {
   const result = await corpsService.createCorps(db, walletAddress, name);
   const r = result as any;
   
-  if (!r.ok) {
+  if (!r.success) {
+    return error(c, r.error || 'Failed to create corps', r.status || 500);
+  }
+
+  return success(c, { corpsId: r.corpsId });
+});
+
+// POST /corps/list - 获取军团列表 (别名，兼容 POST)
+app.post('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { page = 1, pageSize = 20 } = await c.req.json().catch(() => ({}));
+  const result = await corpsService.getCorpsList(db, walletAddress, page, pageSize);
+  const r = result as any;
+  
+  if (!r.success) {
+    return error(c, r.error || 'Failed to get corps list', r.status || 500);
+  }
+
+  return success(c, r.data);
+});
+
+// POST /corps/create - 创建军团 (别名，兼容 POST)
+app.post('/create', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { name } = await c.req.json<{ name?: string }>();
+  if (!name) return error(c, 'name is required');
+
+  const result = await corpsService.createCorps(db, walletAddress, name);
+  const r = result as any;
+  
+  if (!r.success) {
     return error(c, r.error || 'Failed to create corps', r.status || 500);
   }
 
@@ -209,6 +249,7 @@ app.get('/other', async (c) => {
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
   const { city_id } = c.req.query();
+  if (!city_id) return error(c, 'city_id is required', 400);
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
@@ -219,7 +260,7 @@ app.get('/other', async (c) => {
       SELECT * FROM corps 
       WHERE garrison_id = ? AND wallet_address != ?
       ORDER BY id ASC
-    `).bind(city_id, walletAddress).all();
+    `).bind(parseInt(city_id), walletAddress).all();
 
     let corpsList = (corps.results || []).map((corp: any) => ({
       CorpsID: corp.id,
@@ -354,7 +395,7 @@ app.get('/simple-heroes', async (c) => {
     const result = await corpsService.getCorpsHeroes(db, targetCorpsId);
     const r = result as any;
 
-    if (!r.ok) {
+    if (!r.success) {
       return success(c, { heroes: [] });
     }
 
@@ -466,6 +507,28 @@ app.post('/return', async (c) => {
       returnTime,
       message: '军团已开始返回',
     });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetCorpsMembers - 获取军团成员列表
+app.get('/members', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const corps_id = parseInt(c.req.query('corps_id') || '0');
+  if (!corps_id) return error(c, 'corps_id is required', 400);
+
+  try {
+    const result = await corpsService.getCorpsMembers(db, corps_id);
+    const r = result as any;
+
+    // 返回成员数组 (直接数组格式)
+    return success(c, r.members || []);
   } catch (err: any) {
     return error(c, err.message);
   }

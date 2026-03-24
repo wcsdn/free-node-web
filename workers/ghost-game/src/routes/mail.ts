@@ -47,6 +47,44 @@ app.get('/', async (c) => {
   return success(c, r);
 });
 
+// POST /mail/list - 获取邮件列表 (别名，兼容 POST)
+app.post('/list', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { page = 1, pageSize = 20 } = await c.req.json().catch(() => ({}));
+  const result = await mailService.getMailList(db, walletAddress, { page, pageSize });
+  const r = result as any;
+
+  // 返回直接数组格式给前端 (前端 cb_GetMailList 用 result.value 作为数组)
+  return success(c, r.mails || []);
+});
+
+// GET /mail/unread-count - 获取未读邮件数 (别名，兼容 GET)
+app.get('/unread-count', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const unreadCount = await mailService.getUnreadCount(db, walletAddress);
+    const listResult = await mailService.getMailList(db, walletAddress, { page: 1, pageSize: 1 });
+    const total = (listResult as any).total || 0;
+    
+    return success(c, {
+      unreadCount,
+      totalCount: total,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
 app.post('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -54,7 +92,32 @@ app.post('/', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  return success(c, { message: 'Mail API ready' });
+  // POST /mail 发送邮件
+  const { to_user, title, content, attachments } = await c.req.json();
+  
+  if (!to_user || !title || !content) {
+    return error(c, 'to_user, title, content are required');
+  }
+
+  try {
+    const result = await mailService.sendMail(db, {
+      receiverAddress: to_user,
+      senderAddress: walletAddress,
+      title,
+      content,
+      type: MAIL_TYPES.PLAYER,
+      attachments: attachments ? JSON.stringify(attachments) : undefined,
+    });
+    const r = result as any;
+
+    if (!r.success) {
+      return error(c, r.error || '发送失败');
+    }
+
+    return success(c, { mailId: r.mailId, message: '邮件已发送' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
 });
 
 // GetNewMailNum - 获取新邮件数量
@@ -67,10 +130,12 @@ app.get('/new-count', async (c) => {
 
   try {
     const unreadCount = await mailService.getUnreadCount(db, walletAddress);
+    const listResult = await mailService.getMailList(db, walletAddress, { page: 1, pageSize: 1 });
+    const total = (listResult as any).total || 0;
     
     return success(c, {
       unreadCount,
-      totalCount: unreadCount + 5, // 模拟总数
+      totalCount: total,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -230,15 +295,20 @@ app.get('/fight', async (c) => {
       return error(c, '战报不存在', 404);
     }
 
+    // 解析战报内容中的战斗数据
+    let battleData = null;
+    try {
+      // 邮件内容可能是JSON格式的战报
+      battleData = JSON.parse(mail.content || '{}');
+    } catch (e) {
+      // 解析失败，使用默认
+    }
+
     // 返回战斗相关数据
     return success(c, {
       ...mail,
-      battleData: {
-        opponent: 'Enemy',
-        result: 'win',
-        rounds: 5,
-        damage: 1250,
-        awards: { exp: 100, gold: 50 },
+      battleData: battleData || {
+        message: '战报详情请查看邮件内容',
       },
     });
   } catch (err: any) {
@@ -305,7 +375,7 @@ app.post('/send', async (c) => {
     });
     const r = result as any;
 
-    if (!r.ok) {
+    if (!r.success) {
       return error(c, r.error || '发送失败');
     }
 
@@ -350,7 +420,7 @@ app.post('/new', async (c) => {
     });
     const r = result as any;
 
-    if (!r.ok) {
+    if (!r.success) {
       return error(c, r.error || '发送失败');
     }
 
@@ -380,7 +450,7 @@ app.post('/claim', async (c) => {
     const result = await mailService.claimAttachment(db, walletAddress, mail_id);
     const r = result as any;
 
-    if (!r.ok) {
+    if (!r.success) {
       return error(c, r.error || '领取失败');
     }
 
@@ -399,24 +469,23 @@ app.get('/announcements', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
   try {
-    // 返回模拟的系统公告
-    const announcements = [
-      {
-        id: 1,
-        title: '欢迎来到游戏',
-        content: '欢迎各位玩家入驻游戏世界！',
-        date: new Date().toISOString(),
-        important: true,
-      },
-      {
-        id: 2,
-        title: '新版本更新',
-        content: '新版本已上线，新增军团系统和战斗系统',
-        date: new Date().toISOString(),
-        important: false,
-      },
-    ];
+    // 从数据库获取系统公告邮件
+    const result = await mailService.getMailList(db, walletAddress, { 
+      type: MAIL_TYPES.SYSTEM, 
+    });
+    const r = result as any;
+    
+    const announcements = (r.mails || []).map((m: any) => ({
+      id: m.id,
+      title: m.title,
+      content: m.content,
+      date: m.created_at,
+      important: false,
+    }));
 
     return success(c, {
       announcements,

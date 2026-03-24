@@ -7,11 +7,11 @@ import { BaseRepository, type BaseEntity } from './base.repo';
 
 export interface Mail extends BaseEntity {
   id: number;
-  wallet_address: string;
+  receiver_address: string;
+  sender_address: string;
   type: number;
   title: string;
   content: string;
-  sender: string;
   has_attachment: number;
   attachment_gold: number;
   attachment_items: string;
@@ -29,32 +29,32 @@ export class MailRepository extends BaseRepository<Mail> {
   // ==================== 查询操作 ====================
 
   /** 查询用户未读邮件 */
-  async findUnread(walletAddress: string): Promise<Mail[]> {
-    return await this.where({ wallet_address: walletAddress, is_read: 0 });
+  async findUnread(receiverAddress: string): Promise<Mail[]> {
+    return await this.where({ receiver_address: receiverAddress, is_read: 0 });
   }
 
   /** 查询未领取附件邮件 */
-  async findUnclaimed(walletAddress: string): Promise<Mail[]> {
+  async findUnclaimed(receiverAddress: string): Promise<Mail[]> {
     return await this.db.prepare(
-      `SELECT * FROM mails WHERE wallet_address = ? AND has_attachment = 1 AND is_claim = 0`
-    ).bind(walletAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
+      `SELECT * FROM mails WHERE receiver_address = ? AND has_attachment = 1 AND is_claim = 0`
+    ).bind(receiverAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
   }
 
   /** 查询过期邮件 */
-  async findExpired(walletAddress: string): Promise<Mail[]> {
+  async findExpired(receiverAddress: string): Promise<Mail[]> {
     return await this.db.prepare(
-      `SELECT * FROM mails WHERE wallet_address = ? AND expire_time <= datetime('now')`
-    ).bind(walletAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
+      `SELECT * FROM mails WHERE receiver_address = ? AND expire_time <= datetime('now')`
+    ).bind(receiverAddress).all<Mail>().then(r => (r.results as Mail[]) || []);
   }
 
   // ==================== 写入操作 ====================
 
   /** 发送邮件 */
-  async send(walletAddress: string, data: {
+  async send(receiverAddress: string, data: {
     type: number;
     title: string;
     content: string;
-    sender?: string;
+    sender_address?: string;
     attachmentGold?: number;
     attachmentItems?: string;
     expireHours?: number;
@@ -66,12 +66,12 @@ export class MailRepository extends BaseRepository<Mail> {
 
     const result = await this.db.prepare(`
       INSERT INTO mails (
-        wallet_address, type, title, content, sender, has_attachment,
+        receiver_address, type, title, content, sender_address, has_attachment,
         attachment_gold, attachment_items, is_read, is_claim, expire_time, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, datetime('now'), datetime('now'))
     `).bind(
-      walletAddress, data.type, data.title, data.content, 
-      data.sender || '系统', data.attachmentGold ? 1 : 0,
+      receiverAddress, data.type, data.title, data.content, 
+      data.sender_address || 'system', data.attachmentGold ? 1 : 0,
       data.attachmentGold || 0, data.attachmentItems || '[]', expireTime
     ).run();
 
@@ -79,15 +79,15 @@ export class MailRepository extends BaseRepository<Mail> {
   }
 
   /** 批量发送邮件 */
-  async bulkSend(walletAddresses: string[], data: {
+  async bulkSend(receiverAddresses: string[], data: {
     type: number;
     title: string;
     content: string;
-    sender?: string;
+    sender_address?: string;
   }): Promise<Map<string, number>> {
     const results = new Map();
     
-    for (const wallet of walletAddresses) {
+    for (const wallet of receiverAddresses) {
       const id = await this.send(wallet, data);
       results.set(wallet, id);
     }
@@ -140,15 +140,15 @@ export class MailRepository extends BaseRepository<Mail> {
   // ==================== 统计查询 ====================
 
   /** 获取未读邮件数 */
-  async getUnreadCount(walletAddress: string): Promise<number> {
-    return await this.count({ wallet_address: walletAddress, is_read: 0 });
+  async getUnreadCount(receiverAddress: string): Promise<number> {
+    return await this.count({ receiver_address: receiverAddress, is_read: 0 });
   }
 
   /** 获取未领取附件数 */
-  async getUnclaimedCount(walletAddress: string): Promise<number> {
+  async getUnclaimedCount(receiverAddress: string): Promise<number> {
     const result = await this.db.prepare(`
-      SELECT COUNT(*) as count FROM mails WHERE wallet_address = ? AND has_attachment = 1 AND is_claim = 0
-    `).bind(walletAddress).first<{ count: number }>();
+      SELECT COUNT(*) as count FROM mails WHERE receiver_address = ? AND has_attachment = 1 AND is_claim = 0
+    `).bind(receiverAddress).first<{ count: number }>();
     return result?.count || 0;
   }
 }
@@ -157,7 +157,7 @@ export class MailRepository extends BaseRepository<Mail> {
 export const mailRepo = {
   async findByWallet(db: D1Database, walletAddress: string) {
     const repo = new MailRepository(db);
-    return repo.findByWallet(walletAddress);
+    return repo.findUnread(walletAddress);
   },
   async findById(db: D1Database, id: number) {
     const repo = new MailRepository(db);

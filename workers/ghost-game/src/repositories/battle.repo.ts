@@ -53,14 +53,17 @@ export class BattleRepository extends BaseRepository<Battle> {
   /** 根据钱包地址查询战斗记录 */
   async findByWallet(walletAddress: string, limit: number = 20): Promise<Battle[]> {
     const result = await this.db.prepare(
-      `SELECT * FROM battles WHERE wallet_address = ? ORDER BY created_at DESC LIMIT ?`
-    ).bind(walletAddress, limit).all<Battle>();
+      `SELECT * FROM battles WHERE attacker_address = ? OR defender_address = ? ORDER BY created_at DESC LIMIT ?`
+    ).bind(walletAddress, walletAddress, limit).all<Battle>();
     return (result.results as Battle[]) || [];
   }
 
   /** 根据类型查询 */
   async findByType(walletAddress: string, battleType: number): Promise<Battle[]> {
-    return await this.where({ wallet_address: walletAddress, battle_type: battleType });
+    const result = await this.db.prepare(`
+      SELECT * FROM battles WHERE (attacker_address = ? OR defender_address = ?) AND battle_type = ?
+    `).bind(walletAddress, walletAddress, battleType).all<Battle>();
+    return (result.results as Battle[]) || [];
   }
 
   /** 查询战斗结果统计 */
@@ -73,11 +76,11 @@ export class BattleRepository extends BaseRepository<Battle> {
   }> {
     const winsResult = await this.db.prepare(`
       SELECT COUNT(*) as count, SUM(reward_gold) as gold, SUM(damage) as damage 
-      FROM battles WHERE wallet_address = ? AND result = 1
+      FROM battles WHERE attacker_address = ? AND result = 1
     `).bind(walletAddress).first<{ count: number; gold: number; damage: number }>();
 
     const lossesResult = await this.db.prepare(`
-      SELECT COUNT(*) as count FROM battles WHERE wallet_address = ? AND result = 0
+      SELECT COUNT(*) as count FROM battles WHERE attacker_address = ? AND result = 0
     `).bind(walletAddress).first<{ count: number }>();
 
     return {
@@ -123,9 +126,10 @@ export class BattleRepository extends BaseRepository<Battle> {
     enemyMaxHp: number;
     heroId: number;
   }): Promise<number> {
+    // battles表使用 attacker_address，没有 wallet_address 列
     const result = await this.db.prepare(`
       INSERT INTO battles (
-        wallet_address, battle_type, enemy_id, enemy_name, enemy_level, 
+        attacker_address, battle_type, enemy_id, enemy_name, enemy_level, 
         enemy_hp, enemy_max_hp, hero_id, hero_hp, hero_max_hp,
         round, result, reward_gold, reward_exp, damage, damage_taken,
         created_at, updated_at
@@ -190,8 +194,8 @@ export class BattleRepository extends BaseRepository<Battle> {
   async getTodayBattleCount(walletAddress: string): Promise<number> {
     const result = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles 
-      WHERE wallet_address = ? AND created_at >= date('now', 'start of day')
-    `).bind(walletAddress).first<{ count: number }>();
+      WHERE (attacker_address = ? OR defender_address = ?) AND created_at >= date('now', 'start of day')
+    `).bind(walletAddress, walletAddress).first<{ count: number }>();
     return result?.count || 0;
   }
 
@@ -199,7 +203,7 @@ export class BattleRepository extends BaseRepository<Battle> {
   async getTodayWinCount(walletAddress: string): Promise<number> {
     const result = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles 
-      WHERE wallet_address = ? AND result = 1 AND created_at >= date('now', 'start of day')
+      WHERE attacker_address = ? AND result = 1 AND created_at >= date('now', 'start of day')
     `).bind(walletAddress).first<{ count: number }>();
     return result?.count || 0;
   }
@@ -207,7 +211,7 @@ export class BattleRepository extends BaseRepository<Battle> {
   /** 获取最大伤害 */
   async getMaxDamage(walletAddress: string): Promise<number> {
     const result = await this.db.prepare(`
-      SELECT MAX(damage) as max FROM battles WHERE wallet_address = ?
+      SELECT MAX(damage) as max FROM battles WHERE attacker_address = ?
     `).bind(walletAddress).first<{ max: number }>();
     return result?.max || 0;
   }

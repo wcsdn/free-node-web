@@ -113,12 +113,13 @@ export class UserServiceExtension {
   /** 获取VIP信息 */
   async getVipInfo(walletAddress: string) {
     const user: any = await this.db.prepare(`
-      SELECT vip_level, vip_expire FROM users WHERE wallet_address = ?
+      SELECT vip_level, vip_exp FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
     const level = user?.vip_level || 0;
-    const expire = user?.vip_expire;
-    const isActive = expire && new Date(expire) > new Date();
+    const vipExp = user?.vip_exp || 0;
+    // VIP激活状态：vip_level > 0 且 vip_exp > 0 表示有剩余时间
+    const isActive = level > 0 && vipExp > 0;
 
     const config = VIP_CONFIG.LEVELS[level as keyof typeof VIP_CONFIG.LEVELS];
 
@@ -126,8 +127,8 @@ export class UserServiceExtension {
       success: true,
       level,
       isActive,
-      expire,
-      daysRemaining: expire ? Math.max(0, Math.ceil((new Date(expire).getTime() - Date.now()) / 86400000)) : 0,
+      vipExp,
+      daysRemaining: vipExp,
       bonuses: isActive && config ? config : null,
     };
   }
@@ -135,7 +136,7 @@ export class UserServiceExtension {
   /** 获取用户统计 */
   async getUserStats(walletAddress: string) {
     const user: any = await this.db.prepare(`
-      SELECT level, exp, gold, gems, vip_level FROM users WHERE wallet_address = ?
+      SELECT level, exp, gold, gems, vip_level FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
     const heroes: any = await this.db.prepare(`SELECT COUNT(*) as count FROM heroes WHERE wallet_address = ?`)
@@ -144,7 +145,7 @@ export class UserServiceExtension {
       .bind(walletAddress).first();
     const buildings: any = await this.db.prepare(`SELECT COUNT(*) as count FROM buildings WHERE wallet_address = ?`)
       .bind(walletAddress).first();
-    const items: any = await this.db.prepare(`SELECT COUNT(*) as count FROM user_items WHERE wallet_address = ?`)
+    const items: any = await this.db.prepare(`SELECT COUNT(*) as count FROM items WHERE wallet_address = ?`)
       .bind(walletAddress).first();
 
     const nextExp = LEVEL_CONFIG.EXP_TABLE[user?.level] || 0;

@@ -157,7 +157,13 @@ app.post('/gem/equip', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { item_id, gem_id, slot } = await c.req.json();
+  let body: any = {};
+  try {
+    body = await c.req.json();
+  } catch (e) {
+    return error(c, 'Invalid JSON body');
+  }
+  const { item_id, gem_id, slot } = body;
   if (!item_id || !gem_id) return error(c, 'item_id and gem_id are required');
 
   const service = new ItemServiceExtension(db);

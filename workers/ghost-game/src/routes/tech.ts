@@ -27,7 +27,276 @@ const TECH_EFFECT_TYPES = {
   ECONOMY: 7,        // 经济
 };
 
+// GET /tech/list - 获取玩家科技列表（别名，支持未登录）
+app.get('/list', async (c) => {
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
+
+  // 不强制要求登录，未登录返回空数据
+  const walletAddress = await verifyWalletAuth(c).catch(() => null);
+  if (!walletAddress) {
+    return c.json({ success: true, data: { techs: [], total: 0 } });
+  }
+
+  try {
+    const city = await db.prepare(`
+      SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) return c.json({ success: true, data: { techs: [], total: 0 } });
+
+    const playerTechs = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+    `).bind(walletAddress).all();
+
+    const techMap: Record<number, any> = {};
+    for (const tech of (playerTechs.results || [])) {
+      techMap[(tech as any).static_index] = tech;
+    }
+
+    const techsWithStatus = (technicConfigs || []).map((techConfig: any) => {
+      const playerTech = techMap[techConfig.ID];
+      const currentLevel = playerTech?.technic_level || 0;
+      const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+
+      // 查找升级所需的科技依赖
+      const dependTechnic = nextLevelData?.DependTechnicID
+        ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DdependTechnicID)
+        : null;
+
+      return {
+        // 小写字段 (兼容)
+        id: techConfig.ID,
+        name: techConfig.Name,
+        icon: techConfig.Icon,
+        description: techConfig.Des,
+        level: currentLevel,
+        maxLevel: techConfig.InteriorData?.length || 1,
+        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        nextEffect: nextLevelData?.EffValue || 0,
+        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        isUnlocked: currentLevel > 0,
+        state: playerTech?.state || 0,
+        upgradeCost: nextLevelData ? {
+          money: nextLevelData.CostMoney || 0,
+          food: nextLevelData.CostFood || 0,
+          gold: nextLevelData.CostGold || 0,
+          time: nextLevelData.CostTime || 0,
+        } : null,
+        // 大写字段 (前端 TechnicInfo.* 期望)
+        ID: techConfig.ID,
+        Index: techConfig.ID,
+        Name: techConfig.Name || '',
+        Des: techConfig.Des || '',
+        Level: currentLevel,
+        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
+        MaxLevel: techConfig.InteriorData?.length || 1,
+        State: playerTech?.state || 0,
+        // 升级需求
+        UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+        UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+        UpNeedFood: nextLevelData?.CostFood || 0,
+        UpNeedMoney: nextLevelData?.CostMoney || 0,
+        UpNeedMen: nextLevelData?.CostMen || 0,
+        UpNeedGold: nextLevelData?.CostGold || 0,
+        UpNeedArea: nextLevelData?.NeedArea || 0,
+        UpNeedTime: nextLevelData?.CostTime || 0,
+        // 科技依赖 (前端 Tree.js 使用)
+        UpNeedTechnicID: nextLevelData?.DependTechnicID || 0,
+        UpNeedTechnicLevel: nextLevelData?.DependTechnicLevel || 0,
+        UpNeedTechnicName: dependTechnic?.Name || '',
+        // 科技配置属性
+        Icon: techConfig.Icon || '',
+        Area: techConfig.DependArea || 0,
+        EventID: 0,
+      };
+    });
+
+    return c.json({ success: true, data: { techs: techsWithStatus, total: techsWithStatus.length } });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// POST /tech/list - 获取玩家科技列表 (兼容 POST)
+app.post('/list', async (c) => {
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
+
+  const walletAddress = await verifyWalletAuth(c).catch(() => null);
+  if (!walletAddress) {
+    return c.json({ success: true, data: { techs: [], total: 0 } });
+  }
+
+  try {
+    const city = await db.prepare(`
+      SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) return c.json({ success: true, data: { techs: [], total: 0 } });
+
+    const playerTechs = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+    `).bind(walletAddress).all();
+
+    const techMap: Record<number, any> = {};
+    for (const tech of (playerTechs.results || [])) {
+      techMap[(tech as any).static_index] = tech;
+    }
+
+    const techsWithStatus = (technicConfigs || []).map((techConfig: any) => {
+      const playerTech = techMap[techConfig.ID];
+      const currentLevel = playerTech?.technic_level || 0;
+      const nextLevelData = techConfig.InteriorData?.[currentLevel];
+      const dependTechnic = nextLevelData?.DependTechnicID
+        ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
+        : null;
+
+      return {
+        // 小写字段 (兼容)
+        id: techConfig.ID,
+        name: techConfig.Name,
+        icon: techConfig.Icon,
+        description: techConfig.Des,
+        level: currentLevel,
+        maxLevel: techConfig.InteriorData?.length || 1,
+        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        nextEffect: nextLevelData?.EffValue || 0,
+        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        isUnlocked: currentLevel > 0,
+        state: playerTech?.state || 0,
+        upgradeCost: nextLevelData ? {
+          money: nextLevelData.CostMoney || 0,
+          food: nextLevelData.CostFood || 0,
+          gold: nextLevelData.CostGold || 0,
+          time: nextLevelData.CostTime || 0,
+        } : null,
+        // 大写字段 (前端 TechnicInfo.* 期望)
+        ID: techConfig.ID,
+        Index: techConfig.ID,
+        Name: techConfig.Name || '',
+        Des: techConfig.Des || '',
+        Level: currentLevel,
+        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
+        MaxLevel: techConfig.InteriorData?.length || 1,
+        State: playerTech?.state || 0,
+        UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+        UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+        UpNeedFood: nextLevelData?.CostFood || 0,
+        UpNeedMoney: nextLevelData?.CostMoney || 0,
+        UpNeedMen: nextLevelData?.CostMen || 0,
+        UpNeedGold: nextLevelData?.CostGold || 0,
+        UpNeedArea: nextLevelData?.NeedArea || 0,
+        UpNeedTime: nextLevelData?.CostTime || 0,
+        UpNeedTechnicID: nextLevelData?.DependTechnicID || 0,
+        UpNeedTechnicLevel: nextLevelData?.DependTechnicLevel || 0,
+        UpNeedTechnicName: dependTechnic?.Name || '',
+        Icon: techConfig.Icon || '',
+        Area: techConfig.DependArea || 0,
+        EventID: 0,
+      };
+    });
+
+    return c.json({ success: true, data: { techs: techsWithStatus, total: techsWithStatus.length } });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
 // 获取所有科技配置
+// GetTechnicByID - GET /tech/detail - 根据ID获取科技详情
+app.get('/detail', async (c) => {
+  const walletAddress = await verifyWalletAuth(c).catch(() => null);
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
+
+  const { id } = c.req.query();
+  const techId = parseInt(id || '0');
+
+  if (!techId) {
+    return c.json({ success: false, error: 'Missing required field: id' });
+  }
+
+  try {
+    const techConfig = (technicConfigs || []).find((t: any) => t.ID === techId);
+    if (!techConfig) {
+      return c.json({ success: false, error: 'Tech not found' }, 404);
+    }
+
+    let playerTech: any = null;
+    let currentLevel = 0;
+
+    if (walletAddress) {
+      const techs = await db.prepare(`
+        SELECT * FROM technics WHERE user_name = ? AND static_index = ?
+      `).bind(walletAddress, techId).all();
+      if (techs.results && techs.results.length > 0) {
+        playerTech = techs.results[0];
+        currentLevel = (playerTech as any).technic_level || 0;
+      }
+    }
+
+    const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+    const dependTechnic = nextLevelData?.DependTechnicID
+      ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
+      : null;
+
+    return c.json({
+      success: true,
+      data: {
+        id: techConfig.ID,
+        name: techConfig.Name,
+        icon: techConfig.Icon,
+        description: techConfig.Des,
+        level: currentLevel,
+        maxLevel: techConfig.InteriorData?.length || 1,
+        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        nextEffect: nextLevelData?.EffValue || 0,
+        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        isUnlocked: currentLevel > 0,
+        state: playerTech?.state || 0,
+        upgradeCost: nextLevelData ? {
+          money: nextLevelData.CostMoney || 0,
+          food: nextLevelData.CostFood || 0,
+          gold: nextLevelData.CostGold || 0,
+          time: nextLevelData.CostTime || 0,
+        } : null,
+        // C# TechnicInfo PascalCase 字段
+        ID: techConfig.ID,
+        Index: techConfig.ID,
+        Name: techConfig.Name || '',
+        Des: techConfig.Des || '',
+        Level: currentLevel,
+        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        EffID: (techConfig as any).EffectID || nextLevelData?.EffType || 0,
+        MaxLevel: techConfig.InteriorData?.length || 1,
+        State: playerTech?.state || 0,
+        UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+        UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+        UpNeedFood: nextLevelData?.CostFood || 0,
+        UpNeedMoney: nextLevelData?.CostMoney || 0,
+        UpNeedMen: (nextLevelData as any)?.CostMen || 0,
+        UpNeedGold: nextLevelData?.CostGold || 0,
+        UpNeedArea: (nextLevelData as any)?.NeedArea || 0,
+        UpNeedTime: nextLevelData?.CostTime || 0,
+        UpNeedTechnicID: (nextLevelData as any)?.DependTechnicID || 0,
+        UpNeedTechnicLevel: (nextLevelData as any)?.DependTechnicLevel || 0,
+        UpNeedTechnicName: dependTechnic?.Name || '',
+        Icon: techConfig.Icon || '',
+        Area: (techConfig as any).DependArea || 0,
+        EventID: 0,
+      },
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
 app.get('/configs', async (c) => {
   const techs = (technicConfigs || []).map((tech: any) => ({
     id: tech.ID,
@@ -157,6 +426,50 @@ app.get('/', async (c) => {
     });
   } catch (err: any) {
     return error(c, err.message);
+  }
+});
+
+// GET /tech/research - 获取研究中的科技（GET版，未登录友好）
+app.get('/research', async (c) => {
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
+
+  const walletAddress = await verifyWalletAuth(c).catch(() => null);
+  if (!walletAddress) return c.json({ success: true, data: { techs: [], total: 0 } });
+
+  try {
+    const city = await db.prepare(`
+      SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) return c.json({ success: true, data: { techs: [], total: 0 } });
+
+    // 只返回研究中的科技（state=1）
+    const researching = await db.prepare(`
+      SELECT t.*, tc.name, tc.icon, tc.des, tc.interior_data
+      FROM technics t
+      JOIN tech_configs tc ON t.static_index = tc.id
+      WHERE t.user_name = ? AND t.state = 1
+    `).bind(walletAddress).all();
+
+    const events = await db.prepare(`
+      SELECT * FROM time_events WHERE wallet_address = ? AND event_type = 2 AND end_time > datetime('now')
+      ORDER BY end_time ASC
+    `).bind(walletAddress).all();
+
+    const researchingTechs = (researching.results || []).map((tech: any) => {
+      const matchingEvent = (events.results || []).find((e: any) => parseInt(e.target_id) === tech.id);
+      const remainSeconds = matchingEvent ? Math.max(0, Math.floor((new Date(String(matchingEvent.end_time)).getTime() - Date.now()) / 1000)) : 0;
+      return {
+        id: tech.id, static_index: tech.static_index, name: tech.name,
+        icon: tech.icon, level: tech.technic_level, remain_seconds: remainSeconds,
+        end_time: matchingEvent?.end_time || null,
+      };
+    });
+
+    return c.json({ success: true, data: { techs: researchingTechs, total: researchingTechs.length } });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
   }
 });
 
@@ -380,7 +693,7 @@ app.get('/effects', async (c) => {
 });
 
 
-// GetTechnicByBuilding - GET /tech/by-building
+// GetTechnicByBuilding - GET /tech/by-building 根据建筑获取相关科技
 app.get('/by-building', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) {
@@ -388,22 +701,65 @@ app.get('/by-building', async (c) => {
   }
 
   const { city_id, building_type } = c.req.query();
+  const buildingType = parseInt(building_type as string || '0');
 
-  // 返回模拟科技数据
-  const techs = [
-    { id: 1, name: '建筑学', icon: 'tech1', level: 0, maxLevel: 10, effect: '建筑速度+10%' },
-    { id: 2, name: '训练学', icon: 'tech2', level: 0, maxLevel: 10, effect: '训练速度+10%' },
-    { id: 3, name: '攻击学', icon: 'tech3', level: 0, maxLevel: 10, effect: '攻击力+10%' },
-  ];
+  const db = c.env.DB;
+  if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
 
-  return c.json({
-    success: true,
-    data: {
-      buildingType: parseInt(building_type as string || '0'),
-      cityId: parseInt(city_id as string || '0'),
-      techs
+  try {
+    // 获取玩家的科技数据
+    const city = await db.prepare(`
+      SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) return c.json({ success: false, error: 'No city found' }, 404);
+
+    // 获取玩家已研究的科技
+    const playerTechs = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+    `).bind(walletAddress).all();
+
+    // 构建玩家科技映射
+    const techMap: Record<number, any> = {};
+    for (const tech of (playerTechs.results || [])) {
+      techMap[(tech as any).static_index] = tech;
     }
-  });
+
+    // 筛选与该建筑类型相关的科技
+    const relatedTechs = (technicConfigs || [])
+      .filter((tech: any) => {
+        // 检查科技配置中的建筑关联
+        const interiorData = tech.InteriorData || [];
+        return interiorData.some((level: any) => level.NeedBuildingID === buildingType);
+      })
+      .map((techConfig: any) => {
+        const playerTech = techMap[techConfig.ID];
+        const currentLevel = playerTech?.technic_level || 0;
+        const nextLevelData = techConfig.InteriorData?.[currentLevel];
+
+        return {
+          id: techConfig.ID,
+          name: techConfig.Name,
+          icon: techConfig.Icon,
+          level: currentLevel,
+          maxLevel: techConfig.InteriorData?.length || 1,
+          effect: nextLevelData?.EffValue || 0,
+          description: techConfig.Des,
+        };
+      });
+
+    return c.json({
+      success: true,
+      data: {
+        buildingType,
+        cityId: (city as any).id,
+        techs: relatedTechs,
+        total: relatedTechs.length,
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
 });
 
 export default app;

@@ -49,10 +49,13 @@ class CorpsService {
     `).first();
 
     return {
-      corps: (corps.results || []).map(this.formatCorps),
-      total: (totalCount as any).count,
-      page,
-      pageSize,
+      success: true,
+      data: {
+        corps: (corps.results || []).map(this.formatCorps),
+        total: (totalCount as any).count,
+        page,
+        pageSize,
+      },
     };
   }
 
@@ -161,11 +164,20 @@ class CorpsService {
       return { success: false, error: '军团名称已被占用' };
     }
 
+    // 获取玩家的城市ID
+    const city: any = await this.db.prepare(`
+      SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!city) {
+      return { success: false, error: '您没有城市，无法创建军团' };
+    }
+
     // 创建军团
     const result = await this.db.prepare(`
-      INSERT INTO corps_system (name, leader_id, member_count)
-      VALUES (?, ?, 1)
-    `).bind(name, walletAddress).run();
+      INSERT INTO corps_system (name, leader_id, city_id, member_count)
+      VALUES (?, ?, ?, 1)
+    `).bind(name, walletAddress, city.id).run();
 
     const corpsId = result.meta.last_row_id;
 
@@ -577,6 +589,11 @@ export const corpsService = {
   async getCorpsResources(db: D1Database, corpsId: number) {
     const service = new CorpsService(db);
     return service.getCorpsResources(corpsId);
+  },
+
+  async getCorpsMembers(db: D1Database, corpsId: number, page?: number, pageSize?: number) {
+    const service = new CorpsService(db);
+    return service.getCorpsMembers(corpsId, page, pageSize);
   },
 };
 

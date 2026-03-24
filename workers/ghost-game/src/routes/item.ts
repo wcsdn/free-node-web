@@ -61,7 +61,8 @@ app.get('/list', async (c) => {
 
   try {
     let query = `
-      SELECT i.*, ic.Name as item_name, ic.Type as item_type, ic.Des as description, ic.Icon as icon
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type, ic.Des as description, 
+             ic.Icon as icon, ic.Price as SellMoney, ic.EffectType, ic.EffectValue
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.wallet_address = ?
@@ -77,23 +78,42 @@ app.get('/list', async (c) => {
 
     const items = await db.prepare(query).bind(...params).all();
 
-    // 格式化为C# DBItem字段
+    // 格式化为C# DBItem字段 + 前端装备属性
     const formattedItems = (items.results || []).map((item: any) => ({
       ItemID: item.id,
+      ID: item.id,
       StaticIndex: item.config_id,
       UserName: item.wallet_address,
       CityID: 1,
       HeroID: item.hero_id || 0,
       CorpsID: 0,
       ItemName: item.item_name || '物品',
-      ItemType: item.type || 1,
+      ItemType: (item.item_type ?? item.type) || 1,
       State: item.equipped ? 1 : 0,
-      Price: 0,
+      Price: item.SellMoney || 0,
       Durability: item.durability || 100,
       SellDate: item.created_at,
       UseGetExp: 0,
       HitPoint: 0,
       ItemLevel: 1,
+      // 前端 Item.js 装备属性
+      Attack: 0,
+      CR: 0,
+      DR: 0,
+      Defence: 0,
+      FR: 0,
+      LR: 0,
+      // 前端 Item.js 物品字段
+      Name: item.item_name || '物品',
+      Image: item.icon || '/items/default.gif',
+      Quality: 1,
+      Level: 1,
+      UseLevel: 1,
+      UseSex: 0,
+      UseUnion: 0,
+      UseType: item.EffectType || 1,
+      UseGold: 0,
+      SellFlag: item.equipped ? 1 : 0,
     }));
 
     return success(c, {
@@ -124,7 +144,8 @@ app.get('/', async (c) => {
     const offset = (pageNum - 1) * pageSize;
 
     let query = `
-      SELECT i.*, ic.Name as item_name, ic.Type as item_type, ic.Des as description, ic.Icon as icon
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type, ic.Des as description, 
+             ic.Icon as icon, ic.Price as SellMoney, ic.EffectType, ic.EffectValue
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.wallet_address = ?
@@ -149,8 +170,9 @@ app.get('/', async (c) => {
       return success(c, [{ ID: -1 }]);
     }
 
-    // 格式化为 ItemInfo 数组（匹配 C# DBItem 字段）
+    // 格式化为 ItemInfo 数组（匹配 C# DBItem 字段 + 前端需要的字段）
     const itemInfoList = (items.results || []).map((item: any) => ({
+      // C# DBItem 字段
       ID: item.id,
       StaticIndex: item.config_id,
       UserName: walletAddress,
@@ -158,14 +180,33 @@ app.get('/', async (c) => {
       HeroID: item.hero_id || 0,
       CorpsID: 0,
       ItemName: item.item_name || '物品',
-      ItemType: item.item_type || 1,
+      ItemType: item.item_type ?? 1,
       State: item.equipped ? 1 : 0,
-      Price: 0,
+      Price: item.SellMoney || 0,
       Durability: item.durability || 100,
       SellDate: item.created_at,
       UseGetExp: 0,
       HitPoint: 0,
       ItemLevel: 1,
+      // 前端 Item.js 使用的装备属性字段
+      Attack: 0,
+      CR: 0,
+      DR: 0,
+      Defence: 0,
+      FR: 0,
+      LR: 0,
+      // 前端 Item.js 使用的物品字段
+      Name: item.item_name || '物品',
+      Image: item.icon || '/items/default.gif',
+      Quality: 1,
+      Level: 1,
+      UseLevel: 1,
+      UseSex: 0,
+      UseUnion: 0,
+      UseType: item.EffectType || 1,
+      UseGold: 0,
+      SellFlag: item.equipped ? 1 : 0,
+      m_heroID: item.hero_id || 0,
     }));
 
     return success(c, itemInfoList);
@@ -230,6 +271,9 @@ app.get('/count', async (c) => {
 });
 
 // 获取单个物品详情
+// GetItemByID - GET /item/:id - 获取物品详情
+// C#: public ItemInfo GetItemByID(int id)
+// 返回: ItemInfo (单个对象，不是数组)
 app.get('/:id', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -240,7 +284,8 @@ app.get('/:id', async (c) => {
 
   try {
     const item: any = await db.prepare(`
-      SELECT i.*, ic.* 
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type, ic.Des as description, 
+             ic.Icon as icon, ic.Price as SellMoney, ic.EffectType, ic.EffectValue
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.id = ? AND i.wallet_address = ?
@@ -248,7 +293,49 @@ app.get('/:id', async (c) => {
 
     if (!item) return error(c, 'Item not found', 404);
 
-    return success(c, item);
+    // 格式化为 C# ItemInfo 结构
+    const itemInfo = {
+      // C# DBItem 字段
+      ID: item.id,
+      StaticIndex: item.config_id,
+      UserName: item.wallet_address,
+      CityID: 1,
+      HeroID: item.hero_id || 0,
+      CorpsID: 0,
+      ItemName: item.item_name || '物品',
+      ItemType: item.item_type ?? 1,
+      State: item.equipped ? 1 : 0,
+      Price: item.SellMoney || 0,
+      Durability: item.durability || 100,
+      SellDate: item.created_at,
+      UseGetExp: 0,
+      HitPoint: item.HitPoint || 0,
+      ItemLevel: item.item_level || 1,
+      // 装备属性
+      Attack: item.cfg_attack || 0,
+      CR: item.CR || 0,
+      DR: item.DR || 0,
+      Defence: 0,
+      FR: 0,
+      LR: 0,
+      // 前端 Item.js 使用的字段
+      Name: item.item_name || '物品',
+      Image: item.icon || '/items/default.gif',
+      Quality: 1,
+      Level: 1,
+      UseLevel: 1,
+      UseSex: 0,
+      UseUnion: 0,
+      UseType: item.EffectType || 1,
+      UseGold: 0,
+      SellFlag: item.equipped ? 1 : 0,
+      m_heroID: item.hero_id || 0,
+      // 描述
+      Des: item.description || '',
+      Icon: item.icon || item.image || '/items/default.gif',
+    };
+
+    return success(c, itemInfo);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -1007,7 +1094,7 @@ app.get('/convoke', async (c) => {
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.wallet_address = ? AND ic.Type = 'convoke'
-      ORDER BY ic.Quality DESC, i.created_at DESC
+      ORDER BY i.created_at DESC
     `).bind(walletAddress).all();
 
     return success(c, { items: items.results || [] });
@@ -1033,7 +1120,7 @@ app.get('/granger', async (c) => {
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.wallet_address = ? AND ic.Type IN ('resource', 'food')
-      ORDER BY ic.Quality DESC, i.created_at DESC
+      ORDER BY i.created_at DESC
     `).bind(walletAddress).all();
 
     return success(c, { items: items.results || [] });
@@ -1617,7 +1704,7 @@ app.get('/name', async (c) => {
   try {
     // 获取物品名称
     const item: any = await db.prepare(`
-      SELECT i.id, ic.Name, ic.Type, ic.Quality, ic.Icon
+      SELECT i.id, ic.Name, ic.Type, ic.Icon
       FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
       WHERE i.id = ?

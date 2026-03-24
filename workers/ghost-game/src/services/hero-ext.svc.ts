@@ -188,10 +188,10 @@ export class HeroServiceExtension {
 
     // 获取用户拥有的武将
     const ownedHeroesResult: any = await this.db.prepare(`
-      SELECT hero_id FROM heroes WHERE wallet_address = ?
+      SELECT id, config_id FROM heroes WHERE wallet_address = ?
     `).bind(walletAddress).all();
     const ownedHeroes: any[] = (ownedHeroesResult as any)?.results || [];
-    const ownedSet = new Set(ownedHeroes.map((h: any) => h.hero_id));
+    const ownedSet = new Set(ownedHeroes.map((h: any) => h.config_id));
 
     // 检查每个缘分
     for (const [key, fate] of Object.entries(HERO_FATE_CONFIG.FATES)) {
@@ -273,7 +273,7 @@ export class HeroServiceExtension {
     const hero: any = await this.db.prepare(`
       SELECT h.*, hc.name as config_name, hc.quality, hc.base_atk, hc.base_def, hc.base_hp
       FROM heroes h
-      JOIN heroes_config hc ON h.hero_id = hc.id
+      JOIN heroes_config hc ON h.config_id = hc.id
       WHERE h.id = ? AND h.wallet_address = ?
     `).bind(heroId, walletAddress).first();
 
@@ -408,7 +408,7 @@ export class HeroServiceExtension {
   async checkBreakthrough(walletAddress: string, heroId: number) {
     const hero: any = await this.db.prepare(`
       SELECT h.*, hc.quality FROM heroes h
-      JOIN heroes_config hc ON h.hero_id = hc.id
+      JOIN heroes_config hc ON h.config_id = hc.id
       WHERE h.id = ? AND h.wallet_address = ?
     `).bind(heroId, walletAddress).first();
 
@@ -545,7 +545,7 @@ export class HeroServiceExtension {
     const hero: any = await this.db.prepare(`
       SELECT h.*, hc.name as hero_name 
       FROM heroes h
-      JOIN heroes_config hc ON h.hero_id = hc.id
+      JOIN heroes_config hc ON h.config_id = hc.id
       WHERE h.id = ? AND h.wallet_address = ?
     `).bind(walletAddress, heroId).first();
     
@@ -662,7 +662,7 @@ export class HeroServiceExtension {
     const hero: any = await this.db.prepare(`
       SELECT h.*, hc.name as hero_name, hc.base_hp
       FROM heroes h
-      JOIN heroes_config hc ON h.hero_id = hc.id
+      JOIN heroes_config hc ON h.config_id = hc.id
       WHERE h.id = ? AND h.wallet_address = ?
     `).bind(heroId, walletAddress).first();
 
@@ -757,7 +757,7 @@ export class HeroServiceExtension {
     const hero: any = await this.db.prepare(`
       SELECT h.*, hc.name as hero_name 
       FROM heroes h
-      JOIN heroes_config hc ON h.hero_id = hc.id
+      JOIN heroes_config hc ON h.config_id = hc.id
       WHERE h.id = ? AND h.wallet_address = ?
     `).bind(heroId, walletAddress).first();
 

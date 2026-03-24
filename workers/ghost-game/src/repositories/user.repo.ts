@@ -39,7 +39,7 @@ export interface User extends BaseEntity {
 
 export class UserRepository extends BaseRepository<User> {
   constructor(db: D1Database) {
-    super(db, 'users');
+    super(db, 'characters');  // 使用 characters 表代替 users
   }
 
   // ==================== 查询操作 ====================

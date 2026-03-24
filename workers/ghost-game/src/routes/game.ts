@@ -20,11 +20,15 @@ function error(c: any, message: string, status = 400) {
 
 // 初始化新用户（自动创建角色、城市和初始建筑）
 async function initializeNewUser(db: any, walletAddress: string) {
+  // 生成唯一名字（钱包地址后6位）
+  const shortAddr = walletAddress.slice(-6);
+  const playerName = `玩家_${shortAddr}`;
+  
   // 创建角色
   await db.prepare(`
     INSERT INTO characters (wallet_address, name, level, gold)
     VALUES (?, ?, ?, ?)
-  `).bind(walletAddress, '玩家', 1, 10000).run();
+  `).bind(walletAddress, playerName, 1, 10000).run();
 
   // 查找一个未被占用的 position（从 1000 开始，避免与系统预留位置冲突）
   const maxPositionResult: any = await db.prepare(`
@@ -47,14 +51,14 @@ async function initializeNewUser(db: any, walletAddress: string) {
   if (cityResult) {
     // 创建初始建筑：聚义厅（位置10）和义舍（位置14）
     await db.prepare(`
-      INSERT INTO buildings (city_id, type, level, position, state, config_id)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(cityResult.id, 'interior', 1, 10, 0, 1).run();
+      INSERT INTO buildings (wallet_address, city_id, type, level, position, state, config_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(walletAddress, cityResult.id, 'interior', 1, 10, 0, 1).run();
 
     await db.prepare(`
-      INSERT INTO buildings (city_id, type, level, position, state, config_id)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(cityResult.id, 'interior', 1, 14, 0, 2).run();
+      INSERT INTO buildings (wallet_address, city_id, type, level, position, state, config_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(walletAddress, cityResult.id, 'interior', 1, 14, 0, 2).run();
   }
 }
 
@@ -310,7 +314,7 @@ app.post('/city-detail', async (c) => {
   const result = await cityService.getDetail(db, walletAddress, city_id);
   const r = result as any;
   if (!r.ok) {
-    return error(c, r.error || 'Failed to get city detail', r.status || 500);
+    return error(c, r.error || 'Failed to get city detail', r.status || 400);
   }
 
   return success(c, {

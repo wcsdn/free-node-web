@@ -18,30 +18,105 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
+// 格式化武将信息为 C# HeroInfo 结构
+function formatHeroInfo(h: any, walletAddress: string) {
+  return {
+    ID: h.id,
+    Name: h.name,
+    Level: h.level,
+    Sex: h.sex || 1,
+    Junta: h.junta || 1,
+    Icon: h.icon || '/hero/1.gif',
+    Image: h.image || '/hero/1.png',
+    PortraitIndex: h.portrait_index || 1,
+    AbilityIndex: h.ability_index || 1,
+    CityID: h.city_id,
+    UserName: walletAddress,
+    Training: h.training || 0,
+    DefencePos: h.defence_pos || -1,
+    PrenticeNum: h.prentice_num || 0,
+    HeroType: h.hero_type || 0,
+    Quality: h.quality || 1,
+    ExpCount: h.exp || 0,
+    NoSkillReason: 0,
+    PropertyCounteract: [0,0,0,0,0],
+    WuXing: h.wu_xing || 1,
+    UpTraining: h.up_training || 10,
+    AutoExpGold: 0,
+    AutoExpCount: 0,
+    AutoExpResFood: 0,
+    AutoExpResMoney: 0,
+    AutoExpResMen: 0,
+    AutoExpNum: 0,
+    State: h.state || 0,
+    CorpsID: h.corps_id || 0,
+    LevelExp: h.exp || 0,
+    Attack: h.attack || 10,
+    Defence: h.defense || 5,
+    CrushBlow: h.crush_blow || 0,
+    Dodge: h.dodge || 0,
+    MaxPrenticeNum: 5,
+    AttackRange: h.attack_range || 1,
+    MoveRange: h.move_range || 3,
+    ResumeCostTime: 0,
+    ResumeCostGold: 0,
+    TrainCostMoney: 100,
+    TrainCostFood: 100,
+    TrainCostMen: 10,
+    TrainCostGold: 0,
+    TrainCostTime: 3600,
+    ConscriptionCostMoney: 200,
+    ConscriptionCostFood: 200,
+    ConscriptionCostMen: 20,
+    ConscriptionCostGold: 0,
+    ConscriptionCostTime: 7200,
+    FastTrainCostMoney: 50,
+    FastTrainCostFood: 50,
+    FastTrainCostMen: 5,
+    FastTrainCostGold: 10,
+    FastTrainCostTime: 0,
+    FastConscriptionCostMoney: 100,
+    FastConscriptionCostFood: 100,
+    FastConscriptionCostMen: 10,
+    FastConscriptionCostGold: 20,
+    FastConscriptionCostTime: 0,
+    SkillList: [],
+    ItemList: [],
+  };
+}
+
 // GetCityHero - POST /hero/list
 // C# 签名: public HeroInfo[] GetCityHero(int cityID)
 // 返回: HeroInfo[] (数组，不是对象)
 app.post('/list', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  // 支持 city_id 参数 (与前端一致)
-  const { city_id } = await c.req.json<{ city_id?: number }>();
-
   try {
+    const walletAddress = await verifyWalletAuth(c);
+    if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+    const db = c.env.DB;
+    if (!db) return error(c, 'Database not configured', 503);
+
+    // 支持 city_id 和 cityId 参数 (与前端一致)
+    const body = await c.req.json<{ city_id?: number; cityId?: number }>();
+    const city_id = body.city_id ?? body.cityId;
+
     // C# 逻辑: GetHero(userName, cityID) 排除 state=6 (未雇佣)
-    // SELECT * FROM heroes WHERE wallet_address = ? AND city_id = ? AND state != 6
-    const heroes = await db.prepare(`
-      SELECT * FROM heroes 
-      WHERE wallet_address = ? AND city_id = ? AND state != 6
-      ORDER BY level DESC, quality DESC
-    `).bind(walletAddress, city_id).all();
+    // 支持 city_id 过滤，如果不传则返回所有城市的武将
+    let query = 'SELECT * FROM heroes WHERE wallet_address = ? AND state != 6';
+    const params: any[] = [walletAddress];
+    
+    if (city_id !== undefined) {
+      query += ' AND city_id = ?';
+      params.push(city_id);
+    }
+    
+    query += ' ORDER BY level DESC, quality DESC';
+    
+    const heroes = await db.prepare(query).bind(...params).all();
 
     // 如果没有武将，返回包含 ID=-1 的数组 (C# 约定)
     if (!heroes.results || heroes.results.length === 0) {
+      console.log('[/hero/list] No heroes found, returning [{ID:-1}]');
       return success(c, [{ ID: -1 }]);
     }
 
@@ -115,7 +190,7 @@ app.post('/list', async (c) => {
 
     return success(c, heroList);
   } catch (err: any) {
-    return error(c, err.message || 'Failed to get heroes');
+    return c.json({ success: false, error: err.message, stack: err.stack, name: err.name });
   }
 });
 
@@ -306,15 +381,10 @@ app.get('/list', async (c) => {
   try {
     const cityId = city_id ? parseInt(city_id) : undefined;
     const result = await heroService.getList(db, walletAddress, { cityId });
-    const r = result as any;
-    
-    if (!r.ok) {
-      return error(c, r.error || 'Failed to get heroes', r.status || 500);
-    }
-
-    return success(c, r.data);
+    // getList returns { heroes: [], total: 0, page, pageSize }
+    return success(c, result);
   } catch (err: any) {
-    return error(c, err.message);
+    return error(c, err.message || 'Failed to get heroes');
   }
 });
 
@@ -344,61 +414,98 @@ app.get('/detail', async (c) => {
   }
 });
 
-// GetCanEenageHero - GET /hero/can-engage
-app.get('/can-engage', async (c) => {
+// GetCanEenageHero - POST /hero/can-engage
+// C# 签名: public HeroInfo[] GetCanEenageHero(int cityID, int union)
+// 前端发送: city_id, building_type (building_type 对应 junta/union)
+app.post('/can-engage', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, building_type } = c.req.query();
+  const { city_id, building_type, cityID } = await c.req.json();
+  const cityId = city_id || cityID;
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取可雇佣的武将 (state = 0, 空闲状态)
-    const heroes = await db.prepare(`
-      SELECT * FROM heroes 
-      WHERE wallet_address = ? AND city_id = ? AND state = 0
-      ORDER BY quality DESC, level DESC
-    `).bind(walletAddress, city_id).all();
+    // C# 逻辑: GetHeroByUnionBuilding - 获取待雇佣武将 (state=6, 按junta过滤)
+    // building_type (junta) > 0 才过滤，否则返回所有待雇佣武将
+    let query = `SELECT * FROM heroes WHERE wallet_address = ? AND city_id = ? AND state = 6`;
+    const params: any[] = [walletAddress, cityId];
 
-    return success(c, {
-      heroes: heroes.results || [],
-      count: heroes.results?.length || 0,
-    });
-  } catch (err: any) {
-    return error(c, err.message);
-  }
-});
-
-// GetCanUseHero - GET /hero/can-use
-app.get('/can-use', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, level, sex, union } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    // 获取可用武将 (根据条件筛选)
-    let query = `SELECT * FROM heroes WHERE wallet_address = ? AND city_id = ?`;
-    const params: any[] = [walletAddress, city_id];
-
-    if (level) {
-      query += ` AND level >= ?`;
-      params.push(parseInt(level));
+    if (building_type && building_type > 0) {
+      query += ` AND junta = ?`;
+      params.push(building_type);
     }
 
     query += ` ORDER BY quality DESC, level DESC`;
 
     const heroes = await db.prepare(query).bind(...params).all();
 
-    return success(c, {
-      heroes: heroes.results || [],
-      count: heroes.results?.length || 0,
-    });
+    // C# 约定: 没有可用武将时返回 [{ ID: -1 }]
+    if (!heroes.results || heroes.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    // 格式化为 HeroInfo 数组
+    const heroList = (heroes.results || []).map((h: any) => formatHeroInfo(h, walletAddress));
+    return success(c, heroList);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetCanUseHero - POST /hero/can-use
+// C# 签名: public HeroInfo[] GetCanUseHero(int cityID, int level, int sex, int junta)
+// 前端发送: city_id, level, sex, union (union 对应 junta)
+app.post('/can-use', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, level, sex, union, cityID } = await c.req.json();
+  const cityId = city_id || cityID;
+  const filterLevel = parseInt(level) || 0;
+  const filterSex = parseInt(sex) || 0;  // 0 = 不过滤
+  const filterJunta = parseInt(union) || 0;  // 0 = 不过滤
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // C# 逻辑: GetItemHero - 获取可用武将 (state != 6, level >= level, sex过滤, junta过滤, CorpsID == 0)
+    let query = `SELECT * FROM heroes WHERE wallet_address = ? AND city_id = ? AND state != 6`;
+    const params: any[] = [walletAddress, cityId];
+
+    if (filterLevel > 0) {
+      query += ` AND level >= ?`;
+      params.push(filterLevel);
+    }
+
+    if (filterSex > 0) {
+      query += ` AND sex = ?`;
+      params.push(filterSex);
+    }
+
+    if (filterJunta > 0) {
+      query += ` AND junta = ?`;
+      params.push(filterJunta);
+    }
+
+    // 必须不在帮派 (CorpsID == 0)
+    query += ` AND (corps_id = 0 OR corps_id IS NULL)`;
+
+    query += ` ORDER BY quality DESC, level DESC`;
+
+    const heroes = await db.prepare(query).bind(...params).all();
+
+    // C# 约定: 没有可用武将时返回 [{ ID: -1 }]
+    if (!heroes.results || heroes.results.length === 0) {
+      return success(c, [{ ID: -1 }]);
+    }
+
+    // 格式化为 HeroInfo 数组
+    const heroList = (heroes.results || []).map((h: any) => formatHeroInfo(h, walletAddress));
+    return success(c, heroList);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -573,34 +680,46 @@ app.post('/fire-can-engage', async (c) => {
 });
 
 // GetUserHeros - GET /hero/user-heroes
+// C# 签名: public ArenaWinnerInfo[] GetUserHeros(int npcPos)
+// 前端发送: pos (npc位置)
+// 注意: C# 返回 ArenaWinnerInfo[] (竞技场排行榜数据), 不是武将列表
+// 目前简化处理: 返回武将列表数组 (格式化为 HeroInfo[])
 app.get('/user-heroes', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { username } = c.req.query();
+  const { pos, username } = c.req.query();
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 根据用户名查询武将
-    const user = await db.prepare(`
-      SELECT wallet_address FROM characters WHERE name = ?
-    `).bind(username).first();
-
-    if (!user) {
-      return success(c, { heroes: [], count: 0 });
+    // 前端实际发送的是 pos (npcPos), 不是 username
+    // 如果有 username 用 username 查，否则用 pos 查
+    let walletAddr = walletAddress;
+    
+    if (username) {
+      const user = await db.prepare(`
+        SELECT wallet_address FROM characters WHERE name = ?
+      `).bind(username).first();
+      if (user) {
+        walletAddr = (user as any).wallet_address;
+      }
     }
 
     const heroes = await db.prepare(`
       SELECT * FROM heroes WHERE wallet_address = ?
       ORDER BY quality DESC, level DESC
-    `).bind((user as any).wallet_address).all();
+    `).bind(walletAddr).all();
 
-    return success(c, {
-      heroes: heroes.results || [],
-      count: heroes.results?.length || 0,
-    });
+    // C# 约定: 没有数据时返回空数组
+    if (!heroes.results || heroes.results.length === 0) {
+      return success(c, []);
+    }
+
+    // 返回数组 (不是 { heroes: [], count: N })
+    const heroList = (heroes.results || []).map((h: any) => formatHeroInfo(h, walletAddr));
+    return success(c, heroList);
   } catch (err: any) {
     return error(c, err.message);
   }
