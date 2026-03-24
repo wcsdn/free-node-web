@@ -1,16 +1,27 @@
+/**
+ * Task Routes - 任务接口
+ */
 import { Hono } from 'hono';
+import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
-import { success, error } from '../utils/response';
 import taskService from '../services/task.service';
+
+function success(c: any, data: any) {
+  return c.json({ success: true, data });
+}
+
+function error(c: any, message: string, status = 400) {
+  return c.json({ success: false, error: message }, status);
+}
 
 const app = new Hono();
 
-// GET /task/ - 获取任务列表（按类型）
+// GET /task/ - 获取任务列表
 app.get('/', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const db = c.env.DB;
+  const db = (c.env as Env).DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   const url = new URL(c.req.url);
@@ -27,7 +38,6 @@ app.get('/', async (c) => {
 
   try {
     const tasks = await taskService.getCurrentTasks(db, walletAddress, cityId);
-    // 转换为前端期望的 PascalCase 字段
     const taskList = (tasks || []).map((t: any) => ({
       ID: t.id,
       Name: t.name,
@@ -65,7 +75,7 @@ app.post('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const db = c.env.DB;
+  const db = (c.env as Env).DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   const { city_id } = await c.req.json<{ city_id?: number }>();
@@ -117,7 +127,7 @@ app.get('/daily', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const db = c.env.DB;
+  const db = (c.env as Env).DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   const url = new URL(c.req.url);
@@ -132,7 +142,6 @@ app.get('/daily', async (c) => {
   }
 
   try {
-    // 获取每日任务配置
     const configs = await db.prepare(
       'SELECT * FROM daily_task_configs WHERE is_open = 1 ORDER BY id'
     ).all();
@@ -140,7 +149,7 @@ app.get('/daily', async (c) => {
     const dailyTasks = (configs.results || []).map((cfg: any) => ({
       ID: cfg.id,
       Name: cfg.name,
-      Type: 2, // 每日任务type
+      Type: 2,
       Des: cfg.description || '',
       NeedObjValue: cfg.target_value || 0,
       RewardGold: cfg.reward_gold || 0,
@@ -161,7 +170,7 @@ app.get('/other/simple', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const db = c.env.DB;
+  const db = (c.env as Env).DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   const url = new URL(c.req.url);
@@ -177,7 +186,6 @@ app.get('/other/simple', async (c) => {
   }
 
   try {
-    // 从 other_tasks 表获取支线任务
     const otherTasks = await db.prepare(
       'SELECT ot.*, tc.name, tc.description, tc.target_value, tc.reward_gold, tc.reward_exp ' +
       'FROM other_tasks ot ' +
