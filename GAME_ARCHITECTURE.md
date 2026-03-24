@@ -133,6 +133,20 @@ if (!character) {
 - 聚义厅: position=10, config_id=1
 - 义舍: position=14, config_id=2
 
+**4. 初始化任务进度 (tasks 表)**
+- MainID=1, MainIndex=1, Task[0]=firstTaskId (初出茅庐), Task[1..9]=0
+
+**5. 初始化科技 (technics 表)**
+- StaticIndex=1 (聚义厅对应), Level=1
+
+**6. 初始化用户资源 (user_resources 表)**
+- prestige=0, fame=0, 玉石类全0
+
+**7. 初始化战役任务 (missions 表)**
+- group_index='1.1.1' (第一章第一节), state=1
+
+> ⚠️ 完整注册流程见 [用户注册流程文档](./USER_REGISTRATION_FLOW.md)
+
 
 ### 初始化代码实现
 
@@ -463,6 +477,72 @@ CREATE TABLE time_events (
 
 **注意**: 当前表结构较简化，完整版应包含更多字段（参考 C# DBEvent 模型）。
 
+#### tasks (主线任务进度表)
+```sql
+CREATE TABLE tasks (
+  wallet_address TEXT PRIMARY KEY,
+  main_id INTEGER DEFAULT 1,      -- 章ID
+  main_index INTEGER DEFAULT 1,   -- 节ID
+  task_ids TEXT,                  -- JSON数组: [1,2,3,0,0...]
+  task_states TEXT,               -- JSON数组: [0,0,0,0...]
+  task_progress TEXT              -- JSON数组: [0,0,0,0...]
+);
+```
+任务配置来自 `src/config/tasks.json`（95个任务），不存数据库。
+
+#### technics (科技表)
+```sql
+CREATE TABLE technics (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_name TEXT NOT NULL,
+  city_id INTEGER NOT NULL,
+  static_index INTEGER NOT NULL,  -- 科技静态ID
+  technic_level INTEGER DEFAULT 1,
+  state INTEGER DEFAULT 0,
+  build_id INTEGER,
+  FOREIGN KEY (user_name) REFERENCES characters(wallet_address)
+);
+```
+
+#### user_resources (用户资源表)
+```sql
+CREATE TABLE user_resources (
+  wallet_address TEXT PRIMARY KEY,
+  prestige INTEGER DEFAULT 0,       -- 声望
+  prestige_level INTEGER DEFAULT 1,
+  fame INTEGER DEFAULT 0,            -- 荣誉
+  fame_level INTEGER DEFAULT 1,
+  pearl INTEGER DEFAULT 0,           -- 玉石
+  crystal INTEGER DEFAULT 0,         -- 水晶
+  agate INTEGER DEFAULT 0,          -- 玛瑙
+  w_bowlder INTEGER DEFAULT 0,      -- 白玉石
+  b_bowlder INTEGER DEFAULT 0,      -- 黑玉石
+  crusade INTEGER DEFAULT 0,
+  jade_book INTEGER DEFAULT 0
+);
+```
+
+#### missions (战役任务表)
+```sql
+CREATE TABLE missions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  wallet_address TEXT NOT NULL,
+  condition_user TEXT NOT NULL,
+  mission_state INTEGER NOT NULL DEFAULT 0,
+  mission_type INTEGER NOT NULL DEFAULT 0,
+  target_pos INTEGER NOT NULL DEFAULT 0,
+  target_value INTEGER NOT NULL DEFAULT 0,
+  group_index TEXT NOT NULL,
+  condition_index TEXT NOT NULL,
+  gain_index TEXT NOT NULL,
+  start_date DATETIME NOT NULL,
+  create_date DATETIME NOT NULL,
+  FOREIGN KEY (wallet_address) REFERENCES characters(wallet_address)
+);
+```
+
+#### time_events (事件表)
+
 
 ## 前端架构
 
@@ -740,6 +820,6 @@ database_id = "your-database-id"
 
 ---
 
-**最后更新**: 2026-02-27
+**最后更新**: 2026-03-24
 **维护者**: AI Assistant
-**版本**: 1.0.0
+**版本**: 1.1.0（新增注册完整流程、user_resources、missions表）
