@@ -5,7 +5,8 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
-import { userService, cityService } from '../services';
+import { userService, cityService, taskService } from '../services';
+import { taskConfigs } from '../config/tasks';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -49,7 +50,7 @@ async function initializeNewUser(db: any, walletAddress: string) {
   `).bind(walletAddress).first();
 
   if (cityResult) {
-    // 创建初始建筑：聚义厅（位置10）和义舍（位置14）
+    // 创建初始建筑：聚义厅（位置10, StaticIndex=1）和义舍（位置14, StaticIndex=2）
     await db.prepare(`
       INSERT INTO buildings (wallet_address, city_id, type, level, position, state, config_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -59,6 +60,54 @@ async function initializeNewUser(db: any, walletAddress: string) {
       INSERT INTO buildings (wallet_address, city_id, type, level, position, state, config_id)
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `).bind(walletAddress, cityResult.id, 'interior', 1, 14, 0, 2).run();
+
+    // 初始化用户任务进度（对齐C# CreateInitializeTask）
+    // Task[0] = 第一章第一小节第一个任务ID，其余为0
+    const firstTaskId = taskConfigs['1_1']?.Task?.[0] || 1;
+    const taskIds = [firstTaskId, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    await db.prepare(`
+      INSERT INTO tasks (wallet_address, main_id, main_index, task_ids, task_states, task_progress)
+      VALUES (?, 1, 1, ?, '[0,0,0,0,0,0,0,0,0,0]', '[0,0,0,0,0,0,0,0,0,0]')
+    `).bind(walletAddress, JSON.stringify(taskIds)).run();
+
+    // 初始化科技记录（对齐C# Technology）
+    // 聚义厅(config_id=1, StaticIndex=1) -> technics.json中DependBuildingID=1的科技 -> ID=1 移山填海
+    const techResult: any = await db.prepare(`
+      SELECT id FROM technics WHERE user_name = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!techResult) {
+      await db.prepare(`
+        INSERT INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+        VALUES (?, ?, 1, 1, 0, 1)
+      `).bind(walletAddress, cityResult.id).run();
+    }
+
+    // 初始化用户资源（对齐C# UserOrganizeRes）：prestige/fame/玉石全0
+    const resResult: any = await db.prepare(`
+      SELECT wallet_address FROM user_resources WHERE wallet_address = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!resResult) {
+      await db.prepare(`
+        INSERT INTO user_resources (wallet_address, prestige, prestige_level, fame, fame_level, pearl, crystal, agate, w_bowlder, b_bowlder, crusade, jade_book)
+        VALUES (?, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0)
+      `).bind(walletAddress).run();
+    }
+
+    // 初始化战役任务（对齐C# DBMission.CreateDBMission("5.2.1")）
+    // GroupIndex "1.1.1" = 第一章第一节任务（新手教程）
+    const missionResult: any = await db.prepare(`
+      SELECT id FROM missions WHERE wallet_address = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (!missionResult) {
+      const now = new Date().toISOString();
+      await db.prepare(`
+        INSERT INTO missions (wallet_address, condition_user, mission_state, mission_type, target_pos, target_value, group_index, condition_index, gain_index, start_date, create_date)
+        VALUES (?, '', 1, 1, 0, 0, '1.1.1', '1.1.1', '1.1.1', ?, ?)
+      `).bind(walletAddress, now, now).run();
+    }
   }
 }
 

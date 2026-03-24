@@ -4,6 +4,7 @@
  */
 import type { D1Database } from '@cloudflare/workers-types';
 import type { TaskConfig, UserTask } from '../types/models';
+import { taskConfigs, getTaskConfig as getTaskCfg } from '../config/tasks';
 
 // 任务类型定义
 export interface TaskInfo {
@@ -91,10 +92,12 @@ class TaskService {
    * 获取当前可执行任务列表
    */
   async getCurrentTasks(walletAddress: string, cityId: number): Promise<TaskInfo[]> {
-    // 获取用户任务状态
-    const userTask = await this.getUserTaskState(walletAddress);
+    // 获取用户任务状态（如果不存在，自动创建）
+    let userTask = await this.getUserTaskState(walletAddress);
     if (!userTask) {
-      return [];
+      await this.createUserTask(walletAddress);
+      userTask = await this.getUserTaskState(walletAddress);
+      if (!userTask) return [];
     }
     
     const taskList: TaskInfo[] = [];
@@ -576,25 +579,52 @@ class TaskService {
   }
   
   /**
-   * 获取任务配置
+   * 获取任务配置（对齐C# XmlData.MainTask）
    */
-  private async getTaskConfig(taskId: number): Promise<TaskInfo | null> {
-    // TODO: 从配置或数据库加载任务配置
-    return null;
+  private getTaskConfig(taskId: number): TaskInfo | null {
+    if (taskId <= 0) return null;
+    const task = getTaskCfg(taskId);
+    if (!task) return null;
+    return {
+      id: task.ID,
+      mainId: task.MainID,
+      mainIndex: task.MainIndex,
+      index: task.Index,
+      name: task.Name,
+      nameType: task.NameType || 1,
+      type: task.Type || 1,
+      state: 0,
+      beginDes: task.BeginDes || '',
+      endDes: task.EndDes || '',
+      actionDes: task.ActionDes || '',
+      needObjType: task.NeedObjType || 0,
+      needObjID: task.NeedObjID || 0,
+      needObjValue: task.NeedObjValue || 0,
+      taskItemNum: 0,
+      hasTaskItemNum: 0,
+      hasCondition: 0,
+    };
   }
-  
+
   /**
-   * 创建新用户任务
+   * 创建新用户任务（对齐C# CreateInitializeTask）
+   * 初始化: MainID=1, MainIndex=1, Task[0]=第一章第一小节第一个任务ID, Task[1..9]=0
    */
   async createUserTask(walletAddress: string): Promise<void> {
+    // 从 taskConfigs["1_1"] 获取第一章第一小节的所有任务ID，取第一个
+    const chapter1_1 = taskConfigs['1_1'];
+    const firstTaskId = chapter1_1?.Task?.[0] || 1;
+
+    // C#: Task[] = [firstTaskId, 0, 0, ...]
+    const taskIds = [firstTaskId, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     await this.db.prepare(`
       INSERT INTO tasks (wallet_address, main_id, main_index, task_ids, task_states, task_progress)
       VALUES (?, 1, 1, ?, ?, ?)
     `).bind(
       walletAddress,
-      JSON.stringify([1, 2, 3, 0, 0, 0, 0, 0, 0, 0]), // 初始任务ID
-      JSON.stringify([1, 1, 1, 0, 0, 0, 0, 0, 0, 0]), // 初始状态
-      JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])  // 初始进度
+      JSON.stringify(taskIds),
+      JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      JSON.stringify([0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     ).run();
   }
 }
