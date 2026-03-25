@@ -977,6 +977,70 @@ async function cancelEventAndRefund(db: any, event: any): Promise<{ money: numbe
     `).bind(refund.gold, walletAddress).run();
   }
 
+  // ============================================
+  // 后续事件时间重排 (参考 C# Event.DeleteEvent 逻辑)
+  // 当事件被取消后，后续同类型事件的开始和结束时间需要提前
+  // ============================================
+  try {
+    // 计算被删除事件的持续时间 (spaceTime)
+    const now = new Date();
+    const eventStart = new Date(event.start_time);
+    const eventEnd = new Date(event.end_time);
+
+    let spaceTimeSeconds = 0;
+    const secondsUntilStart = (eventStart.getTime() - now.getTime()) / 1000;
+
+    if (secondsUntilStart < 0) {
+      // 事件已开始，计算剩余时间
+      spaceTimeSeconds = Math.max(0, (eventEnd.getTime() - now.getTime()) / 1000);
+    } else {
+      // 事件尚未开始，使用完整持续时间
+      spaceTimeSeconds = (eventEnd.getTime() - eventStart.getTime()) / 1000;
+    }
+
+    // 只有 ObjType=1 (建筑) 需要重排 (参考 C# DeleteEvent)
+    // 其他类型 (科技/防御/英雄/部队) 暂不处理
+    if (eventType === EVENT_TYPES.BUILDING && spaceTimeSeconds > 0) {
+      // 获取所有后续事件 (同 ObjType，且结束时间在当前事件之后)
+      const subsequentEventsResult: any = await db.prepare(`
+        SELECT * FROM time_events
+        WHERE wallet_address = ?
+          AND city_id = ?
+          AND event_type = ?
+          AND end_time > ?
+        ORDER BY end_time ASC
+      `).bind(
+        event.wallet_address,
+        cityId,
+        eventType,
+        event.end_time
+      ).all();
+
+      // 更新后续事件的时间 (都提前 spaceTimeSeconds)
+      const subsequentEvents = subsequentEventsResult.results || subsequentEventsResult;
+      for (const evt of subsequentEvents) {
+        const evtStart = new Date(evt.start_time);
+        const evtEnd = new Date(evt.end_time);
+
+        const newStartTime = new Date(evtStart.getTime() - spaceTimeSeconds * 1000);
+        const newEndTime = new Date(evtEnd.getTime() - spaceTimeSeconds * 1000);
+
+        await db.prepare(`
+          UPDATE time_events
+          SET start_time = ?, end_time = ?
+          WHERE id = ?
+        `).bind(
+          newStartTime.toISOString(),
+          newEndTime.toISOString(),
+          evt.id
+        ).run();
+      }
+    }
+  } catch (rescheduleErr) {
+    // 时间重排失败不影响事件取消
+    console.error('[Event] Reschedule subsequent events failed:', rescheduleErr);
+  }
+
   // 删除事件记录
   await db.prepare('DELETE FROM time_events WHERE id = ?').bind(event.id).run();
 

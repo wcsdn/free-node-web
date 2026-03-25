@@ -480,50 +480,77 @@ app.post('/add', async (c) => {
 });
 
 // 物品分解
+// C#: DisassembleItem(string userName, int cityID, int itemID, int index)
+// 分解装备类物品，返还材料
 app.post('/disassemble', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, item_id, static_index } = await c.req.json();
+  const { city_id, item_id } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
+    // 获取物品（必须是静态索引的物品，检查是否装备或运输中）
     const inv: any = await db.prepare(`
-      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, item_id).first();
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type,
+             ic.EffectType, ic.EffectValue, ic.SellFood, ic.SellMoney,
+             ic.Attack, ic.CR, ic.DR, ic.Defence, ic.FR, ic.LR, ic.HitPoint,
+             ic.Icon, ic.Des, ic.Price, ic.Level, ic.Quality, ic.GetFood,
+             ic.GetMen, ic.GetMoney, ic.GetGold, ic.UseGold, ic.UseLevel,
+             ic.UseSex, ic.UseType, ic.UseUnion, ic.SkillType, ic.NeedUserLevel,
+             ic.GetValue, ic.LostRate, ic.GetItemStatic, ic.SellFlag
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(item_id, walletAddress).first();
 
-    if (!inv || (inv.count || 1) < 1) {
-      return error(c, 'Not enough items');
+    if (!inv) return error(c, '物品不存在', 404);
+
+    // 检查物品是否装备在英雄身上或运输中
+    if ((inv as any).hero_id && (inv as any).hero_id > 0) {
+      return error(c, '物品已装备在英雄身上，不能分解', 400);
+    }
+    if ((inv as any).corps_id && (inv as any).corps_id > 0) {
+      return error(c, '物品运输中，不能分解', 400);
     }
 
-    // 查找分解配方
-    const recipe = (itemDisassemble as any).find((r: any) => r.FromItemID === parseInt(item_id));
+    const staticIndex = inv.config_id;
+
+    // 从 C# XmlData.ItemDisassemble 中查找分解配方
+    // 格式: { [fromIndex]: { ToItemID, ToItemNum } }
+    const disassembleRecipes = (itemDisassemble as any).items || [];
+    const recipe = disassembleRecipes.find((r: any) => r.itemId === staticIndex);
+
     if (!recipe) {
-      return error(c, 'Item cannot be disassembled');
+      return error(c, '该物品不能分解');
     }
 
-    // 扣除物品
-    await db.prepare(`
-      UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, item_id).run();
+    // 消耗物品（减少1个）
+    if ((inv as any).count > 1) {
+      await db.prepare(`
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(item_id).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(item_id).run();
+    }
 
-    // 添加分解产物
+    // 添加分解产物（材料）
     const rewards: any[] = [];
-    if (recipe.ToItemID) {
-      const rewardCount = recipe.ToItemNum || 1;
-      
+    const rewardCount = recipe.disassemblyNum || 1;
+    const rewardConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === recipe.disassemblyId);
+
+    if (recipe.disassemblyId) {
       await db.prepare(`
         INSERT INTO items (wallet_address, config_id, count, source)
         VALUES (?, ?, ?, 'disassemble')
         ON CONFLICT(wallet_address, config_id) DO UPDATE SET count = count + ?
-      `).bind(walletAddress, recipe.ToItemID, rewardCount, rewardCount).run();
+      `).bind(walletAddress, recipe.disassemblyId, rewardCount, rewardCount).run();
 
-      const rewardConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === recipe.ToItemID);
       rewards.push({
-        id: recipe.ToItemID,
+        id: recipe.disassemblyId,
         name: rewardConfig?.Name || '材料',
         count: rewardCount,
       });
@@ -531,9 +558,11 @@ app.post('/disassemble', async (c) => {
 
     return success(c, {
       itemId: item_id,
-      count: 1,
+      itemName: inv.item_name,
+      disassembledName: rewardConfig?.Name || '材料',
+      disassembledNum: rewardCount,
       rewards,
-      message: `分解 1 个物品成功`,
+      message: `分解 1 个 ${inv.item_name} 成功，获得 ${rewardCount} 个 ${rewardConfig?.Name || '材料'}`,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -1075,6 +1104,74 @@ app.post('/takeoff-battle', async (c) => {
     `).bind(item_id).run();
 
     return success(c, { message: '卸下成功' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// GetItemByHero - GET /item/hero/:heroId
+// C#: GetItemByHero(int heroID) - 获得指定侠客装备的道具
+app.get('/hero/:heroId', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const heroId = parseInt(c.req.param('heroId'));
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const items = await db.prepare(`
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type, ic.Des as description,
+             ic.Icon as icon, ic.Price as SellMoney, ic.EffectType, ic.EffectValue,
+             ic.Attack, ic.CR, ic.DR, ic.Defence, ic.FR, ic.LR, ic.HitPoint,
+             ic.Level, ic.Quality, ic.GetFood, ic.GetMen, ic.GetMoney, ic.GetGold,
+             ic.UseGold, ic.UseLevel, ic.UseSex, ic.UseType, ic.UseUnion,
+             ic.SkillType, ic.NeedUserLevel, ic.GetValue, ic.SellFlag,
+             ic.EquipSlot
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.wallet_address = ? AND i.hero_id = ?
+      ORDER BY i.id DESC
+    `).bind(walletAddress, heroId).all();
+
+    const itemList = (items.results || []).map((item: any) => ({
+      ID: item.id,
+      StaticIndex: item.config_id,
+      UserName: walletAddress,
+      CityID: 1,
+      HeroID: item.hero_id || 0,
+      CorpsID: item.corps_id || 0,
+      ItemName: item.item_name || '物品',
+      ItemType: item.item_type || 1,
+      State: item.equipped ? 3 : 1,  // 3=装备属性
+      Price: item.SellMoney || 0,
+      Durability: item.durability || 100,
+      SellDate: item.created_at,
+      UseGetExp: 0,
+      HitPoint: item.HitPoint || 0,
+      ItemLevel: 1,
+      Attack: item.Attack || 0,
+      CR: item.CR || 0,
+      DR: item.DR || 0,
+      Defence: item.Defence || 0,
+      FR: item.FR || 0,
+      LR: item.LR || 0,
+      Name: item.item_name || '物品',
+      Image: item.icon || '/items/default.gif',
+      Level: item.Level || 1,
+      UseLevel: item.UseLevel || 1,
+      UseSex: item.UseSex || 0,
+      UseUnion: item.UseUnion || 0,
+      UseType: item.UseType || 1,
+      UseGold: item.UseGold || 0,
+      SellFlag: item.SellFlag || 0,
+      GetMen: item.GetMen || 0,
+      Quality: item.Quality || 1,
+      Des: item.description || '',
+      Icon: item.icon || item.image || '/items/default.gif',
+    }));
+
+    return success(c, itemList);
   } catch (err: any) {
     return error(c, err.message);
   }

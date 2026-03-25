@@ -974,6 +974,97 @@ app.get('/state', async (c) => {
   }
 });
 
+// 获取目标城市状态 - GET /battle/target-state
+// 检查目标位置的状态，用于战斗前验证
+// 返回: { valid: boolean, type: string, owner?: string, level?: number, error?: number, message?: string }
+app.get('/target-state', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const targetPos = parseInt(c.req.query('pos') || c.req.query('targetPos') || '0');
+  if (!targetPos) return error(c, 'targetPos is required');
+
+  try {
+    // 1. 检查是否是自己的城市
+    const myCity: any = await db.prepare(`
+      SELECT position, level, name FROM cities WHERE wallet_address = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    if (myCity && myCity.position === targetPos) {
+      return success(c, {
+        valid: false,
+        type: 'self',
+        error: 7,
+        message: '不能攻击自己的城市'
+      });
+    }
+
+    // 2. 检查目标位置类型
+    const target: any = await db.prepare(`
+      SELECT wallet_address, name, level, prosperity FROM cities WHERE position = ?
+    `).bind(targetPos).first();
+
+    if (target) {
+      // 玩家城市
+      // 检查是否可攻击
+      const limitResult = await fightService.checkAttackCityLimit(db, walletAddress, targetPos, target.level);
+      if (!limitResult.valid) {
+        return success(c, {
+          valid: false,
+          type: 'player',
+          owner: target.wallet_address,
+          level: target.level,
+          error: limitResult.error,
+          message: limitResult.message
+        });
+      }
+
+      // 计算繁荣度等级
+      const prosperity = target.prosperity || 0;
+      const prosperityLevel = Math.max(1, Math.floor(prosperity / 100) + 1);
+
+      return success(c, {
+        valid: true,
+        type: 'player',
+        owner: target.wallet_address,
+        name: target.name,
+        level: target.level,
+        prosperityLevel: prosperityLevel,
+        canAttack: true
+      });
+    }
+
+    // 3. 检查 NPC
+    const npc: any = await db.prepare(`
+      SELECT * FROM npc_floors WHERE position = ?
+    `).bind(targetPos).first();
+
+    if (npc) {
+      return success(c, {
+        valid: true,
+        type: 'npc',
+        level: npc.difficulty || 1,
+        name: npc.name,
+        canAttack: true
+      });
+    }
+
+    // 4. 空地
+    return success(c, {
+      valid: true,
+      type: 'empty',
+      canAttack: false,
+      message: '空地不可攻击'
+    });
+  } catch (err: any) {
+    console.error('[Battle] target-state error:', err);
+    return error(c, err.message);
+  }
+});
+
 // 改变战斗状态 - POST /battle/change-state
 app.post('/change-state', async (c) => {
   const walletAddress = await verifyWalletAuth(c);

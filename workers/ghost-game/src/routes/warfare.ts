@@ -7,6 +7,20 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import warfareConfig from '../config/warfare.json';
+import {
+  getChessInfo,
+  getChessEvent,
+  createChessboard,
+  addChessman,
+  addPlayer,
+  actionMove,
+  actionAttack,
+  getChessboard,
+  removeChessboard,
+  CHESSBOARD_WIDTH,
+  CHESSBOARD_HEIGHT,
+  BATTLE_TYPES,
+} from '../services/chessboard.svc';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -510,6 +524,24 @@ app.post('/select', async (c) => {
   try {
     const athleticsType = parseInt(area); // AthleticsType
     const battleType = parseInt(warfare_type || '1'); // BattleType (默认死战模式)
+
+    // 验证 battleType 有效性 (1=死战, 2=夺旗, 3=竞速)
+    if (battleType < 1 || battleType > 3) {
+      return c.json({ success: false, code: 1, message: '无效的战斗类型' });
+    }
+
+    // 验证夺旗/竞速模式需要 AthleticsType=2 或 3
+    if ((battleType === 2 || battleType === 3) && athleticsType === 1) {
+      return c.json({ success: false, code: 1, message: '夺旗/竞速模式需要组队或帮派类型' });
+    }
+
+    // 检查 warfare.json 中是否存在对应的配置
+    const warfareEntry = (warfareConfig.Warfare || []).find(
+      (w: any) => w.AthleticsType === athleticsType && w.AthleticsMode === battleType
+    );
+    if (!warfareEntry) {
+      return c.json({ success: false, code: 1, message: '该战区配置不存在' });
+    }
 
     // 1. 检查战场是否开放 (battleIsOpen 配置)
     // 战场默认开放，除非明确配置为关闭
@@ -1052,6 +1084,16 @@ app.post('/match', async (c) => {
 
       const newBattleId = battleResult.meta.last_row_id;
 
+      // 创建战场 (Chessboard)
+      const chessboard = createChessboard(
+        newBattleId,
+        battle_type,
+        athletics_type,
+        1, // serverUnit (默认1)
+        1, // maxLevel (简化)
+        roomId
+      );
+
       // 更新当前用户 time_events state = 11 (已匹配)
       await db.prepare(`
         UPDATE time_events
@@ -1090,6 +1132,229 @@ app.post('/match', async (c) => {
   } catch (err: any) {
     return error(c, err.message);
   }
+});
+
+// ==================== 战场核心接口 ====================
+
+/**
+ * GET /warfare/chess-info - 获取战场完整信息
+ * 参考: ChessEx.GetChessInfo() - ChessEx.cs
+ * 
+ * Query: pos (战场位置)
+ * 
+ * 返回棋盘信息、棋子列表、玩家列表等完整战场数据
+ */
+app.get('/chess-info', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos } = c.req.query();
+
+  if (!pos) {
+    return error(c, 'pos is required');
+  }
+
+  const posNum = parseInt(pos);
+  const chessInfo = getChessInfo(posNum);
+
+  if (!chessInfo) {
+    return error(c, '战场不存在或已结束', 404);
+  }
+
+  return success(c, {
+    Height: chessInfo.Height,
+    Width: chessInfo.Width,
+    Pos: chessInfo.Pos,
+    BattleSeconds: chessInfo.BattleSeconds,
+    WaitSeconds: chessInfo.WaitSeconds,
+    State: chessInfo.State,
+    TotalSecondsNow: chessInfo.TotalSecondsNow,
+    // 网格数据 (简化返回，只返回有棋子的位置)
+    ChessunitMap: chessInfo.ChessunitMap,
+    // 棋子列表
+    ChessmanList: chessInfo.ChessmanList,
+    // 玩家列表
+    ChessplayerList: chessInfo.ChessplayerList,
+  });
+});
+
+/**
+ * GET /warfare/chess-event - 获取战场事件
+ * 参考: ChessEx.GetChessEvent() - ChessEx.cs
+ * 
+ * Query: pos (战场位置), state (上次事件ID)
+ * 
+ * 返回从指定事件ID之后的新事件列表
+ */
+app.get('/chess-event', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos, state } = c.req.query();
+
+  if (!pos) {
+    return error(c, 'pos is required');
+  }
+
+  const posNum = parseInt(pos);
+  const stateNum = state ? parseInt(state) : 0;
+
+  // 查找用户在战场中的位置
+  const chessboard = getChessboard(posNum);
+  if (!chessboard) {
+    return error(c, '战场不存在或已结束', 404);
+  }
+
+  // 查找用户对应的 player ID
+  let playerId = -1;
+  for (let i = 0; i < chessboard.PlayerList.length; i++) {
+    if (chessboard.PlayerList[i]?.UserName === walletAddress) {
+      playerId = i;
+      break;
+    }
+  }
+
+  if (playerId < 0) {
+    return error(c, '您不在此战场中', 400);
+  }
+
+  const events = getChessEvent(posNum, walletAddress, playerId, stateNum);
+
+  if (!events) {
+    return error(c, '获取事件失败', 500);
+  }
+
+  return success(c, {
+    events: events || [],
+    player: playerId,
+    state: chessboard.EventList.length,
+  });
+});
+
+/**
+ * POST /warfare/action-move - 移动棋子
+ * 参考: ChessEx.ActionMove() - ChessEx.cs
+ * 
+ * Body: { pos, obj_id, target_x, target_y }
+ * 
+ * pos: 战场位置
+ * obj_id: 棋子ID
+ * target_x: 目标X坐标
+ * target_y: 目标Y坐标
+ * 
+ * 返回: { code, message }
+ *   0=成功, 101=战场不存在, 102=战斗状态异常, 10=目标位置不在棋盘内,
+ *   11=棋子不存在, 12=棋子不属于该玩家, 13=棋子状态异常, 14=目标位置已被占用,
+ *   15=移动距离超出范围, 16=行动点不足
+ */
+app.post('/action-move', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos, obj_id, target_x, target_y } = await c.req.json();
+
+  if (pos === undefined || obj_id === undefined || target_x === undefined || target_y === undefined) {
+    return error(c, 'pos, obj_id, target_x, target_y are required');
+  }
+
+  const posNum = parseInt(pos);
+  const objIdNum = parseInt(obj_id);
+  const targetXNum = parseInt(target_x);
+  const targetYNum = parseInt(target_y);
+
+  // 查找用户在战场中的位置
+  const chessboard = getChessboard(posNum);
+  if (!chessboard) {
+    return error(c, '战场不存在', 404);
+  }
+
+  // 查找用户对应的 player ID
+  let playerId = -1;
+  for (let i = 0; i < chessboard.PlayerList.length; i++) {
+    if (chessboard.PlayerList[i]?.UserName === walletAddress) {
+      playerId = i;
+      break;
+    }
+  }
+
+  if (playerId < 0) {
+    return error(c, '您不在此战场中', 400);
+  }
+
+  const result = actionMove(posNum, walletAddress, playerId, objIdNum, targetXNum, targetYNum);
+
+  return c.json({
+    success: result.code === 0,
+    code: result.code,
+    message: result.message,
+  });
+});
+
+/**
+ * POST /warfare/action-attack - 攻击
+ * 参考: ChessEx.ActionAttack() - ChessEx.cs
+ * 
+ * Body: { pos, obj_id, target_id, type }
+ * 
+ * pos: 战场位置
+ * obj_id: 攻击方棋子ID
+ * target_id: 目标棋子ID
+ * type: 攻击类型 (1=普通攻击, 2=技能攻击)
+ * 
+ * 返回: { code, message, event }
+ */
+app.post('/action-attack', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { pos, obj_id, target_id, type } = await c.req.json();
+
+  if (pos === undefined || obj_id === undefined || target_id === undefined) {
+    return error(c, 'pos, obj_id, target_id are required');
+  }
+
+  const posNum = parseInt(pos);
+  const objIdNum = parseInt(obj_id);
+  const targetIdNum = parseInt(target_id);
+  const typeNum = type ? parseInt(type) : 1;
+
+  // 查找用户在战场中的位置
+  const chessboard = getChessboard(posNum);
+  if (!chessboard) {
+    return error(c, '战场不存在', 404);
+  }
+
+  // 查找用户对应的 player ID
+  let playerId = -1;
+  for (let i = 0; i < chessboard.PlayerList.length; i++) {
+    if (chessboard.PlayerList[i]?.UserName === walletAddress) {
+      playerId = i;
+      break;
+    }
+  }
+
+  if (playerId < 0) {
+    return error(c, '您不在此战场中', 400);
+  }
+
+  const result = actionAttack(posNum, walletAddress, playerId, objIdNum, targetIdNum, typeNum);
+
+  return c.json({
+    success: result.code === 0,
+    code: result.code,
+    message: result.message,
+    event: result.event,
+  });
+});
+
+/**
+ * GET /warfare/chessboard-size - 获取棋盘尺寸
+ */
+app.get('/chessboard-size', async (c) => {
+  return success(c, {
+    width: CHESSBOARD_WIDTH,
+    height: CHESSBOARD_HEIGHT,
+  });
 });
 
 export default app;

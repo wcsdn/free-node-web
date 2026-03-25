@@ -5,6 +5,7 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import type { Hero, ServiceResult } from '../types/models';
 import { heroRepo } from '../repositories';
+import heroesConfig from '../config/heroes.json';
 
 // 武将品质
 export const HERO_QUALITY = {
@@ -43,6 +44,112 @@ export const QUALITY_BONUS = {
   4: { atk: 2.0, def: 1.6, hp: 1.8 },  // 传说
   5: { atk: 2.5, def: 2.0, hp: 2.2 }, // 神话
 };
+
+// 根据 AbilityIndex 获取能力配置
+function getAbilityByIndex(abilityIndex: number): any {
+  if (!heroesConfig.Ability) return null;
+  return heroesConfig.Ability.find((a: any) => a.Index === abilityIndex);
+}
+
+// 格式化武将 - 使用 AbilityIndex 计算动态属性
+function formatHeroWithAbility(hero: any): any {
+  const bonus = QUALITY_BONUS[hero.quality as keyof typeof QUALITY_BONUS] || QUALITY_BONUS[1];
+  
+  // 从 AbilityIndex 获取基础能力配置
+  const abilityIndex = hero.AbilityIndex || hero.ability_index || hero.config_id || 1;
+  const ability = getAbilityByIndex(abilityIndex);
+  
+  // 计算动态属性
+  let attack = hero.attack || 0;
+  let defense = hero.defense || 0;
+  let hp = hero.hp || hero.max_hp || 0;
+  let maxHp = hero.max_hp || hp;
+  
+  // 如果有 Ability 配置，基于等级计算属性
+  if (ability) {
+    const level = hero.level || 1;
+    // 基础属性 + (等级-1) * 每级成长
+    attack = ability.Attack + (level - 1) * (ability.UpAttack || 0);
+    defense = ability.Defence + (level - 1) * (ability.UpDefence || 0);
+    maxHp = (ability.MaxPrenticeNum || 10) * 10 + (level - 1) * 10;
+    hp = Math.min(hp, maxHp); // 确保当前HP不超过最大HP
+    
+    // 应用品质加成
+    attack = Math.floor(attack * bonus.atk);
+    defense = Math.floor(defense * bonus.def);
+    maxHp = Math.floor(maxHp * bonus.hp);
+    if (hp > 0) hp = Math.floor(hp * bonus.hp);
+  }
+  
+  return {
+    // C# HeroInfo 完整字段
+    id: hero.id,
+    ID: hero.id,
+    cityId: hero.city_id,
+    CityID: hero.city_id,
+    walletAddress: hero.wallet_address,
+    UserName: hero.wallet_address,
+    cityName: hero.city_name,
+    name: hero.name,
+    Name: hero.name,
+    quality: hero.quality,
+    Quality: hero.quality,
+    level: hero.level,
+    Level: hero.level,
+    exp: hero.exp || 0,
+    Exp: hero.exp || 0,
+    attack: attack,
+    defense: defense,
+    hp: hp,
+    maxHp: maxHp,
+    MaxHp: maxHp,
+    training: hero.training || 0,
+    Training: hero.training || 0,
+    skill: hero.skill ?? 0,
+    Skill: hero.skill ?? 0,
+    state: hero.state,
+    State: hero.state,
+    createdAt: hero.created_at,
+    // Ability 相关字段
+    AbilityIndex: abilityIndex,
+    AttackRange: ability?.AttackRange || 2,
+    MoveRange: ability?.MoveRange || 9,
+    CrushBlow: ability?.CrushBlow || 0,
+    Dodge: ability?.Dodge || 0,
+    // C# 额外字段
+    Sex: hero.Sex || 1,
+    Junta: hero.Junta || 1,
+    Icon: hero.Icon || '/hero/1.gif',
+    Image: hero.Image || '/hero/1.png',
+    PortraitIndex: hero.PortraitIndex || hero.portrait_index || 1,
+    DefencePos: hero.DefencePos || 0,
+    PrenticeNum: hero.PrenticeNum || 0,
+    HeroType: hero.HeroType || hero.hero_type || 1,
+    ExpCount: hero.ExpCount || 0,
+    NoSkillReason: hero.NoSkillReason || 0,
+    PropertyCounteract: hero.PropertyCounteract || [0,0,0,0,0],
+    WuXing: hero.WuXing || ability?.Element || 1,
+    UpTraining: hero.UpTraining || 0,
+    AutoExpGold: hero.AutoExpGold || 0,
+    AutoExpCount: hero.AutoExpCount || 0,
+    AutoExpResFood: hero.AutoExpResFood || 0,
+    AutoExpResMoney: hero.AutoExpResMoney || 0,
+    AutoExpResFoodByGold: hero.AutoExpResFoodByGold || 0,
+    AutoExpResMoneyByGold: hero.AutoExpResMoneyByGold || 0,
+    AutoExpResMen: hero.AutoExpResMen || 0,
+    AutoExpNum: hero.AutoExpNum || 0,
+    FastTrainCostMoney: ability?.TrainCostMoney || 100,
+    FastTrainCostFood: ability?.TrainCostFood || 100,
+    FastTrainCostMen: ability?.TrainCostMen || 100,
+    FastTrainCostGold: ability?.TrainCostGold || 10,
+    FastTrainCostTime: ability?.TrainCostTime || 60,
+    FastConscriptionCostMoney: ability?.ConscriptionCostMoney || 100,
+    FastConscriptionCostFood: ability?.ConscriptionCostFood || 100,
+    FastConscriptionCostMen: ability?.ConscriptionCostMen || 100,
+    FastConscriptionCostGold: ability?.ConscriptionCostGold || 10,
+    FastConscriptionCostTime: ability?.ConscriptionCostTime || 60,
+  };
+}
 
 class HeroService {
   private db: D1Database;
@@ -87,7 +194,7 @@ class HeroService {
       SELECT COUNT(*) as count FROM heroes WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
-    const heroes = (result.results || []).map((h: any) => this.formatHero(h));
+    const heroes = (result.results || []).map((h: any) => formatHeroWithAbility(h));
 
     return {
       heroes,
@@ -110,7 +217,7 @@ class HeroService {
 
     if (!hero) return null;
 
-    return this.formatHero(hero);
+    return formatHeroWithAbility(hero);
   }
 
   /**
@@ -121,7 +228,7 @@ class HeroService {
       SELECT * FROM heroes WHERE city_id = ? ORDER BY state ASC, level DESC
     `).bind(cityId).all();
 
-    return (heroes.results || []).map(this.formatHero);
+    return (heroes.results || []).map(formatHeroWithAbility);
   }
 
   /**
@@ -153,7 +260,7 @@ class HeroService {
       LIMIT 50
     `).bind(walletAddress, `%${keyword}%`).all();
 
-    return (heroes.results || []).map(this.formatHero);
+    return (heroes.results || []).map(formatHeroWithAbility);
   }
 
   // ============ 武将操作 ============
@@ -379,7 +486,7 @@ class HeroService {
     return Math.floor(HERO_CONFIG.BASE_EXP * Math.pow(HERO_CONFIG.EXP_MULTIPLIER, level));
   }
 
-  private formatHero(hero: any) {
+  private formatHeroWithLegacy(hero: any) {
     const bonus = QUALITY_BONUS[hero.quality as keyof typeof QUALITY_BONUS] || QUALITY_BONUS[1];
     return {
       // C# HeroInfo 完整字段

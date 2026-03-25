@@ -5,6 +5,16 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import type { BattleRecord, ServiceResult } from '../types/models';
 import { getUnitTypeBonus } from '../utils/battle-engine';
+import battleLimitsConfig from '../config/battle_limits.json';
+
+// 战斗限制配置 (从 battle_limits.json 加载)
+export const BATTLE_LIMITS = {
+  ATTACK_SAME_CITY_MAX: battleLimitsConfig.ATTACK_SAME_CITY_MAX || 2,
+  ATTACK_LOW_LEVEL_MAX: battleLimitsConfig.ATTACK_LOW_LEVEL_MAX || 5,
+  DEF_CITY_MAX: battleLimitsConfig.DEF_CITY_MAX || 5,
+  LEVEL_XIANLING: battleLimitsConfig.LEVEL_XIANLING || 8,
+  RESET_HOURS: battleLimitsConfig.RESET_HOURS || 24,
+};
 
 // 战斗类型
 export const BATTLE_TYPES = {
@@ -1028,6 +1038,114 @@ class FightService {
     this.db = db;
   }
 
+  // ============ 战斗限制相关方法 ============
+
+  /**
+   * 获取繁荣度等级 - 根据城市繁荣度转换为等级
+   * 繁荣度到等级的转换: 每 100 繁荣度 = 1 级
+   * @param walletAddress 玩家钱包地址
+   * @returns 繁荣度等级 (1-100+)
+   */
+  async getProsperityLevel(walletAddress: string): Promise<number> {
+    try {
+      // 从 cities 表获取繁荣度
+      const city: any = await this.db.prepare(`
+        SELECT prosperity FROM cities WHERE wallet_address = ?
+      `).bind(walletAddress).first();
+
+      if (!city) {
+        return 1; // 默认等级
+      }
+
+      const prosperity = city.prosperity || 0;
+      // 每 100 繁荣度 = 1 级，最低 1 级
+      const level = Math.max(1, Math.floor(prosperity / 100) + 1);
+      
+      return level;
+    } catch (error) {
+      console.error('[FightService] getProsperityLevel error:', error);
+      return 1;
+    }
+  }
+
+  /**
+   * 检查攻击次数限制 - 使用 battle_limits.json 配置
+   * @param walletAddress 攻击方钱包地址
+   * @param targetPos 目标位置
+   * @param targetLevel 目标城市等级 (可选，用于检查低等级玩家限制)
+   * @returns { valid: boolean, error?: number, message?: string }
+   */
+  async checkAttackCityLimit(
+    walletAddress: string,
+    targetPos: number,
+    targetLevel?: number
+  ): Promise<{ valid: boolean; error?: number; message?: string }> {
+    const today = new Date().toISOString().split('T')[0];
+
+    try {
+      // 1. 检查当日攻击同一城市次数 (ATTACK_SAME_CITY_MAX)
+      const sameTargetCount: any = await this.db.prepare(`
+        SELECT COUNT(*) as count FROM battles
+        WHERE attacker_address = ?
+          AND defender_address IS NOT NULL
+          AND DATE(created_at) = ?
+      `).bind(walletAddress, today).first();
+
+      if ((sameTargetCount as any).count >= BATTLE_LIMITS.ATTACK_SAME_CITY_MAX) {
+        return {
+          valid: false,
+          error: 30131,
+          message: `同一天攻击同一个玩家不能超过${BATTLE_LIMITS.ATTACK_SAME_CITY_MAX}次`
+        };
+      }
+
+      // 2. 检查累计攻击低级别玩家次数 (ATTACK_LOW_LEVEL_MAX)
+      // 获取攻击方繁荣度等级
+      const attackerLevel = await this.getProsperityLevel(walletAddress);
+
+      // 如果目标等级明确提供且低于攻击方一定等级（仙灵等级），检查限制
+      if (targetLevel && targetLevel < BATTLE_LIMITS.LEVEL_XIANLING) {
+        const lowLevelCount: any = await this.db.prepare(`
+          SELECT COUNT(*) as count FROM battles b
+          JOIN cities c ON b.defender_address = c.wallet_address
+          WHERE b.attacker_address = ?
+            AND b.result = 'win'
+            AND DATE(b.created_at) = ?
+            AND c.level < ?
+        `).bind(walletAddress, today, BATTLE_LIMITS.LEVEL_XIANLING).first();
+
+        if ((lowLevelCount as any).count >= BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX) {
+          return {
+            valid: false,
+            error: 30132,
+            message: `同一天累计攻击低等级玩家不能超过${BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX}次`
+          };
+        }
+      }
+
+      // 3. 检查防守方城市数量限制 (DEF_CITY_MAX)
+      // 获取攻击方作为防守方的被攻击次数
+      const defendCount: any = await this.db.prepare(`
+        SELECT COUNT(*) as count FROM battles
+        WHERE defender_address = ?
+          AND DATE(created_at) = ?
+      `).bind(walletAddress, today).first();
+
+      if ((defendCount as any).count >= BATTLE_LIMITS.DEF_CITY_MAX) {
+        return {
+          valid: false,
+          error: 30133,
+          message: `同日被攻击次数不能超过${BATTLE_LIMITS.DEF_CITY_MAX}次`
+        };
+      }
+
+      return { valid: true };
+    } catch (error) {
+      console.error('[FightService] checkAttackCityLimit error:', error);
+      return { valid: true }; // 出错时默认允许
+    }
+  }
+
   // ============ 战斗计算 ============
 
   /**
@@ -1370,6 +1488,16 @@ export const fightService = {
   async checkAttackLimit(db: D1Database, walletAddress: string, targetPos: number) {
     const service = new FightService(db);
     return service.checkAttackLimit(walletAddress, targetPos);
+  },
+
+  async getProsperityLevel(db: D1Database, walletAddress: string) {
+    const service = new FightService(db);
+    return service.getProsperityLevel(walletAddress);
+  },
+
+  async checkAttackCityLimit(db: D1Database, walletAddress: string, targetPos: number, targetLevel?: number) {
+    const service = new FightService(db);
+    return service.checkAttackCityLimit(walletAddress, targetPos, targetLevel);
   },
 };
 

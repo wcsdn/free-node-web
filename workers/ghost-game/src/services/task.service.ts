@@ -202,74 +202,129 @@ class TaskService {
   }
   
   // 状态计算方法
+  // C#: 根据 needObjType 检查对应条件，返回 2=完成/可领取 或 1=进行中
   private async getInteriorState(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现建筑等级检查
-    return 1;
+    if (!task.needObjID) return 1;
+    const building: any = await this.db.prepare(
+      `SELECT level FROM buildings WHERE wallet_address = ? AND city_id = ? AND config_id = ? LIMIT 1`
+    ).bind(walletAddress, cityId, task.needObjID).first();
+    const current = building?.level || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getTechnicState(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现科技等级检查
-    return 1;
+    if (!task.needObjID) return 1;
+    const technic: any = await this.db.prepare(
+      `SELECT level FROM technics WHERE wallet_address = ? AND city_id = ? AND config_id = ? LIMIT 1`
+    ).bind(walletAddress, cityId, task.needObjID).first();
+    const current = technic?.level || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getDefenceNum(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现城防数量检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COALESCE(SUM(defence_num), 0) as total FROM city_defence WHERE wallet_address = ? AND city_id = ?`
+    ).bind(walletAddress, cityId).first();
+    const current = result?.total || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getHeroNumByEngage(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现已雇佣侠客数检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND state > 0`
+    ).bind(walletAddress, cityId).first();
+    const current = result?.cnt || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getHeroNumByNoEngage(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现未雇佣侠客数检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND state = 0`
+    ).bind(walletAddress, cityId).first();
+    const current = result?.cnt || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getHeroNumByHeroList(
-    walletAddress: string, 
-    cityId: number, 
-    task: TaskInfo, 
+    walletAddress: string,
+    cityId: number,
+    task: TaskInfo,
     listType: number
   ): Promise<number> {
-    // TODO: 实现侠客列表检查
-    return 1;
+    let sql = '';
+    if (listType === 2) {
+      // 出战侠客
+      sql = `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND corps_id > 0`;
+    } else if (listType === 3) {
+      // 后备侠客
+      sql = `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND corps_id = 0 AND state > 0`;
+    } else {
+      return 1;
+    }
+    const result: any = await this.db.prepare(sql).bind(walletAddress, cityId).first();
+    const current = result?.cnt || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getHeroAllTraining(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现训练度总和检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COALESCE(SUM(training_level), 0) as total FROM heroes WHERE wallet_address = ? AND city_id = ? AND state > 0`
+    ).bind(walletAddress, cityId).first();
+    const current = result?.total || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getCityTitle(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现繁荣度检查
-    return 1;
+    // 繁荣度从城市信息中获取
+    const city: any = await this.db.prepare(
+      `SELECT prosperity FROM cities WHERE wallet_address = ? AND id = ?`
+    ).bind(walletAddress, cityId).first();
+    const current = city?.prosperity || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getCityRes(
-    walletAddress: string, 
-    cityId: number, 
-    task: TaskInfo, 
+    walletAddress: string,
+    cityId: number,
+    task: TaskInfo,
     type: number
   ): Promise<number> {
-    // TODO: 实现资源检查
-    return 1;
+    let field = '';
+    if (type === 1) field = 'money';
+    else if (type === 2) field = 'food';
+    else if (type === 3) field = 'population';
+    else return 1;
+
+    const city: any = await this.db.prepare(
+      `SELECT ${field} as val FROM cities WHERE wallet_address = ? AND id = ?`
+    ).bind(walletAddress, cityId).first();
+    const current = city?.val || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getItemNum(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现物品数量检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COALESCE(SUM(count), 0) as total FROM items WHERE wallet_address = ? AND config_id = ?`
+    ).bind(walletAddress, task.needObjID).first();
+    const current = result?.total || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getJuntaNum(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现门派建筑数量检查
-    return 1;
+    const result: any = await this.db.prepare(
+      `SELECT COUNT(*) as cnt FROM junta_buildings WHERE wallet_address = ? AND city_id = ?`
+    ).bind(walletAddress, cityId).first();
+    const current = result?.cnt || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
-  
+
   private async getAllPrenticeNum(walletAddress: string, cityId: number, task: TaskInfo): Promise<number> {
-    // TODO: 实现弟子数量检查
-    return 1;
+    // 弟子数量 = 城市人口中的一部分（简化计算）
+    const city: any = await this.db.prepare(
+      `SELECT population FROM cities WHERE wallet_address = ? AND id = ?`
+    ).bind(walletAddress, cityId).first();
+    const current = city?.population || 0;
+    return current >= task.needObjValue ? 2 : 1;
   }
   
   /**
@@ -303,7 +358,7 @@ class TaskService {
     }
     
     // 验证任务条件
-    const isComplete = await this.verifyTaskComplete(walletAddress, cityId, taskConfig, userTask);
+    const isComplete = await this.checkTaskComplete(walletAddress, cityId, taskId);
     if (!isComplete) {
       return { success: false, error: '任务条件未满足' };
     }
@@ -340,12 +395,35 @@ class TaskService {
   
   /**
    * 发放任务奖励
+   * C#: MissionPrize 中发放奖励的逻辑
    */
   private async grantRewards(walletAddress: string, cityId: number, task: TaskInfo): Promise<void> {
-    // TODO: 实现奖励发放逻辑
-    // 更新城市资源
-    // 添加物品到背包
-    // 更新用户经验
+    // 发放金钱、粮食、人口
+    if ((task.getMoney || 0) > 0 || (task.getFood || 0) > 0 || (task.getMen || 0) > 0) {
+      await this.db.prepare(`
+        UPDATE cities SET
+          money = money + ?,
+          food = food + ?,
+          population = population + ?
+        WHERE wallet_address = ? AND id = ?
+      `).bind(task.getMoney || 0, task.getFood || 0, task.getMen || 0, walletAddress, cityId).run();
+    }
+
+    // 发放元宝
+    if ((task.getGold || 0) > 0) {
+      await this.db.prepare(
+        `UPDATE characters SET gold = gold + ? WHERE wallet_address = ?`
+      ).bind(task.getGold, walletAddress).run();
+    }
+
+    // 发放物品
+    if ((task.getItemIndex || 0) > 0) {
+      await this.db.prepare(`
+        INSERT INTO items (wallet_address, config_id, count, source)
+        VALUES (?, ?, 1, 'task_reward')
+        ON CONFLICT(wallet_address, config_id) DO UPDATE SET count = count + 1
+      `).bind(walletAddress, task.getItemIndex).run();
+    }
   }
   
   /**
@@ -442,7 +520,175 @@ class TaskService {
     
     return null;
   }
-  
+
+  /**
+   * 检查任务是否完成（供外部和内部调用）
+   */
+  async checkTaskComplete(
+    walletAddress: string,
+    cityId: number,
+    taskId: number
+  ): Promise<boolean> {
+    const task = this.getTaskConfig(taskId);
+    if (!task) return false;
+
+    const progress = await this.getTaskProgress(walletAddress, cityId, taskId);
+    return progress.current >= progress.target;
+  }
+
+  /**
+   * 获取任务进度
+   */
+  async getTaskProgress(
+    walletAddress: string,
+    cityId: number,
+    taskId: number
+  ): Promise<{ current: number; target: number }> {
+    const task = this.getTaskConfig(taskId);
+    if (!task) return { current: 0, target: 0 };
+
+    const target = task.needObjValue || task.taskItemNum || 1;
+    let current = 0;
+
+    // 获取用户任务进度
+    const userTask = await this.getUserTaskState(walletAddress);
+    if (userTask) {
+      const idx = userTask.taskIds.indexOf(taskId);
+      if (idx !== -1) {
+        current = userTask.taskProgress[idx] || 0;
+      }
+    }
+
+    // 战斗/探索任务检查任务品
+    if (task.type === 3 || task.type === 4) {
+      return { current, target: task.taskItemNum || 1 };
+    }
+
+    // 达到条件类任务 - 实时计算
+    if (task.type === 1) {
+      current = await this.calculateCurrentProgress(walletAddress, cityId, task);
+      return { current, target };
+    }
+
+    return { current, target };
+  }
+
+  /**
+   * 实时计算任务进度（针对条件类任务）
+   */
+  private async calculateCurrentProgress(
+    walletAddress: string,
+    cityId: number,
+    task: TaskInfo
+  ): Promise<number> {
+    switch (task.needObjType) {
+      case 1: { // 建筑等级
+        const building: any = await this.db.prepare(
+          `SELECT level FROM buildings WHERE wallet_address = ? AND city_id = ? AND config_id = ? LIMIT 1`
+        ).bind(walletAddress, cityId, task.needObjID).first();
+        return building?.level || 0;
+      }
+      case 2: { // 科技等级
+        const technic: any = await this.db.prepare(
+          `SELECT level FROM technics WHERE wallet_address = ? AND city_id = ? AND config_id = ? LIMIT 1`
+        ).bind(walletAddress, cityId, task.needObjID).first();
+        return technic?.level || 0;
+      }
+      case 3: { // 城防数量
+        const result: any = await this.db.prepare(
+          `SELECT COALESCE(SUM(defence_num), 0) as total FROM city_defence WHERE wallet_address = ? AND city_id = ?`
+        ).bind(walletAddress, cityId).first();
+        return result?.total || 0;
+      }
+      case 4: { // 已雇佣侠客数
+        const result: any = await this.db.prepare(
+          `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND state > 0`
+        ).bind(walletAddress, cityId).first();
+        return result?.cnt || 0;
+      }
+      case 5: { // 未雇佣侠客数
+        const result: any = await this.db.prepare(
+          `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND state = 0`
+        ).bind(walletAddress, cityId).first();
+        return result?.cnt || 0;
+      }
+      case 6: { // 出战侠客数
+        const result: any = await this.db.prepare(
+          `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND corps_id > 0`
+        ).bind(walletAddress, cityId).first();
+        return result?.cnt || 0;
+      }
+      case 7: { // 后备侠客数
+        const result: any = await this.db.prepare(
+          `SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND city_id = ? AND corps_id = 0 AND state > 0`
+        ).bind(walletAddress, cityId).first();
+        return result?.cnt || 0;
+      }
+      case 10: { // 金钱
+        const city: any = await this.db.prepare(
+          `SELECT money FROM cities WHERE wallet_address = ? AND id = ?`
+        ).bind(walletAddress, cityId).first();
+        return city?.money || 0;
+      }
+      case 11: { // 粮食
+        const city: any = await this.db.prepare(
+          `SELECT food FROM cities WHERE wallet_address = ? AND id = ?`
+        ).bind(walletAddress, cityId).first();
+        return city?.food || 0;
+      }
+      case 12: { // 人口
+        const city: any = await this.db.prepare(
+          `SELECT population FROM cities WHERE wallet_address = ? AND id = ?`
+        ).bind(walletAddress, cityId).first();
+        return city?.population || 0;
+      }
+      case 13: { // 元宝
+        const char: any = await this.db.prepare(
+          `SELECT gold FROM characters WHERE wallet_address = ?`
+        ).bind(walletAddress).first();
+        return char?.gold || 0;
+      }
+      case 14: { // 物品数量
+        const result: any = await this.db.prepare(
+          `SELECT COALESCE(SUM(count), 0) as total FROM items WHERE wallet_address = ? AND config_id = ?`
+        ).bind(walletAddress, task.needObjID).first();
+        return result?.total || 0;
+      }
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * 获取下一个任务ID
+   */
+  async getNextTaskId(
+    mainId: number,
+    mainIndex: number,
+    currentIndex: number
+  ): Promise<number | null> {
+    // 从 tasks.json 中查找下一个任务
+    // 查找相同 MainID/MainIndex 的下一个 Index
+    const key = `${mainId}_${mainIndex}`;
+    const chapter = taskConfigs[key];
+    if (!chapter?.Task) return null;
+
+    // currentIndex 是 taskIds 数组中的位置，对应 Task[0..9]
+    const nextArrayIndex = currentIndex + 1;
+    if (nextArrayIndex >= chapter.Task.length) {
+      // 尝试下一章节
+      const nextKey = `${mainId}_${mainIndex + 1}`;
+      const nextChapter = taskConfigs[nextKey];
+      if (nextChapter?.Task?.[0]) {
+        return nextChapter.Task[0];
+      }
+      return null;
+    }
+
+    const nextTaskId = chapter.Task[nextArrayIndex];
+    return nextTaskId > 0 ? nextTaskId : null;
+  }
+
   /**
    * 获取探索任务
    */
@@ -581,7 +827,7 @@ class TaskService {
   /**
    * 获取任务配置（对齐C# XmlData.MainTask）
    */
-  private getTaskConfig(taskId: number): TaskInfo | null {
+  getTaskConfig(taskId: number, db?: D1Database): TaskInfo | null {
     if (taskId <= 0) return null;
     const task = getTaskCfg(taskId);
     if (!task) return null;
@@ -600,7 +846,9 @@ class TaskService {
       needObjType: task.NeedObjType || 0,
       needObjID: task.NeedObjID || 0,
       needObjValue: task.NeedObjValue || 0,
-      taskItemNum: 0,
+      // 奖励从 mission_gains.json 按 GainIndex 查找
+      gainType: task.GetGainType || 0,
+      gainIndex: task.GetGainIndex || 0,
       hasTaskItemNum: 0,
       hasCondition: 0,
     };
@@ -707,6 +955,31 @@ export const taskService = {
     const service = new TaskService(db);
     return service.updateSearchTaskProgress(walletAddress, cityId, taskId, found);
   },
+
+  /**
+   * 验证任务是否完成（静态方法，供路由层调用）
+   */
+  async verifyTaskComplete(walletAddress: string, cityId: number, taskId: number, db: D1Database): Promise<boolean> {
+    const service = new TaskService(db);
+    return service.checkTaskComplete(walletAddress, cityId, taskId);
+  },
+
+  /**
+   * 获取任务进度（静态方法）
+   */
+  async getTaskProgress(walletAddress: string, cityId: number, taskId: number, db: D1Database) {
+    const service = new TaskService(db);
+    return service.getTaskProgress(walletAddress, cityId, taskId);
+  },
+
+  /**
+   * 获取下一个任务ID（静态方法）
+   */
+  async getNextTaskId(mainId: number, mainIndex: number, currentIndex: number, db: D1Database): Promise<number | null> {
+    const service = new TaskService(db);
+    return service.getNextTaskId(mainId, mainIndex, currentIndex);
+  },
 };
 
 export default taskService;
+export { TaskService };

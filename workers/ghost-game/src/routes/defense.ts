@@ -254,6 +254,51 @@ app.get('/', async (c) => {
   }
 });
 
+// 城防地形校验（参考 jx/BLL/DefenceBuilding.cs setHeroDefencePos 逻辑）
+// 错误码: 20012=特殊位置, 20013=不在城防范围, 20014=位置不合法, 20015=地形不可建造
+async function validateDefenceTerrain(pos: number, landformsData: any[]): Promise<{ valid: boolean; errorCode?: number }> {
+  if (pos <= 0) {
+    return { valid: false, errorCode: 20014 };
+  }
+
+  // 默认城防地图尺寸 (对应 C# DefenceWidth * DefenceLength)
+  const DefenceWidth = 10;
+  const DefenceLength = 10;
+  const maxPos = DefenceWidth * DefenceLength;
+
+  // 校验1: 位置必须在有效范围内
+  if (pos > maxPos) {
+    return { valid: false, errorCode: 20014 };
+  }
+
+  // 校验2: LineTranslatePlanar 坐标转换验证
+  const quotient = Math.floor(pos / DefenceLength);
+  const residue = pos % DefenceLength;
+  let x = residue > 0 ? residue : DefenceLength;
+  let y = residue > 0 ? quotient + 1 : quotient;
+
+  // 校验3: y 必须在有效范围内 (4 <= y <= Width - 2，对应 C# 城防地图边界)
+  if (y < 4 || y > DefenceWidth - 2) {
+    return { valid: false, errorCode: 20013 };
+  }
+
+  // 校验4: 特殊位置检查 (对应 C# pos == 825 || pos == 826)
+  if (pos === 825 || pos === 826) {
+    return { valid: false, errorCode: 20012 };
+  }
+
+  // 校验5: 地形类型检查 (从 landforms.json 读取，Type=1 表示不可建造)
+  // C#: if (XmlData.BattleLandform[1][pos].Type == 1) return 20015;
+  if (landformsData && landformsData.length > 0) {
+    const terrain = landformsData.find((t: any) => t.Pos === pos);
+    if (terrain && terrain.Type === 1) {
+      return { valid: false, errorCode: 20015 };
+    }
+  }
+
+  return { valid: true };
+}
+
 // 建造城防
 app.post('/build', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
@@ -266,6 +311,22 @@ app.post('/build', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
+    // 加载地形数据 (landforms.json)
+    const landformsConfig = await import('../config/landforms.json');
+    const landformsData = (landformsConfig.default as any).Unit || [];
+
+    // 地形合法性校验
+    const terrainValidation = await validateDefenceTerrain(position || 0, landformsData);
+    if (!terrainValidation.valid) {
+      const errorMessages: Record<number, string> = {
+        20012: '该位置为特殊区域，无法建造',
+        20013: '位置不在城防范围内',
+        20014: '位置不合法',
+        20015: '该地形无法建造建筑',
+      };
+      return error(c, errorMessages[terrainValidation.errorCode || 20014] || '地形验证失败', 400);
+    }
+
     const city = await db.prepare(`
       SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
     `).bind(walletAddress).first();
@@ -277,7 +338,43 @@ app.post('/build', async (c) => {
       VALUES (?, ?, ?, ?, 1)
     `).bind((city as any).id, walletAddress, type, position || 0).run();
 
-    return success(c, { type, message: 'Defense built' });
+    return success(c, { type, position, message: 'Defense built' });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// DELETE /defense/:id - 删除城防建筑
+// C#: 对应 BuildingExAccess.DeleteDefenceByPos 逻辑
+app.delete('/:id', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const defId = parseInt(c.req.param('id'));
+  if (isNaN(defId) || defId <= 0) {
+    return error(c, 'Invalid defense ID', 400);
+  }
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 查询城防建筑是否存在且属于该用户
+    const defence: any = await db.prepare(`
+      SELECT * FROM defence_buildings WHERE id = ? AND user_name = ?
+    `).bind(defId, walletAddress).first();
+
+    if (!defence) {
+      return error(c, 'Defense building not found', 404);
+    }
+
+    // 删除城防建筑
+    await db.prepare('DELETE FROM defence_buildings WHERE id = ?').bind(defId).run();
+
+    return success(c, {
+      id: defId,
+      message: 'Defense building deleted',
+    });
   } catch (err: any) {
     return error(c, err.message);
   }

@@ -344,17 +344,221 @@ app.get('/by-id', async (c) => {
       return success(c, { ID: -1 });
     }
 
+    // 获取城市信息 (用于 AppSettings 常量)
+    const city: any = await db.prepare(
+      `SELECT * FROM cities WHERE id = ?`
+    ).bind(building.city_id).first();
+
+    // 获取城市内政信息 (建筑等级数组、科技等级数组)
+    const buildings: any = await db.prepare(
+      `SELECT * FROM buildings WHERE city_id = ? AND type = 'interior'`
+    ).bind(building.city_id).all();
+
+    // 构建 InteriorBuildingLevel 数组 (长度 22, 索引 = config_id - 1)
+    const interiorBuildingLevel = new Array(22).fill(0);
+    (buildings.results || []).forEach((b: any) => {
+      if (b.config_id && b.config_id >= 1 && b.config_id <= 22) {
+        interiorBuildingLevel[b.config_id - 1] = b.level || 0;
+      }
+    });
+
+    // 获取科技等级
+    const technics: any = await db.prepare(
+      `SELECT technic_id, technic_level FROM technics WHERE wallet_address = ?`
+    ).bind(walletAddress).all();
+    const technicLevel = new Array(22).fill(0);
+    (technics.results || []).forEach((t: any) => {
+      if (t.technic_id && t.technic_id >= 1 && t.technic_id <= 22) {
+        technicLevel[t.technic_id - 1] = t.technic_level || 0;
+      }
+    });
+
+    // ========== AppSettings 常量 (来自 C# ConfigurationManager.AppSettings) ==========
+    const APP_SETTINGS = {
+      MenRoom: 1000,                          // 人口上限
+      FoodRoom: 1000000,                     // 粮食上限
+      MoneyRoom: 1000000,                    // 铜钱上限
+      MenSpeed: 100,                          // 人口增长速度
+      FoodSpeed: (city as any)?.food_rate || 100,  // 粮食生产速度
+      MoneySpeed: (city as any)?.money_rate || 100, // 铜钱生产速度
+      EventTimePercent: 100,                  // 事件时间百分比
+      DegradeNeedResPercent: 50,              // 拆除返还资源百分比
+    };
+
     // 补充配置信息 (BuildingInfo 字段)
     const config = getBuildingConfig(building.type, building.config_id);
     const currentLevelData = getBuildingLevelData(config, building.level);
     const nextLevelData = getBuildingLevelData(config, building.level + 1);
+    const prevLevelData = getBuildingLevelData(config, building.level - 1);
+
+    const buildingIndex = building.config_id;
+
+    // ========== 基础效果值 ==========
+    let currentEff = currentLevelData?.EffValue || 0;
+    let nextEff = nextLevelData?.EffValue || 0;
+    let oldEff = building.level > 1 ? (prevLevelData?.EffValue || 0) : 0;
+
+    // ========== 特殊建筑效果加成 (C# GetBuildingByID 逻辑) ==========
+    // 市场(Index=7): MoneyRoom 常量加成 + TradeRes
+    if (buildingIndex === 7) {
+      currentEff += APP_SETTINGS.MoneyRoom;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.MoneyRoom;
+      if (nextLevelData) nextEff += APP_SETTINGS.MoneyRoom;
+    }
+    // 校舍(Index=6): FoodRoom 常量加成 + TradeRes
+    if (buildingIndex === 6) {
+      currentEff += APP_SETTINGS.FoodRoom;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.FoodRoom;
+      if (nextLevelData) nextEff += APP_SETTINGS.FoodRoom;
+    }
+    // 兵营(Index=5): MenRoom 常量加成 + TradeRes
+    if (buildingIndex === 5) {
+      currentEff += APP_SETTINGS.MenRoom;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.MenRoom;
+      if (nextLevelData) nextEff += APP_SETTINGS.MenRoom;
+    }
+    // 城墙(Index=2): MenSpeed 常量加成
+    if (buildingIndex === 2) {
+      currentEff += APP_SETTINGS.MenSpeed;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.MenSpeed;
+      if (nextLevelData) nextEff += APP_SETTINGS.MenSpeed;
+    }
+    // 农场(Index=3): FoodSpeed 常量加成
+    if (buildingIndex === 3) {
+      currentEff += APP_SETTINGS.FoodSpeed;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.FoodSpeed;
+      if (nextLevelData) nextEff += APP_SETTINGS.FoodSpeed;
+    }
+    // 钱庄(Index=4): MoneySpeed 常量加成
+    if (buildingIndex === 4) {
+      currentEff += APP_SETTINGS.MoneySpeed;
+      if (building.level > 1 && prevLevelData) oldEff += APP_SETTINGS.MoneySpeed;
+      if (nextLevelData) nextEff += APP_SETTINGS.MoneySpeed;
+    }
+
+    // ========== EffID (效果ID) ==========
+    const EffID = currentLevelData?.EffType || config?.EffType || 0;
+
+    // ========== SnapSwitch / SnapGold (来自下一级配置) ==========
+    const SnapSwitch = nextLevelData?.SnapSwitch ?? 0;
+    const SnapGold = nextLevelData?.SnapGold ?? 0;
+
+    // ========== 升级依赖条件检查 ==========
+    const needBuildingID = nextLevelData?.NeedBuildingID || 0;
+    const needBuildingLevel = nextLevelData?.NeedBuildingLevel || 0;
+    const needTechnicID = nextLevelData?.NeedTechnicID || 0;
+    const needTechnicLevel = nextLevelData?.NeedTechnicLevel || 0;
+
+    // 建筑等级适配检查
+    const isBuildFitLevel = (() => {
+      if (!needBuildingID || needBuildingID < 1) return true;
+      const requiredLevel = interiorBuildingLevel[needBuildingID - 1] || 0;
+      return requiredLevel >= needBuildingLevel;
+    })();
+
+    // 科技等级适配检查
+    const isTechnicFitLevel = (() => {
+      if (!needTechnicID || needTechnicID < 1) return true;
+      const requiredLevel = technicLevel[needTechnicID - 1] || 0;
+      return requiredLevel >= needTechnicLevel;
+    })();
+
+    // 综合依赖条件 (建筑等级 + 科技等级同时满足)
+    const isDependCondition = isBuildFitLevel && isTechnicFitLevel;
+
+    // 依赖建筑名称
+    let UpNeedBuildingName = '';
+    if (needBuildingID > 0) {
+      const depConfig = getBuildingConfig('interior', needBuildingID);
+      UpNeedBuildingName = depConfig?.Name || '';
+    }
+
+    // 依赖科技名称
+    let UpNeedTechnicName = '';
+    if (needTechnicID > 0) {
+      const technicConfig = (buildingConfigs as any)?.Technics?.find(
+        (t: any) => t.ID === needTechnicID
+      );
+      UpNeedTechnicName = technicConfig?.Name || '';
+    }
+
+    // ========== TradeRes (市场/校舍/兵营: Index 5,6,7) ==========
+    let TradeRes: any = null;
+    if (buildingIndex === 5 || buildingIndex === 6 || buildingIndex === 7) {
+      // 根据建筑类型计算 TradeRes
+      const cityLevel = 1; // 默认城市等级，后续从 city 扩展字段获取
+      if (buildingIndex === 7) {
+        // 市场: 铜钱交易
+        TradeRes = {
+          LevelMoney: Math.max(0, APP_SETTINGS.MoneyRoom - 0),
+          MoneyPer: 400 + Math.floor(cityLevel / 2) * 10,
+          LevelFood: 0,
+          FoodPer: 0,
+          LevelMen: 0,
+          MenPer: 0,
+        };
+      } else if (buildingIndex === 6) {
+        // 校舍: 粮食交易
+        TradeRes = {
+          LevelMoney: 0,
+          MoneyPer: 0,
+          LevelFood: Math.max(0, APP_SETTINGS.FoodRoom - 0),
+          FoodPer: 200 + Math.floor(cityLevel / 2) * 5,
+          LevelMen: 0,
+          MenPer: 0,
+        };
+      } else if (buildingIndex === 5) {
+        // 兵营: 人口交易
+        TradeRes = {
+          LevelMoney: 0,
+          MoneyPer: 0,
+          LevelFood: 0,
+          FoodPer: 0,
+          LevelMen: Math.max(0, APP_SETTINGS.MenRoom - 0),
+          MenPer: 66 + Math.floor(cityLevel / 2) * 2,
+        };
+      }
+    }
+
+    // ========== EffectArray (聚义厅 Index=1, 校场 Index=11-21) ==========
+    let EffectArray: any[] = [];
+    if (buildingIndex === 1 || (buildingIndex >= 11 && buildingIndex <= 21)) {
+      // 从 persist_effects 表获取持续效果
+      const persistEffects: any = await db.prepare(
+        `SELECT * FROM persist_effects WHERE user_name = ? AND static_index = ? AND end_time > datetime('now')`
+      ).bind(walletAddress, buildingIndex).all();
+
+      EffectArray = (persistEffects.results || []).map((e: any) => ({
+        StaticIndex: e.static_index,
+        MainEffectType: e.main_effect_type,
+        EffectType: e.effect_type,
+        EffectID: e.effect_id,
+        EffectName: '',  // 后续从配置获取
+        State: 1,        // 1=激活
+        Image: '',
+        Gold: 0,
+        Seconds: Math.floor((new Date(e.end_time).getTime() - Date.now()) / 1000),
+        StartTime: e.start_time,
+        EndTime: e.end_time,
+        PersistEffectArray: [],  // 子效果数组
+      }));
+    }
+
+    // ========== 拆除返还资源 ==========
+    const DegradeNeedResPercent = APP_SETTINGS.DegradeNeedResPercent;
+    const DownNeedFood = currentLevelData?.CostFood
+      ? Math.floor(currentLevelData.CostFood * DegradeNeedResPercent / 100) : 0;
+    const DownNeedMen = currentLevelData?.CostMen
+      ? Math.floor(currentLevelData.CostMen * DegradeNeedResPercent / 100) : 0;
+    const DownNeedMoney = currentLevelData?.CostMoney
+      ? Math.floor(currentLevelData.CostMoney * DegradeNeedResPercent / 100) : 0;
 
     // C# BuildingInfo 字段 (驼峰命名)
     return success(c, {
       ID: building.id,
       Name: config?.Name || '',
       Level: building.level,
-      Index: building.config_id,
+      Index: buildingIndex,
       State: building.state,
       Pos: building.position,
       Image: currentLevelData?.Image || config?.Image || '',
@@ -388,6 +592,35 @@ app.get('/by-id', async (c) => {
       LevelData: currentLevelData,
       NextLevelData: nextLevelData,
       CanUpgrade: !!nextLevelData,
+      // 效果值 (已应用特殊建筑加成)
+      EffID,
+      CurrentEff: currentEff,
+      NextEff: nextEff,
+      OldEff: oldEff,
+      // 立即建造
+      SnapSwitch,
+      SnapGold,
+      // 升级依赖
+      UpNeedBuildingID: needBuildingID,
+      UpNeedBuildingLevel: needBuildingLevel,
+      UpNeedTechnicID: needTechnicID,
+      UpNeedTechnicLevel: needTechnicLevel,
+      UpNeedBuildingName,
+      UpNeedTechnicName,
+      // 依赖条件检查
+      isBuildFitLevel,
+      isTechnicFitLevel,
+      isDependCondition,
+      // 拆除返还
+      DownNeedFood,
+      DownNeedMen,
+      DownNeedMoney,
+      DownReturnArea: currentLevelData?.CostArea || 0,
+      Area: currentLevelData?.CostArea || 0,
+      // 特殊建筑 TradeRes (市场/校舍/兵营)
+      TradeRes,
+      // 特殊建筑 EffectArray (聚义厅/校场)
+      EffectArray,
     });
   } catch (err: any) {
     return error(c, err.message);
@@ -447,8 +680,8 @@ app.get('/:id', async (c) => {
       `).bind(parseInt(city_id)).all();
 
       const buildingList = (buildings.results || []).map((b: any) => {
-        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) ||
-                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id);
+        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) as any ||
+                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id) as any;
         const levelData = config ? getBuildingLevelData(config, b.level || 1) : null;
         return {
           ID: b.id,
@@ -713,8 +946,8 @@ app.get('/list', async (c) => {
       `).bind(parseInt(city_id)).all();
 
       const buildingList = (buildings.results || []).map((b: any) => {
-        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) ||
-                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id);
+        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) as any ||
+                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id) as any;
         const levelData = config ? getBuildingLevelData(config, b.level || 1) : null;
         return {
           ID: b.id,

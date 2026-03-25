@@ -182,6 +182,49 @@ export function getAuthenticatedAddress(c: any): string | null {
 /**
  * 完整的认证验证 (带详细错误信息)
  */
+/**
+ * 验证管理员权限
+ * 检查请求者的钱包地址是否在管理员列表中
+ */
+export async function verifyAdminAuth(c: any): Promise<string | null> {
+  // 先验证普通钱包认证
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return null;
+
+  // 检查是否为管理员
+  // 优先从 KV 获取管理员列表
+  try {
+    const kv = (c as any).env?.KV;
+    if (kv) {
+      const adminListStr = await kv.get('admin:wallet_addresses');
+      if (adminListStr) {
+        const adminList: string[] = JSON.parse(adminListStr);
+        if (adminList.map(a => a.toLowerCase()).includes(walletAddress.toLowerCase())) {
+          return walletAddress;
+        }
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  // 检查环境变量中的管理员地址（兼容开发环境）
+  const envAdmins = (c as any).env?.ADMIN_WALLET_ADDRESSES;
+  if (envAdmins) {
+    const adminList: string[] = envAdmins.split(',').map((a: string) => a.trim().toLowerCase());
+    if (adminList.includes(walletAddress.toLowerCase())) {
+      return walletAddress;
+    }
+  }
+
+  // 默认开发环境：任何认证用户都是管理员
+  const isDev = (c as any).env?.ENVIRONMENT === 'development' ||
+                (c as any).env?.NODE_ENV === 'development';
+  if (isDev) {
+    return walletAddress;
+  }
+
+  return null;
+}
+
 export async function verifyWalletAuthDetailed(
   c: any,
   options: {

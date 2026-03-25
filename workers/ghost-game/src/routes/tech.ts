@@ -770,4 +770,395 @@ app.get('/by-building', async (c) => {
   }
 });
 
+// ========== 缺失方法补充 ==========
+
+/**
+ * GetTechnicByBuilding - 根据城市ID和建筑索引获取该建筑相关的科技列表
+ * 参考 jx/BLL/Technic.cs GetTechnicByBuilding(userName, cityID, buildingIndex)
+ */
+app.get('/by-building/:cityId/:buildingIndex', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const cityId = parseInt(c.req.param('cityId'));
+  const buildingIndex = parseInt(c.req.param('buildingIndex'));
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  if (!cityId || !buildingIndex) {
+    return error(c, 'Missing cityId or buildingIndex', 400);
+  }
+
+  try {
+    // 验证城市归属
+    const city: any = await db.prepare(`
+      SELECT id FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
+    if (!city) return error(c, 'City not found or unauthorized', 404);
+
+    // 获取该城市的所有科技（state=0 已完成 or state=1 研究中）
+    const playerTechs = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ? AND city_id = ?
+    `).bind(walletAddress, cityId).all();
+
+    const techMap: Record<number, any> = {};
+    for (const tech of (playerTechs.results || [])) {
+      techMap[(tech as any).static_index] = tech;
+    }
+
+    // 科技ID=1 移山填海：先计算当前已用面积
+    let usedAreaForTech1 = 0;
+    const tech1Related = (technicConfigs || []).some((t: any) => t.ID === 1 && t.DependBuildingID === buildingIndex);
+    if (tech1Related) {
+      const buildings: any = await db.prepare(`
+        SELECT b.level FROM buildings b
+        WHERE b.city_id = ? AND b.type = 'interior'
+      `).bind(cityId).all();
+      for (const b of (buildings.results || [])) {
+        usedAreaForTech1 += ((b as any).level || 1) * 10;
+      }
+    }
+
+    // 根据 buildingIndex 筛选相关科技
+    // DependBuildingID = buildingIndex 表示该科技依赖此建筑
+    const relatedTechs = (technicConfigs || [])
+      .filter((techConfig: any) => {
+        return techConfig.DependBuildingID === buildingIndex;
+      })
+      .map((techConfig: any) => {
+        const playerTech = techMap[techConfig.ID];
+        const currentLevel = playerTech?.technic_level || 0;
+        const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+        const maxLevel = techConfig.InteriorData?.length || 1;
+
+        // 特殊加成处理（参考 C# 代码）
+        let currEff = currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0;
+        let nextEff = nextLevelData?.EffValue || 0;
+
+        // 科技ID=4 计量技术：城防单位数量加成（默认+基础值）
+        if (techConfig.ID === 4) {
+          const defaultDefNum = 5; // DefenceBuildNumDefault
+          currEff += currentLevel > 0 ? defaultDefNum : 0;
+          nextEff += defaultDefNum;
+        }
+        // 科技ID=3 招贤纳士：侠客数量加成
+        if (techConfig.ID === 3) {
+          const defaultHero = 5; // DefaultMaxHeroCount
+          currEff += currentLevel > 0 ? defaultHero : 0;
+          nextEff += defaultHero;
+        }
+        // 科技ID=2 土木技术：聚义厅等级上限加成
+        if (techConfig.ID === 2) {
+          const centerLevel = 1; // CenterBuild 默认值
+          currEff += currentLevel > 0 ? centerLevel : 0;
+          nextEff += centerLevel;
+        }
+        // 科技ID=11 犒劳三军：训练弟子效果加成
+        if (techConfig.ID === 11) {
+          const trainingEffect = 0; // TrainingHeroEffect 默认值
+          currEff += currentLevel > 0 ? trainingEffect : 0;
+          nextEff += trainingEffect;
+        }
+
+        // 科技ID=1 移山填海：检查面积需求
+        let areaCheck = true;
+        if (techConfig.ID === 1 && nextLevelData?.NeedArea) {
+          areaCheck = usedAreaForTech1 >= nextLevelData.NeedArea;
+        }
+
+        const canUpgrade = currentLevel < maxLevel && areaCheck;
+        const dependTechnic = nextLevelData?.DependTechnicID
+          ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
+          : null;
+
+        return {
+          ID: techConfig.ID,
+          Index: techConfig.ID,
+          Name: techConfig.Name || '',
+          Icon: techConfig.Icon || '',
+          Des: techConfig.Des || '',
+          Level: currentLevel,
+          CurrEff: currEff,
+          CurrentEff: currEff,
+          NextEff: nextEff,
+          EffID: nextLevelData?.EffType || 0,
+          MaxLevel: maxLevel,
+          State: playerTech?.state || -1,
+          UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+          UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+          UpNeedFood: nextLevelData?.CostFood || 0,
+          UpNeedMoney: nextLevelData?.CostMoney || 0,
+          UpNeedGold: nextLevelData?.CostGold || 0,
+          UpNeedMen: (nextLevelData as any)?.CostMen || 0,
+          UpNeedArea: (nextLevelData as any)?.NeedArea || 0,
+          UpNeedTime: nextLevelData?.CostTime || 0,
+          UpNeedTechnicID: (nextLevelData as any)?.DependTechnicID || 0,
+          UpNeedTechnicLevel: (nextLevelData as any)?.DependTechnicLevel || 0,
+          UpNeedTechnicName: dependTechnic?.Name || '',
+          CanUpgrade: canUpgrade,
+          AreaCheck: areaCheck,
+          EventID: 0,
+        };
+      });
+
+    return success(c, {
+      cityId,
+      buildingIndex,
+      techs: relatedTechs,
+      total: relatedTechs.length,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+/**
+ * GetUserTechnic - 获取用户所有科技（完整信息）
+ * 对应 C# Technic.cs getTechnicEffValue 逻辑
+ */
+app.get('/user', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    const city: any = await db.prepare(`
+      SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+    `).bind(walletAddress).first();
+    if (!city) return error(c, 'No city found', 404);
+
+    // 获取该用户所有科技
+    const playerTechs = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ?
+    `).bind(walletAddress).all();
+
+    const techMap: Record<number, any> = {};
+    for (const tech of (playerTechs.results || [])) {
+      techMap[(tech as any).static_index] = tech;
+    }
+
+    // 构建所有科技的完整信息
+    const allTechs = (technicConfigs || []).map((techConfig: any) => {
+      const playerTech = techMap[techConfig.ID];
+      const currentLevel = playerTech?.technic_level || 0;
+      const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+      const maxLevel = techConfig.InteriorData?.length || 1;
+
+      return {
+        ID: techConfig.ID,
+        Index: techConfig.ID,
+        Name: techConfig.Name || '',
+        Icon: techConfig.Icon || '',
+        Des: techConfig.Des || '',
+        Level: currentLevel,
+        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        NextEff: nextLevelData?.EffValue || 0,
+        EffID: nextLevelData?.EffType || techConfig.InteriorData?.[0]?.EffType || 0,
+        MaxLevel: maxLevel,
+        State: playerTech?.state ?? -1,
+        IsUnlocked: currentLevel > 0,
+        CanUpgrade: currentLevel < maxLevel,
+        UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
+        UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
+        UpNeedFood: nextLevelData?.CostFood || 0,
+        UpNeedMoney: nextLevelData?.CostMoney || 0,
+        UpNeedGold: nextLevelData?.CostGold || 0,
+        UpNeedMen: (nextLevelData as any)?.CostMen || 0,
+        UpNeedArea: (nextLevelData as any)?.NeedArea || 0,
+        UpNeedTime: nextLevelData?.CostTime || 0,
+        EventID: 0,
+        // 静态配置属性
+        DependPos: techConfig.DependPos || 0,
+        DependBuildingID: techConfig.DependBuildingID || 0,
+        DependArea: techConfig.DependArea || 0,
+      };
+    });
+
+    // 计算科技效果汇总
+    const effectSummary: Record<string, number> = {};
+    for (const techConfig of (technicConfigs || [])) {
+      const playerTech = techMap[techConfig.ID];
+      const level = playerTech?.technic_level || 0;
+      if (level > 0 && techConfig.InteriorData?.[level - 1]) {
+        const levelData = techConfig.InteriorData[level - 1];
+        const effType = levelData.EffType;
+        const effValue = levelData.EffValue;
+
+        // 特殊加成（见 C#）
+        let finalEff = effValue;
+        if (techConfig.ID === 4) finalEff += 5; // 计量技术
+        if (techConfig.ID === 3) finalEff += 5; // 招贤纳士
+        if (techConfig.ID === 2) finalEff += 1; // 土木技术
+        if (techConfig.ID === 11) finalEff += 0; // 犒劳三军（基础效果）
+
+        const typeName = getEffectTypeName(effType);
+        effectSummary[typeName] = (effectSummary[typeName] || 0) + finalEff;
+      }
+    }
+
+    return success(c, {
+      cityId: (city as any).id,
+      cityName: (city as any).name,
+      techs: allTechs,
+      effectSummary,
+      total: allTechs.length,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+/**
+ * UpdateTechnicLevel - 更新科技等级（完成后回调）
+ * 对应 C# Technic.UpdateTechnicLevel(userName, eventID, cityID, technicIndex, level)
+ */
+app.post('/level', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { event_id, city_id, technic_index, level } = await c.req.json();
+
+  if (!technic_index || level === undefined) {
+    return error(c, 'Missing required fields: technic_index, level', 400);
+  }
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 验证城市归属
+    const city: any = await db.prepare(`
+      SELECT id, money, food FROM cities WHERE wallet_address = ? ${city_id ? 'AND id = ?' : 'ORDER BY id ASC LIMIT 1'}
+    `).bind(city_id ? [walletAddress, city_id] : [walletAddress]).first();
+    if (!city) return error(c, 'City not found', 404);
+
+    // 获取当前科技记录
+    const tech: any = await db.prepare(`
+      SELECT * FROM technics WHERE user_name = ? AND static_index = ?
+    `).bind(walletAddress, technic_index).first();
+
+    const config = (technicConfigs || []).find((t: any) => t.ID === technic_index);
+    if (!config) return error(c, 'Tech config not found', 404);
+
+    const currentLevel = tech?.technic_level || 0;
+    const targetLevel = typeof level === 'number' ? level : currentLevel + 1;
+
+    if (targetLevel <= currentLevel) {
+      return error(c, `Target level ${targetLevel} must be greater than current level ${currentLevel}`, 400);
+    }
+
+    // 如果 event_id 提供，更新对应的时间事件状态
+    if (event_id) {
+      await db.prepare(`
+        UPDATE time_events SET state = 1 WHERE id = ? AND wallet_address = ?
+      `).bind(event_id, walletAddress).run();
+    }
+
+    // 更新科技等级
+    const updateResult = await db.prepare(`
+      INSERT OR REPLACE INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+      VALUES (?, ?, ?, ?, 0, 0)
+    `).bind(walletAddress, city.id, technic_index, targetLevel).run();
+
+    const levelData = config.InteriorData?.[targetLevel - 1] as any;
+    const effectType = levelData?.EffType || 0;
+    const effectValue = levelData?.EffValue || 0;
+
+    return success(c, {
+      technicId: technic_index,
+      name: config.Name,
+      previousLevel: currentLevel,
+      newLevel: targetLevel,
+      effectType,
+      effectValue,
+      message: `${config.Name} 升级至 Lv.${targetLevel}，效果值: ${effectValue}`,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+/**
+ * 计算科技效果对建筑/资源的影响
+ * 对应 C# Technic.GetStaticEffectValueByLevel 逻辑
+ */
+app.get('/effect-calc', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { effect_type, technic_index, level } = c.req.query();
+  const effType = parseInt(effect_type || '0');
+  const techIndex = parseInt(technic_index || '0');
+  const lvl = parseInt(level || '0');
+
+  if (!effType || !techIndex || !lvl) {
+    return error(c, 'Missing required fields: effect_type, technic_index, level', 400);
+  }
+
+  try {
+    const config = (technicConfigs || []).find((t: any) => t.ID === techIndex);
+    if (!config) return error(c, 'Tech config not found', 404);
+
+    const levelData = config.InteriorData?.find((l: any) => l.Level === lvl);
+    if (!levelData) return error(c, `Level ${lvl} not found in tech ${techIndex}`, 404);
+
+    const baseValue = levelData.EffValue || 0;
+
+    // 应用特殊加成
+    let finalValue = baseValue;
+    if (techIndex === 4) finalValue += 5; // 计量技术
+    if (techIndex === 3) finalValue += 5; // 招贤纳士
+    if (techIndex === 2) finalValue += 1; // 土木技术
+    if (techIndex === 1) {
+      // 移山填海：返回面积上限
+      const maxArea = baseValue;
+      return success(c, { maxArea, baseValue, effectType: effType });
+    }
+    if (techIndex === 13) {
+      // 仓库扩容：返回物品存储上限
+      const defaultItemCount = 50; // ItemCountOfOneCity
+      const maxItems = baseValue > 0 ? baseValue : defaultItemCount;
+      return success(c, { maxItems, baseValue, effectType: effType });
+    }
+
+    return success(c, {
+      effectValue: finalValue,
+      baseValue,
+      effectType: effType,
+      technicIndex: techIndex,
+      level: lvl,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+/**
+ * 根据效果类型名称映射
+ */
+function getEffectTypeName(effType: number): string {
+  const map: Record<number, string> = {
+    1: 'AREA',          // 移山填海 - 面积上限
+    2: 'BUILDING_LEVEL', // 土木技术 - 建筑等级上限
+    3: 'HERO_COUNT',    // 招贤纳士 - 侠客数量
+    4: 'DEFENCE_COUNT', // 计量技术 - 城防单位数量
+    5: 'WALL_LEVEL',    // 城墙升级 - 城墙等级
+    6: 'ARCHER_TOWER',  // 箭塔升级 - 箭塔等级
+    7: 'TRAP',          // 陷阱升级 - 陷阱等级
+    8: 'ROLLING_LOG',   // 滚木升级 - 滚木等级
+    9: 'STONE_THROWER', // 礌石升级 - 礌石等级
+    10: 'RECRUIT_SPEED', // 厉兵秣马 - 招募时间
+    11: 'TRAIN_EFFECT',  // 犒劳三军 - 训练效果
+    12: 'TRAIN_SPEED',   // 枕戈待旦 - 训练时间
+    13: 'STORAGE',       // 仓库扩容 - 物品上限
+    14: 'BUILD_SPEED',   // 器械应用 - 建造时间
+    15: 'MARCH_SPEED',   // 令行禁止 - 行军速度
+  };
+  return map[effType] || `TYPE_${effType}`;
+}
+
 export default app;

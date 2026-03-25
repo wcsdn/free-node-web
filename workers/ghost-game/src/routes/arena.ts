@@ -26,20 +26,17 @@ function calcHeroPower(hero: {
 
 /** 计算用户总战力（最强3个武将之和） */
 async function calcUserTotalPower(db: D1Database, walletAddress: string): Promise<number> {
-  // 尝试从 heroes 表计算
   const heroes: any[] = await (db.prepare(`
     SELECT attack, defense, hp FROM heroes WHERE wallet_address = ?
   `).bind(walletAddress).all() as any).results || [];
 
   if (heroes.length === 0) {
-    // fallback: 从 characters 表读取 level 作为战力
     const char: any = await db.prepare(`
       SELECT level FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
     return char ? (char.level || 1) * 100 : 100;
   }
 
-  // 取最强3个武将的战力之和
   const powers = heroes.map(h => calcHeroPower(h as any)).sort((a, b) => b - a);
   const top3 = powers.slice(0, 3);
   return top3.reduce((sum, p) => sum + p, 0);
@@ -65,7 +62,6 @@ app.get('/info', async (c) => {
   }
 
   try {
-    // 1. 获取用户角色信息
     const char: any = await db.prepare(`
       SELECT wallet_address, name, level, gold FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
@@ -74,28 +70,23 @@ app.get('/info', async (c) => {
       return c.json({ success: false, error: 'Character not found' }, 404);
     }
 
-    // 2. 获取/创建竞技场记录
     let arenaRecord: any = await db.prepare(`
       SELECT * FROM arena_records WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
     if (!arenaRecord) {
-      // 创建新记录
       await db.prepare(`
         INSERT INTO arena_records (wallet_address, score, rank, win_count, lose_count)
         VALUES (?, 1000, 0, 0, 0)
       `).bind(walletAddress).run();
-
       arenaRecord = { wallet_address: walletAddress, score: 1000, rank: 0, win_count: 0, lose_count: 0 };
     }
 
-    // 3. 计算用户排名
     const rankResult: any = await db.prepare(`
       SELECT COUNT(*) + 1 as rank FROM arena_records WHERE score > ?
     `).bind(arenaRecord.score || 1000).first();
     const myRank = rankResult?.rank || 999;
 
-    // 4. 获取挑战对手列表（从竞技场排行榜选取附近的玩家）
     const opponentsResult: any[] = await (db.prepare(`
       SELECT ar.wallet_address, ar.score,
              c.name, c.level as char_level,
@@ -111,7 +102,6 @@ app.get('/info', async (c) => {
       LIMIT 10
     `).bind(walletAddress).all() as any).results || [];
 
-    // 如果对手不足10个，补充其他玩家
     if (opponentsResult.length < 10) {
       const excludeSet = new Set([walletAddress, ...opponentsResult.map((o: any) => o.wallet_address)]);
       const moreResult: any[] = await (db.prepare(`
@@ -126,35 +116,23 @@ app.get('/info', async (c) => {
         WHERE c.wallet_address NOT IN (${Array.from(excludeSet).map(() => '?').join(',') || "''"})
         LIMIT ?
       `).bind(...Array.from(excludeSet), 10 - opponentsResult.length).all() as any).results || [];
-
       opponentsResult.push(...moreResult);
     }
 
-    const opponents = opponentsResult.slice(0, 5).map((opp: any, idx: number) => ({
+    const opponents = opponentsResult.slice(0, 5).map((opp: any) => ({
       name: opp.name || `玩家${opp.wallet_address?.slice(0, 8)}`,
       level: opp.hero_level || opp.char_level || 1,
       power: Math.round(calcHeroPower(opp)),
       walletAddress: opp.wallet_address,
     }));
 
-    // 5. 计算剩余挑战次数（每日重置）
-    const today = new Date().toISOString().split('T')[0];
-    const todayChallenges: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM arena_records
-      WHERE wallet_address = ? AND DATE(updated_at) = ?
-    `).bind(walletAddress, today).first();
-
     const MAX_CHALLENGE_TIMES = 10;
-    const challengeTimes = Math.max(0, MAX_CHALLENGE_TIMES - ((todayChallenges as any)?.count || 0));
-    // 注: updated_at 更新在每次挑战后，这里用 arena_records 的 update 次数来估算
-    // 实际应记录 challenge_count 字段，临时用 win+lose 次数
     const usedTimes = (arenaRecord.win_count || 0) + (arenaRecord.lose_count || 0);
     const remainingTimes = Math.max(0, MAX_CHALLENGE_TIMES - usedTimes);
 
     return c.json({
       success: true,
       data: {
-        // C# 字段格式 (驼峰)
         Position: 1,
         State: 1,
         MyRank: myRank,
@@ -163,7 +141,6 @@ app.get('/info', async (c) => {
         Score: arenaRecord.score || 1000,
         WinCount: arenaRecord.win_count || 0,
         LoseCount: arenaRecord.lose_count || 0,
-        // 兼容字段
         position: 1,
         state: 1,
         myRank,
@@ -175,6 +152,161 @@ app.get('/info', async (c) => {
         userName: char.name,
         userLevel: char.level || 1,
         opponents,
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// ==================== GET /arena/arena-time - 竞技场开放时间 ====================
+// 参考 jx/BLL/FestivalActive.GetArenaTime() 和 GetArenaStartTime/GetArenaEndTime()
+// 返回格式: [startTime, endTime] - 每天的开放时间段（HH:mm:ss）
+
+app.get('/arena-time', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  try {
+    // 从 KV 或配置读取竞技场开放时间
+    // 默认: 20:00 - 22:00 (每晚8点到10点)
+    let startTime = '20:00:00';
+    let endTime = '22:00:00';
+
+    try {
+      const kv = c.env.KV;
+      if (kv) {
+        const savedStart = await kv.get('arena:start_time');
+        const savedEnd = await kv.get('arena:end_time');
+        if (savedStart) startTime = savedStart;
+        if (savedEnd) endTime = savedEnd;
+      }
+    } catch (_) {
+      // KV 不可用，使用默认值
+    }
+
+    const now = new Date();
+    const todayStart = new Date(now);
+    const parts = startTime.split(':');
+    todayStart.setHours(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]), 0);
+
+    const todayEnd = new Date(now);
+    const endParts = endTime.split(':');
+    todayEnd.setHours(parseInt(endParts[0]), parseInt(endParts[1]), parseInt(endParts[2]), 0);
+
+    const isOpen = now >= todayStart && now <= todayEnd;
+
+    // 距离开始/结束的时间（秒）
+    let nextChangeSeconds = 0;
+    let nextChangeType: 'open' | 'close' | null = null;
+    if (now < todayStart) {
+      nextChangeSeconds = Math.floor((todayStart.getTime() - now.getTime()) / 1000);
+      nextChangeType = 'open';
+    } else if (now < todayEnd) {
+      nextChangeSeconds = Math.floor((todayEnd.getTime() - now.getTime()) / 1000);
+      nextChangeType = 'close';
+    }
+
+    // C# 兼容格式
+    return c.json({
+      success: true,
+      data: {
+        // C# GetArenaTime 返回的 string[] 格式
+        ArenaTimes: [startTime, endTime],
+        // 新格式
+        startTime,
+        endTime,
+        todayStart: todayStart.toISOString(),
+        todayEnd: todayEnd.toISOString(),
+        isOpen,
+        nextChangeSeconds,
+        nextChangeType,
+        serverTime: now.toISOString(),
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// ==================== GET /arena/user-heroes - 获取竞技场冠军武将列表 ====================
+// 参考 jx/BLL/FestivalActive.GetUserHeros(npcPos, serverUnit)
+// 返回指定擂台位置的历史冠军武将（日冠军、周冠军、月冠军、历史冠军）
+
+app.get('/user-heroes', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+
+  const npcPos = parseInt(c.req.query('npcPos') || '1001');
+  const serverUnit = c.req.query('serverUnit') || 's1';
+
+  try {
+    // 参考 C#: ArenaWinnerInfo dayHero = FestivalActiveAccess.GetArenaWinner(npcPos, 2, serverUnit)
+    // type: 1=历史冠军, 2=日冠军, 4=昨日冠军, 5=周冠军
+    // 从 arena_winners 表获取（如果存在）
+    let winners: any[] = [];
+    try {
+      const result: any = await db.prepare(`
+        SELECT * FROM arena_winners WHERE npc_pos = ? AND server_unit = ?
+        ORDER BY type ASC
+      `).bind(npcPos, serverUnit).all();
+      winners = result?.results || [];
+    } catch (_) {
+      // 表不存在则返回空
+    }
+
+    // 映射到 ArenaWinnerInfo 格式
+    // type: 1=历史冠军(Old), 2=日冠军(Day), 4=昨日冠军(Yesterday), 5=周冠军(Week)
+    const typeMap: Record<number, string> = {
+      1: 'old',
+      2: 'day',
+      4: 'yesterday',
+      5: 'week',
+    };
+
+    const arenaWinnerInfoList = [1, 2, 4, 5].map(type => {
+      const w = winners.find((x: any) => x.type === type);
+      if (w) {
+        return {
+          type,
+          typeName: typeMap[type],
+          walletAddress: w.wallet_address,
+          name: w.winner_name,
+          heroId: w.hero_id,
+          heroName: w.hero_name,
+          score: w.score || 0,
+          winTime: w.win_time,
+        };
+      }
+      return {
+        type,
+        typeName: typeMap[type],
+        walletAddress: null,
+        name: null,
+        heroId: 0,
+        heroName: null,
+        score: 0,
+        winTime: null,
+      };
+    });
+
+    return c.json({
+      success: true,
+      data: {
+        npcPos,
+        serverUnit,
+        winners: arenaWinnerInfoList,
+        // C# 兼容格式
+        ArenaWinnerInfoList: arenaWinnerInfoList,
       }
     });
   } catch (err: any) {
@@ -207,7 +339,6 @@ app.get('/times', async (c) => {
       : 0;
     const remaining = Math.max(0, MAX_CHALLENGE_TIMES - usedTimes);
 
-    // 计算重置时间（每天00:00 UTC = 08:00北京时间）
     const now = new Date();
     const resetTime = new Date(now);
     resetTime.setUTCHours(0, 0, 0, 0);
@@ -252,7 +383,6 @@ app.post('/challenge', async (c) => {
       return c.json({ success: false, error: 'opponentAddress is required' }, 400);
     }
 
-    // 1. 获取用户角色
     const char: any = await db.prepare(`
       SELECT c.wallet_address, c.name, c.level,
              COALESCE(h.attack, 0) as atk,
@@ -268,7 +398,6 @@ app.post('/challenge', async (c) => {
       return c.json({ success: false, error: 'Character not found' }, 404);
     }
 
-    // 2. 获取对手角色
     const oppChar: any = await db.prepare(`
       SELECT c.wallet_address, c.name, c.level,
              COALESCE(h.attack, 0) as atk,
@@ -284,7 +413,6 @@ app.post('/challenge', async (c) => {
       return c.json({ success: false, error: 'Opponent not found' }, 404);
     }
 
-    // 3. 校验挑战次数
     const MAX_CHALLENGE_TIMES = 10;
     const arenaRecord: any = await db.prepare(`
       SELECT win_count, lose_count, score FROM arena_records WHERE wallet_address = ?
@@ -298,37 +426,22 @@ app.post('/challenge', async (c) => {
       return c.json({ success: false, error: 'No challenge times remaining' }, 400);
     }
 
-    // 4. 计算战力
-    const myPower = calcHeroPower({
-      atk: char.atk as number,
-      def: char.def as number,
-      hp: char.hp as number,
-    });
-    const oppPower = calcHeroPower({
-      atk: oppChar.atk as number,
-      def: oppChar.def as number,
-      hp: oppChar.hp as number,
-    });
-
-    // 如果没有武将数据，用角色等级估算
+    const myPower = calcHeroPower({ atk: char.atk as number, def: char.def as number, hp: char.hp as number });
+    const oppPower = calcHeroPower({ atk: oppChar.atk as number, def: oppChar.def as number, hp: oppChar.hp as number });
     const finalMyPower = myPower > 0 ? myPower : (char.level || 1) * 100;
     const finalOppPower = oppPower > 0 ? oppPower : (oppChar.level || 1) * 100;
 
-    // 5. 基于属性计算战斗结果
-    // 战力比值 + 少量随机因素（10%）决定胜负
     const powerRatio = finalMyPower / Math.max(1, finalOppPower);
-    const randomFactor = 0.9 + Math.random() * 0.2; // 0.9 ~ 1.1
-    const winThreshold = 0.8; // 战力相同时 80% 基础胜率
+    const randomFactor = 0.9 + Math.random() * 0.2;
+    const winThreshold = 0.8;
     const winChance = Math.min(0.95, Math.max(0.05, winThreshold * powerRatio * randomFactor));
     const isWin = Math.random() < winChance;
 
-    // 6. 计算分数变化
     const SCORE_BASE = 32;
     const scoreChange = isWin
       ? Math.round(SCORE_BASE * (1 + finalOppPower / 1000))
       : -Math.round(SCORE_BASE * (1 + finalMyPower / 2000));
 
-    // 7. 更新竞技场记录
     const currentScore = arenaRecord?.score || 1000;
     const newScore = Math.max(0, currentScore + scoreChange);
 
@@ -339,14 +452,8 @@ app.post('/challenge', async (c) => {
           lose_count = lose_count + ?,
           updated_at = datetime('now')
       WHERE wallet_address = ?
-    `).bind(
-      newScore,
-      isWin ? 1 : 0,
-      isWin ? 0 : 1,
-      walletAddress
-    ).run();
+    `).bind(newScore, isWin ? 1 : 0, isWin ? 0 : 1, walletAddress).run();
 
-    // 8. 如果是新记录，插入
     if (!arenaRecord) {
       await db.prepare(`
         INSERT INTO arena_records (wallet_address, score, rank, win_count, lose_count)
@@ -354,21 +461,17 @@ app.post('/challenge', async (c) => {
       `).bind(walletAddress, newScore, isWin ? 1 : 0, isWin ? 0 : 1).run();
     }
 
-    // 9. 计算奖励
     let rewardGold = 0;
     let rewardExp = 0;
     if (isWin) {
       rewardGold = Math.round(50 + finalOppPower * 0.1);
       rewardExp = Math.round(20 + finalOppPower * 0.05);
-
-      // 更新金币
       await db.prepare(`
         UPDATE characters SET gold = gold + ?, updated_at = datetime('now')
         WHERE wallet_address = ?
       `).bind(rewardGold, walletAddress).run();
     }
 
-    // 10. 计算新排名
     const rankResult: any = await db.prepare(`
       SELECT COUNT(*) + 1 as rank FROM arena_records WHERE score > ?
     `).bind(newScore).first();
@@ -383,10 +486,7 @@ app.post('/challenge', async (c) => {
         scoreChange,
         newScore,
         newRank,
-        reward: {
-          gold: rewardGold,
-          exp: rewardExp,
-        },
+        reward: { gold: rewardGold, exp: rewardExp },
         myName: char.name || '未知',
         oppName: oppChar.name || '未知',
       }
@@ -396,7 +496,8 @@ app.post('/challenge', async (c) => {
   }
 });
 
-// ==================== GET /arena/rankings - 获取竞技场排行榜 ====================
+// ==================== GET /arena/rankings - 获取竞技场排行榜（分页） ====================
+// 参考 jx/BLL/FestivalActive.cs 竞技场排名分页
 
 app.get('/rankings', async (c) => {
   const db = c.env.DB;
@@ -404,10 +505,20 @@ app.get('/rankings', async (c) => {
     return c.json({ success: false, error: 'Database not configured' }, 503);
   }
 
-  const { limit = '20' } = c.req.query();
-  const limitNum = Math.min(100, parseInt(limit as string) || 20);
+  // 分页参数
+  const page = Math.max(1, parseInt(c.req.query('page') || '1'));
+  const pageSize = Math.min(100, Math.max(1, parseInt(c.req.query('pageSize') || '20')));
+  const offset = (page - 1) * pageSize;
+  const limit = Math.min(500, pageSize);
 
   try {
+    // 总数
+    const countResult: any = await db.prepare(
+      `SELECT COUNT(*) as count FROM arena_records`
+    ).first();
+    const total = countResult?.count || 0;
+
+    // 带排名的分页查询
     const result: any = await db.prepare(`
       SELECT ar.wallet_address, ar.score, ar.win_count, ar.lose_count,
              c.name, c.level as char_level,
@@ -419,11 +530,14 @@ app.get('/rankings', async (c) => {
       LEFT JOIN characters c ON c.wallet_address = ar.wallet_address
       LEFT JOIN heroes h ON h.wallet_address = ar.wallet_address
       ORDER BY ar.score DESC
-      LIMIT ?
-    `).bind(limitNum).all();
+      LIMIT ? OFFSET ?
+    `).bind(limit, offset).all();
 
-    const rankings = ((result?.results || []) as any[]).map((row: any, idx: number) => ({
-      rank: idx + 1,
+    const rows = (result?.results || []) as any[];
+
+    // 计算每个用户的排名（基于 offset 的真实排名）
+    const rankings = rows.map((row: any, idx: number) => ({
+      rank: offset + idx + 1,
       walletAddress: row.wallet_address,
       name: row.name || `玩家${row.wallet_address?.slice(0, 8)}`,
       level: row.hero_level || row.char_level || 1,
@@ -433,7 +547,90 @@ app.get('/rankings', async (c) => {
       loseCount: row.lose_count || 0,
     }));
 
-    return c.json({ success: true, data: { rankings } });
+    // 当前用户的排名（如果已登录）
+    const walletAddress = await verifyWalletAuth(c).catch(() => null);
+    let myRank = null;
+    if (walletAddress) {
+      const myRecord: any = await db.prepare(
+        `SELECT score FROM arena_records WHERE wallet_address = ?`
+      ).bind(walletAddress).first();
+      if (myRecord) {
+        const rankRes: any = await db.prepare(
+          `SELECT COUNT(*) + 1 as rank FROM arena_records WHERE score > ?`
+        ).bind(myRecord.score).first();
+        myRank = rankRes?.rank || null;
+      }
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        rankings,
+        pagination: {
+          page,
+          pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize),
+          hasMore: page * pageSize < total,
+        },
+        myRank,
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// ==================== GET /arena/my-rank - 获取我的排名详情 ====================
+
+app.get('/my-rank', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  try {
+    const myRecord: any = await db.prepare(`
+      SELECT * FROM arena_records WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!myRecord) {
+      return c.json({
+        success: true,
+        data: {
+          hasRecord: false,
+          score: 1000,
+          rank: null,
+          winCount: 0,
+          loseCount: 0,
+        }
+      });
+    }
+
+    const rankResult: any = await db.prepare(`
+      SELECT COUNT(*) + 1 as rank FROM arena_records WHERE score > ?
+    `).bind(myRecord.score).first();
+    const myRank = rankResult?.rank || 999;
+
+    return c.json({
+      success: true,
+      data: {
+        hasRecord: true,
+        score: myRecord.score,
+        rank: myRank,
+        winCount: myRecord.win_count || 0,
+        loseCount: myRecord.lose_count || 0,
+        winRate: myRecord.win_count + myRecord.lose_count > 0
+          ? Math.round((myRecord.win_count / (myRecord.win_count + myRecord.lose_count)) * 100)
+          : 0,
+        power: await calcUserTotalPower(db, walletAddress),
+      }
+    });
   } catch (err: any) {
     return c.json({ success: false, error: err.message }, 500);
   }
