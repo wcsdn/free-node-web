@@ -330,20 +330,9 @@ app.get('/user-battle', async (c) => {
       }
     }
 
-    return success(c, {
-      battleState,
-      battleType,
-      AthleticsType: athleticsType,
-      cityId,
-      cityName,
-      cityPos,
-      heroName,
-      heroLevel,
-      levelSegment,
-      startTime,
-      endTime,
-      message: battleState === 0 ? '未报名名城战' : battleState === 1 ? '已报名等待分配' : '战斗中',
-    });
+    // 前端 cb_CreateMyWarfare 使用 result.value.split("_") 解析
+    // 格式: "battleState_battleType_athleticsType"
+    return success(c, `${battleState}_${battleType}_${athleticsType}`);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -373,17 +362,9 @@ app.get('/detail', async (c) => {
       return error(c, '战区不存在', 404);
     }
 
-    // 格式化返回，与 C# GetWarfareDetail 保持一致
-    // C# 返回格式: RoomName__________RoomShow__________id
-    return success(c, {
-      ID: detail.Id,
-      RoomName: detail.RoomName,
-      RoomShow: detail.RoomShow,
-      AthleticsType: detail.AthleticsType,
-      AthleticsMode: detail.AthleticsMode,
-      ManHow: detail.ManHow,
-      Description: detail.RoomShow,
-    });
+    // 前端 cb_CreateWarfareDetail 使用 split("________") 解析
+    // 格式: "RoomName________RoomShow________id" (8个下划线分隔)
+    return success(c, `${detail.RoomName}________${detail.RoomShow}________${detail.Id}`);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -404,16 +385,16 @@ app.get('/detail', async (c) => {
  */
 app.post('/cancel', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id } = await c.req.json();
 
   if (!city_id) {
-    return error(c, 'city_id is required');
+    return c.json({ success: false, code: 1, message: 'city_id is required' });
   }
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 查询报名记录 - target_id 的低8位包含 city_id
@@ -429,7 +410,7 @@ app.post('/cancel', async (c) => {
     `).bind(walletAddress, city_id).first();
 
     if (!record) {
-      return error(c, ERROR_CODES[60045] || '未找到报名记录', 400);
+      return c.json({ success: false, code: 60045, message: ERROR_CODES[60045] || '未找到报名记录' });
     }
 
     const row = record as any;
@@ -438,7 +419,7 @@ app.post('/cancel', async (c) => {
     // state 编码: 1-10 = 等待中(等级段), 11 = 已匹配, 12 = 战斗中
     // state >= 11 不能取消 (已匹配或战斗中)
     if ((row.state as number) >= 11) {
-      return error(c, ERROR_CODES[60055] || '已进入战场，无法取消', 400);
+      return c.json({ success: false, code: 60055, message: ERROR_CODES[60055] || '已进入战场，无法取消' });
     }
 
     // FIX: 双重检查 - 也检查 battles 表中是否有活跃 warfare 战斗
@@ -452,7 +433,7 @@ app.post('/cancel', async (c) => {
     `).bind(walletAddress, walletAddress).first();
 
     if (battleRecord) {
-      return error(c, ERROR_CODES[60052] || '已在战场中', 400);
+      return c.json({ success: false, code: 60052, message: ERROR_CODES[60052] || '已在战场中' });
     }
 
     // 从 target_id 中提取 city_id
@@ -484,13 +465,11 @@ app.post('/cancel', async (c) => {
         AND state = 1
     `).bind(walletAddress, storedCityId).run();
 
-    return success(c, {
-      message: '取消报名成功',
-      cityId: city_id,
-    });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
     const { code, message } = handleError(err);
-    return error(c, message, 400);
+    return c.json({ success: false, code: code || -1, message });
   }
 });
 
@@ -517,16 +496,16 @@ app.post('/cancel', async (c) => {
  */
 app.post('/select', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { area, warfare_type, city_id, pos } = await c.req.json();
 
   if (!area || !city_id) {
-    return error(c, 'area and city_id are required');
+    return c.json({ success: false, code: 1, message: 'area and city_id are required' });
   }
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     const athleticsType = parseInt(area); // AthleticsType
@@ -540,7 +519,7 @@ app.post('/select', async (c) => {
       `).first();
       
       if (isOpenResult && (isOpenResult as any).value === '0') {
-        return error(c, ERROR_CODES[60054] || '战场未开放', 400);
+        return c.json({ success: false, code: 60054, message: ERROR_CODES[60054] || '战场未开放' });
       }
     } catch (e) {
       // system_config 表不存在时，默认开放
@@ -555,7 +534,7 @@ app.post('/select', async (c) => {
     `).bind(walletAddress).first();
 
     if (existingRecord) {
-      return error(c, ERROR_CODES[60044] || '已在报名列表中', 400);
+      return c.json({ success: false, code: 60044, message: ERROR_CODES[60044] || '已在报名列表中' });
     }
 
     // 3. 检查城市是否存在且属于当前用户
@@ -568,7 +547,7 @@ app.post('/select', async (c) => {
     `).bind(city_id, walletAddress).first();
 
     if (!cityResult) {
-      return error(c, ERROR_CODES[60053] || '城市不存在或不属于当前用户', 400);
+      return c.json({ success: false, code: 60053, message: ERROR_CODES[60053] || '城市不存在或不属于当前用户' });
     }
 
     // 4. 检查是否有出战队列侠客 (state = 2 表示在出战队列)
@@ -581,7 +560,7 @@ app.post('/select', async (c) => {
 
     const heroCount = (heroCountResult as any)?.count || 0;
     if (heroCount <= 0) {
-      return error(c, ERROR_CODES[60046] || '该城市没有出战队列侠客', 400);
+      return c.json({ success: false, code: 60046, message: ERROR_CODES[60046] || '该城市没有出战队列侠客' });
     }
 
     // 5. 检查城市是否已有军团驻守 (state = 1 表示已驻守)
@@ -590,7 +569,7 @@ app.post('/select', async (c) => {
       WHERE city_id = ? AND state = 1
     `).bind(city_id).first();
     if (corpsResult) {
-      return error(c, ERROR_CODES[60047] || '该城市已有军团驻守', 400);
+      return c.json({ success: false, code: 60047, message: ERROR_CODES[60047] || '该城市已有军团驻守' });
     }
 
     // 6. 计算最高等级侠客的等级段 (与 C# SelectBattle 逻辑完全一致)
@@ -628,7 +607,7 @@ app.post('/select', async (c) => {
     `).bind(walletAddress, walletAddress).first();
 
     if (activeWarfare) {
-      return error(c, ERROR_CODES[60052] || '已在战场中，无法报名', 400);
+      return c.json({ success: false, code: 60052, message: ERROR_CODES[60052] || '已在战场中，无法报名' });
     }
 
     // 7. 编码 target_id
@@ -646,7 +625,7 @@ app.post('/select', async (c) => {
     `).bind(walletAddress, city_id).run();
 
     if (updateHeroResult.meta.changes === 0) {
-      return error(c, ERROR_CODES[60048] || '更新侠客状态失败', 400);
+      return c.json({ success: false, code: 60048, message: ERROR_CODES[60048] || '更新侠客状态失败' });
     }
 
     // 9. 创建名城战报名事件
@@ -661,17 +640,11 @@ app.post('/select', async (c) => {
       ) VALUES (?, 'warfare_select', ?, datetime('now'), ?, ?)
     `).bind(walletAddress, targetId, endTime.toISOString(), levelSegment);
 
-    return success(c, {
-      message: '报名成功',
-      battleType,
-      athleticsType,
-      levelSegment,
-      cityId: city_id,
-      endTime: endTime.toISOString(),
-    });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
     const { code, message } = handleError(err);
-    return error(c, message, 400);
+    return c.json({ success: false, code: code || -1, message });
   }
 });
 

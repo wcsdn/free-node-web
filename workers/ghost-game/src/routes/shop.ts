@@ -186,7 +186,7 @@ app.post('/buy', async (c) => {
       // 购买持续效果 - 检查是否已有此效果
       const existingEffect = await db.prepare(`
         SELECT * FROM persist_effects
-        WHERE wallet_address = ? AND main_effect_type = ? AND expire_time > datetime('now')
+        WHERE user_name = ? AND main_effect_type = ? AND end_time > datetime('now')
       `).bind(walletAddress, commodity.MainEffectType).first();
 
       if (existingEffect) {
@@ -196,7 +196,7 @@ app.post('/buy', async (c) => {
       // 添加持续效果
       const durationDays = commodity.EffectType || 7; // 默认7天
       await db.prepare(`
-        INSERT INTO persist_effects (wallet_address, main_effect_type, effect_type, start_time, expire_time)
+        INSERT INTO persist_effects (user_name, main_effect_type, effect_type, start_time, end_time)
         VALUES (?, ?, ?, datetime('now'), datetime('now', '+' || ? || ' days'))
       `).bind(walletAddress, commodity.MainEffectType, commodity.EffectType, durationDays).run();
 
@@ -237,7 +237,7 @@ app.post('/persist-effect', async (c) => {
     // 检查是否已有此效果
     const existingEffect = await db.prepare(`
       SELECT * FROM persist_effects
-      WHERE wallet_address = ? AND main_effect_type = ? AND expire_time > datetime('now')
+      WHERE user_name = ? AND main_effect_type = ? AND end_time > datetime('now')
     `).bind(walletAddress, main_type).first();
 
     if (existingEffect) {
@@ -254,7 +254,7 @@ app.post('/persist-effect', async (c) => {
 
     // 添加持续效果
     await db.prepare(`
-      INSERT INTO persist_effects (wallet_address, main_effect_type, effect_type, start_time, expire_time)
+      INSERT INTO persist_effects (user_name, main_effect_type, effect_type, start_time, end_time)
       VALUES (?, ?, ?, datetime('now'), datetime('now', '+' || ? || ' days'))
     `).bind(walletAddress, main_type, effect_type, durationDays).run();
 
@@ -469,7 +469,7 @@ app.post('/list', async (c) => {
     // 获取玩家的持续效果
     const effects = await db.prepare(`
       SELECT main_effect_type, effect_type FROM persist_effects
-      WHERE wallet_address = ? AND expire_time > datetime('now')
+      WHERE user_name = ? AND end_time > datetime('now')
     `).bind(walletAddress).all();
 
     const effectSet = new Set((effects.results || []).map((e: any) => `${e.main_effect_type}_${e.effect_type}`));

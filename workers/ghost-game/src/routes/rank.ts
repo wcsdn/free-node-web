@@ -80,6 +80,8 @@ app.get('/chess', async (c) => {
       power: r.power,
       heroCount: r.hero_count,
       title: offset + idx + 1 <= 3 ? ['🏆', '🥈', '🥉'][offset + idx] : '',
+      // C# UserRank.MySelf 标记：1=当前用户，用于前端高亮
+      mySelf: wallet && r.wallet_address.toLowerCase() === wallet.toLowerCase() ? 1 : 0,
     }));
 
     return c.json({

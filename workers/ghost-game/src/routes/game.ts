@@ -662,9 +662,11 @@ app.get('/player-count', async (c) => {
       SELECT COUNT(*) as count FROM characters
     `).first();
 
-    return success(c, {
-      playerCount: (result as any)?.count || 0,
-    });
+    // C# 语义: GetPlayerNum() 返回页数 = (总用户数/20) + 1
+    // 前端 Taxis.js 用 result.value 作为 MaxPlayerPage (总页数)
+    const totalUsers = (result as any)?.count || 0;
+    const pageCount = Math.ceil(totalUsers / 20) + 1;
+    return c.json({ success: true, value: pageCount });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -682,9 +684,11 @@ app.get('/ins-player-count', async (c) => {
       WHERE last_login > datetime('now', '-5 minutes')
     `).first();
 
-    return success(c, {
-      onlineCount: (result as any)?.count || 0,
-    });
+    // C# 语义: GetInsPlayerNum() 返回页数 = (在线用户数/20) + 1 (最大5页)
+    // 前端 Taxis.js 用 result.value 作为 MaxPlayerPage
+    const totalOnline = (result as any)?.count || 0;
+    const pageCount = Math.min(Math.ceil(totalOnline / 20) + 1, 5);
+    return c.json({ success: true, value: pageCount });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -701,9 +705,11 @@ app.get('/territory-player-count', async (c) => {
       SELECT COUNT(DISTINCT wallet_address) as count FROM cities
     `).first();
 
-    return success(c, {
-      territoryPlayerCount: (result as any)?.count || 0,
-    });
+    // C# 语义: GetTerritoryPlayerNum() 返回页数 = (领地玩家数/20) + 1 (最大5页)
+    // 前端 Taxis.js 用 result.value 作为 MaxPlayerPage
+    const territoryUsers = (result as any)?.count || 0;
+    const pageCount = Math.min(Math.ceil(territoryUsers / 20) + 1, 5);
+    return c.json({ success: true, value: pageCount });
   } catch (err: any) {
     return error(c, err.message);
   }

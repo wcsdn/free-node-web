@@ -171,7 +171,10 @@ app.get('/chess/board', async (c) => {
 });
 
 // 获取战斗事件 - GET /battle/chess/event
-// 修复: 返回真实的战斗事件和历史记录
+// C# 签名: public Chessevent[] GetChessEvent(int pos, int player, int eventState)
+// 前端期望: result.value 为 Chessevent[] 数组
+// Chessevent 格式: {ID, ObjX, ObjY, ObjAction, EffValue, ExpandEffValue, Player, ObjID, TargetID}
+// 无事件时返回 [{ID: -1}]
 app.get('/chess/event', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -181,8 +184,7 @@ app.get('/chess/event', async (c) => {
 
   const pos = c.req.query('pos') || '';
   const playerID = c.req.query('playerID') || '';
-  const eventState = c.req.query('eventState') || '0';
-  const lastEventId = parseInt(c.req.query('lastEventId') || '0');
+  const eventState = parseInt(c.req.query('eventState') || '0');
 
   try {
     // 获取当前进行中的战斗
@@ -194,146 +196,117 @@ app.get('/chess/event', async (c) => {
       LIMIT 1
     `).bind(walletAddress, walletAddress).first();
 
-    // 获取最近的战斗记录（用于回放）
-    const recentBattles: any = await db.prepare(`
-      SELECT id, attacker_address, defender_address, result, created_at,
-             CASE WHEN attacker_address = ? THEN 'attacker' ELSE 'defender' END as my_role
-      FROM battles
-      WHERE (attacker_address = ? OR defender_address = ?)
-      ORDER BY created_at DESC
-      LIMIT 20
-    `).bind(walletAddress, walletAddress, walletAddress).all();
+    // 获取棋盘数据
+    const board = activeBattle ? await getChessboardByPos(db, parseInt(pos) || 1, walletAddress) : null;
 
-    const battleLog: any[] = [];
-    const animations: any[] = [];
+    // 生成 Chessevent 格式的战斗事件
+    // eventState 表示已处理的最后事件ID，新事件从 eventState+1 开始
+    const chessEvents: any[] = [];
+    let eventId = eventState;
+    let currentRound = 1;
 
-    // 如果有进行中的战斗，生成战斗事件
-    if (activeBattle) {
+    if (activeBattle && board) {
       const isAttacker = activeBattle.attacker_address === walletAddress;
-      const opponentAddress = isAttacker ? activeBattle.defender_address : activeBattle.attacker_address;
+      const myFlag = isAttacker ? 1 : 3; // 1=攻击方, 3=防守方
+      const opponentFlag = isAttacker ? 3 : 1;
 
-      // 获取对手信息
-      const opponent: any = await db.prepare(`
-        SELECT c.wallet_address, c.name, c.level
-        FROM characters c
-        WHERE c.wallet_address = ?
-      `).bind(opponentAddress).first();
-
-      // 获取双方武将状态
-      const myHeroes: any = await db.prepare(`
-        SELECT id, name, hp, max_hp, attack, defense, config_id, level
-        FROM heroes
-        WHERE wallet_address = ? AND state IN (1, 10)
-        ORDER BY attack DESC
-        LIMIT 5
-      `).bind(walletAddress).all();
-
-      const opponentHeroes: any = opponentAddress ? await db.prepare(`
-        SELECT id, name, hp, max_hp, attack, defense, config_id, level
-        FROM heroes
-        WHERE wallet_address = ? AND state IN (1, 10)
-        ORDER BY attack DESC
-        LIMIT 5
-      `).bind(opponentAddress).all() : [];
-
-      const currentRound = parseInt(eventState) || 1;
-
-      // 生成战斗日志条目
+      // 计算战斗已进行的回合数
       const battleStartTime = new Date(activeBattle.created_at).getTime();
       const elapsedSeconds = Math.floor((Date.now() - battleStartTime) / 1000);
+      currentRound = Math.floor(elapsedSeconds / 60) + 1;
 
-      // 检查是否超时（5分钟战斗时间）
-      const BATTLE_TIMEOUT = 300; // 5分钟
-      const battleEnded = elapsedSeconds >= BATTLE_TIMEOUT;
+      // 获取武将状态，生成攻击事件
+      const myHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === myFlag);
+      const opponentHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === opponentFlag);
 
-      if (battleEnded && !activeBattle.result) {
-        // 战斗超时，判定为平局
-        battleLog.push({
-          id: activeBattle.id,
-          type: 'battle_end',
-          result: 'timeout',
-          message: `战斗超时（${BATTLE_TIMEOUT}秒），判定为平局`,
-          timestamp: Date.now(),
-          round: currentRound,
+      // 从 eventState+1 开始生成新事件（模拟战斗进程）
+      const newEventsStart = eventState + 1;
+
+      // 战斗开始事件 (ID = eventState + 1, eventId = 98)
+      if (newEventsStart <= eventId + 1) {
+        chessEvents.push({
+          ID: newEventsStart,
+          ObjX: 0,
+          ObjY: 0,
+          ObjAction: 98, // 战斗开始
+          EffValue: 0,
+          ExpandEffValue: 0,
+          Player: myFlag,
+          ObjID: 0,
+          TargetID: 0,
         });
       }
 
-      // 添加战斗开始事件
-      battleLog.push({
-        id: activeBattle.id,
-        type: 'battle_start',
-        opponent: opponent?.name || `玩家${opponentAddress?.slice(0, 6)}`,
-        opponentAddress: opponentAddress,
-        myRole: isAttacker ? 'attacker' : 'defender',
-        timestamp: new Date(activeBattle.created_at).getTime(),
-        message: `战斗开始：${isAttacker ? '进攻' : '防守'}方`,
-      });
+      // 遍历武将状态，生成攻击/受伤事件
+      let nextEventId = newEventsStart + 1;
 
-      // 添加武将状态更新事件
-      for (const hero of (myHeroes.results || [])) {
-        if (hero.hp < hero.max_hp) {
-          battleLog.push({
-            id: `hero_${hero.id}`,
-            type: 'hero_damaged',
-            heroId: hero.id,
-            heroName: hero.name,
-            hp: hero.hp,
-            maxHp: hero.max_hp,
-            timestamp: Date.now(),
+      for (const myHero of myHeroes) {
+        if (!myHero || !myHero.ID) continue;
+
+        // 查找目标（随机选择对手）
+        const target = opponentHeroes.find((o: any) => o && o.ID && o.ID !== myHero.ID);
+        if (!target) continue;
+
+        const heroDamage = Math.floor((myHero.Attack || 50) * 0.5);
+        const targetDamage = Math.max(1, heroDamage - (target.Defense || 20));
+
+        // 攻击事件
+        if (nextEventId > eventState) {
+          chessEvents.push({
+            ID: nextEventId,
+            ObjX: myHero.X || 0,
+            ObjY: myHero.Y || 0,
+            ObjAction: 1, // 普通攻击
+            EffValue: heroDamage,
+            ExpandEffValue: targetDamage,
+            Player: myFlag,
+            ObjID: myHero.ID,
+            TargetID: target.ID,
           });
+          nextEventId++;
+        }
+
+        // 如果目标死亡，添加死亡事件
+        if ((target.Hp || 100) <= targetDamage && nextEventId > eventState) {
+          chessEvents.push({
+            ID: nextEventId,
+            ObjX: target.X || 0,
+            ObjY: target.Y || 0,
+            ObjAction: 0, // 移动（死亡）
+            EffValue: 0,
+            ExpandEffValue: 0,
+            Player: opponentFlag,
+            ObjID: target.ID,
+            TargetID: 0,
+          });
+          nextEventId++;
         }
       }
 
-      // 如果是PVE，添加NPC事件
-      if (!opponentAddress && (opponentHeroes.results || []).length > 0) {
-        for (const hero of (opponentHeroes.results || [])) {
-          if (hero.hp < hero.max_hp) {
-            battleLog.push({
-              id: `enemy_${hero.id}`,
-              type: 'enemy_damaged',
-              heroId: hero.id,
-              heroName: hero.name,
-              hp: hero.hp,
-              maxHp: hero.max_hp,
-              timestamp: Date.now(),
-            });
-          }
-        }
+      // 检查战斗是否结束（超时5分钟或所有单位死亡）
+      const BATTLE_TIMEOUT = 300;
+      if (elapsedSeconds >= BATTLE_TIMEOUT && nextEventId > eventState) {
+        chessEvents.push({
+          ID: nextEventId,
+          ObjX: 0,
+          ObjY: 0,
+          ObjAction: 99, // 战斗结束
+          EffValue: 0,
+          ExpandEffValue: 0,
+          Player: myFlag,
+          ObjID: 0,
+          TargetID: 0,
+        });
       }
-
-      // 添加回合更新动画
-      animations.push({
-        type: 'round_update',
-        round: currentRound,
-        elapsed: elapsedSeconds,
-        remaining: Math.max(0, BATTLE_TIMEOUT - elapsedSeconds),
-      });
     }
 
-    // 添加历史战斗记录
-    for (const battle of (recentBattles.results || [])) {
-      if (battle.id <= lastEventId) continue;
-
-      const isWin = battle.my_role === 'attacker' && battle.result === 'win';
-      const isLose = battle.my_role === 'attacker' && battle.result === 'lose';
-
-      battleLog.push({
-        id: battle.id,
-        type: 'battle_record',
-        result: battle.result,
-        resultText: isWin ? '胜利' : isLose ? '失败' : '平局',
-        myRole: battle.my_role,
-        timestamp: new Date(battle.created_at).getTime(),
-      });
+    // 如果没有新事件，返回 [{ID: -1}] 表示无更新
+    if (chessEvents.length === 0) {
+      return success(c, [{ ID: -1 }]);
     }
 
-    return success(c, {
-      battleLog,
-      animations,
-      lastAction: battleLog.length > 0 ? battleLog[battleLog.length - 1] : null,
-      currentRound: parseInt(eventState) || 1,
-      hasActiveBattle: !!activeBattle,
-    });
+    // 返回 Chessevent 数组 (直接返回数组，适配器 result.value = 数组)
+    return success(c, chessEvents);
   } catch (err: any) {
     console.error('[Battle] GetChessEvent error:', err);
     return error(c, err.message);

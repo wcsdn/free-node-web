@@ -306,14 +306,199 @@ app.post('/build', async (c) => {
   }
 });
 
-// 获取建筑详情
+// GetBuildingByID - GET /building/by-id
+// C#: public BuildingInfo GetBuildingByID(int cityID, int buildingType, int buildingID)
+// 返回 BuildingInfo (单个对象，不包装)
+app.get('/by-id', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, map_type, building_id } = c.req.query();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    if (!building_id) {
+      // C# 约定: ID=-1 表示空
+      return success(c, { ID: -1 });
+    }
+
+    // 查找建筑
+    const bid = parseInt(building_id as string);
+    const building: any = await db.prepare(
+      `SELECT * FROM buildings WHERE id = ?`
+    ).bind(bid).first();
+
+    if (!building) {
+      return success(c, { ID: -1 });
+    }
+
+    // 验证所有权
+    if (building.wallet_address !== walletAddress) {
+      return success(c, { ID: -1 });
+    }
+
+    // 如果提供了 city_id,验证建筑是否属于该城市
+    if (city_id && building.city_id !== parseInt(city_id)) {
+      return success(c, { ID: -1 });
+    }
+
+    // 补充配置信息 (BuildingInfo 字段)
+    const config = getBuildingConfig(building.type, building.config_id);
+    const currentLevelData = getBuildingLevelData(config, building.level);
+    const nextLevelData = getBuildingLevelData(config, building.level + 1);
+
+    // C# BuildingInfo 字段 (驼峰命名)
+    return success(c, {
+      ID: building.id,
+      Name: config?.Name || '',
+      Level: building.level,
+      Index: building.config_id,
+      State: building.state,
+      Pos: building.position,
+      Image: currentLevelData?.Image || config?.Image || '',
+      Icon: currentLevelData?.Icon || config?.Icon || '',
+      EventID: 0,
+      Type: building.type === 'defense' ? 2 : 1,
+      UserName: walletAddress,
+      AttackCount: 0,
+      UniteCount: 0,
+      SubLevel: 0,
+      Quality: 1,
+      CityName: '',
+      ArriveTime: '',
+      DefeceFlag: 0,
+      JuntaName: '',
+      JuntaState: 0,
+      LevelDifferenceFlag: 0,
+      ImageIndex: 0,
+      NpcFloor: 0,
+      NpcFloorMax: 0,
+      NpcFloorJunta: 0,
+      EspecialType: 0,
+      StartTime: '',
+      EndTime: '',
+      IsAppendantNPC: 0,
+      IsLord: 0,
+      ImageArray: [],
+      StateFlag: [],
+      // 附加数据
+      MaxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+      LevelData: currentLevelData,
+      NextLevelData: nextLevelData,
+      CanUpgrade: !!nextLevelData,
+    });
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+// 获取所有建筑配置
+app.get('/config/list', async (c) => {
+  return success(c, {
+    interiorBuildings: (buildingConfigs.InteriorBuilding || []).map((b: any) => ({
+      id: b.ID,
+      name: b.Name,
+      type: 'interior',
+      description: b.Des || '',
+      maxLevel: b.InteriorData?.length || 10,
+    })),
+    defenseBuildings: (buildingConfigs.DefenceBuilding || []).map((b: any) => ({
+      id: b.ID,
+      name: b.Name,
+      type: 'defense',
+      description: b.Des || '',
+      maxLevel: b.DefenseData?.length || 10,
+    })),
+  });
+});
+
+// 获取建筑详情 (包含 /list 别名处理)
 app.get('/:id', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const buildingId = parseInt(c.req.param('id'));
+  const idParam = c.req.param('id');
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
+
+  // 特殊处理 /list 路径 (别名，防止被 :id 误匹配)
+  if (idParam === 'list') {
+    const { city_id, map_type } = c.req.query();
+    
+    if (!city_id) {
+      return error(c, 'Missing city_id');
+    }
+
+    try {
+      // 验证城市所有权
+      const city = await db.prepare(`
+        SELECT id FROM cities WHERE id = ? AND wallet_address = ?
+      `).bind(parseInt(city_id), walletAddress).first();
+
+      if (!city) {
+        return error(c, 'City not found or not owned', 404);
+      }
+
+      // 返回该城市所有建筑
+      const buildings: any = await db.prepare(`
+        SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+      `).bind(parseInt(city_id)).all();
+
+      const buildingList = (buildings.results || []).map((b: any) => {
+        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) ||
+                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id);
+        const levelData = config ? getBuildingLevelData(config, b.level || 1) : null;
+        return {
+          ID: b.id,
+          CityID: b.city_id,
+          Index: b.config_id,
+          State: b.state || 0,
+          UserName: walletAddress,
+          Name: config?.Name || `建筑${b.config_id}`,
+          Des: config?.Des || '',
+          Pos: b.position,
+          Level: b.level || 1,
+          UpNeedBuildingID: 0,
+          UpNeedBuildingLevel: 0,
+          UpNeedTechnicID: 0,
+          UpNeedTechnicLevel: 0,
+          UpNeedFood: levelData?.CostFood || 0,
+          UpNeedMoney: levelData?.CostMoney || 0,
+          UpNeedMen: levelData?.CostMen || 0,
+          UpNeedGold: 0,
+          UpNeedArea: 0,
+          UpNeedTime: levelData?.CostTime || 0,
+          DownNeedFood: 0,
+          DownNeedMen: 0,
+          DownNeedMoney: 0,
+          DownReturnArea: 0,
+          EffID: config?.EffectID || 0,
+          Area: 0,
+          CurrentEff: levelData?.EffectValue || 0,
+          NextEff: levelData?.EffectValue || 0,
+          OldEff: 0,
+          EventID: 0,
+          Type: config?.Type || 1,
+          Image: levelData?.Image || config?.Image || '',
+          Icon: levelData?.Icon || config?.Icon || '',
+          Attack: levelData?.Attack || 0,
+          HitPoint: levelData?.HitPoint || 0,
+          AttackRange: levelData?.AttackRange || 0,
+          EffRange: levelData?.EffRange || 0,
+          MaxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+          UpNeedBuildingName: '',
+        };
+      });
+
+      return success(c, buildingList);
+    } catch (err: any) {
+      return error(c, err.message);
+    }
+  }
+
+  const buildingId = parseInt(idParam);
 
   try {
     const building: any = await db.prepare(`
@@ -470,26 +655,6 @@ app.delete('/:id', async (c) => {
   }
 });
 
-// 获取所有建筑配置
-app.get('/config/list', async (c) => {
-  return success(c, {
-    interiorBuildings: (buildingConfigs.InteriorBuilding || []).map((b: any) => ({
-      id: b.ID,
-      name: b.Name,
-      type: 'interior',
-      description: b.Des || '',
-      maxLevel: b.InteriorData?.length || 10,
-    })),
-    defenseBuildings: (buildingConfigs.DefenceBuilding || []).map((b: any) => ({
-      id: b.ID,
-      name: b.Name,
-      type: 'defense',
-      description: b.Des || '',
-      maxLevel: b.DefenseData?.length || 10,
-    })),
-  });
-});
-
 // 辅助函数：根据类型和ID获取建筑配置
 function getBuildingConfig(type: string, configId: number): any {
   if (type === 'defense' || configId > 100) {
@@ -516,7 +681,9 @@ function getBuildingLevelData(config: any, level: number): any {
 // GetBuildingByPos - GET /building/by-pos
 // C# 签名: public BuildingInfo[] GetBuildingByPos(int cityID, int buildingType, int pos)
 // 返回: BuildingInfo[] (数组，不是单个对象)
-app.get('/by-pos', async (c) => {
+// FIX: pos 参数变为可选，不传时返回该城市所有建筑
+// NOTE: 路由注册在 /:id 之前，避免被误匹配
+app.get('/list', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
@@ -526,8 +693,8 @@ app.get('/by-pos', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    if (!city_id || !pos) {
-      return error(c, 'Missing city_id or pos');
+    if (!city_id) {
+      return error(c, 'Missing city_id');
     }
 
     // 验证城市所有权
@@ -537,6 +704,61 @@ app.get('/by-pos', async (c) => {
 
     if (!city) {
       return error(c, 'City not found or not owned', 404);
+    }
+
+    // 如果没有 pos 参数，返回该城市所有建筑
+    if (!pos) {
+      const buildings: any = await db.prepare(`
+        SELECT * FROM buildings WHERE city_id = ? ORDER BY position
+      `).bind(parseInt(city_id)).all();
+
+      const buildingList = (buildings.results || []).map((b: any) => {
+        const config = (buildingConfigs.InteriorBuilding || []).find((cfg: any) => cfg.ID === b.config_id) ||
+                      (buildingConfigs.DefenceBuilding || []).find((cfg: any) => cfg.ID === b.config_id);
+        const levelData = config ? getBuildingLevelData(config, b.level || 1) : null;
+        return {
+          ID: b.id,
+          CityID: b.city_id,
+          Index: b.config_id,
+          State: b.state || 0,
+          UserName: walletAddress,
+          Name: config?.Name || `建筑${b.config_id}`,
+          Des: config?.Des || '',
+          Pos: b.position,
+          Level: b.level || 1,
+          UpNeedBuildingID: 0,
+          UpNeedBuildingLevel: 0,
+          UpNeedTechnicID: 0,
+          UpNeedTechnicLevel: 0,
+          UpNeedFood: levelData?.CostFood || 0,
+          UpNeedMoney: levelData?.CostMoney || 0,
+          UpNeedMen: levelData?.CostMen || 0,
+          UpNeedGold: 0,
+          UpNeedArea: 0,
+          UpNeedTime: levelData?.CostTime || 0,
+          DownNeedFood: 0,
+          DownNeedMen: 0,
+          DownNeedMoney: 0,
+          DownReturnArea: 0,
+          EffID: config?.EffectID || 0,
+          Area: 0,
+          CurrentEff: levelData?.EffectValue || 0,
+          NextEff: levelData?.EffectValue || 0,
+          OldEff: 0,
+          EventID: 0,
+          Type: config?.Type || 1,
+          Image: levelData?.Image || config?.Image || '',
+          Icon: levelData?.Icon || config?.Icon || '',
+          Attack: levelData?.Attack || 0,
+          HitPoint: levelData?.HitPoint || 0,
+          AttackRange: levelData?.AttackRange || 0,
+          EffRange: levelData?.EffRange || 0,
+          MaxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
+          UpNeedBuildingName: '',
+        };
+      });
+
+      return success(c, buildingList);
     }
 
     // 查找指定位置的建筑
@@ -679,94 +901,6 @@ app.get('/debug-count', async (c) => {
     return c.json({ debug: true, count: result?.count, walletAddress });
   } catch (err: any) {
     return c.json({ debug: true, error: err.message });
-  }
-});
-
-// GetBuildingByID - GET /building/by-id
-// C#: public BuildingInfo GetBuildingByID(int cityID, int buildingType, int buildingID)
-// 返回 BuildingInfo (单个对象，不包装)
-app.get('/by-id', async (c) => {
-  const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
-
-  const { city_id, map_type, building_id } = c.req.query();
-
-  const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
-
-  try {
-    if (!building_id) {
-      // C# 约定: ID=-1 表示空
-      return success(c, { ID: -1 });
-    }
-
-    // 查找建筑
-    const bid = parseInt(building_id as string);
-    const building: any = await db.prepare(
-      `SELECT * FROM buildings WHERE id = ?`
-    ).bind(bid).first();
-
-    if (!building) {
-      return success(c, { ID: -1 });
-    }
-
-    // 验证所有权
-    if (building.wallet_address !== walletAddress) {
-      return success(c, { ID: -1 });
-    }
-
-    // 如果提供了 city_id,验证建筑是否属于该城市
-    if (city_id && building.city_id !== parseInt(city_id)) {
-      return success(c, { ID: -1 });
-    }
-
-    // 补充配置信息 (BuildingInfo 字段)
-    const config = getBuildingConfig(building.type, building.config_id);
-    const currentLevelData = getBuildingLevelData(config, building.level);
-    const nextLevelData = getBuildingLevelData(config, building.level + 1);
-
-    // C# BuildingInfo 字段 (驼峰命名)
-    return success(c, {
-      ID: building.id,
-      Name: config?.Name || '',
-      Level: building.level,
-      Index: building.config_id,
-      State: building.state,
-      Pos: building.position,
-      Image: currentLevelData?.Image || config?.Image || '',
-      Icon: currentLevelData?.Icon || config?.Icon || '',
-      EventID: 0,
-      Type: building.type === 'defense' ? 2 : 1,
-      UserName: walletAddress,
-      AttackCount: 0,
-      UniteCount: 0,
-      SubLevel: 0,
-      Quality: 1,
-      CityName: '',
-      ArriveTime: '',
-      DefeceFlag: 0,
-      JuntaName: '',
-      JuntaState: 0,
-      LevelDifferenceFlag: 0,
-      ImageIndex: 0,
-      NpcFloor: 0,
-      NpcFloorMax: 0,
-      NpcFloorJunta: 0,
-      EspecialType: 0,
-      StartTime: '',
-      EndTime: '',
-      IsAppendantNPC: 0,
-      IsLord: 0,
-      ImageArray: [],
-      StateFlag: [],
-      // 附加数据
-      MaxLevel: config?.InteriorData?.length || config?.DefenseData?.length || 10,
-      LevelData: currentLevelData,
-      NextLevelData: nextLevelData,
-      CanUpgrade: !!nextLevelData,
-    });
-  } catch (err: any) {
-    return error(c, err.message);
   }
 });
 

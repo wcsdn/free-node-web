@@ -64,7 +64,7 @@ app.get('/', async (c) => {
       Progress: t.hasTaskItemNum || 0,
       HasTaskItemNum: t.hasTaskItemNum || 0,
     }));
-    return success(c, { tasks: taskList });
+    return success(c, taskList);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -116,7 +116,7 @@ app.post('/list', async (c) => {
       Progress: t.hasTaskItemNum || 0,
       HasTaskItemNum: t.hasTaskItemNum || 0,
     }));
-    return success(c, { tasks: taskList });
+    return success(c, taskList);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -159,7 +159,7 @@ app.get('/daily', async (c) => {
       State: 0,
     }));
 
-    return success(c, { tasks: dailyTasks });
+    return success(c, dailyTasks);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -206,7 +206,7 @@ app.get('/other/simple', async (c) => {
       State: t.state || 0,
     }));
 
-    return success(c, { tasks });
+    return success(c, tasks);
   } catch (err: any) {
     return error(c, err.message);
   }

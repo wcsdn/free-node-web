@@ -173,7 +173,7 @@ app.get('/list', async (c) => {
       IsMine: (item.seller_address || '').toLowerCase() === walletAddress.toLowerCase(),
     }));
 
-    return success(c, { items, total, page: pageNum, pageSize, totalPages: Math.ceil(total / pageSize) });
+    return success(c, items);
   } catch (err: any) {
     console.error('[MarketList]', err);
     return error(c, err.message);
@@ -215,7 +215,7 @@ app.get('/history', async (c) => {
       Action: r.state === MARKET_STATE.SOLD ? 'sold' : r.state === MARKET_STATE.CANCELLED ? 'cancelled' : 'listing',
     }));
 
-    return success(c, { history, walletAddress: targetAddress });
+    return success(c, history);
   } catch (err: any) {
     console.error('[MarketHistory]', err);
     return error(c, err.message);
@@ -281,13 +281,7 @@ app.get('/items', async (c) => {
       IsMine: item.seller_address.toLowerCase() === walletAddress.toLowerCase(),
     }));
 
-    return success(c, {
-      items,
-      total,
-      page: pageNum,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    });
+    return success(c, items);
   } catch (err: any) {
     console.error('[MarketItems]', err);
     return error(c, err.message);
@@ -340,7 +334,7 @@ app.get('/my', async (c) => {
       CreatedAt: item.created_at,
     }));
 
-    return success(c, { items, total, page: pageNum, pageSize });
+    return success(c, items);
   } catch (err: any) {
     console.error('[MarketMy]', err);
     return error(c, err.message);
@@ -681,15 +675,16 @@ app.post('/buy', async (c) => {
 });
 
 // ============ POST /market/cancel - 取消挂单 ============
+// C#: public int CancleSellItem(int cityID, int listingID) 返回 0=成功
 app.post('/cancel', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   const { listing_id } = await c.req.json();
-  if (!listing_id) return error(c, '缺少挂单ID (listing_id)');
+  if (!listing_id) return c.json({ success: false, code: 1, message: '缺少挂单ID (listing_id)' });
 
   try {
     await ensureMarketTable(db);
@@ -701,10 +696,10 @@ app.post('/cancel', async (c) => {
       WHERE ml.id = ?
     `).bind(listing_id).first();
 
-    if (!listing) return error(c, '挂单不存在', 404);
-    if (listing.state !== MARKET_STATE.ACTIVE) return error(c, '该挂单已结束，无法取消');
+    if (!listing) return c.json({ success: false, code: 2, message: '挂单不存在' });
+    if (listing.state !== MARKET_STATE.ACTIVE) return c.json({ success: false, code: 3, message: '该挂单已结束，无法取消' });
     if (listing.seller_address.toLowerCase() !== walletAddress.toLowerCase()) {
-      return error(c, '只能取消自己的挂单');
+      return c.json({ success: false, code: 4, message: '只能取消自己的挂单' });
     }
 
     // 更新状态为已取消
@@ -718,16 +713,11 @@ app.post('/cancel', async (c) => {
       VALUES (?, ?, 1, 'market_cancel')
     `).bind(walletAddress, listing.config_id).run();
 
-    return success(c, {
-      listingId: listing_id,
-      itemId: listing.item_id,
-      itemName: listing.item_name || '物品',
-      price: listing.price,
-      message: `已取消「${listing.item_name || '物品'}」的挂单，物品已返还背包`,
-    });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
     console.error('[MarketCancel]', err);
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
@@ -843,14 +833,7 @@ app.get('/search', async (c) => {
       IsMine: item.seller_address.toLowerCase() === walletAddress.toLowerCase(),
     }));
 
-    return success(c, {
-      items,
-      total,
-      page: pageNum,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-      searchTerm: item_name,
-    });
+    return success(c, items);
   } catch (err: any) {
     console.error('[MarketSearch]', err);
     return error(c, err.message);

@@ -172,7 +172,7 @@ app.get('/list', async (c) => {
   const offset = (pageNum - 1) * pageSizeNum;
 
   try {
-    let query = `SELECT te.*, c.name as city_name FROM time_events te LEFT JOIN cities c ON te.city_id = c.id WHERE 1=1`;
+    let query = `SELECT te.* FROM time_events te WHERE 1=1`;
     const params: any[] = [];
 
     if (walletAddress) {
@@ -180,10 +180,8 @@ app.get('/list', async (c) => {
       params.push(walletAddress);
     }
 
-    if (cityId) {
-      query += ' AND te.city_id = ?';
-      params.push(parseInt(cityId));
-    }
+    // time_events表没有city_id列，只有wallet_address
+    // 如果需要按城市过滤，需要先通过wallet_address查城市
 
     if (eventType !== undefined) {
       query += ' AND te.event_type = ?';
@@ -211,20 +209,14 @@ app.get('/active', async (c) => {
   if (!db) return c.json({ success: false, error: 'Database not configured' }, 503);
 
   const walletAddress = await verifyWalletAuth(c).catch(() => null);
-  const cityId = c.req.query('city_id');
 
   try {
-    let query = `SELECT te.*, c.name as city_name FROM time_events te LEFT JOIN cities c ON te.city_id = c.id WHERE te.end_time > datetime('now')`;
+    let query = `SELECT te.* FROM time_events te WHERE te.end_time > datetime('now')`;
     const params: any[] = [];
 
     if (walletAddress) {
       query += ` AND te.wallet_address = ?`;
       params.push(walletAddress);
-    }
-
-    if (cityId) {
-      query += ' AND te.city_id = ?';
-      params.push(parseInt(cityId));
     }
 
     query += ' ORDER BY te.end_time ASC';
@@ -249,7 +241,7 @@ app.get('/completable', async (c) => {
   const walletAddress = await verifyWalletAuth(c).catch(() => null);
 
   try {
-    let query = `SELECT te.*, c.name as city_name FROM time_events te LEFT JOIN cities c ON te.city_id = c.id WHERE te.end_time <= datetime('now')`;
+    let query = `SELECT te.* FROM time_events te WHERE te.end_time <= datetime('now')`;
     const params: any[] = [];
 
     if (walletAddress) {
@@ -280,22 +272,14 @@ app.get('/pending', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const cityId = c.req.query('city_id');
-  const eventType = c.req.query('event_type'); // 可选：筛选事件类型
+  const eventType = c.req.query('event_type');
 
   try {
     let query = `
-      SELECT te.*, c.name as city_name
-      FROM time_events te
-      LEFT JOIN cities c ON te.city_id = c.id
+      SELECT te.* FROM time_events te
       WHERE te.wallet_address = ? AND te.end_time > datetime('now')
     `;
     const params: any[] = [walletAddress];
-
-    if (cityId) {
-      query += ' AND te.city_id = ?';
-      params.push(parseInt(cityId));
-    }
 
     if (eventType !== undefined) {
       query += ' AND te.event_type = ?';
@@ -373,9 +357,7 @@ app.get('/:id', async (c) => {
 
   try {
     const event: any = await db.prepare(`
-      SELECT te.*, c.name as city_name
-      FROM time_events te
-      LEFT JOIN cities c ON te.city_id = c.id
+      SELECT te.* FROM time_events te
       WHERE te.id = ? AND te.wallet_address = ?
     `).bind(eventId, walletAddress).first();
 
@@ -597,9 +579,7 @@ app.post('/:id/speedup', async (c) => {
 
   try {
     const event: any = await db.prepare(`
-      SELECT te.*, c.gold
-      FROM time_events te
-      LEFT JOIN cities c ON te.city_id = c.id
+      SELECT te.* FROM time_events te
       WHERE te.id = ? AND te.wallet_address = ?
     `).bind(eventId, walletAddress).first();
 

@@ -106,7 +106,6 @@ app.get('/list', async (c) => {
       // 前端 Item.js 物品字段
       Name: item.item_name || '物品',
       Image: item.icon || '/items/default.gif',
-      Quality: 1,
       Level: 1,
       UseLevel: 1,
       UseSex: 0,
@@ -114,12 +113,12 @@ app.get('/list', async (c) => {
       UseType: item.EffectType || 1,
       UseGold: 0,
       SellFlag: item.equipped ? 1 : 0,
+      // C# ItemInfo 资源获取字段 (前端 Item.js 使用)
+      GetMen: item.GetMen || 0,
+      // C# ItemInfo.UserSkillType (映射自 config.SkillType)
     }));
 
-    return success(c, {
-      items: formattedItems,
-      total: items.results?.length || 0,
-    });
+    return success(c, formattedItems);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -198,7 +197,6 @@ app.get('/', async (c) => {
       // 前端 Item.js 使用的物品字段
       Name: item.item_name || '物品',
       Image: item.icon || '/items/default.gif',
-      Quality: 1,
       Level: 1,
       UseLevel: 1,
       UseSex: 0,
@@ -207,6 +205,9 @@ app.get('/', async (c) => {
       UseGold: 0,
       SellFlag: item.equipped ? 1 : 0,
       m_heroID: item.hero_id || 0,
+      // C# ItemInfo 资源获取字段 (前端 Item.js 使用)
+      GetMen: item.GetMen || 0,
+      // C# ItemInfo.UserSkillType (映射自 config.SkillType)
     }));
 
     return success(c, itemInfoList);
@@ -321,7 +322,6 @@ app.get('/:id', async (c) => {
       // 前端 Item.js 使用的字段
       Name: item.item_name || '物品',
       Image: item.icon || '/items/default.gif',
-      Quality: 1,
       Level: 1,
       UseLevel: 1,
       UseSex: 0,
@@ -333,6 +333,9 @@ app.get('/:id', async (c) => {
       // 描述
       Des: item.description || '',
       Icon: item.icon || item.image || '/items/default.gif',
+      // C# ItemInfo 资源获取字段 (前端 Item.js 使用)
+      GetMen: item.GetMen || 0,
+      // C# ItemInfo.UserSkillType (映射自 config.SkillType)
     };
 
     return success(c, itemInfo);

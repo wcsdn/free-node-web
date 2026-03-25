@@ -35,7 +35,7 @@ app.get('/list', async (c) => {
   // 不强制要求登录，未登录返回空数据
   const walletAddress = await verifyWalletAuth(c).catch(() => null);
   if (!walletAddress) {
-    return c.json({ success: true, data: { techs: [], total: 0 } });
+    return c.json({ success: true, data: [] });
   }
 
   try {
@@ -43,7 +43,7 @@ app.get('/list', async (c) => {
       SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
     `).bind(walletAddress).first();
 
-    if (!city) return c.json({ success: true, data: { techs: [], total: 0 } });
+    if (!city) return c.json({ success: true, data: [] });
 
     const playerTechs = await db.prepare(`
       SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
@@ -91,6 +91,8 @@ app.get('/list', async (c) => {
         Level: currentLevel,
         CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
         CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
+        NextEff: nextLevelData?.EffValue || 0,
         EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
         MaxLevel: techConfig.InteriorData?.length || 1,
         State: playerTech?.state || 0,
@@ -114,7 +116,7 @@ app.get('/list', async (c) => {
       };
     });
 
-    return c.json({ success: true, data: { techs: techsWithStatus, total: techsWithStatus.length } });
+    return c.json({ success: true, data: techsWithStatus });
   } catch (err: any) {
     return c.json({ success: false, error: err.message }, 500);
   }
@@ -127,7 +129,7 @@ app.post('/list', async (c) => {
 
   const walletAddress = await verifyWalletAuth(c).catch(() => null);
   if (!walletAddress) {
-    return c.json({ success: true, data: { techs: [], total: 0 } });
+    return c.json({ success: true, data: [] });
   }
 
   try {
@@ -135,7 +137,7 @@ app.post('/list', async (c) => {
       SELECT id, name FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
     `).bind(walletAddress).first();
 
-    if (!city) return c.json({ success: true, data: { techs: [], total: 0 } });
+    if (!city) return c.json({ success: true, data: [] });
 
     const playerTechs = await db.prepare(`
       SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
@@ -181,6 +183,8 @@ app.post('/list', async (c) => {
         Level: currentLevel,
         CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
         CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
+        NextEff: nextLevelData?.EffValue || 0,
         EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
         MaxLevel: techConfig.InteriorData?.length || 1,
         State: playerTech?.state || 0,
@@ -201,7 +205,7 @@ app.post('/list', async (c) => {
       };
     });
 
-    return c.json({ success: true, data: { techs: techsWithStatus, total: techsWithStatus.length } });
+    return c.json({ success: true, data: techsWithStatus });
   } catch (err: any) {
     return c.json({ success: false, error: err.message }, 500);
   }
@@ -273,6 +277,8 @@ app.get('/detail', async (c) => {
         Level: currentLevel,
         CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
         CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
+        NextEff: nextLevelData?.EffValue || 0,
         EffID: (techConfig as any).EffectID || nextLevelData?.EffType || 0,
         MaxLevel: techConfig.InteriorData?.length || 1,
         State: playerTech?.state || 0,
@@ -391,6 +397,8 @@ app.get('/', async (c) => {
         Level: playerTech?.level || 0,
         CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
         CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
+        NextEff: nextLevelData?.EffValue || 0,
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
         UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
         UpNeedFood: nextLevelData?.CostFood || 0,

@@ -304,11 +304,83 @@ app.post('/recruit', async (c) => {
 
   const result = await heroService.recruit(db, walletAddress, city_id, name, quality);
   const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to recruit hero', r.status || 500);
+  if (!r.success) {
+    return error(c, r.error || 'Failed to recruit hero', 500);
   }
 
-  return success(c, r.data);
+  // 获取新创建的武将信息并返回
+  const hero = await db.prepare(`
+    SELECT * FROM heroes WHERE id = ?
+  `).bind(r.heroId).first();
+
+  if (!hero) {
+    return error(c, 'Failed to get created hero', 500);
+  }
+
+  const h = hero as any;
+  return success(c, {
+    ID: h.id,
+    Name: h.name,
+    Level: h.level,
+    Sex: h.sex || 1,
+    Junta: h.junta || 1,
+    Icon: h.icon || '/hero/1.gif',
+    Image: h.image || '/hero/1.png',
+    PortraitIndex: h.portrait_index || 1,
+    AbilityIndex: h.ability_index || 1,
+    CityID: h.city_id,
+    UserName: walletAddress,
+    Training: h.training || 0,
+    DefencePos: h.defence_pos || -1,
+    PrenticeNum: h.prentice_num || 0,
+    HeroType: h.hero_type || 0,
+    Quality: h.quality || 1,
+    ExpCount: h.exp || 0,
+    NoSkillReason: 0,
+    PropertyCounteract: [0,0,0,0,0],
+    WuXing: h.wu_xing || 1,
+    UpTraining: h.up_training || 10,
+    AutoExpGold: 0,
+    AutoExpCount: 0,
+    AutoExpResFood: 0,
+    AutoExpResMoney: 0,
+    AutoExpResMen: 0,
+    AutoExpNum: 0,
+    State: h.state || 0,
+    CorpsID: h.corps_id || 0,
+    LevelExp: h.exp || 0,
+    Attack: h.attack || 10,
+    Defence: h.defense || 5,
+    CrushBlow: h.crush_blow || 0,
+    Dodge: h.dodge || 0,
+    MaxPrenticeNum: 5,
+    AttackRange: h.attack_range || 1,
+    MoveRange: h.move_range || 3,
+    ResumeCostTime: 0,
+    ResumeCostGold: 0,
+    TrainCostMoney: 100,
+    TrainCostFood: 100,
+    TrainCostMen: 10,
+    TrainCostGold: 0,
+    TrainCostTime: 3600,
+    ConscriptionCostMoney: 200,
+    ConscriptionCostFood: 200,
+    ConscriptionCostMen: 20,
+    ConscriptionCostGold: 0,
+    ConscriptionCostTime: 7200,
+    FastTrainCostMoney: 50,
+    FastTrainCostFood: 50,
+    FastTrainCostMen: 5,
+    FastTrainCostGold: 10,
+    FastTrainCostTime: 0,
+    FastConscriptionCostMoney: 100,
+    FastConscriptionCostFood: 100,
+    FastConscriptionCostMen: 10,
+    FastConscriptionCostGold: 20,
+    FastConscriptionCostTime: 0,
+    SkillList: [],
+    ItemList: [],
+  });
 });
 
 // 升级武将
@@ -324,11 +396,11 @@ app.post('/levelup', async (c) => {
 
   const result = await heroService.levelUp(db, hero_id);
   const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to level up hero', r.status || 500);
+  if (!r.success) {
+    return error(c, r.error || 'Failed to level up hero', 500);
   }
 
-  return success(c, r.data);
+  return success(c, { newLevel: r.newLevel });
 });
 
 // 训练武将
@@ -342,11 +414,11 @@ app.post('/:heroId/train', async (c) => {
 
   const result = await heroService.train(db, heroId);
   const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to train hero', r.status || 500);
+  if (!r.success) {
+    return error(c, r.error || 'Failed to train hero', 500);
   }
 
-  return success(c, r.data);
+  return success(c, { trainingGain: r.trainingGain });
 });
 
 // 升级武将 (带heroId路径)
@@ -360,11 +432,11 @@ app.post('/:heroId/upgrade', async (c) => {
 
   const result = await heroService.levelUp(db, heroId);
   const r = result as any;
-  if (!r.ok) {
-    return error(c, r.error || 'Failed to upgrade hero', r.status || 500);
+  if (!r.success) {
+    return error(c, r.error || 'Failed to upgrade hero', 500);
   }
 
-  return success(c, r.data);
+  return success(c, { newLevel: r.newLevel });
 });
 
 
@@ -382,7 +454,7 @@ app.get('/list', async (c) => {
     const cityId = city_id ? parseInt(city_id) : undefined;
     const result = await heroService.getList(db, walletAddress, { cityId });
     // getList returns { heroes: [], total: 0, page, pageSize }
-    return success(c, result);
+    return success(c, result.heroes);
   } catch (err: any) {
     return error(c, err.message || 'Failed to get heroes');
   }
@@ -401,14 +473,12 @@ app.get('/detail', async (c) => {
   try {
     if (!hero_id) return error(c, 'hero_id is required');
     
-    const result = await heroService.getDetail(db, parseInt(hero_id));
-    const r = result as any;
-    
-    if (!r.ok) {
-      return error(c, r.error || 'Failed to get hero', r.status || 500);
+    const hero = await heroService.getDetail(db, parseInt(hero_id));
+    if (!hero) {
+      return error(c, 'Hero not found', 404);
     }
 
-    return success(c, r.data);
+    return success(c, hero);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -512,16 +582,16 @@ app.post('/can-use', async (c) => {
 });
 
 // EngageHero - POST /hero/engage
+// C#: public int EngageHero(int cityID, int heroID) 返回 0=成功
 app.post('/engage', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { cityID, heroID, city_id, hero_id } = await c.req.json();
-  const cityId = cityID || city_id;
   const heroId = heroID || hero_id;
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 雇佣武将 (将武将分配到建筑)
@@ -530,21 +600,23 @@ app.post('/engage', async (c) => {
       WHERE id = ? AND wallet_address = ?
     `).bind(heroId, walletAddress).run();
 
-    return success(c, { message: '武将已雇佣' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // FireTheHero - POST /hero/fire
+// C#: public int FireTheHero(int cityID, int heroID) 返回 0=成功
 app.post('/fire', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 解雇武将 (删除武将)
@@ -552,25 +624,27 @@ app.post('/fire', async (c) => {
       DELETE FROM heroes WHERE id = ? AND wallet_address = ?
     `).bind(hero_id, walletAddress).run();
 
-    return success(c, { message: '武将已解雇' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // UpdateHeroName - POST /hero/name
+// C#: public int UpdateHeroName(int cityID, int heroID, string name) 返回 0=成功
 app.post('/name', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id, name } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     if (!name || name.length < 2 || name.length > 10) {
-      return error(c, '武将名称必须为2-10个字符');
+      return c.json({ success: false, code: 1, message: '武将名称必须为2-10个字符' });
     }
 
     await db.prepare(`
@@ -578,21 +652,23 @@ app.post('/name', async (c) => {
       WHERE id = ? AND wallet_address = ?
     `).bind(name, hero_id, walletAddress).run();
 
-    return success(c, { message: '武将名称已修改' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // AddHeroEvent - POST /hero/event
+// C#: public int AddHeroEvent(int cityID, int actionType, int objType, int objID, int subjoin) 返回 0=成功
 app.post('/event', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { cityID, actionType, objType, objID, subjoin, city_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 武将事件处理
@@ -616,21 +692,23 @@ app.post('/event', async (c) => {
         break;
     }
 
-    return success(c, { message: '事件已处理' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // AddHeroEventEx - POST /hero/event-ex
+// C#: public int AddHeroEventEx(int cityID, int actionType, int objType, int objID, int subjoin, bool flag) 返回 0=成功
 app.post('/event-ex', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { cityID, actionType, objType, objID, subjoin, flag, city_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 扩展事件处理 (与 AddHeroEvent 类似,但支持更多参数)
@@ -650,21 +728,23 @@ app.post('/event-ex', async (c) => {
         break;
     }
 
-    return success(c, { message: '扩展事件已处理' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // FireCanEenageHero - POST /hero/fire-can-engage
+// C#: public int FireCanEenageHero(int cityID, int heroID) 返回 0=成功
 app.post('/fire-can-engage', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 解雇可雇佣的武将 (将武将状态改为空闲)
@@ -673,9 +753,10 @@ app.post('/fire-can-engage', async (c) => {
       WHERE id = ? AND wallet_address = ?
     `).bind(hero_id, walletAddress).run();
 
-    return success(c, { message: '武将已解雇' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
@@ -738,9 +819,11 @@ app.get('/count', async (c) => {
       SELECT COUNT(*) as count FROM heroes WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
-    return success(c, {
-      count: (result as any)?.count || 0,
-    });
+    // C# 语义: GetHeroCount() 返回页数 = (武将总数/20) + 1 (最大250页)
+    // 前端 Taxis.js 用 result.value 作为 MaxPlayerPage
+    const totalHeroes = (result as any)?.count || 0;
+    const pageCount = Math.min(Math.ceil(totalHeroes / 20) + 1, 250);
+    return c.json({ success: true, value: pageCount });
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -860,14 +943,15 @@ app.get('/exp-percent', async (c) => {
 });
 
 // HeroFastHealth - POST /hero/fast-health
+// C#: public int HeroFastHealth(int cityID, int heroID) 返回 0=成功
 app.post('/fast-health', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 快速恢复武将生命值
@@ -876,21 +960,23 @@ app.post('/fast-health', async (c) => {
       WHERE id = ? AND wallet_address = ?
     `).bind(hero_id, walletAddress).run();
 
-    return success(c, { message: '武将生命已恢复' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // SetHeroDefence - POST /hero/set-defence
+// C#: public int SetHeroDefence(int cityID, int heroID, int defencePos) 返回 0=成功
 app.post('/set-defence', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id, defence_pos } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 设置武将到城防位置
@@ -900,23 +986,24 @@ app.post('/set-defence', async (c) => {
       WHERE id = ? AND wallet_address = ?
     `).bind(hero_id, walletAddress).run();
 
-    return success(c, { message: '武将已设置到城防' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // DebusHeroEquip - POST /hero/unequip
+// C#: public int DebusHeroEquip(int cityID, int heroID) 返回 0=成功
 app.post('/unequip', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { cityID, heroID, city_id, hero_id } = await c.req.json();
-  const cityId = cityID || city_id;
   const heroId = heroID || hero_id;
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 卸载武将装备 (将装备的 hero_id 设为 null)
@@ -925,21 +1012,23 @@ app.post('/unequip', async (c) => {
       WHERE hero_id = ? AND wallet_address = ?
     `).bind(heroId, walletAddress).run();
 
-    return success(c, { message: '装备已卸载' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
 // HeroExpToItem - POST /hero/exp-to-item
+// C#: public int HeroExpToItem(int cityID, int heroID, int itemID) 返回 0=成功
 app.post('/exp-to-item', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
-  if (!walletAddress) return error(c, 'Unauthorized', 401);
+  if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
   const { city_id, hero_id, item_id } = await c.req.json();
 
   const db = c.env.DB;
-  if (!db) return error(c, 'Database not configured', 503);
+  if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
     // 将武将经验转换为物品
@@ -948,12 +1037,12 @@ app.post('/exp-to-item', async (c) => {
     `).bind(hero_id, walletAddress).first();
 
     if (!hero) {
-      return error(c, '武将不存在');
+      return c.json({ success: false, code: 1, message: '武将不存在' });
     }
 
     const exp = (hero as any).exp;
     if (exp < 100) {
-      return error(c, '经验不足');
+      return c.json({ success: false, code: 2, message: '经验不足' });
     }
 
     // 扣除经验
@@ -968,9 +1057,10 @@ app.post('/exp-to-item', async (c) => {
       VALUES (?, 'consumable', ?, 1, 'hero_exp', datetime('now'))
     `).bind(walletAddress, item_id).run();
 
-    return success(c, { message: '经验已转换为物品' });
+    // C# 返回 0 表示成功
+    return c.json({ success: true, code: 0 });
   } catch (err: any) {
-    return error(c, err.message);
+    return c.json({ success: false, code: -1, message: err.message });
   }
 });
 
@@ -992,10 +1082,7 @@ app.get('/by-skill-level', async (c) => {
       ORDER BY quality DESC, level DESC
     `).bind(walletAddress, city_id).all();
 
-    return success(c, {
-      heroes: heroes.results || [],
-      count: heroes.results?.length || 0,
-    });
+    return success(c, heroes.results || []);
   } catch (err: any) {
     return error(c, err.message);
   }
