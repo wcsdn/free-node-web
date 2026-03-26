@@ -6,6 +6,7 @@ import type { D1Database } from '@cloudflare/workers-types';
 import type { BattleRecord, ServiceResult } from '../types/models';
 import { getUnitTypeBonus } from '../utils/battle-engine';
 import battleLimitsConfig from '../config/battle_limits.json';
+import { BATTLE_CONFIG as GAME_BATTLE_CONFIG } from '../config/game-config';
 
 // 战斗限制配置 (从 battle_limits.json 加载)
 export const BATTLE_LIMITS = {
@@ -15,6 +16,123 @@ export const BATTLE_LIMITS = {
   LEVEL_XIANLING: battleLimitsConfig.LEVEL_XIANLING || 8,
   RESET_HOURS: battleLimitsConfig.RESET_HOURS || 24,
 };
+
+// 繁荣度等级阈值数组 (参考 jx/BLL/CityInterior.cs::ProsperityToLevel)
+const PROSPERITY_LEVEL_THRESHOLDS = [
+  150, 350, 600, 900, 1300, 1800, 2500, 3500, 4800, 6500,
+  8800, 11900, 16200, 22000, 29800, 40400, 54700, 74000, 100000
+];
+
+// InitRestrictFight 字典 (参考 jx/BLL/Fight.cs::InitRestrictFight)
+// 内存中的攻击限制字典，24小时重置一次
+interface RestrictFightInfo {
+  oldTime: string;                      // 上次战斗计数时间 (ISO string)
+  aimCityFight: Map<number, number>;    // 攻击指定城市的次数 (position -> count)
+  cityCount: number;                    // 累计攻击低级城市的次数
+}
+const RestrictFightDict = new Map<string, RestrictFightInfo>();
+
+/**
+ * 初始化用户的攻击限制记录 (参考 jx/BLL/Fight.cs::InitRestrictFight)
+ * 每次攻击前调用，自动清除超过24小时的记录
+ */
+function InitRestrictFight(userName: string): void {
+  const RESET_HOURS = BATTLE_LIMITS.RESET_HOURS;
+
+  if (!RestrictFightDict.has(userName)) {
+    RestrictFightDict.set(userName, {
+      oldTime: new Date().toISOString(),
+      aimCityFight: new Map(),
+      cityCount: 0,
+    });
+  }
+
+  const record = RestrictFightDict.get(userName)!;
+  const lastTime = new Date(record.oldTime).getTime();
+  const now = Date.now();
+  const elapsedHours = (now - lastTime) / (1000 * 60 * 60);
+
+  if (elapsedHours >= RESET_HOURS) {
+    // 重置记录
+    record.oldTime = new Date().toISOString();
+    record.aimCityFight.clear();
+    record.cityCount = 0;
+  }
+}
+
+/**
+ * 获取攻击指定城市的次数 (参考 jx/BLL/Fight.cs::GetFightCityNum flag=1)
+ */
+function GetFightCityNum(userName: string, cityPos: number): number {
+  InitRestrictFight(userName);
+  const record = RestrictFightDict.get(userName)!;
+  return record.aimCityFight.get(cityPos) || 0;
+}
+
+/**
+ * 累计攻击低级城市的次数 (参考 jx/BLL/Fight.cs::GetFightCityNum flag=0)
+ */
+function GetLowLevelAttackCount(userName: string): number {
+  InitRestrictFight(userName);
+  const record = RestrictFightDict.get(userName)!;
+  return record.cityCount;
+}
+
+/**
+ * 记录攻击指定城市 (参考 jx/BLL/Fight.cs::AddFightCityNum)
+ * @returns 0=正常, 1=攻击同一城市超过上限, 2=累计攻击低级超过上限
+ */
+function AddFightCityNum(userName: string, cityPos: number, isLowLevel: boolean): number {
+  InitRestrictFight(userName);
+  const record = RestrictFightDict.get(userName)!;
+
+  // 攻击指定城市次数+1
+  const currentCount = record.aimCityFight.get(cityPos) || 0;
+  record.aimCityFight.set(cityPos, currentCount + 1);
+
+  // 如果是低级城市，累计计数+1
+  if (isLowLevel) {
+    record.cityCount++;
+  }
+
+  return 0;
+}
+
+/**
+ * 根据繁荣度计算繁荣度等级 (参考 jx/BLL/CityInterior.cs::ProsperityToLevel)
+ * 阈值数组: [150, 350, 600, 900, 1300, 1800, 2500, 3500, 4800, 6500, ...]
+ */
+export function getProsperityLevel(prosperity: number): number {
+  let level = 1;
+  for (let i = 0; i < PROSPERITY_LEVEL_THRESHOLDS.length; i++) {
+    if (PROSPERITY_LEVEL_THRESHOLDS[i] > prosperity) {
+      level = i + 1;
+      break;
+    }
+  }
+  return level;
+}
+
+/**
+ * 计算玩家总战力 - 基于繁荣度等级体系 (参考 jx/BLL/Fight.cs)
+ * 战力 = 繁荣度等级 * 100 + 武将基础属性总和
+ */
+export function calculateFightPowerByProsperity(
+  prosperity: number,
+  heroes: Array<{ attack?: number; defense?: number; level?: number }>
+): number {
+  // 繁荣度等级
+  const prosperityLv = getProsperityLevel(prosperity);
+
+  // 武将属性加成
+  let heroPower = 0;
+  for (const hero of heroes) {
+    heroPower += (hero.attack || 0) * 2 + (hero.defense || 0) * 1.5 + (hero.level || 1) * 10;
+  }
+
+  // 战力 = 繁荣度等级 * 100 + 武将总战力
+  return Math.floor(prosperityLv * 100 + heroPower);
+}
 
 // 战斗类型
 export const BATTLE_TYPES = {
@@ -39,7 +157,7 @@ export const BATTLE_CONFIG = {
   CRITICAL_RATE: 0.1,       // 暴击率
   CRITICAL_DAMAGE: 1.5,     // 暴击伤害
   DEFENSE_RATE: 0.2,        // 防御减伤率
-  MAX_DAILY_BATTLES: 50,     // 每日最大战斗次数
+  MAX_DAILY_BATTLES: GAME_BATTLE_CONFIG.MAX_DAILY_BATTLES,     // 每日最大战斗次数 (从 game-config.ts 读取)
   REWARD_EXP_BASE: 100,     // 基础经验奖励
   REWARD_GOLD_BASE: 50,     // 基础金币奖励
 };
@@ -61,47 +179,135 @@ export const UNIT_COUNTER: { [key: number]: { strong: number; weak: number } } =
 // 格式: FieldName$Value#
 // 复合类型: ++Begin++$TypeName#...++End++$TypeName#
 
+/**
+ * 战报城市信息 (对应 C# FightSummaryCityInfo)
+ * 编码格式: ++Begin++$CityList#Flag$value#UserName$value#CityName$value#CityPos$value#Power$value#PowerBattleOver$value#++End++$CityList#
+ */
 export interface BattleSummaryCityInfo {
-  Flag: number;        // 1=攻击方, 2=攻击援助, 3=防守方, 4=防守援助
-  CityID: number;
-  CityPos: number;
-  Name: string;
-  Power: number;       // 战前实力
-  PowerBattleOver: number;  // 战后实力
-  Army: number;        // 兵种
-  HeroName: string;
-  HeroLevel: number;
+  Flag: number;          // 1=攻击方, 2=攻击援助, 3=防守方, 4=防守援助
+  UserName: string;     // 用户名
+  CityName: string;     // 城市名
+  CityPos: number;      // 城市位置
+  Power: number;        // 战前实力
+  PowerBattleOver: number; // 战后实力
 }
 
-export interface BattleSummarySkillEffect {
-  SkillID: number;
-  UsCrushBlow: number;   // 必杀
-  OtherDodge: number;    // 闪避
+/**
+ * 战报抢夺资源信息 (对应 C# FightSummaryResInfo)
+ * 编码格式: ++Begin++$Res#CityName$value#Men$value#Money$value#Food$value#[ItemArray]++End++$Res#
+ */
+export interface BattleSummaryResInfo {
+  CityName: string;
+  Men: number;
+  Money: number;
+  Food: number;
+  ItemArray: BattleSummaryItemInfo[];
+}
+
+/**
+ * 战报抢夺道具信息 (对应 C# FightSummaryItemInfo)
+ */
+export interface BattleSummaryItemInfo {
+  ItemIndex: number;
+  ItemPath: string;
+  IsFill: number;
+  ItemType: number;
+  ItemName: string;
+}
+
+/**
+ * 战报技能效果信息 (对应 C# FightSummarySkillEffectInfo)
+ * 编码格式: CityPos, AttackHeroID, AttackHeroName, AttackQuality, AimType, SkillName,
+ *           DefenceHeroID, DefenceHeroName, DefenceQuality, PropertyType, PropertyChange,
+ *           AttackWuXing, DefenceWuXing, UsCrushBlow, OtherDodge, SkillLevel
+ */
+export interface BattleSummarySkillEffectInfo {
+  CityPos: number;
+  AttackHeroID: number;
+  AttackHeroName: string;
+  AttackQuality: number;
+  AimType: number;
+  SkillName: string;
+  DefenceHeroID: number;
+  DefenceHeroName: string;
+  DefenceQuality: number;
+  PropertyType: number;
+  PropertyChange: number;
+  AttackWuXing: number;
+  DefenceWuXing: number;
+  UsCrushBlow: number;
+  OtherDodge: number;
   SkillLevel: number;
 }
 
-export interface BattleSummaryHero {
+/**
+ * 战报武将信息 (对应 C# FightSummaryHeroInfo)
+ * 编码格式: CityPos, HeroID, HeroName, ChildrenCount, ChildrenLoss, TrainingCount,
+ *           TrainingLoss, GainExp, State, HeroStatefFlag, HeroUpdateFlag, Quality
+ */
+export interface BattleSummaryHeroInfo {
+  CityPos: number;
   HeroID: number;
   HeroName: string;
-  HeroLevel: number;
-  HeroQuality: number;
-  HeroPower: number;
+  ChildrenCount: number;
+  ChildrenLoss: number;
+  TrainingCount: number;
+  TrainingLoss: number;
+  GainExp: number;
+  State: number;
+  HeroStatefFlag: number;
+  HeroUpdateFlag: number;
+  Quality: number;
 }
 
-export interface BattleSummaryRes {
+/**
+ * 战报城防统计信息 (对应 C# FightSummaryDefenceInfo)
+ */
+export interface BattleSummaryDefenceInfo {
+  StaticIndex: number;
+  DefenceCount: number;
+  DefenceLoss: number;
+}
+
+/**
+ * 内政建筑降级信息 (对应 C# LostLevelBuildInfo)
+ */
+export interface LostLevelBuildInfo {
   Type: number;
-  Key: string;
-  Value: number;
+  EndLevel: number;
+  Index: number;
+  CurrentLevel: number;
 }
 
+/**
+ * 帮派资源 KeyValue (对应 C# KeyValueInfo)
+ */
+export interface KeyValueInfo {
+  Type: number;
+  Key: number;
+  Value: number;
+  Name: string;
+}
+
+/**
+ * 帮派附加资源信息 (对应 C# OrgAppendInfo)
+ */
+export interface OrgAppendInfo {
+  CityPos: number;
+  OrgResList: KeyValueInfo[];
+}
+
+/**
+ * 战报服务端信息 (对应 C# FightSummaryServerInfo)
+ */
 export interface BattleSummaryServerInfo {
   CityList: BattleSummaryCityInfo[];
-  Res: BattleSummaryRes[];
-  SkillEffectList: BattleSummarySkillEffect[];
-  HeroList: BattleSummaryHero[];
-  StatDefenceBuildList: any[];
-  CityBuilds: any[];
-  OrgResList: any[];
+  Res: BattleSummaryResInfo | null;
+  SkillEffectList: BattleSummarySkillEffectInfo[];
+  HeroList: BattleSummaryHeroInfo[];
+  StatDefenceBuildList: BattleSummaryDefenceInfo[];
+  CityBuilds: LostLevelBuildInfo[];
+  OrgResList: OrgAppendInfo[];
   FightWinName: string;
   FightWinFlag: number;
   FightTime: string;
@@ -126,6 +332,11 @@ export interface BattleSummaryServerInfo {
   WeiWang: number;
 }
 
+// 向后兼容别名
+export type BattleSummaryRes = BattleSummaryResInfo;
+export type BattleSummaryHero = BattleSummaryHeroInfo;
+export type BattleSummarySkillEffect = BattleSummarySkillEffectInfo;
+
 /**
  * 编码战报 - 将 BattleSummaryServerInfo 编码为压缩字符串
  * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummary
@@ -144,6 +355,15 @@ export function encodeBattleSummary(summary: BattleSummaryServerInfo): string {
 
   // 编码武将列表
   str += encodeBattleSummaryHero(summary.HeroList);
+
+  // 编码城防统计
+  str += encodeBattleSummaryDefence(summary.StatDefenceBuildList);
+
+  // 编码内政建筑降级
+  str += encodeBattleSummaryCityBuild(summary.CityBuilds);
+
+  // 编码帮派资源
+  str += encodeBattleSummaryOrgRes(summary.OrgResList);
 
   // 基本字段
   str += `FightWinName$${summary.FightWinName}#`;
@@ -194,7 +414,7 @@ export function decodeBattleSummary(encoded: string): BattleSummaryServerInfo | 
 
     const summary: BattleSummaryServerInfo = {
       CityList: [],
-      Res: [],
+      Res: null,
       SkillEffectList: [],
       HeroList: [],
       StatDefenceBuildList: [],
@@ -254,6 +474,12 @@ export function decodeBattleSummary(encoded: string): BattleSummaryServerInfo | 
             summary.SkillEffectList = decodeBattleSummarySkillEffect(strArray, num);
           } else if (value === 'HeroList') {
             summary.HeroList = decodeBattleSummaryHero(strArray, num);
+          } else if (value === 'StatDefenceBuildList') {
+            summary.StatDefenceBuildList = decodeBattleSummaryDefenceBuild(strArray, num);
+          } else if (value === 'CityBuild') {
+            summary.CityBuilds = decodeBattleSummaryCityBuild(strArray, num);
+          } else if (value === 'OrgResList') {
+            summary.OrgResList = decodeBattleSummaryOrgResList(strArray, num);
           }
           break;
         case 'FightWinName':
@@ -360,87 +586,377 @@ function writeAppointStrByStr(name: string, value: string): string {
   return `${name}$${value}#`;
 }
 
+/**
+ * 编码城市列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryCity
+ * 格式: ++Begin++$CityList#Flag$value#UserName$value#CityName$value#CityPos$value#Power$value#PowerBattleOver$value#++End++$CityList#
+ * 注意: C# 是扁平结构,没有内层 City 包装
+ */
 function encodeBattleSummaryCity(cityList: BattleSummaryCityInfo[]): string {
   if (!cityList || cityList.length === 0) return '';
 
-  let str = writeBeginStr('CityList');
-
+  let str = '';
   for (const city of cityList) {
-    str += writeBeginStr('City');
+    str += writeBeginStr('CityList');
     str += writeAppointStrByInt('Flag', city.Flag);
-    str += writeAppointStrByInt('CityID', city.CityID);
+    str += writeAppointStrByStr('UserName', city.UserName);
+    str += writeAppointStrByStr('CityName', city.CityName);
     str += writeAppointStrByInt('CityPos', city.CityPos);
-    str += writeAppointStrByStr('Name', city.Name);
-    str += writeAppointStrByInt('Power', city.Power);
-    str += writeAppointStrByInt('PowerBattleOver', city.PowerBattleOver);
-    str += writeAppointStrByInt('Army', city.Army);
-    str += writeAppointStrByStr('HeroName', city.HeroName);
-    str += writeAppointStrByInt('HeroLevel', city.HeroLevel);
-    str += writeEndStr('City');
+    str += writeAppointStrByFloat('Power', city.Power);
+    str += writeAppointStrByFloat('PowerBattleOver', city.PowerBattleOver);
+    str += writeEndStr('CityList');
   }
-
-  str += writeEndStr('CityList');
   return str;
 }
 
-function encodeBattleSummaryRes(resList: BattleSummaryRes[]): string {
-  if (!resList || resList.length === 0) return '';
+/**
+ * 编码资源信息
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryRes
+ * 格式: ++Begin++$Res#CityName$value#Men$value#Money$value#Food$value#[ItemArray]++End++$Res#
+ */
+function encodeBattleSummaryRes(res: BattleSummaryResInfo | null | undefined): string {
+  if (!res) return '';
 
   let str = writeBeginStr('Res');
-
-  for (const res of resList) {
-    str += writeBeginStr('ResItem');
-    str += writeAppointStrByInt('Type', res.Type);
-    str += writeAppointStrByStr('Key', res.Key);
-    str += writeAppointStrByInt('Value', res.Value);
-    str += writeEndStr('ResItem');
-  }
-
+  str += writeAppointStrByStr('CityName', res.CityName);
+  str += writeAppointStrByInt('Men', res.Men);
+  str += writeAppointStrByInt('Money', res.Money);
+  str += writeAppointStrByInt('Food', res.Food);
+  str += encodeBattleSummaryItem(res.ItemArray);
   str += writeEndStr('Res');
   return str;
 }
 
-function encodeBattleSummarySkillEffect(effects: BattleSummarySkillEffect[]): string {
-  if (!effects || effects.length === 0) return '';
+/**
+ * 编码道具列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryItem
+ */
+function encodeBattleSummaryItem(itemList: BattleSummaryItemInfo[]): string {
+  if (!itemList || itemList.length === 0) return '';
 
-  let str = writeBeginStr('SkillEffectList');
-
-  for (const effect of effects) {
-    str += writeBeginStr('SkillEffect');
-    str += writeAppointStrByInt('SkillID', effect.SkillID);
-    str += writeAppointStrByInt('UsCrushBlow', effect.UsCrushBlow);
-    str += writeAppointStrByInt('OtherDodge', effect.OtherDodge);
-    str += writeAppointStrByInt('SkillLevel', effect.SkillLevel);
-    str += writeEndStr('SkillEffect');
+  let str = '';
+  for (const item of itemList) {
+    str += writeBeginStr('ItemArray');
+    str += writeAppointStrByInt('ItemIndex', item.ItemIndex);
+    str += writeAppointStrByStr('ItemPath', item.ItemPath);
+    str += writeAppointStrByInt('IsFill', item.IsFill);
+    str += writeAppointStrByInt('ItemType', item.ItemType);
+    str += writeAppointStrByStr('ItemName', item.ItemName);
+    str += writeEndStr('ItemArray');
   }
-
-  str += writeEndStr('SkillEffectList');
   return str;
 }
 
-function encodeBattleSummaryHero(heroes: BattleSummaryHero[]): string {
+/**
+ * 编码技能效果列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummarySkillEffect
+ * 17个字段: CityPos, AttackHeroID, AttackHeroName, AttackQuality, AimType, SkillName,
+ *           DefenceHeroID, DefenceHeroName, DefenceQuality, PropertyType, PropertyChange,
+ *           AttackWuXing, DefenceWuXing, UsCrushBlow, OtherDodge, SkillLevel
+ */
+function encodeBattleSummarySkillEffect(effects: BattleSummarySkillEffectInfo[]): string {
+  if (!effects || effects.length === 0) return '';
+
+  let str = '';
+  for (const effect of effects) {
+    str += writeBeginStr('SkillEffectList');
+    str += writeAppointStrByInt('CityPos', effect.CityPos);
+    str += writeAppointStrByInt('AttackHeroID', effect.AttackHeroID);
+    str += writeAppointStrByStr('AttackHeroName', effect.AttackHeroName);
+    str += writeAppointStrByInt('AttackQuality', effect.AttackQuality);
+    str += writeAppointStrByInt('AimType', effect.AimType);
+    str += writeAppointStrByStr('SkillName', effect.SkillName);
+    str += writeAppointStrByInt('DefenceHeroID', effect.DefenceHeroID);
+    str += writeAppointStrByStr('DefenceHeroName', effect.DefenceHeroName);
+    str += writeAppointStrByInt('DefenceQuality', effect.DefenceQuality);
+    str += writeAppointStrByInt('PropertyType', effect.PropertyType);
+    str += writeAppointStrByInt('PropertyChange', effect.PropertyChange);
+    str += writeAppointStrByInt('AttackWuXing', effect.AttackWuXing);
+    str += writeAppointStrByInt('DefenceWuXing', effect.DefenceWuXing);
+    str += writeAppointStrByInt('UsCrushBlow', effect.UsCrushBlow);
+    str += writeAppointStrByInt('OtherDodge', effect.OtherDodge);
+    str += writeAppointStrByInt('SkillLevel', effect.SkillLevel);
+    str += writeEndStr('SkillEffectList');
+  }
+  return str;
+}
+
+/**
+ * 编码武将列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryHero
+ * 13个字段: CityPos, HeroID, HeroName, ChildrenCount, ChildrenLoss, TrainingCount,
+ *           TrainingLoss, GainExp, State, HeroStatefFlag, HeroUpdateFlag, Quality
+ */
+function encodeBattleSummaryHero(heroes: BattleSummaryHeroInfo[]): string {
   if (!heroes || heroes.length === 0) return '';
 
-  let str = writeBeginStr('HeroList');
-
+  let str = '';
   for (const hero of heroes) {
-    str += writeBeginStr('Hero');
+    str += writeBeginStr('HeroList');
+    str += writeAppointStrByInt('CityPos', hero.CityPos);
     str += writeAppointStrByInt('HeroID', hero.HeroID);
     str += writeAppointStrByStr('HeroName', hero.HeroName);
-    str += writeAppointStrByInt('HeroLevel', hero.HeroLevel);
-    str += writeAppointStrByInt('HeroQuality', hero.HeroQuality);
-    str += writeAppointStrByInt('HeroPower', hero.HeroPower);
-    str += writeEndStr('Hero');
+    str += writeAppointStrByInt('ChildrenCount', hero.ChildrenCount);
+    str += writeAppointStrByInt('ChildrenLoss', hero.ChildrenLoss);
+    str += writeAppointStrByInt('TrainingCount', hero.TrainingCount);
+    str += writeAppointStrByInt('TrainingLoss', hero.TrainingLoss);
+    str += writeAppointStrByInt('GainExp', hero.GainExp);
+    str += writeAppointStrByInt('State', hero.State);
+    str += writeAppointStrByInt('HeroStatefFlag', hero.HeroStatefFlag);
+    str += writeAppointStrByInt('HeroUpdateFlag', hero.HeroUpdateFlag);
+    str += writeAppointStrByInt('Quality', hero.Quality);
+    str += writeEndStr('HeroList');
   }
+  return str;
+}
 
-  str += writeEndStr('HeroList');
+/**
+ * 编码城防统计信息
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryDefence
+ * 3个字段: StaticIndex, DefenceCount, DefenceLoss
+ */
+function encodeBattleSummaryDefence(defenceList: BattleSummaryDefenceInfo[]): string {
+  if (!defenceList || defenceList.length === 0) return '';
+
+  let str = '';
+  for (const defence of defenceList) {
+    str += writeBeginStr('StatDefenceBuildList');
+    str += writeAppointStrByInt('StaticIndex', defence.StaticIndex);
+    str += writeAppointStrByInt('DefenceCount', defence.DefenceCount);
+    str += writeAppointStrByInt('DefenceLoss', defence.DefenceLoss);
+    str += writeEndStr('StatDefenceBuildList');
+  }
+  return str;
+}
+
+/**
+ * 编码内政建筑降级信息
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryCityBuild
+ * 4个字段: Type, EndLevel, Index, CurrentLevel
+ */
+function encodeBattleSummaryCityBuild(buildList: LostLevelBuildInfo[]): string {
+  if (!buildList || buildList.length === 0) return '';
+
+  let str = '';
+  for (const build of buildList) {
+    str += writeBeginStr('CityBuild');
+    str += writeAppointStrByInt('Type', build.Type);
+    str += writeAppointStrByInt('EndLevel', build.EndLevel);
+    str += writeAppointStrByInt('Index', build.Index);
+    str += writeAppointStrByInt('CurrentLevel', build.CurrentLevel);
+    str += writeEndStr('CityBuild');
+  }
+  return str;
+}
+
+/**
+ * 编码帮派资源列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryOrgRes
+ */
+function encodeBattleSummaryOrgRes(orgResList: OrgAppendInfo[]): string {
+  if (!orgResList || orgResList.length === 0) return '';
+
+  let str = '';
+  for (const orgRes of orgResList) {
+    str += writeBeginStr('OrgResList');
+    str += writeAppointStrByInt('CityPos', orgRes.CityPos);
+    str += encodeBattleSummaryKeyValueList(orgRes.OrgResList);
+    str += writeEndStr('OrgResList');
+  }
+  return str;
+}
+
+/**
+ * 编码KeyValue列表
+ * 参考 jx/BLL/FightSummaryCode.cs::CodingFightSummaryKeyValueList
+ * 4个字段: Type, Key, Value, Name
+ */
+function encodeBattleSummaryKeyValueList(kvList: KeyValueInfo[]): string {
+  if (!kvList || kvList.length === 0) return '';
+
+  let str = '';
+  for (const kv of kvList) {
+    str += writeBeginStr('OrgResList');
+    str += writeAppointStrByInt('Type', kv.Type);
+    str += writeAppointStrByInt('Key', kv.Key);
+    str += writeAppointStrByInt('Value', kv.Value);
+    str += writeAppointStrByStr('Name', kv.Name || '');
+    str += writeEndStr('OrgResList');
+  }
   return str;
 }
 
 // ==================== 内部解码函数 ====================
 
+/**
+ * 解码城市列表
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryCity
+ */
 function decodeBattleSummaryCity(strArray: string[], startIdx: number): BattleSummaryCityInfo[] {
   const cities: BattleSummaryCityInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  // 跳过 ++Begin++$CityList
+  if (strArray[num] === '++Begin++$CityList') {
+    num++;
+  }
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'CityList') {
+      // 开始新的城市
+      num++;
+      const city: BattleSummaryCityInfo = {
+        Flag: 0,
+        UserName: '',
+        CityName: '',
+        CityPos: 0,
+        Power: 0,
+        PowerBattleOver: 0,
+      };
+
+      // 读取城市字段直到 ++End++$CityList
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'CityList') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'Flag':
+            city.Flag = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'UserName':
+            city.UserName = fieldKv[1];
+            break;
+          case 'CityName':
+            city.CityName = fieldKv[1];
+            break;
+          case 'CityPos':
+            city.CityPos = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Power':
+            city.Power = parseFloat(fieldKv[1]) || 0;
+            break;
+          case 'PowerBattleOver':
+            city.PowerBattleOver = parseFloat(fieldKv[1]) || 0;
+            break;
+        }
+        num++;
+      }
+
+      cities.push(city);
+      continue;
+    }
+
+    num++;
+  }
+
+  return cities;
+}
+
+/**
+ * 解码资源信息
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryRes
+ */
+function decodeBattleSummaryRes(strArray: string[], startIdx: number): BattleSummaryResInfo | null {
+  let num = startIdx;
+  let maxNum = 0;
+  let res: BattleSummaryResInfo | null = null;
+
+  // 跳过 ++Begin++$Res
+  if (strArray[num] === '++Begin++$Res') {
+    num++;
+  }
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++End++' && kv[1] === 'Res') {
+      num++;
+      break;
+    }
+
+    if (kv[0] === '++Begin++') {
+      if (kv[1] === 'ItemArray') {
+        // 解码道具数组
+        if (!res) res = { CityName: '', Men: 0, Money: 0, Food: 0, ItemArray: [] };
+        res.ItemArray = decodeBattleSummaryItemArray(strArray, num);
+      }
+      num++;
+      continue;
+    }
+
+    if (!res) {
+      res = { CityName: '', Men: 0, Money: 0, Food: 0, ItemArray: [] };
+    }
+
+    switch (kv[0]) {
+      case 'CityName':
+        res.CityName = kv[1];
+        break;
+      case 'Men':
+        res.Men = parseInt(kv[1]) || 0;
+        break;
+      case 'Money':
+        res.Money = parseInt(kv[1]) || 0;
+        break;
+      case 'Food':
+        res.Food = parseInt(kv[1]) || 0;
+        break;
+    }
+    num++;
+  }
+
+  return res;
+}
+
+/**
+ * 解码道具数组
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryItemArray
+ */
+function decodeBattleSummaryItemArray(strArray: string[], startIdx: number): BattleSummaryItemInfo[] {
+  const items: BattleSummaryItemInfo[] = [];
   let num = startIdx;
   let maxNum = 0;
 
@@ -459,25 +975,21 @@ function decodeBattleSummaryCity(strArray: string[], startIdx: number): BattleSu
       continue;
     }
 
-    if (kv[0] === '++End++' && kv[1] === 'CityList') {
+    if (kv[0] === '++End++' && kv[1] === 'ItemArray') {
       num++;
       break;
     }
 
-    if (kv[0] === '++Begin++' && kv[1] === 'City') {
-      const city: BattleSummaryCityInfo = {
-        Flag: 0,
-        CityID: 0,
-        CityPos: 0,
-        Name: '',
-        Power: 0,
-        PowerBattleOver: 0,
-        Army: 0,
-        HeroName: '',
-        HeroLevel: 0,
+    if (kv[0] === '++Begin++' && kv[1] === 'ItemArray') {
+      num++;
+      const item: BattleSummaryItemInfo = {
+        ItemIndex: 0,
+        ItemPath: '',
+        IsFill: 0,
+        ItemType: 0,
+        ItemName: '',
       };
 
-      num++;
       while (num < strArray.length) {
         if (maxNum++ > 1000) break;
 
@@ -493,67 +1005,596 @@ function decodeBattleSummaryCity(strArray: string[], startIdx: number): BattleSu
           continue;
         }
 
-        if (fieldKv[0] === '++End++' && fieldKv[1] === 'City') {
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'ItemArray') {
           num++;
           break;
         }
 
         switch (fieldKv[0]) {
-          case 'Flag':
-            city.Flag = parseInt(fieldKv[1]) || 0;
+          case 'ItemIndex':
+            item.ItemIndex = parseInt(fieldKv[1]) || 0;
             break;
-          case 'CityID':
-            city.CityID = parseInt(fieldKv[1]) || 0;
+          case 'ItemPath':
+            item.ItemPath = fieldKv[1];
             break;
-          case 'CityPos':
-            city.CityPos = parseInt(fieldKv[1]) || 0;
+          case 'IsFill':
+            item.IsFill = parseInt(fieldKv[1]) || 0;
             break;
-          case 'Name':
-            city.Name = fieldKv[1];
+          case 'ItemType':
+            item.ItemType = parseInt(fieldKv[1]) || 0;
             break;
-          case 'Power':
-            city.Power = parseInt(fieldKv[1]) || 0;
-            break;
-          case 'PowerBattleOver':
-            city.PowerBattleOver = parseInt(fieldKv[1]) || 0;
-            break;
-          case 'Army':
-            city.Army = parseInt(fieldKv[1]) || 0;
-            break;
-          case 'HeroName':
-            city.HeroName = fieldKv[1];
-            break;
-          case 'HeroLevel':
-            city.HeroLevel = parseInt(fieldKv[1]) || 0;
+          case 'ItemName':
+            item.ItemName = fieldKv[1];
             break;
         }
-
         num++;
       }
 
-      cities.push(city);
+      items.push(item);
       continue;
     }
 
     num++;
   }
 
-  return cities;
+  return items;
 }
 
-function decodeBattleSummaryRes(strArray: string[], startIdx: number): BattleSummaryRes[] {
-  const resList: BattleSummaryRes[] = [];
-  return resList;
-}
+/**
+ * 解码技能效果列表
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummarySkillEffect
+ * 17个字段
+ */
+function decodeBattleSummarySkillEffect(strArray: string[], startIdx: number): BattleSummarySkillEffectInfo[] {
+  const effects: BattleSummarySkillEffectInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
 
-function decodeBattleSummarySkillEffect(strArray: string[], startIdx: number): BattleSummarySkillEffect[] {
-  const effects: BattleSummarySkillEffect[] = [];
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'SkillEffectList') {
+      num++;
+      const effect: BattleSummarySkillEffectInfo = {
+        CityPos: 0,
+        AttackHeroID: 0,
+        AttackHeroName: '',
+        AttackQuality: 0,
+        AimType: 0,
+        SkillName: '',
+        DefenceHeroID: 0,
+        DefenceHeroName: '',
+        DefenceQuality: 0,
+        PropertyType: 0,
+        PropertyChange: 0,
+        AttackWuXing: 0,
+        DefenceWuXing: 0,
+        UsCrushBlow: 0,
+        OtherDodge: 0,
+        SkillLevel: 0,
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'SkillEffectList') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'CityPos':
+            effect.CityPos = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'AttackHeroID':
+            effect.AttackHeroID = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'AttackHeroName':
+            effect.AttackHeroName = fieldKv[1];
+            break;
+          case 'AttackQuality':
+            effect.AttackQuality = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'AimType':
+            effect.AimType = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'SkillName':
+            effect.SkillName = fieldKv[1];
+            break;
+          case 'DefenceHeroID':
+            effect.DefenceHeroID = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'DefenceHeroName':
+            effect.DefenceHeroName = fieldKv[1];
+            break;
+          case 'DefenceQuality':
+            effect.DefenceQuality = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'PropertyType':
+            effect.PropertyType = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'PropertyChange':
+            effect.PropertyChange = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'AttackWuXing':
+            effect.AttackWuXing = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'DefenceWuXing':
+            effect.DefenceWuXing = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'UsCrushBlow':
+            effect.UsCrushBlow = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'OtherDodge':
+            effect.OtherDodge = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'SkillLevel':
+            effect.SkillLevel = parseInt(fieldKv[1]) || 0;
+            break;
+        }
+        num++;
+      }
+
+      effects.push(effect);
+      continue;
+    }
+
+    num++;
+  }
+
   return effects;
 }
 
-function decodeBattleSummaryHero(strArray: string[], startIdx: number): BattleSummaryHero[] {
-  const heroes: BattleSummaryHero[] = [];
+/**
+ * 解码武将列表
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryHero
+ * 13个字段
+ */
+function decodeBattleSummaryHero(strArray: string[], startIdx: number): BattleSummaryHeroInfo[] {
+  const heroes: BattleSummaryHeroInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'HeroList') {
+      num++;
+      const hero: BattleSummaryHeroInfo = {
+        CityPos: 0,
+        HeroID: 0,
+        HeroName: '',
+        ChildrenCount: 0,
+        ChildrenLoss: 0,
+        TrainingCount: 0,
+        TrainingLoss: 0,
+        GainExp: 0,
+        State: 0,
+        HeroStatefFlag: 0,
+        HeroUpdateFlag: 0,
+        Quality: 0,
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'HeroList') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'CityPos':
+            hero.CityPos = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'HeroID':
+            hero.HeroID = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'HeroName':
+            hero.HeroName = fieldKv[1];
+            break;
+          case 'ChildrenCount':
+            hero.ChildrenCount = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'ChildrenLoss':
+            hero.ChildrenLoss = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'TrainingCount':
+            hero.TrainingCount = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'TrainingLoss':
+            hero.TrainingLoss = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'GainExp':
+            hero.GainExp = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'State':
+            hero.State = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'HeroStatefFlag':
+            hero.HeroStatefFlag = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'HeroUpdateFlag':
+            hero.HeroUpdateFlag = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Quality':
+            hero.Quality = parseInt(fieldKv[1]) || 0;
+            break;
+        }
+        num++;
+      }
+
+      heroes.push(hero);
+      continue;
+    }
+
+    num++;
+  }
+
   return heroes;
+}
+
+/**
+ * 解码城防统计信息
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryDefenceBuild
+ */
+function decodeBattleSummaryDefenceBuild(strArray: string[], startIdx: number): BattleSummaryDefenceInfo[] {
+  const defenceList: BattleSummaryDefenceInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'StatDefenceBuildList') {
+      num++;
+      const defence: BattleSummaryDefenceInfo = {
+        StaticIndex: 0,
+        DefenceCount: 0,
+        DefenceLoss: 0,
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'StatDefenceBuildList') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'StaticIndex':
+            defence.StaticIndex = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'DefenceCount':
+            defence.DefenceCount = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'DefenceLoss':
+            defence.DefenceLoss = parseInt(fieldKv[1]) || 0;
+            break;
+        }
+        num++;
+      }
+
+      defenceList.push(defence);
+      continue;
+    }
+
+    num++;
+  }
+
+  return defenceList;
+}
+
+/**
+ * 解码内政建筑降级信息
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryCityBuild
+ */
+function decodeBattleSummaryCityBuild(strArray: string[], startIdx: number): LostLevelBuildInfo[] {
+  const buildList: LostLevelBuildInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'CityBuild') {
+      num++;
+      const build: LostLevelBuildInfo = {
+        Type: 0,
+        EndLevel: 0,
+        Index: 0,
+        CurrentLevel: 0,
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'CityBuild') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'Type':
+            build.Type = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'EndLevel':
+            build.EndLevel = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Index':
+            build.Index = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'CurrentLevel':
+            build.CurrentLevel = parseInt(fieldKv[1]) || 0;
+            break;
+        }
+        num++;
+      }
+
+      buildList.push(build);
+      continue;
+    }
+
+    num++;
+  }
+
+  return buildList;
+}
+
+/**
+ * 解码帮派资源列表
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryOrgResList
+ */
+function decodeBattleSummaryOrgResList(strArray: string[], startIdx: number): OrgAppendInfo[] {
+  const orgResList: OrgAppendInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'OrgResList') {
+      num++;
+      const orgRes: OrgAppendInfo = {
+        CityPos: 0,
+        OrgResList: [],
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'OrgResList') {
+          num++;
+          break;
+        }
+
+        if (fieldKv[0] === '++Begin++' && fieldKv[1] === 'OrgResList') {
+          // 嵌套的 KeyValue 列表
+          orgRes.OrgResList = decodeBattleSummaryKeyValue(strArray, num);
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === 'CityPos') {
+          orgRes.CityPos = parseInt(fieldKv[1]) || 0;
+        }
+        num++;
+      }
+
+      orgResList.push(orgRes);
+      continue;
+    }
+
+    num++;
+  }
+
+  return orgResList;
+}
+
+/**
+ * 解码KeyValue列表
+ * 参考 jx/BLL/FightSummaryCode.cs::DecodeFightSummaryKeyValue
+ */
+function decodeBattleSummaryKeyValue(strArray: string[], startIdx: number): KeyValueInfo[] {
+  const kvList: KeyValueInfo[] = [];
+  let num = startIdx;
+  let maxNum = 0;
+
+  while (num < strArray.length) {
+    if (maxNum++ > 1000) break;
+
+    const part = strArray[num];
+    if (!part) {
+      num++;
+      continue;
+    }
+
+    const kv = part.split('$');
+    if (kv.length < 2) {
+      num++;
+      continue;
+    }
+
+    if (kv[0] === '++End++' && kv[1] === 'OrgResList') {
+      num++;
+      break;
+    }
+
+    if (kv[0] === '++Begin++' && kv[1] === 'OrgResList') {
+      num++;
+      const kvInfo: KeyValueInfo = {
+        Type: 0,
+        Key: 0,
+        Value: 0,
+        Name: '',
+      };
+
+      while (num < strArray.length) {
+        if (maxNum++ > 1000) break;
+
+        const fieldPart = strArray[num];
+        if (!fieldPart) {
+          num++;
+          continue;
+        }
+
+        const fieldKv = fieldPart.split('$');
+        if (fieldKv.length < 2) {
+          num++;
+          continue;
+        }
+
+        if (fieldKv[0] === '++End++' && fieldKv[1] === 'OrgResList') {
+          num++;
+          break;
+        }
+
+        switch (fieldKv[0]) {
+          case 'Type':
+            kvInfo.Type = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Key':
+            kvInfo.Key = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Value':
+            kvInfo.Value = parseInt(fieldKv[1]) || 0;
+            break;
+          case 'Name':
+            kvInfo.Name = fieldKv[1];
+            break;
+        }
+        num++;
+      }
+
+      kvList.push(kvInfo);
+      continue;
+    }
+
+    num++;
+  }
+
+  return kvList;
 }
 
 // ==================== 伤害计算 ====================
@@ -571,9 +1612,9 @@ export interface DamageParams {
 
 /**
  * 计算战斗伤害 - 基于属性的真实伤害计算
- * 参考 jx/BLL/Fight.cs 和 battle-engine.ts
+ * 参考 jx/BLL/Fight.cs
  * 
- * 伤害公式: damage = attack * 1.5 - defense * 0.5, 最低为1
+ * 伤害公式: damage = 攻击力 * 兵种系数 * (1 - 防御力 / (防御力 + 100))
  * 兵种相克: 步>骑>弓>步, 克制方伤害+20%
  */
 export function calculateDamage(params: DamageParams): {
@@ -593,10 +1634,9 @@ export function calculateDamage(params: DamageParams): {
     attackerHeroPower = 0,
   } = params;
 
-  // 基础伤害 = attack * 1.5 - defense * 0.5 (最低1)
+  // C# 伤害公式: 攻击力 * 兵种系数 * (1 - 防御力 / (防御力 + 100))
   // 攻击力 = attackerAttack + attackerHeroPower
   const attackPower = attackerAttack + attackerHeroPower;
-  let baseDamage = attackPower * 1.5 - defenderDefense * 0.5;
 
   // 兵种相克加成: 步>骑>弓>步, 克制方+20%
   let typeBonus = 1.0;
@@ -607,8 +1647,11 @@ export function calculateDamage(params: DamageParams): {
     }
   }
 
-  // 应用兵种相克加成
-  baseDamage = baseDamage * typeBonus;
+  // C# 公式: 攻击力 * 兵种系数 * (1 - 防御力 / (防御力 + 100))
+  // 防御减免比例 = 防御力 / (防御力 + 100)
+  // 实际造成比例 = 1 - 防御减免比例
+  const defenseRatio = defenderDefense / (defenderDefense + 100);
+  let baseDamage = attackPower * typeBonus * (1 - defenseRatio);
 
   // 应用城防减免
   if (defenderBuildingDefense > 0) {
@@ -620,8 +1663,8 @@ export function calculateDamage(params: DamageParams): {
 
   return {
     damage,
-    isCritical: false, // 新公式不含暴击
-    isMiss: false,      // 新公式不含闪避
+    isCritical: false,
+    isMiss: false,
     typeBonus,
   };
 }
@@ -1008,9 +2051,16 @@ function generateChessmanList(heroes: any[]): any[] {
 }
 
 /**
- * 计算玩家总战力
+ * 计算玩家总战力 - 基于繁荣度等级体系 (参考 jx/BLL/Fight.cs)
+ * 战力 = 繁荣度等级 * 100 + 武将总战力
+ * @param heroes 武将列表
+ * @param prosperity 繁荣度 (可选，如果不提供则只计算武将战力)
  */
-function calculatePlayerPower(heroes: any[]): number {
+function calculatePlayerPower(heroes: any[], prosperity?: number): number {
+  if (prosperity !== undefined && prosperity > 0) {
+    return calculateFightPowerByProsperity(prosperity, heroes);
+  }
+  // 纯武将战力
   let power = 0;
   for (const hero of heroes) {
     power += hero.attack * 2 + hero.defense * 1.5 + hero.level * 10;
@@ -1042,26 +2092,21 @@ class FightService {
 
   /**
    * 获取繁荣度等级 - 根据城市繁荣度转换为等级
-   * 繁荣度到等级的转换: 每 100 繁荣度 = 1 级
+   * 使用 jx/BLL/CityInterior.cs::ProsperityToLevel 阈值数组
    * @param walletAddress 玩家钱包地址
    * @returns 繁荣度等级 (1-100+)
    */
   async getProsperityLevel(walletAddress: string): Promise<number> {
     try {
-      // 从 cities 表获取繁荣度
       const city: any = await this.db.prepare(`
         SELECT prosperity FROM cities WHERE wallet_address = ?
       `).bind(walletAddress).first();
 
       if (!city) {
-        return 1; // 默认等级
+        return 1;
       }
 
-      const prosperity = city.prosperity || 0;
-      // 每 100 繁荣度 = 1 级，最低 1 级
-      const level = Math.max(1, Math.floor(prosperity / 100) + 1);
-      
-      return level;
+      return getProsperityLevel(city.prosperity || 0);
     } catch (error) {
       console.error('[FightService] getProsperityLevel error:', error);
       return 1;
@@ -1069,10 +2114,14 @@ class FightService {
   }
 
   /**
-   * 检查攻击次数限制 - 使用 battle_limits.json 配置
+   * 检查攻击次数限制 - 使用 InitRestrictFight 字典 (参考 jx/BLL/Fight.cs)
+   * 规则:
+   *   - 攻击同一玩家(同一position) ≤ ATTACK_SAME_CITY_MAX (默认2次)
+   *   - 累计攻击低级(繁荣度等级 < LEVEL_XIANLING=8) ≤ ATTACK_LOW_LEVEL_MAX (默认5次)
+   *   - 字典24小时自动重置
    * @param walletAddress 攻击方钱包地址
-   * @param targetPos 目标位置
-   * @param targetLevel 目标城市等级 (可选，用于检查低等级玩家限制)
+   * @param targetPos 目标城市位置
+   * @param targetLevel 目标繁荣度等级 (可选)
    * @returns { valid: boolean, error?: number, message?: string }
    */
   async checkAttackCityLimit(
@@ -1080,18 +2129,10 @@ class FightService {
     targetPos: number,
     targetLevel?: number
   ): Promise<{ valid: boolean; error?: number; message?: string }> {
-    const today = new Date().toISOString().split('T')[0];
-
     try {
-      // 1. 检查当日攻击同一城市次数 (ATTACK_SAME_CITY_MAX)
-      const sameTargetCount: any = await this.db.prepare(`
-        SELECT COUNT(*) as count FROM battles
-        WHERE attacker_address = ?
-          AND defender_address IS NOT NULL
-          AND DATE(created_at) = ?
-      `).bind(walletAddress, today).first();
-
-      if ((sameTargetCount as any).count >= BATTLE_LIMITS.ATTACK_SAME_CITY_MAX) {
+      // 1. 检查当日攻击同一城市次数 (ATTACK_SAME_CITY_MAX=2)
+      const sameTargetCount = GetFightCityNum(walletAddress, targetPos);
+      if (sameTargetCount >= BATTLE_LIMITS.ATTACK_SAME_CITY_MAX) {
         return {
           valid: false,
           error: 30131,
@@ -1099,22 +2140,11 @@ class FightService {
         };
       }
 
-      // 2. 检查累计攻击低级别玩家次数 (ATTACK_LOW_LEVEL_MAX)
-      // 获取攻击方繁荣度等级
-      const attackerLevel = await this.getProsperityLevel(walletAddress);
-
-      // 如果目标等级明确提供且低于攻击方一定等级（仙灵等级），检查限制
+      // 2. 检查累计攻击低级城市次数 (ATTACK_LOW_LEVEL_MAX=5)
+      // 低级 = 繁荣度等级 < LEVEL_XIANLING (8)
       if (targetLevel && targetLevel < BATTLE_LIMITS.LEVEL_XIANLING) {
-        const lowLevelCount: any = await this.db.prepare(`
-          SELECT COUNT(*) as count FROM battles b
-          JOIN cities c ON b.defender_address = c.wallet_address
-          WHERE b.attacker_address = ?
-            AND b.result = 'win'
-            AND DATE(b.created_at) = ?
-            AND c.level < ?
-        `).bind(walletAddress, today, BATTLE_LIMITS.LEVEL_XIANLING).first();
-
-        if ((lowLevelCount as any).count >= BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX) {
+        const lowLevelCount = GetLowLevelAttackCount(walletAddress);
+        if (lowLevelCount >= BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX) {
           return {
             valid: false,
             error: 30132,
@@ -1123,8 +2153,8 @@ class FightService {
         }
       }
 
-      // 3. 检查防守方城市数量限制 (DEF_CITY_MAX)
-      // 获取攻击方作为防守方的被攻击次数
+      // 3. 检查防守方被攻击次数限制 (DEF_CITY_MAX=5)
+      const today = new Date().toISOString().split('T')[0];
       const defendCount: any = await this.db.prepare(`
         SELECT COUNT(*) as count FROM battles
         WHERE defender_address = ?
@@ -1337,8 +2367,10 @@ class FightService {
 
   /**
    * 获取今日战斗统计
+   * 修复: 使用 proper date comparison for SQLite
    */
   async getTodayBattleStats(walletAddress: string) {
+    // 使用 YYYY-MM-DD 格式用于 SQLite DATE() 比较
     const today = new Date().toISOString().split('T')[0];
 
     const stats: any = await this.db.prepare(`
@@ -1348,7 +2380,7 @@ class FightService {
         SUM(CASE WHEN result = 'lose' AND attacker_address = ? THEN 1 ELSE 0 END) as lose_count,
         SUM(CASE WHEN result = 'draw' THEN 1 ELSE 0 END) as draw_count
       FROM battles
-      WHERE (attacker_address = ? OR defender_address = ?) AND DATE(created_at) = ?
+      WHERE (attacker_address = ? OR defender_address = ?) AND DATE(created_at) = DATE(?)
     `).bind(walletAddress, walletAddress, walletAddress, walletAddress, today).first();
 
     return {
@@ -1408,6 +2440,7 @@ class FightService {
     const today = new Date().toISOString().split('T')[0];
 
     // 检查当日攻击同一人次数 (使用 attacker_address)
+    // 使用 BATTLE_LIMITS.ATTACK_SAME_CITY_MAX 替代硬编码值 2
     const sameTargetCount: any = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles
       WHERE attacker_address = ?
@@ -1415,11 +2448,13 @@ class FightService {
         AND DATE(created_at) = ?
     `).bind(walletAddress, today).first();
 
-    if ((sameTargetCount as any).count >= 2) {
-      return { valid: false, error: 30131, message: '同一天攻击同一个玩家不能超过2次' };
+    if ((sameTargetCount as any).count >= BATTLE_LIMITS.ATTACK_SAME_CITY_MAX) {
+      return { valid: false, error: 30131, message: `同一天攻击同一个玩家不能超过${BATTLE_LIMITS.ATTACK_SAME_CITY_MAX}次` };
     }
 
     // 检查累计攻击低级别玩家次数
+    // 使用 BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX 替代硬编码值 5
+    // 参考 jx/BLL/Fight.cs: if (FightCityNum >= 5) return 30132; (在 GetAttackCity 中，但 GetTargetStateEx 中被注释)
     const lowLevelCount: any = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles
       WHERE attacker_address = ?
@@ -1427,8 +2462,8 @@ class FightService {
         AND DATE(created_at) = ?
     `).bind(walletAddress, today).first();
 
-    if ((lowLevelCount as any).count >= 5) {
-      return { valid: false, error: 30132, message: '同一天累计攻击低级别玩家不能超过5次' };
+    if ((lowLevelCount as any).count >= BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX) {
+      return { valid: false, error: 30132, message: `同一天累计攻击低级别玩家不能超过${BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX}次` };
     }
 
     return { valid: true };

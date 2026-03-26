@@ -5,9 +5,54 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import buildingConfigs from '../config/buildings.json';
+import persistEffectGroupsData from '../config/persist_effect_groups.json';
+import persistEffectsData from '../config/persist_effects.json';
 import { formatDuration } from '../config/game-config';
 
 const app = new Hono<{ Bindings: Env }>();
+
+// 持久效果组配置（从 persist_effect_groups.json 加载）
+// 参考 jx/BLL/PersistEffect 中 XmlData.PersistEffectGroup
+interface PersistEffectGroupConfig {
+  ID: number;
+  MainEffectType: number;
+  EffectType: number;
+  Name: string;
+  Des: string;
+  Image: string;
+  PersistTime: number;
+  Gold: number;
+  EffectID1?: number;
+  EffectID2?: number;
+  EffectID3?: number;
+  EffectID4?: number;
+  EffectID5?: number;
+  EffectID6?: number;
+  [key: string]: any;
+}
+
+const PERSIST_EFFECT_GROUPS: Record<number, PersistEffectGroupConfig> =
+  ((persistEffectGroupsData as any).EffectGroup || []).reduce((acc, item: PersistEffectGroupConfig) => {
+    acc[item.ID] = item;
+    return acc;
+  }, {} as Record<number, PersistEffectGroupConfig>);
+
+// 子效果配置（从 persist_effects.json 加载）
+// 参考 jx/BLL/PersistEffect.translateEffectGroupInfo 中 PersistEffectArray 的构建
+interface PersistEffectItem {
+  ID: number;
+  Type: number;
+  Value: number;
+  Name: string;
+  Des: string;
+  [key: string]: any;
+}
+
+const PERSIST_EFFECTS: Record<number, PersistEffectItem> =
+  ((persistEffectsData as any).Effect || []).reduce((acc: Record<number, PersistEffectItem>, item: PersistEffectItem) => {
+    acc[item.ID] = item;
+    return acc;
+  }, {} as Record<number, PersistEffectItem>);
 
 function success(c: any, data: any) {
   return c.json({ success: true, data });
@@ -15,6 +60,40 @@ function success(c: any, data: any) {
 
 function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
+}
+
+/**
+ * 根据 StaticIndex 构建子效果数组
+ * 参考 jx/BLL/PersistEffect.translateEffectGroupInfo 中 PersistEffectArray 的构建逻辑
+ */
+function buildPersistEffectArrayForBuilding(staticIndex: number): Array<{
+  StaticIndex: number;
+  Type: number;
+  Des: string;
+  Value: number;
+}> {
+  const cfg = PERSIST_EFFECT_GROUPS[staticIndex];
+  if (!cfg) return [];
+
+  const effectIds: number[] = [];
+  for (let i = 1; i <= 6; i++) {
+    const id = cfg[`EffectID${i}`];
+    if (id) effectIds.push(id);
+  }
+
+  const result: Array<{ StaticIndex: number; Type: number; Des: string; Value: number }> = [];
+  for (const effectId of effectIds) {
+    const effectInfo = PERSIST_EFFECTS[effectId];
+    if (effectInfo) {
+      result.push({
+        StaticIndex: effectId,
+        Type: effectInfo.Type,
+        Des: effectInfo.Des,
+        Value: effectInfo.Value,
+      });
+    }
+  }
+  return result;
 }
 
 // 建筑类型映射
@@ -364,12 +443,12 @@ app.get('/by-id', async (c) => {
 
     // 获取科技等级
     const technics: any = await db.prepare(
-      `SELECT technic_id, technic_level FROM technics WHERE wallet_address = ?`
+      `SELECT static_index, technic_level FROM technics WHERE wallet_address = ?`
     ).bind(walletAddress).all();
     const technicLevel = new Array(22).fill(0);
     (technics.results || []).forEach((t: any) => {
-      if (t.technic_id && t.technic_id >= 1 && t.technic_id <= 22) {
-        technicLevel[t.technic_id - 1] = t.technic_level || 0;
+      if (t.static_index && t.static_index >= 1 && t.static_index <= 22) {
+        technicLevel[t.static_index - 1] = t.technic_level || 0;
       }
     });
 
@@ -486,7 +565,10 @@ app.get('/by-id', async (c) => {
     let TradeRes: any = null;
     if (buildingIndex === 5 || buildingIndex === 6 || buildingIndex === 7) {
       // 根据建筑类型计算 TradeRes
-      const cityLevel = 1; // 默认城市等级，后续从 city 扩展字段获取
+      // 参考 jx/BLL/CityInterior.GetChangeResInfo:
+      //   MoneyPer = 400 + Convert.ToInt32(interior.Level / (2 - 0.01f)) * 10;
+      // interior.Level 来自 CityInteriorInfo.Level（城市等级）
+      const cityLevel = (city as any)?.level || 1;
       if (buildingIndex === 7) {
         // 市场: 铜钱交易
         TradeRes = {
@@ -521,27 +603,72 @@ app.get('/by-id', async (c) => {
     }
 
     // ========== EffectArray (聚义厅 Index=1, 校场 Index=11-21) ==========
+    // 参考 jx/BLL/Building.cs 中:
+    //   buildSingle.EffectArray = PersistEffect.GetPersistEffectByBuildIndex(userName, buildSingle.Index);
+    // 参考 jx/BLL/PersistEffect.translateEffectGroupInfo 构建 PersistEffectGroupInfo:
+    //   effectEntity.EffectName = XmlData.PersistEffectGroup[index].Name;
+    //   effectEntity.Gold = XmlData.PersistEffectGroup[index].Gold;
+    //   effectEntity.Image = XmlData.PersistEffectGroup[index].Image;
+    //   effectEntity.PersistEffectArray = [sub-effects from EffectID1~6]
     let EffectArray: any[] = [];
     if (buildingIndex === 1 || (buildingIndex >= 11 && buildingIndex <= 21)) {
-      // 从 persist_effects 表获取持续效果
+      // 从 persist_effects 表获取持续效果（使用 wallet_address 字段）
       const persistEffects: any = await db.prepare(
-        `SELECT * FROM persist_effects WHERE user_name = ? AND static_index = ? AND end_time > datetime('now')`
-      ).bind(walletAddress, buildingIndex).all();
+        `SELECT * FROM persist_effects WHERE wallet_address = ? AND end_time > datetime('now')`
+      ).bind(walletAddress).all();
 
-      EffectArray = (persistEffects.results || []).map((e: any) => ({
-        StaticIndex: e.static_index,
-        MainEffectType: e.main_effect_type,
-        EffectType: e.effect_type,
-        EffectID: e.effect_id,
-        EffectName: '',  // 后续从配置获取
-        State: 1,        // 1=激活
-        Image: '',
-        Gold: 0,
-        Seconds: Math.floor((new Date(e.end_time).getTime() - Date.now()) / 1000),
-        StartTime: e.start_time,
-        EndTime: e.end_time,
-        PersistEffectArray: [],  // 子效果数组
-      }));
+      // 按 StaticIndex 分组（同一 MainEffectType 只取最新的）
+      const activeByMainType = new Map<number, any>();
+      for (const e of (persistEffects.results || [])) {
+        const mt = e.main_effect_type;
+        if (!activeByMainType.has(mt) ||
+            new Date(e.end_time) > new Date(activeByMainType.get(mt).end_time)) {
+          activeByMainType.set(mt, e);
+        }
+      }
+
+      // 参考 C# GetPersistEffectByBuildIndex 中根据 buildingIndex 确定 StaticIndex 列表
+      const targetStaticIndexes: number[] = [];
+      if (buildingIndex === 1) {
+        targetStaticIndexes.push(1, 2, 7, 8, 9); // 聚义厅
+      } else if (buildingIndex >= 11 && buildingIndex <= 21) {
+        targetStaticIndexes.push(6); // 各门派建筑 - 白驹丸
+      }
+
+      const now = new Date();
+      for (const staticIdx of targetStaticIndexes) {
+        const cfg = PERSIST_EFFECT_GROUPS[staticIdx];
+        if (!cfg) continue;
+
+        const mainEffectType = cfg.MainEffectType;
+        const dbEffect = activeByMainType.get(mainEffectType);
+        const isActive = !!dbEffect && new Date(dbEffect.end_time) > now;
+
+        const endTimeStr = dbEffect?.end_time;
+        let seconds = 0;
+        let startTime: string | null = null;
+        if (isActive && endTimeStr) {
+          seconds = Math.max(0, Math.floor((new Date(endTimeStr).getTime() - now.getTime()) / 1000));
+          startTime = dbEffect.start_time;
+        }
+
+        EffectArray.push({
+          StaticIndex: staticIdx,
+          MainEffectType: mainEffectType,
+          EffectType: cfg.EffectType,
+          EffectID: cfg.EffectID1 || 0,
+          // 从 persist_effect_groups.json 读取 EffectName, Gold, Image（参考 C# translateEffectGroupInfo）
+          EffectName: cfg.Name || '',
+          Gold: cfg.Gold || 0,
+          Image: cfg.Image || '',
+          State: isActive ? 1 : 0,
+          Seconds: seconds,
+          StartTime: startTime,
+          EndTime: endTimeStr || null,
+          // 子效果数组（参考 C# translateEffectGroupInfo 中构建 PersistEffectArray 的逻辑）
+          PersistEffectArray: buildPersistEffectArrayForBuilding(staticIdx),
+        });
+      }
     }
 
     // ========== 拆除返还资源 ==========

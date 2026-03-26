@@ -7,6 +7,7 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import warfareConfig from '../config/warfare.json';
+import battleLimitsConfig from '../config/battle_limits.json';
 import {
   getChessInfo,
   getChessEvent,
@@ -22,6 +23,46 @@ import {
   BATTLE_TYPES,
 } from '../services/chessboard.svc';
 
+// 战斗限制配置 (从 battle_limits.json 加载，参考 jx/BLL/Fight.cs)
+// ATTACK_SAME_CITY_MAX: 攻击同一玩家(同一position)最大次数
+// ATTACK_LOW_LEVEL_MAX: 累计攻击低级城市最大次数
+// LEVEL_XIANLING: 县令等级(8级)，超过此等级不受低级别攻击限制
+// RESET_HOURS: 重置周期(小时)
+export const BATTLE_LIMITS = {
+  ATTACK_SAME_CITY_MAX: battleLimitsConfig.ATTACK_SAME_CITY_MAX || 2,
+  ATTACK_LOW_LEVEL_MAX: battleLimitsConfig.ATTACK_LOW_LEVEL_MAX || 5,
+  DEF_CITY_MAX: battleLimitsConfig.DEF_CITY_MAX || 5,
+  LEVEL_XIANLING: battleLimitsConfig.LEVEL_XIANLING || 8,
+  RESET_HOURS: battleLimitsConfig.RESET_HOURS || 24,
+} as const;
+
+// 竞技场 NPC 位置列表 (参考 jx/BLL/FestivalActive.cs XmlData.ArenaNpcPosList)
+const ARENA_NPC_POS_LIST = [
+  1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
+  1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020,
+];
+
+/**
+ * 判断是否为竞技场位置（擂台）
+ * 参考 jx/BLL/MapUnit.IsArenaPos(pos)
+ */
+function isArenaPos(pos: number): boolean {
+  return ARENA_NPC_POS_LIST.includes(pos);
+}
+
+/**
+ * 判断当前是否在竞技场活动时间
+ * 参考 jx/BLL/FestivalActive.IsAtArenaTime()
+ */
+function isAtArenaTime(): boolean {
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0, 8); // HH:mm:ss
+  // 默认竞技场时间: 20:00:00 - 22:00:00
+  const startTime = '20:00:00';
+  const endTime = '22:00:00';
+  return currentTime >= startTime && currentTime <= endTime;
+}
+
 const app = new Hono<{ Bindings: Env }>();
 
 function success(c: any, data: any) {
@@ -32,18 +73,41 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 错误码映射 (来自 C# BLLEX/ChessEx.cs)
+// 错误码映射 (来自 C# BLLEX/ChessEx.cs 和 BLL/Fight.cs)
 const ERROR_CODES: Record<number, string> = {
+  // ========== 战斗相关 (ChessEx.cs) ==========
+  60000: '战功计算异常',
+  60001: '战场数据为空',
+  60002: '对象标识无效',
+  60003: '目标标识无效',
+  60005: '道具已使用',
+  60008: '兵力数据异常',
+  60009: '战场数据不存在',
+  60010: '战斗道具列表为空',
+  60011: '玩家标识超出范围',
+  60012: '目标位置不在棋盘内',
+  60013: '道具效果状态异常',
+  60019: '战斗道具数据为空',
+  60032: '军团状态更新失败',
+  60033: '侠客状态更新失败',
+  60035: '城市数据不存在',
+  // ========== 名城战报名相关 (ChessEx.cs) ==========
   60039: '无最高等级侠客，无法报名',
+  60040: '军团状态异常',
   60044: '已在报名列表中，请勿重复报名',
   60045: '未找到报名记录，无法取消',
   60046: '该城市没有出战队列侠客',
   60047: '该城市已有军团驻守，无法报名',
   60048: '更新侠客状态失败',
+  // ========== 战场状态相关 (ChessEx.cs) ==========
   60052: '已在战场中，无法报名',
   60053: '服务器区服不匹配',
   60054: '战场未开放',
   60055: '已进入战场，无法取消',
+  // ========== 攻击限制相关 (Fight.cs) ==========
+  10116: '事件冷却中',
+  30131: '同一天攻击同一个玩家不能超过2次',
+  30132: '同一天累计攻击低级别玩家不能超过5次',
 };
 
 // Warfare 配置类型
@@ -353,7 +417,7 @@ app.get('/user-battle', async (c) => {
 });
 
 /**
- * GET /warfare/detail - 获取名城战详情
+ * GET /warfare/detail - 获取名城战详情 (query param 方式)
  * 参考: Main.aspx.cs GetWarfareDetail(int id)
  * 
  * Query: warfare_id (战区ID)
@@ -370,6 +434,37 @@ app.get('/detail', async (c) => {
 
   try {
     const id = parseInt(warfare_id);
+    const detail = getWarfareDetail(id);
+
+    if (!detail) {
+      return error(c, '战区不存在', 404);
+    }
+
+    // 前端 cb_CreateWarfareDetail 使用 split("________") 解析
+    // 格式: "RoomName________RoomShow________id" (8个下划线分隔)
+    return success(c, `${detail.RoomName}________${detail.RoomShow}________${detail.Id}`);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
+});
+
+/**
+ * GET /warfare/detail/:id - 获取名城战详情 (path param 方式)
+ * 参考: Main.aspx.cs GetWarfareDetail(int id)
+ * 
+ * Path: id (战区ID)
+ */
+app.get('/detail/:id', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const id = parseInt(c.req.param('id'));
+
+  if (!id || isNaN(id)) {
+    return error(c, '无效的战区ID');
+  }
+
+  try {
     const detail = getWarfareDetail(id);
 
     if (!detail) {
@@ -582,6 +677,63 @@ app.post('/select', async (c) => {
       return c.json({ success: false, code: 60053, message: ERROR_CODES[60053] || '城市不存在或不属于当前用户' });
     }
 
+    const cityRow = cityResult as any;
+    const cityPos = cityRow.position || 0;
+
+    // 3.5 检查是否为竞技场位置（名城坐标），竞技场在活动时间不可被攻击
+    // 参考 jx/BLL/Fight.cs GetTargetStateEx: if (MapUnit.IsArenaPos(targetCityPos) == true) return 10116;
+    if (isArenaPos(cityPos) && isAtArenaTime()) {
+      return c.json({ success: false, code: 10116, message: ERROR_CODES[10116] || '事件冷却中（竞技场活动时间不可报名）' });
+    }
+
+    // 3.5 检查30131：同一天攻击同一位置不能超过2次
+    // 参考 jx/BLL/Fight.cs GetAttackCity: if (SpecifyCityNum >= 2) return 30131;
+    const today = new Date().toISOString().split('T')[0];
+    const samePosCount: any = await db.prepare(`
+      SELECT COUNT(DISTINCT te.id) as cnt FROM time_events te
+      WHERE te.wallet_address = ?
+        AND te.event_type IN ('warfare_select', 'warfare_attack')
+        AND DATE(te.start_time) = ?
+        AND te.target_id = ?
+    `).bind(walletAddress, today, city_id).first();
+    if ((samePosCount?.cnt || 0) >= BATTLE_LIMITS.ATTACK_SAME_CITY_MAX) {
+      return c.json({ success: false, code: 30131, message: `同一天攻击同一玩家不能超过${BATTLE_LIMITS.ATTACK_SAME_CITY_MAX}次` });
+    }
+
+    // 3.6 检查30132攻击限制：高级别玩家一天攻击低级别玩家不能超过5次
+    // 参考 jx/BLL/Fight.cs GetTargetStateEx: if (defNum >= 5) return 30132;
+    // 获取攻击方最高侠客等级
+    const attackerMaxResult: any = await db.prepare(`
+      SELECT MAX(level) as max_level FROM heroes WHERE wallet_address = ? AND state = 2
+    `).bind(walletAddress).first();
+    const attackerLevel = attackerMaxResult?.max_level || 1;
+    const targetOwner: any = await db.prepare(`
+      SELECT c.wallet_address FROM cities c WHERE c.id = ? AND c.wallet_address != ?
+    `).bind(city_id, walletAddress).first();
+    if (targetOwner) {
+      const targetMaxLevelResult: any = await db.prepare(`
+        SELECT MAX(h.level) as max_level FROM heroes h
+        WHERE h.wallet_address = ? AND h.state = 2
+      `).bind(targetOwner.wallet_address).first();
+      const targetMaxLevel = targetMaxLevelResult?.max_level || 1;
+      // 如果攻击方等级比防守方高超过10级，且今天已攻击过5次，拒绝
+      if (attackerLevel > targetMaxLevel + 10) {
+        const today = new Date().toISOString().split('T')[0];
+        const attackCountResult: any = await db.prepare(`
+          SELECT COUNT(*) as cnt FROM time_events te
+          WHERE te.wallet_address = ?
+            AND te.event_type = 'warfare_attack'
+            AND te.start_time >= ?
+            AND te.target_city = (
+              SELECT position FROM cities WHERE id = ? AND wallet_address = ?
+            )
+        `).bind(walletAddress, today, city_id, targetOwner.wallet_address).first();
+        if ((attackCountResult?.cnt || 0) >= BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX) {
+          return c.json({ success: false, code: 30132, message: `同一天累计攻击低级别玩家不能超过${BATTLE_LIMITS.ATTACK_LOW_LEVEL_MAX}次` });
+        }
+      }
+    }
+
     // 4. 检查是否有出战队列侠客 (state = 2 表示在出战队列)
     const heroCountResult = await db.prepare(`
       SELECT COUNT(*) as count FROM heroes
@@ -615,17 +767,8 @@ app.post('/select', async (c) => {
     const maxLevel = (maxLevelResult as any)?.max_level || 1;
     // FIX: 正确计算 levelSegment (C# 使用 maxLevel/10 整除)
     // maxLevel 1-9 -> segment 1, 10-19 -> 2, ..., 90-99 -> 9, 100+ -> 10
-    let levelSegment = 1;
-    if (maxLevel >= 10) levelSegment = 10;
-    else if (maxLevel >= 9) levelSegment = 9;
-    else if (maxLevel >= 8) levelSegment = 8;
-    else if (maxLevel >= 7) levelSegment = 7;
-    else if (maxLevel >= 6) levelSegment = 6;
-    else if (maxLevel >= 5) levelSegment = 5;
-    else if (maxLevel >= 4) levelSegment = 4;
-    else if (maxLevel >= 3) levelSegment = 3;
-    else if (maxLevel >= 2) levelSegment = 2;
-    else levelSegment = 1;
+    // C#: segment = maxLevel / 10 + 1 (integer division)
+    const levelSegment = Math.min(Math.floor(maxLevel / 10) + 1, 10);
 
     // FIX: 检查是否已在战场中 (XmlData.battlePos 等价检查)
     // 如果用户已经有活跃的 warfare 战斗记录，不能重复报名
@@ -1084,13 +1227,20 @@ app.post('/match', async (c) => {
 
       const newBattleId = battleResult.meta.last_row_id;
 
+      // 获取当前用户和对手的最高英雄等级 (C#: GetHeroMaxLevelByUserNameType)
+      const [attackerMaxHero, defenderMaxHero] = await Promise.all([
+        db.prepare(`SELECT MAX(h.level) as maxLevel FROM heroes h WHERE h.wallet_address = ? AND h.state = 1`).bind(walletAddress).first(),
+        db.prepare(`SELECT MAX(h.level) as maxLevel FROM heroes h WHERE h.wallet_address = ? AND h.state = 1`).bind(opponent.wallet_address).first()
+      ]);
+      const maxLevel = Math.max(Number(attackerMaxHero?.maxLevel) || 1, Number(defenderMaxHero?.maxLevel) || 1);
+
       // 创建战场 (Chessboard)
       const chessboard = createChessboard(
         newBattleId,
         battle_type,
         athletics_type,
         1, // serverUnit (默认1)
-        1, // maxLevel (简化)
+        maxLevel,
         roomId
       );
 
@@ -1345,6 +1495,32 @@ app.post('/action-attack', async (c) => {
     message: result.message,
     event: result.event,
   });
+});
+
+/**
+ * GET /warfare/chess-num - 获取战场数量
+ * 参考: Main.aspx.cs GetChessNum()
+ * 
+ * 返回 warfare.json 中配置的战场总数 (用于前端分页)
+ * C# 原逻辑: 总人数/20 向上取整，最大25页
+ */
+app.get('/chess-num', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  try {
+    const allAreas = (warfareConfig.Warfare || []) as WarfareEntry[];
+    // 按 ID 1-11，每个 ID 算一页
+    const totalIds = [...new Set(allAreas.map(a => a.Id))].length;
+    // C# 逻辑: Math.Min(num, 25)，每页20条，取整
+    const pageSize = 20;
+    const num = Math.ceil(totalIds / pageSize);
+    const result = Math.min(num, 25);
+
+    return success(c, result);
+  } catch (err: any) {
+    return error(c, err.message);
+  }
 });
 
 /**

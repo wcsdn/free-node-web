@@ -16,22 +16,22 @@ export const HERO_QUALITY = {
   MYTHIC: 5,     // 神话
 };
 
-// 武将状态
+// 武将状态 (C# 值: 1=驻守, 2=出征, 4=负伤, 6=未雇佣)
 export const HERO_STATES = {
-  IDLE: 0,        // 空闲
-  TRAINING: 1,     // 训练中
-  FIGHTING: 2,     // 出战中
-  RESERVE: 3,     // 后备队
-  INJURED: 4,     // 负伤
+  DEFEND: 1,       // 驻守 (garrison/defend)
+  ATTACK: 2,       // 出征 (fighting/attack)
+  INJURED: 4,      // 负伤 (wounded/injured)
+  UNHIRED: 6,      // 未雇佣 (not hired)
 };
 
 // 武将配置
 export const HERO_CONFIG = {
   MAX_PER_CITY: 10,        // 城市最大武将数
-  MAX_LEVEL: 100,           // 最大等级
+  MAX_LEVEL: 100,          // 最大等级
   BASE_EXP: 100,            // 基础经验需求
   EXP_MULTIPLIER: 1.5,      // 经验增长系数
-  TRAINING_COST: 100,        // 训练消耗金币
+  TRAINING_COST: 100,       // 训练消耗银两/元宝
+  UP_TRAINING: 10,          // 每次训练增加的训练度
   TRAINING_EXP: 50,         // 训练获得经验
   MAX_TRAINING: 100,        // 最大训练度
 };
@@ -267,36 +267,85 @@ class HeroService {
 
   /**
    * 招募武将
+   * C# 签名: AddHero(string userName, int cityID, int objID)
+   * objID: 建筑槽位索引 (1-based)，用于确定最大招募等级
+   * 名称从 NPC 配置中随机生成
    */
-  async recruit(walletAddress: string, cityId: number, name: string, quality = 1) {
-    // 检查城市武将数量
+  async recruit(walletAddress: string, cityId: number, objID: number) {
+    // 检查城市武将数量 (排除 state=6 未雇佣)
     const heroCount: any = await this.db.prepare(`
-      SELECT COUNT(*) as count FROM heroes WHERE city_id = ?
-    `).bind(cityId).first();
+      SELECT COUNT(*) as count FROM heroes WHERE city_id = ? AND state != ?
+    `).bind(cityId, HERO_STATES.UNHIRED).first();
 
     if ((heroCount as any).count >= HERO_CONFIG.MAX_PER_CITY) {
       return { success: false, error: '城市武将数量已达上限' };
     }
 
+    // C#: 从建筑等级确定最大可招募等级
+    // 获取城市内政建筑等级 (简化: 使用城市等级作为基础)
+    const city: any = await this.db.prepare(`
+      SELECT * FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
+
+    if (!city) {
+      return { success: false, error: '城市不存在' };
+    }
+
+    // 简化: 使用 objID 对应的建筑槽位等级
+    // C#: level = rand.Next(1, interInfo.InteriorBuildingLevel[objID-1] + 1)
+    const maxHeroLevel = Math.max(1, Math.min(objID * 5, (city.level || 1) * 2));
+    const heroLevel = Math.floor(Math.random() * maxHeroLevel) + 1;
+
+    // C#: union = 3 (hardcoded in AddHero)
+    // 从 heroes.json Portrait 中随机选择一个模板
+    const portraits = (heroesConfig as any).Portrait || [];
+    if (portraits.length === 0) {
+      return { success: false, error: '武将配置不存在' };
+    }
+
+    const portraitTemplate = portraits[Math.floor(Math.random() * portraits.length)];
+    const firstNameIdx = portraitTemplate.FirstNameIndex || 1;
+    const lastNameIdx = portraitTemplate.LastNameIndex || 1;
+
+    // 从 names.json Name 数组中查找名字
+    const namesData = heroesConfig as any;
+    const nameList: Array<{Index: number, Value: string}> = namesData.Name || [];
+    
+    // 构造名字: 姓(LastName) + 名(FirstName)
+    // C# MenFirstName 是姓, MenLastName 是名
+    const firstNameEntry = nameList.find(n => n.Index === firstNameIdx);
+    const lastNameEntry = nameList.find(n => n.Index === lastNameIdx);
+    
+    const firstName = firstNameEntry?.Value || '侠';
+    const lastName = lastNameEntry?.Value || '客';
+    const heroName = firstName + lastName;
+
+    // 品质从配置中获取或默认为 1
+    const quality = portraitTemplate.Quality || 1;
+    const abilityIndex = portraitTemplate.AbilityIndex || 1;
+
     // 获取基础属性
     const baseStats = this.getBaseStats(quality);
 
-    // config_id: 临时使用品质作为配置ID，后续有配置表后改为真实配置ID
-    const configId = quality || 1;
-
     const result = await this.db.prepare(`
-      INSERT INTO heroes (city_id, wallet_address, name, quality, level, exp, attack, defense, hp, max_hp, training, state, config_id)
-      VALUES (?, ?, ?, ?, 1, 0, ?, ?, ?, ?, 0, 0, ?)
+      INSERT INTO heroes (city_id, wallet_address, name, quality, level, exp, attack, defense, hp, max_hp, training, state, config_id, ability_index, sex, icon, image)
+      VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)
     `).bind(
       cityId,
       walletAddress,
-      name,
+      heroName,
       quality,
+      heroLevel,
       baseStats.atk,
       baseStats.def,
       baseStats.hp,
       baseStats.hp,
-      configId
+      HERO_STATES.UNHIRED,  // C#: state = 6 (未雇佣)
+      portraitTemplate.Index || 1,
+      abilityIndex,
+      portraitTemplate.Sex || 1,
+      portraitTemplate.Icon || '/hero/1.gif',
+      portraitTemplate.Image || '/hero/1.png'
     ).run();
 
     return { success: true, heroId: result.meta.last_row_id };
@@ -304,81 +353,152 @@ class HeroService {
 
   /**
    * 训练武将
+   * C#: AddHeroTrain(userName, cityID, EventInfo eventSingle)
+   * 消耗资源(money, food) 并创建训练事件，完成后增加训练度
+   * 状态变为 DEFEND(1) = 驻守
    */
-  async train(heroId: number) {
+  async train(walletAddress: string, cityId: number, heroId: number) {
     const hero: any = await this.db.prepare(`
-      SELECT * FROM heroes WHERE id = ?
-    `).bind(heroId).first();
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
 
     if (!hero) {
       return { success: false, error: '武将不存在' };
     }
 
+    // C#: 训练度已满(100)则不能训练
     if ((hero.training || 0) >= HERO_CONFIG.MAX_TRAINING) {
       return { success: false, error: '训练度已满' };
     }
 
-    // 训练消耗
-    const cost = HERO_CONFIG.TRAINING_COST;
-    
-    // 检查玩家金币
-    const player: any = await this.db.prepare(`
-      SELECT gold FROM characters WHERE wallet_address = ?
-    `).bind(hero.wallet_address).first();
-
-    if ((player as any).gold < cost) {
-      return { success: false, error: '金币不足' };
+    // C#: 如果英雄在外(CorpsID != 0)不能训练
+    if ((hero as any).corps_id && (hero as any).corps_id !== 0) {
+      return { success: false, error: '英雄正在外出' };
     }
 
-    // 扣除金币
-    await this.db.prepare(`
-      UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
-    `).bind(cost, hero.wallet_address).run();
+    // 获取训练消耗 (C#: TrainCostMoney, TrainCostFood)
+    // 简化: 使用固定消耗
+    const costMoney = HERO_CONFIG.TRAINING_COST;
+    const costFood = HERO_CONFIG.TRAINING_COST;
 
-    // 增加训练度
-    const trainingGain = 10;
-    await this.db.prepare(`
-      UPDATE heroes SET training = MIN(?, ?) WHERE id = ?
-    `).bind(
-      (hero.training || 0) + trainingGain,
-      HERO_CONFIG.MAX_TRAINING,
-      heroId
-    ).run();
+    // 检查玩家资源
+    const player: any = await this.db.prepare(`
+      SELECT gold, money, food FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
 
-    return { success: true, trainingGain };
+    if (!player) {
+      return { success: false, error: '角色不存在' };
+    }
+
+    if ((player as any).gold < costMoney) {
+      return { success: false, error: '元宝不足' };
+    }
+    if ((player as any).money < costMoney) {
+      return { success: false, error: '银两不足' };
+    }
+    if ((player as any).food < costFood) {
+      return { success: false, error: '粮食不足' };
+    }
+
+    // C#: 扣除资源
+    await this.db.prepare(`
+      UPDATE characters SET gold = gold - ?, money = money - ?, food = food - ?
+      WHERE wallet_address = ?
+    `).bind(costMoney, costMoney, costFood, walletAddress).run();
+
+    // C#: 计算训练时间并创建事件 (简化: 立即完成训练)
+    // C#: AddHeroTrain 在事件完成时增加训练度
+    // 这里简化处理: 立即增加训练度
+    const trainingGain = HERO_CONFIG.UP_TRAINING || 10;
+    const newTraining = Math.min((hero.training || 0) + trainingGain, HERO_CONFIG.MAX_TRAINING);
+
+    // C#: 训练完成后状态变为 DEFEND(1) = 驻守
+    await this.db.prepare(`
+      UPDATE heroes SET training = ?, state = ?, updated_at = datetime('now')
+      WHERE id = ?
+    `).bind(newTraining, HERO_STATES.DEFEND, heroId).run();
+
+    // C#: 调用事件系统记录训练日志 (EventExAccess.AddEventHeroState)
+    // 这里记录到 events 表
+    await this.db.prepare(`
+      INSERT INTO events (wallet_address, city_id, event_type, action_type, obj_id, obj_level, obj_type, start_time, end_time, state)
+      VALUES (?, ?, 9, 9, ?, ?, 3, datetime('now'), datetime('now'), 1)
+    `).bind(walletAddress, cityId, heroId, trainingGain).run();
+
+    return { success: true, trainingGain, newTraining };
   }
 
   /**
    * 升级武将
+   * C#: HeroUpLevel(ref HeroInfo heroSingle, out int upFlag)
+   * - 消耗 LevelExpStatic 经验
+   * - 检查 maxLevel 防止超过最大等级
+   * - C# 公式: Level <= 80 用一套公式, > 80 用另一套公式
    */
-  async levelUp(heroId: number) {
+  async levelUp(walletAddress: string, heroId: number) {
     const hero: any = await this.db.prepare(`
-      SELECT * FROM heroes WHERE id = ?
-    `).bind(heroId).first();
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
 
     if (!hero) {
       return { success: false, error: '武将不存在' };
     }
 
-    // 计算所需经验
-    const requiredExp = this.calculateRequiredExp(hero.level);
+    // C#: 计算最大等级 (简化: 使用城市等级和 AbilityIndex 的最大值)
+    const city: any = await this.db.prepare(`
+      SELECT level FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind((hero as any).city_id, walletAddress).first();
 
-    if ((hero.exp || 0) < requiredExp) {
+    const cityLevel = city?.level || 1;
+    // C#: maxLevel 由建筑等级和 HeroAbility.MaxLevel 共同决定
+    // 简化: maxLevel = min(cityLevel * 5, 100)
+    const maxLevel = Math.min(cityLevel * 5, HERO_CONFIG.MAX_LEVEL);
+
+    if ((hero as any).level >= maxLevel) {
+      return { success: false, error: '已达到最大等级' };
+    }
+
+    // C#: 计算当前级别所需经验 HeroUpNeedExp
+    // Level <= 80: LevelExp + 10 + UpLevelExp * level^1.8 * 0.2
+    // Level > 80: 上述 + (level-80)^2.8 * UpLevelExp * (3 - Quality * 0.3)
+    const ability = getAbilityByIndex((hero as any).ability_index || 1);
+    const baseLevelExp = (ability?.LevelExp as number) || 100;
+    const upLevelExp = (ability?.UpLevelExp as number) || 50;
+    const quality = (hero as any).quality || 1;
+    const currentLevel = (hero as any).level || 1;
+
+    let requiredExp: number;
+    if (currentLevel <= 80) {
+      requiredExp = Math.floor(
+        baseLevelExp + 10 + upLevelExp * Math.pow(currentLevel, 1.8) * 0.2
+      );
+    } else {
+      requiredExp = Math.floor(
+        baseLevelExp + 10 + upLevelExp * Math.pow(currentLevel, 1.8) * 0.2 +
+        Math.pow(currentLevel - 80, 2.8) * (upLevelExp * (3 - quality * 0.3))
+      );
+    }
+
+    const currentExp = (hero as any).exp || 0;
+
+    // C#: while (LevelExp >= LevelExpStatic) { LevelExp -= LevelExpStatic; Level++; }
+    if (currentExp < requiredExp) {
       return { success: false, error: '经验不足' };
     }
 
-    // 扣除经验并升级
-    await this.db.prepare(`
-      UPDATE heroes SET exp = exp - ?, level = level + 1 WHERE id = ?
-    `).bind(requiredExp, heroId).run();
+    // C#: 扣除经验并升级
+    const remainingExp = currentExp - requiredExp;
+    const newLevel = currentLevel + 1;
 
     // 获取升级后属性
-    const bonus = QUALITY_BONUS[hero.quality as keyof typeof QUALITY_BONUS] || QUALITY_BONUS[1];
-    const newStats = this.getLevelUpStats(hero.quality, hero.level + 1);
+    const newStats = this.getLevelUpStats(quality, newLevel);
 
     await this.db.prepare(`
-      UPDATE heroes SET attack = ?, defense = ?, max_hp = ?, hp = ? WHERE id = ?
+      UPDATE heroes SET exp = ?, level = ?, attack = ?, defense = ?, max_hp = ?, hp = ?, updated_at = datetime('now')
+      WHERE id = ?
     `).bind(
+      remainingExp,
+      newLevel,
       newStats.atk,
       newStats.def,
       newStats.hp,
@@ -386,7 +506,7 @@ class HeroService {
       heroId
     ).run();
 
-    return { success: true, newLevel: hero.level + 1 };
+    return { success: true, newLevel, expConsumed: requiredExp };
   }
 
   /**
@@ -584,19 +704,19 @@ export const heroService = {
     return service.search(walletAddress, keyword);
   },
 
-  async recruit(db: D1Database, walletAddress: string, cityId: number, name: string, quality?: number) {
+  async recruit(db: D1Database, walletAddress: string, cityId: number, objID: number) {
     const service = new HeroService(db);
-    return service.recruit(walletAddress, cityId, name, quality);
+    return service.recruit(walletAddress, cityId, objID);
   },
 
-  async train(db: D1Database, heroId: number) {
+  async train(db: D1Database, walletAddress: string, cityId: number, heroId: number) {
     const service = new HeroService(db);
-    return service.train(heroId);
+    return service.train(walletAddress, cityId, heroId);
   },
 
-  async levelUp(db: D1Database, heroId: number) {
+  async levelUp(db: D1Database, walletAddress: string, heroId: number) {
     const service = new HeroService(db);
-    return service.levelUp(heroId);
+    return service.levelUp(walletAddress, heroId);
   },
 
   async setState(db: D1Database, heroId: number, state: number) {

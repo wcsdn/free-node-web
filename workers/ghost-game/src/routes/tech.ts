@@ -16,7 +16,37 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
-// 科技效果类型
+// ========== 辅助函数：按 Level 查找 InteriorData ==========
+// InteriorData 是数组，元素 { Level: N, ... }，Level 从 1 开始
+function getLevelData(interiorData: any[] | undefined, level: number): any {
+  if (!interiorData || level <= 0) return null;
+  return interiorData.find((d: any) => d.Level === level) || null;
+}
+function getNextLevelData(interiorData: any[] | undefined, currentLevel: number): any {
+  if (!interiorData) return null;
+  return interiorData.find((d: any) => d.Level === currentLevel + 1) || null;
+}
+
+// ========== bonus 配置（从配置文件读取，参考 Web.config） ==========
+// 参考 jx/BLL/Technic.cs:
+//   Tech 4: DefenceBuildNumDefault - 城防数量加成（每级额外增加城防单位数量）
+//   Tech 3: DefaultMaxHeroCount   - 武将数量上限加成
+//   Tech 2: CenterBuild           - 聚义厅等级上限加成
+//   Tech 11: TrainingHeroEffect    - 训练效果加成
+//   Tech 13: ItemCountOfOneCity    - 物品存储上限（<=0 时默认 50，在 GetStaticEffectValueByLevel 中处理）
+const TECH_BONUS_CONFIG: Record<number, number> = {
+  1: 0,    // 移山填海 - 面积（通过 NeedArea 校验，不在这里加bonus）
+  2: 15,   // 土木技术 - CenterBuild (聚义厅等级上限加成)
+  3: 10,   // 招贤纳士 - DefaultMaxHeroCount (武将数量上限加成)
+  4: 5,    // 计量技术 - DefenceBuildNumDefault (城防数量加成，每级额外增加5个城防单位)
+  11: 14,  // 犒劳三军 - TrainingHeroEffect (训练效果加成)
+  // Tech 13 (仓库扩容) 的默认值 50 在 GetStaticEffectValueByLevel 中特殊处理
+};
+function getTechBonus(techId: number): number {
+  return TECH_BONUS_CONFIG[techId] ?? 0;
+}
+
+// ========== 科技效果类型 ==========
 const TECH_EFFECT_TYPES = {
   AREA: 1,           // 区域/面积
   BUILDING_LEVEL: 2, // 建筑等级上限
@@ -46,7 +76,7 @@ app.get('/list', async (c) => {
     if (!city) return c.json({ success: true, data: [] });
 
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+      SELECT * FROM technics WHERE wallet_address = ? ORDER BY static_index
     `).bind(walletAddress).all();
 
     const techMap: Record<number, any> = {};
@@ -54,14 +84,47 @@ app.get('/list', async (c) => {
       techMap[(tech as any).static_index] = tech;
     }
 
+    // 计算玩家当前已用面积（用于 Tech ID=1 移山填海面积校验）
+    // 参考 jx/BLL/Technic.cs: 计算当前建筑群已用面积
+    let usedArea = 0;
+    try {
+      const buildings: any = await db.prepare(`
+        SELECT b.level, i.CostArea
+        FROM buildings b
+        LEFT JOIN interior_building_config i ON b.config_id = i.id
+        WHERE b.city_id = ? AND b.type = 'interior'
+      `).bind((city as any).id).all();
+      for (const b of (buildings.results || [])) {
+        usedArea += ((b as any).CostArea || 0) * ((b as any).level || 1);
+      }
+    } catch (_) { /* ignore */ }
+
     const techsWithStatus = (technicConfigs || []).map((techConfig: any) => {
       const playerTech = techMap[techConfig.ID];
       const currentLevel = playerTech?.technic_level || 0;
-      const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+      const levelData = getLevelData(techConfig.InteriorData, currentLevel);
+      const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
+      const maxLevel = techConfig.InteriorData?.length || 1;
+
+      // Tech ID=1 移山填海：面积校验 — 当前已用面积 < 依赖面积时返回 null（不显示该科技）
+      // 参考 jx/BLL/Technic.cs: if (CurrentArea < DependArea) return null;
+      if (techConfig.ID === 1 && currentLevel === 0) {
+        const dependArea = techConfig.DependArea || 0;
+        if (usedArea < dependArea) {
+          return null; // 面积不足，不显示该科技
+        }
+      }
+
+      // 特殊加成（参考 C# Technic.cs 中的 DefenceBuildNumDefault, DefaultMaxHeroCount 等）
+      // Tech ID=4: DefenceBuildNumDefault 加成同时作用于 CurrEff 和 NextEff
+      // Tech ID=3/2/11: 其他特殊加成
+      const bonus = getTechBonus(techConfig.ID);
+      const currEffBase = currentLevel > 0 ? (levelData?.EffValue || 0) : 0;
+      const nextEffBase = nextLevelData?.EffValue || 0;
 
       // 查找升级所需的科技依赖
       const dependTechnic = nextLevelData?.DependTechnicID
-        ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DdependTechnicID)
+        ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
         : null;
 
       return {
@@ -71,12 +134,12 @@ app.get('/list', async (c) => {
         icon: techConfig.Icon,
         description: techConfig.Des,
         level: currentLevel,
-        maxLevel: techConfig.InteriorData?.length || 1,
-        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        nextEffect: nextLevelData?.EffValue || 0,
-        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        maxLevel,
+        effect: currEffBase + (currentLevel > 0 ? bonus : 0),
+        nextEffect: nextEffBase + bonus,
+        canUpgrade: !!nextLevelData,
         isUnlocked: currentLevel > 0,
-        state: playerTech?.state || 0,
+        state: playerTech?.state ?? -1,
         upgradeCost: nextLevelData ? {
           money: nextLevelData.CostMoney || 0,
           food: nextLevelData.CostFood || 0,
@@ -89,13 +152,14 @@ app.get('/list', async (c) => {
         Name: techConfig.Name || '',
         Des: techConfig.Des || '',
         Level: currentLevel,
-        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
-        NextEff: nextLevelData?.EffValue || 0,
+        // Tech ID=4 补充 DefenceBuildNumDefault 加成（参考 C#: technicSingle.CurrentEff += DefenceBuildNumDefault）
+        CurrEff: currEffBase + (currentLevel > 0 ? bonus : 0),
+        CurrentEff: currEffBase + (currentLevel > 0 ? bonus : 0),
+        // C# TechnicInfo.NextEff: 下一级科技效果值（含加成）
+        NextEff: nextEffBase + bonus,
         EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
-        MaxLevel: techConfig.InteriorData?.length || 1,
-        State: playerTech?.state || 0,
+        MaxLevel: maxLevel,
+        State: playerTech?.state ?? -1,
         // 升级需求
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
         UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
@@ -114,7 +178,7 @@ app.get('/list', async (c) => {
         Area: techConfig.DependArea || 0,
         EventID: 0,
       };
-    });
+    }).filter(Boolean); // 过滤 null 值（Tech ID=1 面积不足时）
 
     return c.json({ success: true, data: techsWithStatus });
   } catch (err: any) {
@@ -140,7 +204,7 @@ app.post('/list', async (c) => {
     if (!city) return c.json({ success: true, data: [] });
 
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+      SELECT * FROM technics WHERE wallet_address = ? ORDER BY static_index
     `).bind(walletAddress).all();
 
     const techMap: Record<number, any> = {};
@@ -148,10 +212,38 @@ app.post('/list', async (c) => {
       techMap[(tech as any).static_index] = tech;
     }
 
+    // 计算玩家当前已用面积（用于 Tech ID=1 移山填海面积校验）
+    let usedArea = 0;
+    try {
+      const buildings: any = await db.prepare(`
+        SELECT b.level, i.CostArea
+        FROM buildings b
+        LEFT JOIN interior_building_config i ON b.config_id = i.id
+        WHERE b.city_id = ? AND b.type = 'interior'
+      `).bind((city as any).id).all();
+      for (const b of (buildings.results || [])) {
+        usedArea += ((b as any).CostArea || 0) * ((b as any).level || 1);
+      }
+    } catch (_) { /* ignore */ }
+
     const techsWithStatus = (technicConfigs || []).map((techConfig: any) => {
       const playerTech = techMap[techConfig.ID];
       const currentLevel = playerTech?.technic_level || 0;
-      const nextLevelData = techConfig.InteriorData?.[currentLevel];
+      const levelData = getLevelData(techConfig.InteriorData, currentLevel);
+      const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
+      const maxLevel = techConfig.InteriorData?.length || 1;
+
+      // Tech ID=1 移山填海：面积校验
+      if (techConfig.ID === 1 && currentLevel === 0) {
+        const dependArea = techConfig.DependArea || 0;
+        if (usedArea < dependArea) {
+          return null;
+        }
+      }
+
+      const bonus = getTechBonus(techConfig.ID);
+      const currEffBase = currentLevel > 0 ? (levelData?.EffValue || 0) : 0;
+      const nextEffBase = nextLevelData?.EffValue || 0;
       const dependTechnic = nextLevelData?.DependTechnicID
         ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
         : null;
@@ -163,12 +255,12 @@ app.post('/list', async (c) => {
         icon: techConfig.Icon,
         description: techConfig.Des,
         level: currentLevel,
-        maxLevel: techConfig.InteriorData?.length || 1,
-        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        nextEffect: nextLevelData?.EffValue || 0,
-        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        maxLevel,
+        effect: currEffBase + (currentLevel > 0 ? bonus : 0),
+        nextEffect: nextEffBase + bonus,
+        canUpgrade: !!nextLevelData,
         isUnlocked: currentLevel > 0,
-        state: playerTech?.state || 0,
+        state: playerTech?.state ?? -1,
         upgradeCost: nextLevelData ? {
           money: nextLevelData.CostMoney || 0,
           food: nextLevelData.CostFood || 0,
@@ -181,29 +273,29 @@ app.post('/list', async (c) => {
         Name: techConfig.Name || '',
         Des: techConfig.Des || '',
         Level: currentLevel,
-        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
-        NextEff: nextLevelData?.EffValue || 0,
+        // Tech ID=4 补充 DefenceBuildNumDefault 加成
+        CurrEff: currEffBase + (currentLevel > 0 ? bonus : 0),
+        CurrentEff: currEffBase + (currentLevel > 0 ? bonus : 0),
+        NextEff: nextEffBase + bonus,
         EffID: techConfig.EffectID || nextLevelData?.EffType || 0,
-        MaxLevel: techConfig.InteriorData?.length || 1,
-        State: playerTech?.state || 0,
+        MaxLevel: maxLevel,
+        State: playerTech?.state ?? -1,
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
         UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
         UpNeedFood: nextLevelData?.CostFood || 0,
         UpNeedMoney: nextLevelData?.CostMoney || 0,
-        UpNeedMen: nextLevelData?.CostMen || 0,
+        UpNeedMen: (nextLevelData as any)?.CostMen || 0,
         UpNeedGold: nextLevelData?.CostGold || 0,
-        UpNeedArea: nextLevelData?.NeedArea || 0,
+        UpNeedArea: (nextLevelData as any)?.NeedArea || 0,
         UpNeedTime: nextLevelData?.CostTime || 0,
-        UpNeedTechnicID: nextLevelData?.DependTechnicID || 0,
-        UpNeedTechnicLevel: nextLevelData?.DependTechnicLevel || 0,
+        UpNeedTechnicID: (nextLevelData as any)?.DependTechnicID || 0,
+        UpNeedTechnicLevel: (nextLevelData as any)?.DependTechnicLevel || 0,
         UpNeedTechnicName: dependTechnic?.Name || '',
         Icon: techConfig.Icon || '',
         Area: techConfig.DependArea || 0,
         EventID: 0,
       };
-    });
+    }).filter(Boolean);
 
     return c.json({ success: true, data: techsWithStatus });
   } catch (err: any) {
@@ -236,7 +328,7 @@ app.get('/detail', async (c) => {
 
     if (walletAddress) {
       const techs = await db.prepare(`
-        SELECT * FROM technics WHERE user_name = ? AND static_index = ?
+        SELECT * FROM technics WHERE wallet_address = ? AND static_index = ?
       `).bind(walletAddress, techId).all();
       if (techs.results && techs.results.length > 0) {
         playerTech = techs.results[0];
@@ -244,7 +336,8 @@ app.get('/detail', async (c) => {
       }
     }
 
-    const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+    const levelData = getLevelData(techConfig.InteriorData, currentLevel);
+    const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
     const dependTechnic = nextLevelData?.DependTechnicID
       ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
       : null;
@@ -258,11 +351,11 @@ app.get('/detail', async (c) => {
         description: techConfig.Des,
         level: currentLevel,
         maxLevel: techConfig.InteriorData?.length || 1,
-        effect: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        effect: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
         nextEffect: nextLevelData?.EffValue || 0,
-        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        canUpgrade: !!nextLevelData,
         isUnlocked: currentLevel > 0,
-        state: playerTech?.state || 0,
+        state: playerTech?.state ?? -1,
         upgradeCost: nextLevelData ? {
           money: nextLevelData.CostMoney || 0,
           food: nextLevelData.CostFood || 0,
@@ -275,13 +368,13 @@ app.get('/detail', async (c) => {
         Name: techConfig.Name || '',
         Des: techConfig.Des || '',
         Level: currentLevel,
-        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
+        CurrentEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
         // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
         NextEff: nextLevelData?.EffValue || 0,
         EffID: (techConfig as any).EffectID || nextLevelData?.EffType || 0,
         MaxLevel: techConfig.InteriorData?.length || 1,
-        State: playerTech?.state || 0,
+        State: playerTech?.state ?? -1,
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
         UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
         UpNeedFood: nextLevelData?.CostFood || 0,
@@ -357,7 +450,7 @@ app.get('/', async (c) => {
 
     // 获取玩家已研究的科技
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+      SELECT * FROM technics WHERE wallet_address = ? ORDER BY static_index
     `).bind(walletAddress).all();
 
     // 构建玩家科技映射
@@ -370,7 +463,8 @@ app.get('/', async (c) => {
     const techsWithStatus = (technicConfigs || []).map((techConfig: any) => {
       const playerTech = techMap[techConfig.ID];
       const currentLevel = playerTech?.technic_level || 0;
-      const nextLevelData = techConfig.InteriorData?.[currentLevel]; // 下一级数据
+      const levelData = getLevelData(techConfig.InteriorData, currentLevel);
+      const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
 
       return {
         id: techConfig.ID,
@@ -381,22 +475,22 @@ app.get('/', async (c) => {
         effectType: techConfig.InteriorData?.[0]?.EffType || 0,
         currentLevel,
         maxLevel: techConfig.InteriorData?.length || 1,
-        currentEffect: currentLevel > 0 
-          ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 
+        currentEffect: currentLevel > 0
+          ? (levelData?.EffValue || 0)
           : 0,
         nextEffect: nextLevelData?.EffValue || 0,
-        canUpgrade: currentLevel < (techConfig.InteriorData?.length || 1),
+        canUpgrade: !!nextLevelData,
         isUnlocked: currentLevel > 0,
-        state: playerTech?.state || 0,
-        
+        state: playerTech?.state ?? -1,
+
         // C# TechnicInfo 字段 (驼峰)
         ID: techConfig.ID,
         Index: techConfig.ID,
         Name: techConfig.Name || '',
         Des: techConfig.Des || '',
-        Level: playerTech?.level || 0,
-        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        Level: currentLevel,
+        CurrEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
+        CurrentEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
         // C# TechnicInfo.NextEff: 下一级科技效果值 (前端 Tips.js 使用)
         NextEff: nextLevelData?.EffValue || 0,
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
@@ -407,7 +501,7 @@ app.get('/', async (c) => {
         UpNeedGold: nextLevelData?.CostGold || 0,
         UpNeedArea: nextLevelData?.NeedArea || 0,
         EffID: techConfig.EffectID || 0,
-        
+
         // 当前等级升级消耗
         upgradeCost: nextLevelData ? {
           money: nextLevelData.CostMoney || 0,
@@ -415,7 +509,7 @@ app.get('/', async (c) => {
           gold: nextLevelData.CostGold || 0,
           time: nextLevelData.CostTime || 0,
         } : null,
-        
+
         // 升级需求
         upgradeRequirements: nextLevelData ? {
           buildingId: nextLevelData.NeedBuildingID,
@@ -457,7 +551,7 @@ app.get('/research', async (c) => {
       SELECT t.*, tc.name, tc.icon, tc.des, tc.interior_data
       FROM technics t
       JOIN tech_configs tc ON t.static_index = tc.id
-      WHERE t.user_name = ? AND t.state = 1
+      WHERE t.wallet_address = ? AND t.state = 1
     `).bind(walletAddress).all();
 
     const events = await db.prepare(`
@@ -507,11 +601,11 @@ app.post('/research', async (c) => {
 
     // 获取玩家当前科技等级
     const currentTech: any = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? AND static_index = ?
+      SELECT * FROM technics WHERE wallet_address = ? AND static_index = ?
     `).bind(walletAddress, static_index).first();
 
     const currentLevel = currentTech?.technic_level || 0;
-    const nextLevelData = config.InteriorData?.[currentLevel];
+    const nextLevelData = getNextLevelData(config.InteriorData, currentLevel);
 
     if (!nextLevelData) {
       return error(c, 'Tech already at max level');
@@ -537,7 +631,7 @@ app.post('/research', async (c) => {
     const dependTechnicId = (nextLevelData as any).DependTechnicID;
     if (dependTechnicId && dependTechnicId > 0) {
       const preTech: any = await db.prepare(`
-        SELECT technic_level FROM technics WHERE user_name = ? AND static_index = ?
+        SELECT technic_level FROM technics WHERE wallet_address = ? AND static_index = ?
       `).bind(walletAddress, dependTechnicId).first();
 
       if (!preTech || preTech.technic_level < 1) {
@@ -557,15 +651,15 @@ app.post('/research', async (c) => {
 
       // 创建科技记录（研究中）
       const techResult = await db.prepare(`
-        INSERT OR REPLACE INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+        INSERT OR REPLACE INTO technics (wallet_address, city_id, static_index, technic_level, state, build_id)
         VALUES (?, ?, ?, ?, 1, 0)
       `).bind(walletAddress, city.id, static_index, currentLevel).run();
 
-      // 创建时间事件
+      // 创建时间事件（target_id 使用 static_index，而非自增ID）
       await db.prepare(`
         INSERT INTO time_events (wallet_address, city_id, event_type, target_id, start_time, end_time, state)
         VALUES (?, ?, 2, ?, datetime('now'), datetime('?', 'unixepoch'), 0)
-      `).bind(walletAddress, city.id, techResult.meta.last_row_id, endTime.getTime() / 1000).run();
+      `).bind(walletAddress, city.id, static_index, endTime.getTime() / 1000).run();
 
       return success(c, {
         techId: techResult.meta.last_row_id,
@@ -580,7 +674,7 @@ app.post('/research', async (c) => {
     } else {
       // 立即完成
       await db.prepare(`
-        INSERT OR REPLACE INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+        INSERT OR REPLACE INTO technics (wallet_address, city_id, static_index, technic_level, state, build_id)
         VALUES (?, ?, ?, ?, 0, 0)
       `).bind(walletAddress, city.id, static_index, currentLevel + 1).run();
 
@@ -613,7 +707,7 @@ app.post('/:id/upgrade', async (c) => {
       SELECT t.*, c.money, c.food 
       FROM technics t 
       JOIN cities c ON t.city_id = c.id 
-      WHERE t.id = ? AND t.user_name = ?
+      WHERE t.id = ? AND t.wallet_address = ?
     `).bind(techId, walletAddress).first();
 
     if (!tech) return error(c, 'Tech not found');
@@ -622,7 +716,7 @@ app.post('/:id/upgrade', async (c) => {
     if (!config) return error(c, 'Tech config not found');
 
     const currentLevel = tech.technic_level;
-    const nextLevelData = config.InteriorData?.[currentLevel];
+    const nextLevelData = getNextLevelData(config.InteriorData, currentLevel);
 
     if (!nextLevelData) {
       return error(c, 'Tech already at max level');
@@ -671,7 +765,7 @@ app.get('/effects', async (c) => {
 
   try {
     const techs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? AND technic_level > 0
+      SELECT * FROM technics WHERE wallet_address = ? AND technic_level > 0
     `).bind(walletAddress).all();
 
     const effects: Record<string, number> = {};
@@ -679,14 +773,16 @@ app.get('/effects', async (c) => {
 
     for (const tech of (techs.results || [])) {
       const config = (technicConfigs || []).find((t: any) => t.ID === (tech as any).static_index);
-      if (config && config.InteriorData?.[(tech as any).technic_level - 1]) {
-        const levelData = config.InteriorData[(tech as any).technic_level - 1];
-        const effectType = levelData.EffType;
-        const effectValue = levelData.EffValue;
-        
-        const typeName = Object.entries(TECH_EFFECT_TYPES).find(([_, v]) => v === effectType)?.[0] || 'UNKNOWN';
-        effects[typeName] = (effects[typeName] || 0) + effectValue;
-        totalBonus += effectValue;
+      if (config) {
+        const levelData = getLevelData(config.InteriorData, (tech as any).technic_level);
+        if (levelData) {
+          const effectType = levelData.EffType;
+          const effectValue = levelData.EffValue;
+
+          const typeName = Object.entries(TECH_EFFECT_TYPES).find(([_, v]) => v === effectType)?.[0] || 'UNKNOWN';
+          effects[typeName] = (effects[typeName] || 0) + effectValue;
+          totalBonus += effectValue;
+        }
       }
     }
 
@@ -697,6 +793,94 @@ app.get('/effects', async (c) => {
     });
   } catch (err: any) {
     return error(c, err.message);
+  }
+});
+
+/**
+ * GET /tech/eff-value - 获取指定科技的效果值
+ * 对应 C# Technic.getTechnicEffValue(userName, cityID, TechnicIndex)
+ * C# 逻辑:
+ *   1. 检查 TechnicIndex 是否在 XmlData.Technic 中
+ *   2. 获取该玩家该城市的科技信息 (CityInteriorInfo)
+ *   3. 从 interior.TechnicLevel[TechnicIndex - 1] 获取等级
+ *   4. 若 level <= 0 返回 0
+ *   5. 返回 XmlData.Technic[TechnicIndex].InteriorData[level].EffValue
+ *   6. 特殊加成: Tech 4 +0, Tech 3 +10, Tech 2 +15, Tech 11 +14
+ */
+app.get('/eff-value', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, technic_index } = c.req.query();
+  const techIndex = parseInt(technic_index as string || '0');
+
+  if (!techIndex) {
+    return error(c, 'Missing required field: technic_index', 400);
+  }
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    // 获取城市（支持指定 city_id 或取第一个）
+    let cityId: number;
+    let city: any;
+    if (city_id) {
+      city = await db.prepare(`
+        SELECT id FROM cities WHERE wallet_address = ? AND id = ?
+      `).bind(walletAddress, parseInt(city_id as string)).first();
+      if (!city) return error(c, 'City not found or unauthorized', 404);
+      cityId = (city as any).id;
+    } else {
+      city = await db.prepare(`
+        SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+      `).bind(walletAddress).first();
+      if (!city) return error(c, 'No city found', 404);
+      cityId = (city as any).id;
+    }
+
+    // 检查科技配置是否存在
+    const config = (technicConfigs || []).find((t: any) => t.ID === techIndex);
+    if (!config) return error(c, `Technic ${techIndex} not found in config`, 404);
+
+    // 获取该玩家该城市的科技等级
+    // technics 表中 static_index 对应科技 ID, technic_level 对应等级
+    const playerTech: any = await db.prepare(`
+      SELECT technic_level FROM technics WHERE wallet_address = ? AND static_index = ?
+    `).bind(walletAddress, techIndex).first();
+
+    const level = playerTech?.technic_level || 0;
+
+    if (level <= 0) {
+      return success(c, {
+        technicIndex: techIndex,
+        level: 0,
+        effectValue: 0,
+        bonus: 0,
+        message: 'Tech not researched',
+      });
+    }
+
+    // 获取该等级的效果值
+    const levelData = config.InteriorData?.find((l: any) => l.Level === level);
+    if (!levelData) return error(c, `Level ${level} not found for technic ${techIndex}`, 404);
+
+    let effectValue = levelData.EffValue || 0;
+
+    // 应用特殊加成（从配置读取）
+    const bonus = getTechBonus(techIndex);
+    const finalEffect = effectValue + bonus;
+
+    return success(c, {
+      technicIndex: techIndex,
+      level,
+      effectValue,
+      bonus,
+      finalEffect,
+      cityId,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
   }
 });
 
@@ -724,7 +908,7 @@ app.get('/by-building', async (c) => {
 
     // 获取玩家已研究的科技
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? ORDER BY static_index
+      SELECT * FROM technics WHERE wallet_address = ? ORDER BY static_index
     `).bind(walletAddress).all();
 
     // 构建玩家科技映射
@@ -743,7 +927,7 @@ app.get('/by-building', async (c) => {
       .map((techConfig: any) => {
         const playerTech = techMap[techConfig.ID];
         const currentLevel = playerTech?.technic_level || 0;
-        const nextLevelData = techConfig.InteriorData?.[currentLevel];
+        const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
 
         return {
           id: techConfig.ID,
@@ -799,7 +983,7 @@ app.get('/by-building/:cityId/:buildingIndex', async (c) => {
 
     // 获取该城市的所有科技（state=0 已完成 or state=1 研究中）
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? AND city_id = ?
+      SELECT * FROM technics WHERE wallet_address = ? AND city_id = ?
     `).bind(walletAddress, cityId).all();
 
     const techMap: Record<number, any> = {};
@@ -829,45 +1013,26 @@ app.get('/by-building/:cityId/:buildingIndex', async (c) => {
       .map((techConfig: any) => {
         const playerTech = techMap[techConfig.ID];
         const currentLevel = playerTech?.technic_level || 0;
-        const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+        const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel) as any;
+        const levelData = getLevelData(techConfig.InteriorData, currentLevel);
         const maxLevel = techConfig.InteriorData?.length || 1;
 
-        // 特殊加成处理（参考 C# 代码）
-        let currEff = currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0;
-        let nextEff = nextLevelData?.EffValue || 0;
+        // 特殊加成处理（从配置读取）
+        const bonus = getTechBonus(techConfig.ID);
+        let currEff = currentLevel > 0 ? (levelData?.EffValue || 0) + bonus : 0;
+        let nextEff = (nextLevelData?.EffValue || 0) + bonus;
 
-        // 科技ID=4 计量技术：城防单位数量加成（默认+基础值）
-        if (techConfig.ID === 4) {
-          const defaultDefNum = 5; // DefenceBuildNumDefault
-          currEff += currentLevel > 0 ? defaultDefNum : 0;
-          nextEff += defaultDefNum;
-        }
-        // 科技ID=3 招贤纳士：侠客数量加成
-        if (techConfig.ID === 3) {
-          const defaultHero = 5; // DefaultMaxHeroCount
-          currEff += currentLevel > 0 ? defaultHero : 0;
-          nextEff += defaultHero;
-        }
-        // 科技ID=2 土木技术：聚义厅等级上限加成
-        if (techConfig.ID === 2) {
-          const centerLevel = 1; // CenterBuild 默认值
-          currEff += currentLevel > 0 ? centerLevel : 0;
-          nextEff += centerLevel;
-        }
-        // 科技ID=11 犒劳三军：训练弟子效果加成
-        if (techConfig.ID === 11) {
-          const trainingEffect = 0; // TrainingHeroEffect 默认值
-          currEff += currentLevel > 0 ? trainingEffect : 0;
-          nextEff += trainingEffect;
-        }
-
-        // 科技ID=1 移山填海：检查面积需求
+        // 科技ID=1 移山填海：面积校验 - 参考 jx/BLL/Technic.cs
+        // 如果当前已用面积 < 依赖面积（DependArea），返回 null（不显示该科技）
         let areaCheck = true;
         if (techConfig.ID === 1 && nextLevelData?.NeedArea) {
           areaCheck = usedAreaForTech1 >= nextLevelData.NeedArea;
+          if (!areaCheck) {
+            return null; // 面积不足，不返回该科技（对应 C# return null）
+          }
         }
 
-        const canUpgrade = currentLevel < maxLevel && areaCheck;
+        const canUpgrade = !!nextLevelData && areaCheck;
         const dependTechnic = nextLevelData?.DependTechnicID
           ? (technicConfigs || []).find((t: any) => t.ID === nextLevelData.DependTechnicID)
           : null;
@@ -900,7 +1065,7 @@ app.get('/by-building/:cityId/:buildingIndex', async (c) => {
           AreaCheck: areaCheck,
           EventID: 0,
         };
-      });
+      }).filter(Boolean);
 
     return success(c, {
       cityId,
@@ -932,7 +1097,7 @@ app.get('/user', async (c) => {
 
     // 获取该用户所有科技
     const playerTechs = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ?
+      SELECT * FROM technics WHERE wallet_address = ?
     `).bind(walletAddress).all();
 
     const techMap: Record<number, any> = {};
@@ -944,7 +1109,8 @@ app.get('/user', async (c) => {
     const allTechs = (technicConfigs || []).map((techConfig: any) => {
       const playerTech = techMap[techConfig.ID];
       const currentLevel = playerTech?.technic_level || 0;
-      const nextLevelData = techConfig.InteriorData?.[currentLevel] as any;
+      const levelData = getLevelData(techConfig.InteriorData, currentLevel);
+      const nextLevelData = getNextLevelData(techConfig.InteriorData, currentLevel);
       const maxLevel = techConfig.InteriorData?.length || 1;
 
       return {
@@ -954,14 +1120,14 @@ app.get('/user', async (c) => {
         Icon: techConfig.Icon || '',
         Des: techConfig.Des || '',
         Level: currentLevel,
-        CurrEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
-        CurrentEff: currentLevel > 0 ? techConfig.InteriorData?.[currentLevel - 1]?.EffValue || 0 : 0,
+        CurrEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
+        CurrentEff: currentLevel > 0 ? (levelData?.EffValue || 0) : 0,
         NextEff: nextLevelData?.EffValue || 0,
         EffID: nextLevelData?.EffType || techConfig.InteriorData?.[0]?.EffType || 0,
         MaxLevel: maxLevel,
         State: playerTech?.state ?? -1,
         IsUnlocked: currentLevel > 0,
-        CanUpgrade: currentLevel < maxLevel,
+        CanUpgrade: !!nextLevelData,
         UpNeedBuildingID: nextLevelData?.NeedBuildingID || 0,
         UpNeedBuildingLevel: nextLevelData?.NeedBuildingLevel || 0,
         UpNeedFood: nextLevelData?.CostFood || 0,
@@ -983,20 +1149,19 @@ app.get('/user', async (c) => {
     for (const techConfig of (technicConfigs || [])) {
       const playerTech = techMap[techConfig.ID];
       const level = playerTech?.technic_level || 0;
-      if (level > 0 && techConfig.InteriorData?.[level - 1]) {
-        const levelData = techConfig.InteriorData[level - 1];
-        const effType = levelData.EffType;
-        const effValue = levelData.EffValue;
+      if (level > 0) {
+        const levelData = getLevelData(techConfig.InteriorData, level);
+        if (levelData) {
+          const effType = levelData.EffType;
+          const effValue = levelData.EffValue;
 
-        // 特殊加成（见 C#）
-        let finalEff = effValue;
-        if (techConfig.ID === 4) finalEff += 5; // 计量技术
-        if (techConfig.ID === 3) finalEff += 5; // 招贤纳士
-        if (techConfig.ID === 2) finalEff += 1; // 土木技术
-        if (techConfig.ID === 11) finalEff += 0; // 犒劳三军（基础效果）
+          // 特殊加成（从配置读取）
+          const bonus = getTechBonus(techConfig.ID);
+          const finalEff = effValue + bonus;
 
-        const typeName = getEffectTypeName(effType);
-        effectSummary[typeName] = (effectSummary[typeName] || 0) + finalEff;
+          const typeName = getEffectTypeName(effType);
+          effectSummary[typeName] = (effectSummary[typeName] || 0) + finalEff;
+        }
       }
     }
 
@@ -1038,7 +1203,7 @@ app.post('/level', async (c) => {
 
     // 获取当前科技记录
     const tech: any = await db.prepare(`
-      SELECT * FROM technics WHERE user_name = ? AND static_index = ?
+      SELECT * FROM technics WHERE wallet_address = ? AND static_index = ?
     `).bind(walletAddress, technic_index).first();
 
     const config = (technicConfigs || []).find((t: any) => t.ID === technic_index);
@@ -1060,11 +1225,11 @@ app.post('/level', async (c) => {
 
     // 更新科技等级
     const updateResult = await db.prepare(`
-      INSERT OR REPLACE INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+      INSERT OR REPLACE INTO technics (wallet_address, city_id, static_index, technic_level, state, build_id)
       VALUES (?, ?, ?, ?, 0, 0)
     `).bind(walletAddress, city.id, technic_index, targetLevel).run();
 
-    const levelData = config.InteriorData?.[targetLevel - 1] as any;
+    const levelData = getLevelData(config.InteriorData, targetLevel) as any;
     const effectType = levelData?.EffType || 0;
     const effectValue = levelData?.EffValue || 0;
 
@@ -1108,26 +1273,26 @@ app.get('/effect-calc', async (c) => {
 
     const baseValue = levelData.EffValue || 0;
 
-    // 应用特殊加成
-    let finalValue = baseValue;
-    if (techIndex === 4) finalValue += 5; // 计量技术
-    if (techIndex === 3) finalValue += 5; // 招贤纳士
-    if (techIndex === 2) finalValue += 1; // 土木技术
+    // 应用特殊加成（从配置读取）
+    const bonus = getTechBonus(techIndex);
+    let finalValue = baseValue + bonus;
+
     if (techIndex === 1) {
       // 移山填海：返回面积上限
       const maxArea = baseValue;
-      return success(c, { maxArea, baseValue, effectType: effType });
+      return success(c, { maxArea, baseValue, bonus, effectType: effType });
     }
     if (techIndex === 13) {
-      // 仓库扩容：返回物品存储上限
-      const defaultItemCount = 50; // ItemCountOfOneCity
+      // 仓库扩容：返回物品存储上限 (ItemCountOfOneCity 默认 50)
+      const defaultItemCount = 50;
       const maxItems = baseValue > 0 ? baseValue : defaultItemCount;
-      return success(c, { maxItems, baseValue, effectType: effType });
+      return success(c, { maxItems, baseValue, bonus, effectType: effType });
     }
 
     return success(c, {
       effectValue: finalValue,
       baseValue,
+      bonus,
       effectType: effType,
       technicIndex: techIndex,
       level: lvl,
@@ -1159,6 +1324,101 @@ function getEffectTypeName(effType: number): string {
     15: 'MARCH_SPEED',   // 令行禁止 - 行军速度
   };
   return map[effType] || `TYPE_${effType}`;
+}
+
+// ========== 缺失方法补充（C# Technic.cs 参考实现）==========
+
+/**
+ * isBeTechnic - 检查指定科技是否在玩家的科技列表中
+ * 对应 C# Technic.isBeTechnic(ArrayList technicList, int technicId)
+ */
+function isBeTechnic(technicList: any[], technicId: number): boolean {
+  return technicList.some((t: any) => t.StaticIndex === technicId);
+}
+
+/**
+ * checkTechnicFull - 检查指定建筑关联的科技是否都存在（补充缺失的）
+ * 对应 C# Technic.checkTechnicFull(userName, cityID, buildingIndex)
+ * 逻辑：
+ *   1. 获取该 buildingIndex 关联的所有科技（DependBuildingID = buildingIndex）
+ *   2. 获取玩家已有的科技列表
+ *   3. 若有科技缺失，自动创建记录（state=-1, level=0）并插入数据库
+ *   4. 返回更新后的完整科技列表
+ */
+async function checkTechnicFull(
+  db: any,
+  walletAddress: string,
+  cityId: number,
+  buildingIndex: number
+): Promise<{ technicList: any[]; newlyAdded: number[] }> {
+  // 获取该建筑关联的所有科技
+  const relatedTechs = (technicConfigs || []).filter(
+    (t: any) => t.DependBuildingID === buildingIndex
+  );
+
+  if (relatedTechs.length === 0) {
+    return { technicList: [], newlyAdded: [] };
+  }
+
+  // 获取玩家已有的科技
+  const playerTechs: any = await db.prepare(`
+    SELECT * FROM technics WHERE wallet_address = ? AND city_id = ?
+  `).bind(walletAddress, cityId).all();
+
+  const existingMap = new Map<number, any>();
+  for (const tech of (playerTechs.results || [])) {
+    existingMap.set((tech as any).static_index, tech);
+  }
+
+  const technicList: any[] = [];
+  const newlyAdded: number[] = [];
+
+  for (const techConfig of relatedTechs) {
+    const techId = techConfig.ID;
+    const existing = existingMap.get(techId);
+
+    if (existing) {
+      technicList.push(existing);
+    } else {
+      // 科技不存在，自动创建（state=-1 表示未激活，level=0）
+      const insertResult = await db.prepare(`
+        INSERT INTO technics (wallet_address, city_id, static_index, technic_level, state, build_id)
+        VALUES (?, ?, ?, 0, -1, 0)
+      `).bind(walletAddress, cityId, techId).run();
+
+      const newTech = {
+        id: insertResult.meta?.last_row_id,
+        wallet_address: walletAddress,
+        city_id: cityId,
+        static_index: techId,
+        technic_level: 0,
+        state: -1,
+        build_id: 0,
+      };
+      technicList.push(newTech);
+      newlyAdded.push(techId);
+    }
+  }
+
+  return { technicList, newlyAdded };
+}
+
+/**
+ * GetStaticEffectValueByLevel - 获取指定科技指定等级的效果值（含加成）
+ * 对应 C# Technic.GetStaticEffectValueByLevel(technicIndex, level)
+ */
+function getStaticEffectValueByLevel(techIndex: number, level: number): number {
+  if (level <= 0) return 0;
+
+  const config = (technicConfigs || []).find((t: any) => t.ID === techIndex);
+  if (!config) return 0;
+
+  const levelData = getLevelData(config.InteriorData, level);
+  if (!levelData) return 0;
+
+  const baseValue = levelData.EffValue || 0;
+  const bonus = getTechBonus(techIndex);
+  return baseValue + bonus;
 }
 
 export default app;

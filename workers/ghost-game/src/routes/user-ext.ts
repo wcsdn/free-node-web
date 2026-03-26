@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import { UserServiceExtension, SIGNIN_CONFIG, VIP_CONFIG, LEVEL_CONFIG } from '../services';
+import initConfig from '../config/init.json';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -57,7 +58,7 @@ app.get('/info', async (c) => {
     const user: any = await db.prepare(`
       SELECT u.*, c.id as city_id, c.name as city_name, c.money, c.food,
              c.population, c.prosperity, c.map_image, c.position
-      FROM users u
+      FROM characters u
       LEFT JOIN cities c ON c.wallet_address = u.wallet_address
       WHERE u.wallet_address = ?
     `).bind(wallet).first();
@@ -76,7 +77,7 @@ app.get('/info', async (c) => {
 
     // 获取科技数量（已解锁）
     const technics: any = await db.prepare(`
-      SELECT COUNT(*) as count FROM technics WHERE user_name = ? AND technic_level > 0
+      SELECT COUNT(*) as count FROM technics WHERE wallet_address = ? AND technic_level > 0
     `).bind(wallet).first();
 
     // 获取装备/物品数量
@@ -98,12 +99,33 @@ app.get('/info', async (c) => {
       }
     }
 
-    // 保护期剩余时间
+    // 参考 jx/BLL/User.cs GetUserInfo() - 配置字段
+    // 基础队列数从配置读取
+    let defanceBuildingQueueNum = initConfig.Init.DefanceBuildingQueueNum;
+    let interiorBuildingQueueNum = initConfig.Init.InteriorBuildingQueueNum;
+    const degradeNeedResPercent = initConfig.Init.DegradeNeedResPercent;
+    const fastUpDateNeedTimePercent = initConfig.Init.FastUpDateNeedTimePercent;
+    const eventBreakReturnResPercent = initConfig.Init.EventBreakReturnResPercent;
+    const degradeNeedTimePercent = initConfig.Init.DegradeNeedTimePercent;
+
+    // VIP持续效果检测 (PersisEffect MainType=1 增加队列数)
+    // 参考 jx/BLL/User.cs: if(PersistEffectAccess.GetPerSistEffectByMainEffectType(userName,1) != null)
+    const persistEffect: any = await db.prepare(`
+      SELECT * FROM persist_effects WHERE wallet_address = ? AND main_effect_type = 1 LIMIT 1
+    `).bind(wallet).first();
+
+    if (persistEffect) {
+      interiorBuildingQueueNum += 1;
+      defanceBuildingQueueNum += 2;
+    }
+
+    // 保护期剩余时间 (从配置读取 NewUserTime，单位：秒)
+    // 参考 jx/BLL/User.cs: endProtect = userSingle.CreateDate.AddSeconds(int.Parse(ConfigurationManager.AppSettings["NewUserTime"]))
     let protectRemain = 0;
     if (user.created_at) {
       const createTime = new Date(user.created_at).getTime();
-      const protectDuration = 24 * 60 * 60 * 1000; // 24小时
-      const endTime = createTime + protectDuration;
+      const protectDurationMs = (initConfig.Init.NewUserTime || 86400) * 1000; // 默认24小时
+      const endTime = createTime + protectDurationMs;
       protectRemain = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
     }
 
@@ -122,12 +144,12 @@ app.get('/info', async (c) => {
       // 用户基础信息
       id: user.id,
       walletAddress: user.wallet_address,
-      username: user.username || '',
+      username: user.name || user.wallet_address,
       level: user.level || 1,
       exp: user.exp || 0,
       nextExp,
       gold: user.gold || 0,
-      gems: user.diamonds || 0,
+      gems: user.gems || 0,
       vipLevel: user.vip_level || 0,
       vipExp: user.vip_exp || 0,
       loginDays: user.login_days || 0,
@@ -153,6 +175,15 @@ app.get('/info', async (c) => {
       },
       // VIP加成
       vipBonus,
+      // 建筑队列配置 (参考 jx/BLL/User.cs GetUserInfo)
+      DefanceBuildingQueueNum: defanceBuildingQueueNum,
+      InteriorBuildingQueueNum: interiorBuildingQueueNum,
+      DegradeNeedResPercent: degradeNeedResPercent,
+      FastUpDateNeedTimePercent: fastUpDateNeedTimePercent,
+      EventBreakReturnResPercent: eventBreakReturnResPercent,
+      DegradeNeedTimePercent: degradeNeedTimePercent,
+      // VIP持续效果标记
+      hasPersisEffectMainType1: !!persistEffect,
       // 保护期
       protectRemain,
       endProtect: protectRemain > 0
@@ -198,11 +229,10 @@ app.get('/info/:username', async (c) => {
   if (!db) return error(c, 'DB not configured', 503);
 
   try {
-    // 通过用户名查找（username 可能是 display name）
-    // 先通过 wallet_address 查找（如果有）
+    // 通过钱包地址或显示名称查找用户公开信息
     const user: any = await db.prepare(`
-      SELECT wallet_address, username, level, vip_level, created_at
-      FROM users WHERE wallet_address = ? OR username = ?
+      SELECT wallet_address, name, level, vip_level, created_at
+      FROM characters WHERE wallet_address = ? OR name = ?
       LIMIT 1
     `).bind(targetUsername, targetUsername).first();
 
@@ -222,7 +252,7 @@ app.get('/info/:username', async (c) => {
     `).bind((user as any).wallet_address).first();
 
     return success(c, {
-      username: (user as any).username || (user as any).wallet_address,
+      username: (user as any).name || (user as any).wallet_address,
       level: (user as any).level || 1,
       vipLevel: (user as any).vip_level || 0,
       cityName: city?.name || '',
@@ -365,7 +395,7 @@ app.get('/statistics', async (c) => {
     const user: any = await db.prepare(`
       SELECT level, exp, gold, diamonds, vip_level, vip_exp,
              login_days, last_login, created_at
-      FROM users WHERE wallet_address = ?
+      FROM characters WHERE wallet_address = ?
     `).bind(wallet).first();
 
     if (!user) return error(c, 'User not found', 404);
@@ -396,7 +426,7 @@ app.get('/statistics', async (c) => {
     const techStats: any = await db.prepare(`
       SELECT COUNT(*) as tech_count, SUM(technic_level) as total_levels,
              MAX(technic_level) as max_level
-      FROM technics WHERE user_name = ? AND technic_level > 0
+      FROM technics WHERE wallet_address = ? AND technic_level > 0
     `).bind(wallet).first();
 
     // 物品统计
@@ -586,7 +616,7 @@ app.get('/sub', async (c) => {
   try {
     const user: any = await db.prepare(`
       SELECT u.*, c.id as city_id, c.name as city_name, c.prosperity
-      FROM users u
+      FROM characters u
       LEFT JOIN cities c ON c.wallet_address = u.wallet_address
       WHERE u.wallet_address = ?
     `).bind(wallet).first();
@@ -598,13 +628,13 @@ app.get('/sub', async (c) => {
       SELECT * FROM user_sub_info WHERE wallet_address = ?
     `).bind(wallet).first();
 
-    // 军衔信息（根据繁荣度计算）
+    // 军衔信息（根据繁荣度计算，对应 C#: user.Title = CityInterior.ProsperityToLevel(user.Bloom)）
     const bloom = (user as any)?.prosperity || 0;
-    const title = await getTitleByBloom(bloom);
+    const Title = await getTitleByBloom(bloom);
 
-    // 排名
+    // 排名（对应 C#: user.Place = UserAccess.GetUserRank(UserName)）
     const rankResult: any = await db.prepare(`
-      SELECT COUNT(*) + 1 as rank FROM users WHERE level > (SELECT level FROM users WHERE wallet_address = ?)
+      SELECT COUNT(*) + 1 as rank FROM characters WHERE level > (SELECT level FROM characters WHERE wallet_address = ?)
     `).bind(wallet).first();
 
     // 联盟信息
@@ -618,12 +648,12 @@ app.get('/sub', async (c) => {
 
     return success(c, {
       walletAddress: (user as any).wallet_address,
-      username: (user as any).username || '',
+      username: (user as any).name || (user as any).wallet_address,
       cityId: (user as any).city_id || 0,
       cityName: (user as any).city_name || '',
       bloom,
-      title,
-      rank: (rankResult as any)?.rank || 0,
+      Title,
+      Place: (rankResult as any)?.rank || 0,
       level: (user as any).level || 1,
       exp: (user as any).exp || 0,
       gold: (user as any).gold || 0,

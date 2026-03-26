@@ -42,6 +42,227 @@ async function calcUserTotalPower(db: D1Database, walletAddress: string): Promis
   return top3.reduce((sum, p) => sum + p, 0);
 }
 
+// ==================== 竞技场配置（从 KV 读取，支持动态配置）====================
+
+/** 默认竞技场配置 */
+const ARENA_DEFAULT_CONFIG = {
+  startTime: '20:00:00',
+  endTime: '22:00:00',
+  // 竞技场 NPC 位置列表（参考 jx/BLL/FestivalActive.cs XmlData.ArenaNpcPosList）
+  // 10个守擂位置（0-9为第一组，10-19为第二组）
+  npcPosList: [1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
+               1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020],
+  // 战胜勋章基础值（按擂台等级）
+  winnerInsignia: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  // 基础积分
+  scoreBase: 32,
+};
+
+/**
+ * 从 KV 读取竞技场时间配置
+ * 参考 jx/BLL/FestivalActive.GetArenaStartTime() / GetArenaEndTime()
+ */
+async function getArenaTimeConfig(kv: KVNamespace | undefined): Promise<{ startTime: string; endTime: string }> {
+  let startTime = ARENA_DEFAULT_CONFIG.startTime;
+  let endTime = ARENA_DEFAULT_CONFIG.endTime;
+  if (kv) {
+    try {
+      const savedStart = await kv.get('arena:start_time');
+      const savedEnd = await kv.get('arena:end_time');
+      if (savedStart) startTime = savedStart;
+      if (savedEnd) endTime = savedEnd;
+    } catch (_) { /* use defaults */ }
+  }
+  return { startTime, endTime };
+}
+
+/**
+ * GetArenaLevel - 获取指定擂台位置的等级
+ * 参考 jx/BLL/FestivalActive.GetArenaLevel(npcPos)
+ * 计算逻辑：
+ *   i > 9 时 npcLevel = i - 10，否则 npcLevel = i
+ *   npcLevel == 9 时返回 (npcLevel + 1) * 10，否则 (npcLevel + 1) * 10 - 1
+ */
+function getArenaLevel(npcPos: number): number {
+  const posList = ARENA_DEFAULT_CONFIG.npcPosList;
+  for (let i = 0; i < posList.length; i++) {
+    if (posList[i] === npcPos) {
+      let npcLevel = i;
+      if (i > 9) npcLevel = i - 10;
+      // 参考 C#: if(npcLevel == 9) npcLevel = (npcLevel + 1) * 10; else npcLevel = (npcLevel + 1) * 10 - 1;
+      if (npcLevel === 9) {
+        return (npcLevel + 1) * 10;
+      } else {
+        return (npcLevel + 1) * 10 - 1;
+      }
+    }
+  }
+  return 0;
+}
+
+/**
+ * GetArenaInsignia - 获取指定擂台位置的勋章值
+ * 参考 jx/BLL/FestivalActive.GetArenaInsignia(npcPos)
+ * 勋章值 = winnerInsignia[npcLevel]
+ */
+function getArenaInsignia(npcPos: number): number {
+  const posList = ARENA_DEFAULT_CONFIG.npcPosList;
+  const insigniaList = ARENA_DEFAULT_CONFIG.winnerInsignia;
+  for (let i = 0; i < posList.length; i++) {
+    if (posList[i] === npcPos) {
+      let npcLevel = i;
+      if (i > 9) npcLevel = i - 10;
+      return insigniaList[npcLevel] || 0;
+    }
+  }
+  return 0;
+}
+
+/**
+ * GetWinnerName - 获取指定擂台位置的冠军名字
+ * 参考 jx/BLL/FestivalActive.GetWinnerName(pos)
+ * 从 arena_winners 表获取当前冠军（type=2 为日冠军）
+ */
+async function getWinnerName(db: D1Database, npcPos: number, serverUnit = 's1'): Promise<string | null> {
+  try {
+    const winner: any = await db.prepare(`
+      SELECT winner_name FROM arena_winners
+      WHERE npc_pos = ? AND server_unit = ? AND type = 2
+      ORDER BY win_time DESC LIMIT 1
+    `).bind(npcPos, serverUnit).first();
+    return winner?.winner_name || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+/**
+ * StatInsignia - 查看挑战勋章值
+ * 参考 jx/BLL/FestivalActive.StatInsignia(userName, pos)
+ * 勋章值 = 挑战时间(秒) * 勋章基数
+ */
+async function statInsignia(db: D1Database, walletAddress: string, npcPos: number): Promise<number> {
+  // 检查是否为竞技场位置
+  const isArena = ARENA_DEFAULT_CONFIG.npcPosList.includes(npcPos);
+  if (!isArena) return 0;
+
+  const npcInsignia = getArenaInsignia(npcPos);
+  if (npcInsignia === 0) return 0;
+
+  // 计算挑战时间（到达时间到结束时间的秒数）
+  const winTime = await getWinnerTime(db, walletAddress, npcPos);
+  return winTime * npcInsignia;
+}
+
+/**
+ * GetArenaEndTime - 获取指定日期的竞技场结束时间（重载版本）
+ * 参考 jx/BLL/FestivalActive.GetArenaEndTime(DateTime time)
+ * 将 config 中的时间应用到指定日期
+ */
+async function getArenaEndTimeWithDate(kv: KVNamespace | undefined, date: Date): Promise<Date> {
+  const { endTime: endTimeStr } = await getArenaTimeConfig(kv);
+  const endTime = new Date(date);
+  const parts = endTimeStr.split(':');
+  endTime.setHours(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]), 0);
+  return endTime;
+}
+
+/**
+ * GetWinnerTime - 获取占领时间（秒）
+ * 参考 jx/BLL/FestivalActive.GetWinnerTime(userName, pos)
+ */
+async function getWinnerTime(db: D1Database, walletAddress: string, npcPos: number): Promise<number> {
+  try {
+    // 获取到达时间（军团到达时间）
+    const corps: any = await db.prepare(`
+      SELECT arrive_time FROM corps WHERE wallet_address = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    const MIN_DATE = new Date(0); // 相当于 C# DateTime.MinValue
+    const arriveTime = corps?.arrive_time ? new Date(corps.arrive_time) : MIN_DATE;
+    if (!arriveTime || arriveTime.getTime() === MIN_DATE.getTime()) return 0;
+
+    // 使用重载版本获取当日结束时间
+    const endTime = await getArenaEndTimeWithDate(undefined, arriveTime);
+
+    const now = new Date();
+    const lastTime = endTime < now ? endTime : now;
+
+    // 如果到达日期和结束日期不是同一天，返回0
+    if (arriveTime.toDateString() !== lastTime.toDateString()) return 0;
+
+    const spaceTime = lastTime.getTime() - arriveTime.getTime();
+    return Math.max(0, Math.floor(spaceTime / 1000));
+  } catch (_) {
+    return 0;
+  }
+}
+
+/**
+ * GetWinnerTime (重载版本) - 获取占领时间（秒）
+ * 参考 jx/BLL/FestivalActive.GetWinnerTime(userName, pos) + GetArenaEndTime(DateTime)
+ * 带 DateTime 参数的重载版本
+ */
+async function getWinnerTimeWithDate(
+  db: D1Database,
+  walletAddress: string,
+  npcPos: number,
+  kv: KVNamespace | undefined
+): Promise<number> {
+  try {
+    // 获取到达时间（军团到达时间）
+    const corps: any = await db.prepare(`
+      SELECT arrive_time FROM corps WHERE wallet_address = ? LIMIT 1
+    `).bind(walletAddress).first();
+
+    const MIN_DATE = new Date(0); // 相当于 C# DateTime.MinValue
+    const arriveTime = corps?.arrive_time ? new Date(corps.arrive_time) : MIN_DATE;
+    if (!arriveTime || arriveTime.getTime() === MIN_DATE.getTime()) return 0;
+
+    // 获取指定日期的结束时间（参考 C# GetArenaEndTime(DateTime time)）
+    const endTime = await getArenaEndTimeWithDate(kv, arriveTime);
+
+    const now = new Date();
+    const lastTime = endTime < now ? endTime : now;
+
+    // 如果到达日期和结束日期不是同一天，返回0
+    if (arriveTime.toDateString() !== lastTime.toDateString()) return 0;
+
+    const spaceTime = lastTime.getTime() - arriveTime.getTime();
+    return Math.max(0, Math.floor(spaceTime / 1000));
+  } catch (_) {
+    return 0;
+  }
+}
+
+/**
+ * StatArenaWinnerTime - 查看占领时间（返回 TimeSpan 格式字符串）
+ * 参考 jx/BLL/FestivalActive.StatArenaWinnerTime(userName, pos)
+ * C#: TimeSpan spaceTime = new TimeSpan(0, 0, wintime); return spaceTime.ToString();
+ */
+async function statArenaWinnerTime(
+  db: D1Database,
+  walletAddress: string,
+  npcPos: number
+): Promise<string | null> {
+  // 检查是否为竞技场位置
+  if (!isArenaPos(npcPos)) return null;
+
+  const winTime = await getWinnerTime(db, walletAddress, npcPos);
+  if (winTime <= 0) return null;
+
+  // C#: new TimeSpan(0, 0, wintime).ToString() -> "HH:mm:ss"
+  const hours = Math.floor(winTime / 3600);
+  const minutes = Math.floor((winTime % 3600) / 60);
+  const seconds = winTime % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+/** 判断是否为竞技场位置（擂台） */
+function isArenaPos(pos: number): boolean {
+  return ARENA_DEFAULT_CONFIG.npcPosList.includes(pos);
+}
+
 // ==================== GET /arena - 根路径兼容 ====================
 
 app.get('/', async (c) => {
@@ -160,32 +381,13 @@ app.get('/info', async (c) => {
 });
 
 // ==================== GET /arena/arena-time - 竞技场开放时间 ====================
-// 参考 jx/BLL/FestivalActive.GetArenaTime() 和 GetArenaStartTime/GetArenaEndTime()
-// 返回格式: [startTime, endTime] - 每天的开放时间段（HH:mm:ss）
+// 参考 jx/BLL/FestivalActive.GetArenaTime()
+// 返回格式: string[] - [startTime, endTime]，每个都是 TimeSpan.ToString() 即 "HH:mm:ss"
 
 app.get('/arena-time', async (c) => {
-  const db = c.env.DB;
-  if (!db) {
-    return c.json({ success: false, error: 'Database not configured' }, 503);
-  }
-
   try {
-    // 从 KV 或配置读取竞技场开放时间
-    // 默认: 20:00 - 22:00 (每晚8点到10点)
-    let startTime = '20:00:00';
-    let endTime = '22:00:00';
-
-    try {
-      const kv = c.env.KV;
-      if (kv) {
-        const savedStart = await kv.get('arena:start_time');
-        const savedEnd = await kv.get('arena:end_time');
-        if (savedStart) startTime = savedStart;
-        if (savedEnd) endTime = savedEnd;
-      }
-    } catch (_) {
-      // KV 不可用，使用默认值
-    }
+    // 从 KV 读取竞技场时间配置（参考 jx/BLL/FestivalActive.GetArenaStartTime/GetArenaEndTime）
+    const { startTime, endTime } = await getArenaTimeConfig(c.env.KV);
 
     const now = new Date();
     const todayStart = new Date(now);
@@ -209,13 +411,16 @@ app.get('/arena-time', async (c) => {
       nextChangeType = 'close';
     }
 
-    // C# 兼容格式
+    // C# GetArenaTime() 返回 string[] 格式: TimeSpan.ToString() = "HH:mm:ss"
+    // 数组顺序: [开始时间, 结束时间]
+    const arenaTimes: [string, string] = [startTime, endTime];
+
     return c.json({
       success: true,
       data: {
-        // C# GetArenaTime 返回的 string[] 格式
-        ArenaTimes: [startTime, endTime],
-        // 新格式
+        // C# 兼容格式 - GetArenaTime 返回 string[] (HH:mm:ss)
+        ArenaTimes: arenaTimes,
+        // 新格式（扩展字段）
         startTime,
         endTime,
         todayStart: todayStart.toISOString(),
@@ -264,16 +469,20 @@ app.get('/user-heroes', async (c) => {
       // 表不存在则返回空
     }
 
-    // 映射到 ArenaWinnerInfo 格式
-    // type: 1=历史冠军(Old), 2=日冠军(Day), 4=昨日冠军(Yesterday), 5=周冠军(Week)
+    // 参考 C# GetUserHeros 添加顺序:
+    //   heros.Add(dayHero);         // type=2, 日冠军 (第一个)
+    //   heros.Add(yesterdayHero);   // type=4, 昨日冠军 (第二个)
+    //   heros.Add(weekHero);       // type=5, 周冠军 (第三个)
+    //   heros.Add(oldHero);        // type=1, 历史冠军 (第四个)
+    // 返回数组顺序: [日=2, 昨=4, 周=5, 历史=1]
     const typeMap: Record<number, string> = {
-      1: 'old',
       2: 'day',
       4: 'yesterday',
       5: 'week',
+      1: 'old',
     };
 
-    const arenaWinnerInfoList = [1, 2, 4, 5].map(type => {
+    const arenaWinnerInfoList = [2, 4, 5, 1].map(type => {
       const w = winners.find((x: any) => x.type === type);
       if (w) {
         return {
@@ -437,7 +646,9 @@ app.post('/challenge', async (c) => {
     const winChance = Math.min(0.95, Math.max(0.05, winThreshold * powerRatio * randomFactor));
     const isWin = Math.random() < winChance;
 
-    const SCORE_BASE = 32;
+    // 评分变化改为动态获取（参考 jx/BLL/FestivalActive 评分计算逻辑）
+    // SCORE_BASE 从配置读取，支持动态调整
+    const SCORE_BASE = ARENA_DEFAULT_CONFIG.scoreBase;
     const scoreChange = isWin
       ? Math.round(SCORE_BASE * (1 + finalOppPower / 1000))
       : -Math.round(SCORE_BASE * (1 + finalMyPower / 2000));
@@ -629,6 +840,187 @@ app.get('/my-rank', async (c) => {
           ? Math.round((myRecord.win_count / (myRecord.win_count + myRecord.lose_count)) * 100)
           : 0,
         power: await calcUserTotalPower(db, walletAddress),
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// ==================== GET /arena/arena-level - 获取指定擂台等级 ====================
+// 参考 jx/BLL/FestivalActive.GetArenaLevel(npcPos)
+// 根据擂台位置返回对应的等级
+
+app.get('/arena-level', async (c) => {
+  const npcPos = parseInt(c.req.query('npcPos') || '0');
+  if (!npcPos) {
+    return c.json({ success: false, error: 'npcPos is required' }, 400);
+  }
+
+  const level = getArenaLevel(npcPos);
+  return c.json({
+    success: true,
+    data: {
+      npcPos,
+      level,
+    }
+  });
+});
+
+// ==================== GET /arena/arena-insignia - 获取指定擂台勋章值 ====================
+// 参考 jx/BLL/FestivalActive.GetArenaInsignia(npcPos)
+// 根据擂台位置返回勋章基数
+
+app.get('/arena-insignia', async (c) => {
+  const npcPos = parseInt(c.req.query('npcPos') || '0');
+  if (!npcPos) {
+    return c.json({ success: false, error: 'npcPos is required' }, 400);
+  }
+
+  const insignia = getArenaInsignia(npcPos);
+  return c.json({
+    success: true,
+    data: {
+      npcPos,
+      insignia,
+    }
+  });
+});
+
+// ==================== GET /arena/winner-name - 获取指定擂台冠军名字 ====================
+// 参考 jx/BLL/FestivalActive.GetWinnerName(pos)
+// 从 arena_winners 表获取日冠军名字
+
+app.get('/winner-name', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  const npcPos = parseInt(c.req.query('npcPos') || '0');
+  const serverUnit = c.req.query('serverUnit') || 's1';
+
+  if (!npcPos) {
+    return c.json({ success: false, error: 'npcPos is required' }, 400);
+  }
+
+  const winnerName = await getWinnerName(db, npcPos, serverUnit);
+  return c.json({
+    success: true,
+    data: {
+      npcPos,
+      serverUnit,
+      winnerName,
+    }
+  });
+});
+
+// ==================== GET /arena/stat-insignia - 查看挑战勋章值 ====================
+// 参考 jx/BLL/FestivalActive.StatInsignia(userName, pos)
+// 返回: 挑战时间(秒) * 勋章基数
+
+app.get('/stat-insignia', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  const npcPos = parseInt(c.req.query('npcPos') || '0');
+  if (!npcPos) {
+    return c.json({ success: false, error: 'npcPos is required' }, 400);
+  }
+
+  const insignia = await statInsignia(db, walletAddress, npcPos);
+  const npcLevel = getArenaLevel(npcPos);
+  const npcInsignia = getArenaInsignia(npcPos);
+
+  return c.json({
+    success: true,
+    data: {
+      npcPos,
+      npcLevel,
+      npcInsignia,
+      insignia,
+      isArenaPos: isArenaPos(npcPos),
+    }
+  });
+});
+
+// ==================== GET /arena/is-at-time - 判断是否在竞技时间段内 ====================
+// 参考 jx/BLL/FestivalActive.IsAtArenaTime()
+// 返回当前是否在竞技场开放时间段内
+
+app.get('/is-at-time', async (c) => {
+  try {
+    const { startTime, endTime } = await getArenaTimeConfig(c.env.KV);
+
+    const now = new Date();
+    const todayStart = new Date(now);
+    const parts = startTime.split(':');
+    todayStart.setHours(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]), 0);
+
+    const todayEnd = new Date(now);
+    const endParts = endTime.split(':');
+    todayEnd.setHours(parseInt(endParts[0]), parseInt(endParts[1]), parseInt(endParts[2]), 0);
+
+    const isOpen = now >= todayStart && now <= todayEnd;
+    const isAtArenaTime = startTime !== '00:00:00' && endTime !== '00:00:00' && isOpen;
+
+    return c.json({
+      success: true,
+      data: {
+        isAtArenaTime,
+        isOpen,
+        startTime,
+        endTime,
+        serverTime: now.toISOString(),
+      }
+    });
+  } catch (err: any) {
+    return c.json({ success: false, error: err.message }, 500);
+  }
+});
+
+// ==================== GET /arena/stat-winner-time - 查看占领时间（TimeSpan字符串）====================
+// 参考 jx/BLL/FestivalActive.StatArenaWinnerTime(userName, pos)
+// C# 返回: TimeSpan.ToString() 即 "HH:mm:ss" 格式
+// 如果未占领或不在竞技场位置返回 null
+
+app.get('/stat-winner-time', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) {
+    return c.json({ success: false, error: 'Unauthorized' }, 401);
+  }
+
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  const npcPos = parseInt(c.req.query('npcPos') || '0');
+  if (!npcPos) {
+    return c.json({ success: false, error: 'npcPos is required' }, 400);
+  }
+
+  try {
+    const winnerTimeStr = await statArenaWinnerTime(db, walletAddress, npcPos);
+    const winSeconds = winnerTimeStr ? await getWinnerTime(db, walletAddress, npcPos) : 0;
+
+    return c.json({
+      success: true,
+      data: {
+        npcPos,
+        walletAddress,
+        // C# StatArenaWinnerTime 返回值: TimeSpan.ToString() 或 null
+        winnerTime: winnerTimeStr,
+        // 扩展：秒数
+        winSeconds,
+        isArenaPos: isArenaPos(npcPos),
       }
     });
   } catch (err: any) {

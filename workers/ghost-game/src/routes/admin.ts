@@ -5,6 +5,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth, verifyAdminAuth } from '../utils/auth';
+import initConfig from '../config/init.json';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -15,6 +16,18 @@ function success(c: any, data: any) {
 function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
+
+// 管理员配置 - 从环境变量读取
+// 注意：C# 中 OnlineOffset 取负值：int offset = -int.Parse(config["OnlineOffset"])
+//       SQL: datetimeadd(minute, offset, getdate()) -> 向过去推算offset秒
+const _ONLINE_OFFSET_RAW = parseInt((process.env.ONLINE_OFFSET as string) || '3600');
+const ADMIN_CONFIG = {
+  // 在线人数偏移量(秒) - 对应 C# OnlineOffset (3600秒 = 1小时)
+  // C# 中是负数：int offset = -3600 (用于datetimeadd向过去推算)
+  ONLINE_OFFSET: -_ONLINE_OFFSET_RAW,
+  // 在线判定时间窗口(分钟) - 取绝对值，不取反
+  ONLINE_WINDOW_MINUTES: Math.max(1, Math.floor(_ONLINE_OFFSET_RAW / 60)),
+};
 
 // ==================== GET /admin/server-info - 获取服务器状态 ====================
 // 参考 BLL.Server.GetServerInfo()
@@ -42,20 +55,22 @@ app.get('/server-info', async (c) => {
     const timePercent = 100; // 默认100%
 
     return success(c, {
-      // 兼容 C# ServerInfo 字段
+      // 兼容 C# ServerInfo 字段 (参考 jx/BLL/Server.cs GetServerInfo)
       Time: now.toLocaleTimeString('zh-CN'),
-      TimePercent: timePercent,
-      JuntaNum: 0,
+      TimePercent: initConfig.Init.EventTimePercent,
+      JuntaNum: initConfig.Init.JuntaNum,
       ExpPer: 1.0,
-      UserCount: userCount,
-      NewUserCount: newUserCount,
+      // R = 注册人数 (RegistrationNum)
+      R: userCount,
+      RegistrationNum: userCount,
+      // O = 在线人数
+      O: 0,
       // 兼容字段
-      time: now.toLocaleTimeString('zh-CN'),
-      timePercent,
       userCount,
       newUserCount,
       serverTime: now.toISOString(),
       serverStatus: 'online',
+      timePercent,
     });
   } catch (err: any) {
     return error(c, err.message, 500);
@@ -130,9 +145,126 @@ app.get('/stats', async (c) => {
   }
 });
 
+// ==================== GET /admin/online-count - 在线人数 ====================
+// 参考 BLL.Server.GetUserOnlineCount() + BLLEX.ServerEx
+// 使用最近30分钟有活动的用户数作为在线人数
+// serverUnit: 区服标识 (参考 C# GetUserOnlineCount(serverUnit) 重载)
+
+app.get('/online-count', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  try {
+    // serverUnit 参数 (参考 C#: GetUserOnlineCount(string serverUnit))
+    const serverUnit = c.req.query('serverUnit') || '1';
+    // 在线定义：从配置读取偏移量，默认3600秒(1小时)
+    // C#: offset = -int.Parse(ConfigurationManager.AppSettings["OnlineOffset"])
+    const offsetMinutes = ADMIN_CONFIG.ONLINE_WINDOW_MINUTES;
+    const onlineResult: any = await db.prepare(`
+      SELECT COUNT(*) as count FROM characters
+      WHERE state = 99
+        AND updated_at >= datetime('now', '-' || ? || ' minutes')
+    `).bind(offsetMinutes).first();
+
+    const activeResult: any = await db.prepare(`
+      SELECT COUNT(*) as count FROM characters
+      WHERE updated_at >= datetime('now', '-' || ? || ' minutes')
+    `).bind(offsetMinutes).first();
+
+    // 在线峰值（当日）
+    const today = new Date().toISOString().split('T')[0];
+    const peakResult: any = await db.prepare(`
+      SELECT MAX(cnt) as peak FROM (
+        SELECT COUNT(*) as cnt FROM characters
+        WHERE DATE(updated_at) = ?
+        GROUP BY strftime('%H', updated_at)
+      )
+    `).bind(today).first();
+
+    return success(c, {
+      onlineCount: onlineResult?.count || 0,
+      activeCount: activeResult?.count || 0,
+      peakCount: peakResult?.peak || 0,
+      windowMinutes: offsetMinutes,
+      onlineOffset: ADMIN_CONFIG.ONLINE_OFFSET,
+      serverUnit,
+      serverTime: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+// ==================== GET /admin/server-time - 服务器时间 ====================
+// 参考 Main.aspx.cs GetServerTimeNow()
+
+app.get('/server-time', async (c) => {
+  const now = new Date();
+  return success(c, {
+    serverTime: now.toISOString(),
+    time: now.toLocaleTimeString('zh-CN'),
+    timestamp: now.getTime(),
+    timezone: 'Asia/Shanghai',
+    date: now.toISOString().split('T')[0],
+  });
+});
+
+// ==================== GET /admin/server-list - 区服列表 ====================
+// 参考 BLL.Server.GetServerInfo() 和 BLLEX.ServerEx
+
+app.get('/server-list', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  try {
+    const userCountResult: any = await db.prepare(`SELECT COUNT(*) as count FROM characters`).first();
+    const userCount = userCountResult?.count || 0;
+
+    // 在线人数（30分钟内活跃）
+    const onlineResult: any = await db.prepare(`
+      SELECT COUNT(*) as count FROM characters
+      WHERE updated_at >= datetime('now', '-30 minutes')
+    `).first();
+    const onlineCount = onlineResult?.count || 0;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+
+    // 今日新用户
+    const newUserResult: any = await db.prepare(
+      `SELECT COUNT(*) as count FROM characters WHERE DATE(created_at) = ?`
+    ).bind(today).first();
+    const newUserCount = newUserResult?.count || 0;
+
+    // 单区服配置（参考C#多区服逻辑，单区返回单一列表）
+    const servers = [
+      {
+        serverId: '1',
+        serverName: '一区-虎牢关',
+        onlineCount,
+        userCount,
+        newUserCount,
+        status: 'online',
+        openTime: '2024-01-01 00:00:00',
+        eventTimePercent: 100,
+        expPercent: 1.0,
+        serverTime: now.toLocaleTimeString('zh-CN'),
+      },
+    ];
+
+    return success(c, { servers });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
 // ==================== POST /admin/kick-user - 踢出用户 ====================
 // 参考 Main.aspx.cs KickUser()
-// 功能：强制用户下线（通过清除session状态）
+// 功能：强制用户下线，并写入 ban 记录（踢出也是一种封禁记录）
 
 app.post('/kick-user', async (c) => {
   const adminAddress = await verifyAdminAuth(c);
@@ -149,12 +281,13 @@ app.post('/kick-user', async (c) => {
     const body = await c.req.json().catch(() => ({}));
     const targetUserName = body.userName as string;
     const targetAddress = body.walletAddress as string;
+    const kickReason = body.reason || 'Admin kick';
 
     if (!targetUserName && !targetAddress) {
       return error(c, 'userName or walletAddress is required');
     }
 
-    // 查询目标用户状态
+    // 查询目标用户
     let query;
     if (targetAddress) {
       query = await db.prepare(`SELECT * FROM characters WHERE wallet_address = ?`).bind(targetAddress).first();
@@ -167,18 +300,34 @@ app.post('/kick-user', async (c) => {
     }
 
     const target = query as any;
+    const previousState = target.state || 0;
 
-    // 模拟 KickUser 逻辑：检查用户状态，99=在线
-    // 在区块链环境中，这里主要记录日志，不实际踢人
-    const result = {
+    // 写入踢出记录到 user_bans（ban_type=1 表示踢出）
+    await db.prepare(`
+      INSERT INTO user_bans (wallet_address, ban_reason, ban_until, banned_by, ban_type, is_active)
+      VALUES (?, ?, datetime('now', '+5 minutes'), ?, 1, 1)
+    `).bind(target.wallet_address, kickReason, adminAddress).run();
+
+    // 写入管理员操作日志
+    await db.prepare(`
+      INSERT INTO admin_logs (admin_address, action, target_address, target_name, details)
+      VALUES (?, 'kick_user', ?, ?, ?)
+    `).bind(adminAddress, target.wallet_address, target.name, JSON.stringify({ reason: kickReason, previousState })).run();
+
+    // 更新用户状态为离线（state=0）
+    await db.prepare(`
+      UPDATE characters SET state = 0, updated_at = datetime('now')
+      WHERE wallet_address = ?
+    `).bind(target.wallet_address).run();
+
+    return success(c, {
       kicked: true,
       targetAddress: target.wallet_address,
       targetName: target.name,
-      previousState: target.state || 0,
-      message: 'Kick request logged (stateless environment)',
-    };
-
-    return success(c, result);
+      previousState,
+      reason: kickReason,
+      message: 'User kicked and logged',
+    });
   } catch (err: any) {
     return error(c, err.message, 500);
   }
@@ -288,13 +437,25 @@ app.post('/ban-user', async (c) => {
       ? '9999-12-31 23:59:59'
       : new Date(Date.now() + durationDays * 86400000).toISOString().replace('T', ' ').slice(0, 19);
 
-    // 写入 ban 记录
+    // 先标记旧记录为非活跃
     await db.prepare(`
-      INSERT OR REPLACE INTO user_bans (wallet_address, ban_reason, ban_until, banned_by, created_at)
-      VALUES (?, ?, ?, ?, datetime('now'))
+      UPDATE user_bans SET is_active = 0
+      WHERE wallet_address = ? AND is_active = 1
+    `).bind(target.wallet_address).run();
+
+    // 写入新的 ban 记录
+    await db.prepare(`
+      INSERT INTO user_bans (wallet_address, ban_reason, ban_until, banned_by, ban_type, is_active)
+      VALUES (?, ?, ?, ?, 0, 1)
     `).bind(target.wallet_address, banReason, banUntil, adminAddress).run();
 
-    // 更新用户状态为封禁
+    // 写入管理员操作日志
+    await db.prepare(`
+      INSERT INTO admin_logs (admin_address, action, target_address, target_name, details)
+      VALUES (?, 'ban_user', ?, ?, ?)
+    `).bind(adminAddress, target.wallet_address, target.name, JSON.stringify({ reason: banReason, durationDays, banUntil })).run();
+
+    // 更新用户状态为封禁（state=99）
     await db.prepare(`
       UPDATE characters SET state = 99, updated_at = datetime('now')
       WHERE wallet_address = ?
@@ -303,6 +464,7 @@ app.post('/ban-user', async (c) => {
     return success(c, {
       banned: true,
       walletAddress: target.wallet_address,
+      targetName: target.name,
       reason: banReason,
       durationDays,
       banUntil,
@@ -335,14 +497,28 @@ app.post('/unban-user', async (c) => {
     }
 
     let walletToUnban = targetAddress;
+    let targetName = '';
     if (!walletToUnban) {
-      const user: any = await db.prepare(`SELECT wallet_address FROM characters WHERE name = ?`).bind(targetUserName).first();
+      const user: any = await db.prepare(`SELECT wallet_address, name FROM characters WHERE name = ?`).bind(targetUserName).first();
       if (!user) return error(c, 'User not found', 404);
       walletToUnban = user.wallet_address;
+      targetName = user.name;
+    } else {
+      const user: any = await db.prepare(`SELECT name FROM characters WHERE wallet_address = ?`).bind(walletToUnban).first();
+      if (user) targetName = user.name;
     }
 
-    // 删除 ban 记录
-    await db.prepare(`DELETE FROM user_bans WHERE wallet_address = ?`).bind(walletToUnban).run();
+    // 标记 ban 记录为非活跃（软删除，保留历史记录）
+    await db.prepare(`
+      UPDATE user_bans SET is_active = 0
+      WHERE wallet_address = ? AND is_active = 1
+    `).bind(walletToUnban).run();
+
+    // 写入管理员操作日志
+    await db.prepare(`
+      INSERT INTO admin_logs (admin_address, action, target_address, target_name, details)
+      VALUES (?, 'unban_user', ?, ?, '{}')
+    `).bind(adminAddress, walletToUnban, targetName).run();
 
     // 恢复用户状态
     await db.prepare(`
@@ -353,6 +529,79 @@ app.post('/unban-user', async (c) => {
     return success(c, {
       unbanned: true,
       walletAddress: walletToUnban,
+      targetName,
+    });
+  } catch (err: any) {
+    return error(c, err.message, 500);
+  }
+});
+
+// ==================== GET /admin/currency-rank - 货币排行榜分页 ====================
+// 参考 BLL.User.GetCurrencyRankByPageNum()
+// type: 1=用户排名, 2=金币排名, 3=武将排名
+// pageSize: 每页数量
+// serverUnit: 区服标识 (参考 C# serverUnit 参数)
+
+app.get('/currency-rank', async (c) => {
+  const db = c.env.DB;
+  if (!db) {
+    return c.json({ success: false, error: 'Database not configured' }, 503);
+  }
+
+  try {
+    const type = c.req.query('type') || '1';
+    const pageSize = Math.min(100, Math.max(1, parseInt(c.req.query('pageSize') || '20')));
+    const serverUnit = c.req.query('serverUnit') || '1'; // 默认区服1
+
+    let rankData: any[] = [];
+
+    if (type === '1') {
+      // 用户排名 - 按等级/经验排名
+      const users = await db.prepare(`
+        SELECT wallet_address as UserName, level as UserValue
+        FROM characters
+        ORDER BY level DESC, exp DESC
+        LIMIT ?
+      `).bind(pageSize).all() as any;
+      rankData = (users.results || []).map((u: any, idx: number) => ({
+        RankID: idx + 1,
+        UserName: u.UserName,
+        UserValue: u.UserValue,
+      }));
+    } else if (type === '2') {
+      // 金币排名 - 按金币数量排名
+      const goldRanks = await db.prepare(`
+        SELECT wallet_address as UserName, gold as UserValue
+        FROM characters
+        ORDER BY gold DESC
+        LIMIT ?
+      `).bind(pageSize).all() as any;
+      rankData = (goldRanks.results || []).map((u: any, idx: number) => ({
+        RankID: idx + 1,
+        UserName: u.UserName,
+        UserValue: u.UserValue,
+      }));
+    } else if (type === '3') {
+      // 武将排名 - 按武将战力/等级排名
+      const heroRanks = await db.prepare(`
+        SELECT wallet_address as UserName, level as UserValue
+        FROM heroes
+        ORDER BY level DESC, attack DESC
+        LIMIT ?
+      `).bind(pageSize).all() as any;
+      rankData = (heroRanks.results || []).map((u: any, idx: number) => ({
+        RankID: idx + 1,
+        UserName: u.UserName,
+        UserValue: u.UserValue,
+      }));
+    }
+    // type === '4' 预留，返回空
+
+    return success(c, {
+      type: parseInt(type),
+      pageSize,
+      serverUnit,
+      ranks: rankData,
     });
   } catch (err: any) {
     return error(c, err.message, 500);

@@ -1,46 +1,26 @@
 /**
  * Battle Repository - 战斗数据访问层
- * 参考原版 jx/DAL/BattleAccess.cs (243 行)
+ * 
+ * battles表实际结构 (参考 routes/battle.ts 中的 INSERT 语句):
+ * - id: INTEGER PRIMARY KEY
+ * - attacker_address: TEXT (攻击方钱包地址)
+ * - defender_address: TEXT (防御方钱包地址，可为NULL表示PVE)
+ * - battle_type: TEXT (战斗类型: 'pve', 'pvp', 'guild', 'arena')
+ * - result: TEXT (结果: 'win', 'lose', 'draw', NULL表示进行中)
+ * - report: TEXT (战报编码，可为NULL)
+ * - created_at: TEXT (ISO8601时间戳)
  */
 import type { D1Database } from '@cloudflare/workers-types';
 import { BaseRepository, type BaseEntity } from './base.repo';
 
 export interface Battle extends BaseEntity {
   id: number;
-  wallet_address: string;
-  battle_type: number;
-  enemy_id: number;
-  enemy_name: string;
-  enemy_level: number;
-  enemy_hp: number;
-  enemy_max_hp: number;
-  hero_id: number;
-  hero_hp: number;
-  hero_max_hp: number;
-  round: number;
-  result: number;
-  reward_gold: number;
-  reward_exp: number;
-  reward_items: string;
-  damage: number;
-  damage_taken: number;
+  attacker_address: string;
+  defender_address: string | null;
+  battle_type: string;
+  result: string | null;
+  report: string | null;
   created_at: string;
-}
-
-export interface BattleConfig {
-  id: number;
-  name: string;
-  type: number;
-  level: number;
-  enemy_id: number;
-  enemy_name: string;
-  enemy_level: number;
-  enemy_hp: number;
-  enemy_atk: number;
-  enemy_def: number;
-  reward_gold: number;
-  reward_exp: number;
-  win_rate: number;
 }
 
 export class BattleRepository extends BaseRepository<Battle> {
@@ -59,7 +39,7 @@ export class BattleRepository extends BaseRepository<Battle> {
   }
 
   /** 根据类型查询 */
-  async findByType(walletAddress: string, battleType: number): Promise<Battle[]> {
+  async findByType(walletAddress: string, battleType: string): Promise<Battle[]> {
     const result = await this.db.prepare(`
       SELECT * FROM battles WHERE (attacker_address = ? OR defender_address = ?) AND battle_type = ?
     `).bind(walletAddress, walletAddress, battleType).all<Battle>();
@@ -71,72 +51,46 @@ export class BattleRepository extends BaseRepository<Battle> {
     total: number;
     wins: number;
     losses: number;
-    totalDamage: number;
-    totalRewards: number;
+    draws: number;
   }> {
-    const winsResult = await this.db.prepare(`
-      SELECT COUNT(*) as count, SUM(reward_gold) as gold, SUM(damage) as damage 
-      FROM battles WHERE attacker_address = ? AND result = 1
-    `).bind(walletAddress).first<{ count: number; gold: number; damage: number }>();
-
-    const lossesResult = await this.db.prepare(`
-      SELECT COUNT(*) as count FROM battles WHERE attacker_address = ? AND result = 0
-    `).bind(walletAddress).first<{ count: number }>();
+    const statsResult = await this.db.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN result = 'win' AND attacker_address = ? THEN 1 ELSE 0 END) as wins,
+        SUM(CASE WHEN result = 'lose' AND attacker_address = ? THEN 1 ELSE 0 END) as losses,
+        SUM(CASE WHEN result = 'draw' THEN 1 ELSE 0 END) as draws
+      FROM battles 
+      WHERE attacker_address = ? OR defender_address = ?
+    `).bind(walletAddress, walletAddress, walletAddress, walletAddress).first();
 
     return {
-      total: (winsResult?.count || 0) + (lossesResult?.count || 0),
-      wins: winsResult?.count || 0,
-      losses: lossesResult?.count || 0,
-      totalDamage: winsResult?.damage || 0,
-      totalRewards: winsResult?.gold || 0,
+      total: (statsResult as any)?.total || 0,
+      wins: (statsResult as any)?.wins || 0,
+      losses: (statsResult as any)?.losses || 0,
+      draws: (statsResult as any)?.draws || 0,
     };
-  }
-
-  // ==================== 战斗配置查询 ====================
-
-  /** 获取战斗配置 */
-  async getBattleConfig(battleId: number): Promise<BattleConfig | null> {
-    return await this.db.prepare(
-      `SELECT * FROM battles_config WHERE id = ?`
-    ).bind(battleId).first<BattleConfig>();
-  }
-
-  /** 根据类型和等级获取配置 */
-  async getBattleConfigByLevel(battleType: number, level: number): Promise<BattleConfig | null> {
-    return await this.db.prepare(
-      `SELECT * FROM battles_config WHERE type = ? AND level = ?`
-    ).bind(battleType, level).first<BattleConfig>();
-  }
-
-  /** 获取所有配置 */
-  async getAllConfigs(): Promise<BattleConfig[]> {
-    const result = await this.db.prepare(`SELECT * FROM battles_config`).all<BattleConfig>();
-    return (result.results as BattleConfig[]) || [];
   }
 
   // ==================== 写入操作 ====================
 
   /** 创建战斗记录 */
-  async create(walletAddress: string, data: {
-    battleType: number;
-    enemyId: number;
-    enemyName: string;
-    enemyLevel: number;
-    enemyHp: number;
-    enemyMaxHp: number;
-    heroId: number;
+  async create(data: {
+    attackerAddress: string;
+    defenderAddress?: string;
+    battleType: string;
+    result?: string;
+    report?: string;
   }): Promise<number> {
-    // battles表使用 attacker_address，没有 wallet_address 列
     const result = await this.db.prepare(`
       INSERT INTO battles (
-        attacker_address, battle_type, enemy_id, enemy_name, enemy_level, 
-        enemy_hp, enemy_max_hp, hero_id, hero_hp, hero_max_hp,
-        round, result, reward_gold, reward_exp, damage, damage_taken,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0, 0, 0, datetime('now'), datetime('now'))
+        attacker_address, defender_address, battle_type, result, report, created_at
+      ) VALUES (?, ?, ?, ?, ?, datetime('now'))
     `).bind(
-      walletAddress, data.battleType, data.enemyId, data.enemyName, data.enemyLevel,
-      data.enemyHp, data.enemyMaxHp, data.heroId, 0, 0
+      data.attackerAddress,
+      data.defenderAddress || null,
+      data.battleType,
+      data.result || null,
+      data.report || null
     ).run();
 
     return result.meta.last_row_id;
@@ -144,76 +98,50 @@ export class BattleRepository extends BaseRepository<Battle> {
 
   /** 更新战斗结果 */
   async updateResult(battleId: number, result: {
-    heroHp: number;
-    heroMaxHp: number;
-    round: number;
-    result: number;
-    rewardGold: number;
-    rewardExp: number;
-    rewardItems: string;
-    damage: number;
-    damageTaken: number;
+    result: string;
+    report?: string;
   }): Promise<void> {
     await this.db.prepare(`
       UPDATE battles SET 
-        hero_hp = ?, hero_max_hp = ?, round = ?, result = ?, 
-        reward_gold = ?, reward_exp = ?, reward_items = ?,
-        damage = ?, damage_taken = ?, updated_at = datetime('now')
+        result = ?,
+        report = ?
       WHERE id = ?
     `).bind(
-      result.heroHp, result.heroMaxHp, result.round, result.result,
-      result.rewardGold, result.rewardExp, result.rewardItems,
-      result.damage, result.damageTaken, battleId
+      result.result,
+      result.report || null,
+      battleId
     ).run();
-  }
-
-  /** 快速结算（简化版） */
-  async quickSettle(battleId: number, result: number, damage: number): Promise<void> {
-    const battle = await this.findById(battleId);
-    if (!battle) return;
-
-    const rewardGold = result === 1 ? Math.floor(battle.enemy_level * 10) : 0;
-    const rewardExp = result === 1 ? Math.floor(battle.enemy_level * 5) : 0;
-
-    await this.updateResult(battleId, {
-      heroHp: result === 1 ? battle.hero_max_hp : 0,
-      heroMaxHp: battle.hero_max_hp,
-      round: 1,
-      result,
-      rewardGold,
-      rewardExp,
-      rewardItems: '[]',
-      damage,
-      damageTaken: battle.enemy_max_hp - (result === 1 ? 0 : battle.enemy_hp),
-    });
   }
 
   // ==================== 统计查询 ====================
 
   /** 获取今日战斗次数 */
   async getTodayBattleCount(walletAddress: string): Promise<number> {
+    const today = new Date().toISOString().split('T')[0];
     const result = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles 
-      WHERE (attacker_address = ? OR defender_address = ?) AND created_at >= date('now', 'start of day')
-    `).bind(walletAddress, walletAddress).first<{ count: number }>();
-    return result?.count || 0;
+      WHERE (attacker_address = ? OR defender_address = ?) AND DATE(created_at) = DATE(?)
+    `).bind(walletAddress, walletAddress, today).first();
+    return (result as any)?.count || 0;
   }
 
   /** 获取今日胜利次数 */
   async getTodayWinCount(walletAddress: string): Promise<number> {
+    const today = new Date().toISOString().split('T')[0];
     const result = await this.db.prepare(`
       SELECT COUNT(*) as count FROM battles 
-      WHERE attacker_address = ? AND result = 1 AND created_at >= date('now', 'start of day')
-    `).bind(walletAddress).first<{ count: number }>();
-    return result?.count || 0;
+      WHERE attacker_address = ? AND result = 'win' AND DATE(created_at) = DATE(?)
+    `).bind(walletAddress, today).first();
+    return (result as any)?.count || 0;
   }
 
-  /** 获取最大伤害 */
-  async getMaxDamage(walletAddress: string): Promise<number> {
-    const result = await this.db.prepare(`
-      SELECT MAX(damage) as max FROM battles WHERE attacker_address = ?
-    `).bind(walletAddress).first<{ max: number }>();
-    return result?.max || 0;
+  /** 获取进行中的战斗 */
+  async getActiveBattle(walletAddress: string): Promise<Battle | null> {
+    return await this.db.prepare(`
+      SELECT * FROM battles 
+      WHERE (attacker_address = ? OR defender_address = ?) AND result IS NULL
+      ORDER BY created_at DESC LIMIT 1
+    `).bind(walletAddress, walletAddress).first<Battle>() || null;
   }
 
   /** 获取连续胜利次数 */
@@ -222,7 +150,7 @@ export class BattleRepository extends BaseRepository<Battle> {
     let streak = 0;
     
     for (const battle of battles) {
-      if (battle.result === 1) {
+      if (battle.result === 'win') {
         streak++;
       } else {
         break;

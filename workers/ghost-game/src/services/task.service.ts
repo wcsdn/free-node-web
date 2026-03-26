@@ -5,6 +5,29 @@
 import type { D1Database } from '@cloudflare/workers-types';
 import type { TaskConfig, UserTask } from '../types/models';
 import { taskConfigs, getTaskConfig as getTaskCfg } from '../config/tasks';
+import missionGainsData from '../config/mission_gains.json';
+import missionConditionsData from '../config/mission_conditions.json';
+import itemsData from '../config/items.json';
+
+// ItemInfo - 道具信息（对齐 C# ItemInfo）
+export interface ItemInfo {
+  ID: number;           // 道具的动态ID
+  StaticIndex: number;  // 道具静态索引
+  Name: string;          // 道具名称
+  ItemType: number;     // 道具类型
+  Des: string;          // 说明描述
+  Level: number;        // 道具等级
+  Quality: number;      // 品质
+  Image: string;        // 图片路径
+  State: number;        // 道具状态
+  Price: number;        // 价格
+  UseType: number;      // 使用类型 1=装备 2=消耗
+  UseGold: number;      // 使用需要的金币
+  Attack: number;        // 攻击
+  Defence: number;       // 防御
+  HitPoint: number;     // 耐久(初始)
+  Durability: number;   // 当前耐久度
+}
 
 // 任务类型定义
 export interface TaskInfo {
@@ -23,43 +46,48 @@ export interface TaskInfo {
   needObjType: number;            // 需求对象类型
   needObjID: number;              // 需求对象ID
   needObjValue: number;           // 需求数量值
+  conditionTargetName?: string;  // 目标用户名称 (C#: ConditonTargetName)
   
   // 消耗资源
   costMoney?: number;
   costFood?: number;
   costMen?: number;
   costGold?: number;
+  costInsignia?: number;          // 需要战勋 (C#: CostInsignia)
   
   // 目标信息
   target?: number;                // 目标位置/ID
   targetType?: number;            // 目标类型: 0=通用, 1=玩家, 2=NPC
-  overFlag?: number;             // 完成标记
+  overFlag?: number;             // 完成标记 (C#: OverFlag)
   
   // 任务品信息
-  taskItem?: string;             // 任务品名称
-  taskItemNum?: number;           // 任务品需求数量
-  taskItemCondition?: number;     // 战斗条件: 0=胜/败, 1=胜, 2=败
-  taskItemProbability?: number;   // 获得概率 (1-10000)
+  taskItem?: string;              // 任务品名称 (C#: TaskItemName)
+  taskItemNum?: number;           // 任务品需求数量 (C#: TaskItemNum)
+  taskItemCondition?: number;     // 战斗条件: 0=胜/负, 1=胜, 2=负 (C#: TaskItemCondition)
+  taskItemProbability?: number;   // 获得概率 (1-10000) (C#: TaskItemProbability)
   
   // 额外掉落
-  appendItemIndex?: number;       // 额外掉落物品ID
-  appendItemProbability?: number; // 额外掉落概率
+  appendItemIndex?: number;       // 额外掉落物品ID (C#: AppendItemIndex)
+  appendItemProbability?: number; // 额外掉落概率 (C#: AppendItemProbability)
   
   // 完成任务奖励
   getMoney?: number;
   getFood?: number;
   getMen?: number;
   getGold?: number;
-  getItemIndex?: number;         // 奖励物品ID
+  getItemIndex?: number;         // 奖励物品ID (C#: GetItem → StaticIndex)
   
   // 增益效果
-  gainType?: number;              // 增益类型
-  gainIndex?: number;             // 增益索引
+  gainType?: number;              // 增益类型 (C#: GainType)
+  gainIndex?: number;             // 增益索引 (C#: GainIndex)
   
   // 用户状态
   state: number;                  // 状态: 0=未接取, 1=进行中, 2=已完成(未领取), 3=已领取
   hasTaskItemNum?: number;        // 已获得任务品数量
   hasCondition?: number;           // 已达成条件数量
+  
+  // 任务道具消耗列表 (C#: CostItemList)
+  costItemList?: ItemInfo[];
 }
 
 // 用户任务状态
@@ -71,6 +99,81 @@ export interface UserTaskState {
   taskStates: number[];          // 任务状态数组
   taskProgress: number[];        // 任务进度数组
 }
+
+// ---------------------------------------------------------------------------
+// Helpers - 对齐 C# XmlData.MissionGain / Item static data
+// ---------------------------------------------------------------------------
+
+interface GainEntry {
+  ID: string;
+  GetMoney?: number;
+  GetFood?: number;
+  GetMen?: number;
+  GetItemIndex?: number;
+  EndDes?: string;
+}
+
+interface ConditionEntry {
+  ID: string;
+  CostMoney?: number;
+  CostFood?: number;
+  CostMen?: number;
+  CostGold?: number;
+  CostInsignia?: number;
+  CostItemIndex1?: number;
+  CostItemIndex2?: number;
+  CostItemIndex3?: number;
+  CostItemIndex4?: number;
+  CostItemIndex5?: number;
+  CostItemIndex6?: number;
+  CostItemIndex7?: number;
+  CostItemIndex8?: number;
+  CostItemIndex9?: number;
+  CostItemIndex10?: number;
+  MissionItemCondition?: number;
+  MissionItemProbability?: number;
+  AppendItemIndex?: number;
+  AppendItemProbability?: number;
+}
+
+const missionGains: Record<string, GainEntry> = ((missionGainsData as any).Gain || []).reduce(
+  (acc: Record<string, GainEntry>, g: GainEntry) => { acc[g.ID] = g; return acc; }, {}
+);
+
+const missionConditions: Record<string, ConditionEntry> = ((missionConditionsData as any).Condition || []).reduce(
+  (acc: Record<string, ConditionEntry>, c: ConditionEntry) => { acc[c.ID] = c; return acc; }, {}
+);
+
+/**
+ * 根据静态索引获取道具的 ItemInfo（对齐 C# Item.TransitionToItemInfo）
+ */
+export function getItemInfo(staticIndex: number): ItemInfo | null {
+  if (!staticIndex) return null;
+  const item = ((itemsData as any).Item || []).find((i: any) => i.Index === staticIndex);
+  if (!item) return null;
+  return {
+    ID: 0,
+    StaticIndex: item.Index,
+    Name: item.Name || '',
+    ItemType: item.Type || 1,
+    Des: item.Des || '',
+    Level: item.Level || 1,
+    Quality: item.Quality || 1,
+    Image: item.Image || '',
+    State: 1,
+    Price: item.SellMoney || 0,
+    UseType: item.UseType || 1,
+    UseGold: item.UseGold || 0,
+    Attack: item.Attack || 0,
+    Defence: item.Defence || 0,
+    HitPoint: item.HitPoint || 0,
+    Durability: item.HitPoint || 0,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// TaskService
+// ---------------------------------------------------------------------------
 
 class TaskService {
   private db: D1Database;
@@ -386,7 +489,13 @@ class TaskService {
       const state = await this.calculateTaskState(walletAddress, cityId, task);
       return state === 2;
     }
-    
+
+    // Type=2: 领取道具/物品交付任务，调用 calculateCurrentProgress
+    if (task.type === 2) {
+      const progress = await this.calculateCurrentProgress(walletAddress, cityId, task);
+      return progress >= 1;
+    }
+
     // 战斗和探索任务检查进度
     const taskIndex = userTask.taskIds.indexOf(task.id);
     const progress = userTask.taskProgress[taskIndex] || 0;
@@ -398,6 +507,45 @@ class TaskService {
    * C#: MissionPrize 中发放奖励的逻辑
    */
   private async grantRewards(walletAddress: string, cityId: number, task: TaskInfo): Promise<void> {
+    // C#: 扣除 CostItemList 物品 (如果有)
+    const costItems = (task as any).costItemList || [];
+    for (const costItem of costItems) {
+      if (costItem.id) {
+        // 从用户物品中删除
+        await this.db.prepare(`
+          UPDATE items SET count = count - ?
+          WHERE wallet_address = ? AND config_id = ? AND count >= ?
+        `).bind(costItem.count || 1, walletAddress, costItem.id, costItem.count || 1).run();
+      }
+    }
+
+    // 扣除 CostGold 和 CostInsignia (C#: CostGold/CostInsignia)
+    if ((task as any).costGold || (task as any).costInsignia) {
+      await this.db.prepare(`
+        UPDATE characters SET
+          gold = gold - ?,
+          insignia = insignia - ?
+        WHERE wallet_address = ?
+      `).bind((task as any).costGold || 0, (task as any).costInsignia || 0, walletAddress).run();
+    }
+
+    // 扣除城市资源 (CostMen/CostMoney/CostFood)
+    if ((task as any).costMen || (task as any).costMoney || (task as any).costFood) {
+      await this.db.prepare(`
+        UPDATE cities SET
+          population = population - ?,
+          money = money - ?,
+          food = food - ?
+        WHERE wallet_address = ? AND id = ?
+      `).bind(
+        (task as any).costMen || 0,
+        (task as any).costMoney || 0,
+        (task as any).costFood || 0,
+        walletAddress,
+        cityId
+      ).run();
+    }
+
     // 发放金钱、粮食、人口
     if ((task.getMoney || 0) > 0 || (task.getFood || 0) > 0 || (task.getMen || 0) > 0) {
       await this.db.prepare(`
@@ -568,6 +716,63 @@ class TaskService {
     if (task.type === 1) {
       current = await this.calculateCurrentProgress(walletAddress, cityId, task);
       return { current, target };
+    }
+
+    // 领取道具/物品交付任务 (Type=2) - 检查是否拥有所需物品
+    // C#: GetMissionState 中 Type==2 的分支
+    // 验证条件: 所有 CostItemList 物品都已拥有 && Gold >= CostGold && Insignia >= CostInsignia
+    if (task.type === 2) {
+      const costItems = (task as any).costItemList || [];
+
+      // C#: 从 ConditonTargetName 查询物品，而不是当前用户
+      // 如果设置了 conditionTargetName，从目标用户查询；否则从当前用户查询
+      const targetWalletAddress = task.conditionTargetName || walletAddress;
+
+      // 获取用户元宝和战勋 (C#: 检查 CostGold 和 CostInsignia 是否足够)
+      const char: any = await this.db.prepare(
+        `SELECT gold, insignia FROM characters WHERE wallet_address = ?`
+      ).bind(walletAddress).first();
+      const goldEnough = (char?.gold || 0) >= (task.costGold || 0);
+      const insigniaEnough = (char?.insignia || 0) >= (task.costInsignia || 0);
+
+      if (costItems.length === 0) {
+        // 无物品需求时，C# 检查城市资源: interior.Men/Money/Food/Gold + insignia
+        // 获取城市资源 (C#: CityInteriorInfo interior = CityInterior.GetCityInteriorInfo)
+        const city: any = await this.db.prepare(
+          `SELECT men, money, food, population FROM cities WHERE wallet_address = ? AND id = ?`
+        ).bind(walletAddress, cityId).first();
+        const menEnough = (city?.population || 0) >= (task.costMen || 0);
+        const moneyEnough = (city?.money || 0) >= (task.costMoney || 0);
+        const foodEnough = (city?.food || 0) >= (task.costFood || 0);
+        // C# 还检查 interior.Gold（城市黄金储备），对应 cities 表的 gold 字段
+        const cityGoldEnough = (city?.gold || 0) >= (task.costGold || 0);
+
+        if (menEnough && moneyEnough && foodEnough && cityGoldEnough && insigniaEnough) {
+          return { current: 1, target: 1 }; // 可完成
+        }
+        return { current: 0, target: 1 };
+      }
+
+      // 检查每个所需物品是否拥有 (从 conditionTargetName 查询)
+      let ownedCount = 0;
+      for (const item of costItems) {
+        const staticIndex = item.StaticIndex || item.staticIndex || 0;
+        // C#: ItemAccess.GetItemsByCityID( mission.ConditonTargetName, conditionCityID, itemState )
+        const result: any = await this.db.prepare(
+          `SELECT COUNT(*) as cnt FROM items WHERE wallet_address = ? AND config_id = ? AND state = 1`
+        ).bind(targetWalletAddress, staticIndex).first();
+        if ((result?.cnt || 0) > 0) {
+          ownedCount++;
+        }
+      }
+
+      // 所有物品都拥有且资源足够才算完成
+      const hasAllItems = ownedCount >= costItems.length;
+
+      if (hasAllItems && goldEnough && insigniaEnough) {
+        return { current: costItems.length, target: costItems.length };
+      }
+      return { current: ownedCount, target: costItems.length };
     }
 
     return { current, target };
@@ -763,8 +968,11 @@ class TaskService {
    * 检查章节是否完成
    */
   private async isChapterComplete(userTask: UserTaskState): Promise<boolean> {
-    // 章节完成条件：所有任务都已领取(状态为3)
-    return userTask.taskStates.every(state => state === 3);
+    // 章节完成条件：所有任务都已完成(状态为3)或未接取(状态为0)
+    // C#: IsOverTask - 如果任何任务 State != -1 则章节未完成
+    // TS: State=3(已完成/已领取) 或 State=0(未接取) 都表示任务不需要操作
+    // 只有 State=1(进行中) 或 State=2(可领取) 才算章节未完成
+    return userTask.taskStates.every(state => state === 3 || state === 0);
   }
   
   /**
@@ -826,12 +1034,20 @@ class TaskService {
   
   /**
    * 获取任务配置（对齐C# XmlData.MainTask）
+   * 补全所有 C# TaskInfo 字段：
+   * - CostMoney/Food/Men/Gold/Insignia ← tasks.json
+   * - TaskItemCondition/Probability, AppendItemIndex/Probability ← tasks.json
+   * - CostItemList ← 需要从 DB 查询（见 getCostItemListForTask）
+   * - GetItemIndex ← tasks.json → mission_gains.json
+   * - GetMoney/Food/Men/Gold ← tasks.json → mission_gains.json
    */
   getTaskConfig(taskId: number, db?: D1Database): TaskInfo | null {
     if (taskId <= 0) return null;
     const task = getTaskCfg(taskId);
     if (!task) return null;
-    return {
+
+    // 从 tasks.json 直接映射的字段
+    const base: TaskInfo = {
       id: task.ID,
       mainId: task.MainID,
       mainIndex: task.MainIndex,
@@ -846,12 +1062,46 @@ class TaskService {
       needObjType: task.NeedObjType || 0,
       needObjID: task.NeedObjID || 0,
       needObjValue: task.NeedObjValue || 0,
-      // 奖励从 mission_gains.json 按 GainIndex 查找
+      conditionTargetName: task.ConditionTargetName || '',
+      costMoney: task.CostMoney || 0,
+      costFood: task.CostFood || 0,
+      costMen: task.CostMen || 0,
+      costGold: task.CostGold || 0,
+      costInsignia: task.CostInsignia || 0,
+      target: task.Target || 0,
+      targetType: task.TargetType || 0,
+      overFlag: task.OverFlag || 0,
+      taskItem: task.TaskItem || '',
+      taskItemNum: task.TaskItemNum || 0,
+      taskItemCondition: task.TaskItemCondition || 0,
+      taskItemProbability: task.TaskItemProbability || 0,
+      appendItemIndex: task.AppendItemIndex || 0,
+      appendItemProbability: task.AppendItemProbability || 0,
+      getMoney: task.GetMoney || 0,
+      getFood: task.GetFood || 0,
+      getMen: task.GetMen || 0,
+      getGold: task.GetGold || 0,
+      getItemIndex: task.GetItemIndex || 0,
       gainType: task.GetGainType || 0,
       gainIndex: task.GetGainIndex || 0,
       hasTaskItemNum: 0,
       hasCondition: 0,
     };
+
+    // 从 tasks.json 的 GetGainIndex 查 mission_gains.json 补全资源奖励
+    if (task.GetGainIndex) {
+      const gain = missionGains[String(task.GetGainIndex)];
+      if (gain) {
+        base.getMoney = base.getMoney || gain.GetMoney || 0;
+        base.getFood  = base.getFood  || gain.GetFood  || 0;
+        base.getMen   = base.getMen   || gain.GetMen   || 0;
+        base.getItemIndex = base.getItemIndex || gain.GetItemIndex || 0;
+        // EndDes 可以用 gain.EndDes 覆盖（如果有）
+        if (gain.EndDes) base.endDes = gain.EndDes;
+      }
+    }
+
+    return base;
   }
 
   /**

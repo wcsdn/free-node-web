@@ -5,7 +5,7 @@
 
 import tasksData from './tasks.json';
 
-// 任务配置类型
+// 任务配置类型 - 对齐 C# TaskInfo 和 tasks.json 所有字段
 export interface TaskConfig {
   ID: number;
   MainID: number;
@@ -20,8 +20,30 @@ export interface TaskConfig {
   NeedObjType: number;
   NeedObjID: number;
   NeedObjValue: number;
-  GetGainType: number;
-  GetGainIndex: number;
+  CostMoney?: number;
+  CostFood?: number;
+  CostMen?: number;
+  CostGold?: number;
+  CostInsignia?: number;
+  Target?: number;
+  TargetType?: number;
+  OverFlag?: number;
+  TaskItem?: string;
+  TaskItemNum?: number;
+  TaskItemCondition?: number;
+  TaskItemProbability?: number;
+  AppendItemIndex?: number;
+  AppendItemProbability?: number;
+  GetMoney?: number;
+  GetFood?: number;
+  GetMen?: number;
+  GetGold?: number;
+  GetItemIndex?: number;
+  GetGainType?: number;
+  GetGainIndex?: number;
+  // Type=2 任务相关：交付物品目标
+  ConditionTargetName?: string;
+  ConditionCityID?: number;
 }
 
 export interface MainTaskConfig {

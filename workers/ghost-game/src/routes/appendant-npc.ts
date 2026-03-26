@@ -182,20 +182,21 @@ app.post('/add', async (c) => {
 
     // 检查是否已有该附庸NPC
     const existing: any = await db.prepare(`
-      SELECT id FROM appendant_npcs WHERE city_id = ? AND npc_id = ?
-    `).bind(city_id, npc_id).first();
+      SELECT id FROM appendant_npc WHERE npc_pos = ? AND wallet_address = ?
+    `).bind(npc_id, walletAddress).first();
 
     if (existing) return error(c, '该NPC已是您的附庸');
 
-    // 添加附庸NPC
+    // 添加附庸NPC (npc_pos是NPC在地图上的位置)
+    const now = new Date().toISOString();
+    const endTime = new Date(Date.now() + 3600000).toISOString(); // 默认1小时
     const result = await db.prepare(`
-      INSERT INTO appendant_npcs (city_id, npc_id, wallet_address, status)
-      VALUES (?, ?, ?, 1)
-    `).bind(city_id, npc_id, walletAddress).run();
+      INSERT INTO appendant_npc (wallet_address, npc_pos, state, begin_time, end_time)
+      VALUES (?, ?, 1, ?, ?)
+    `).bind(walletAddress, npc_id, now, endTime).run();
 
     return success(c, {
       id: result.meta.last_row_id,
-      cityId: city_id,
       npcId: npc_id,
       message: '附庸NPC添加成功',
     });
@@ -216,15 +217,15 @@ app.get('/list', async (c) => {
 
   try {
     let query = `
-      SELECT an.*, c.name as city_name
-      FROM appendant_npcs an
-      JOIN cities c ON an.city_id = c.id
+      SELECT an.*, c.name as city_name, c.position as city_position
+      FROM appendant_npc an
+      JOIN cities c ON c.wallet_address = an.wallet_address
       WHERE an.wallet_address = ?
     `;
     const params: any[] = [walletAddress];
 
     if (city_id) {
-      query += ' AND an.city_id = ?';
+      query += ' AND c.id = ?';
       params.push(city_id);
     }
 
@@ -244,20 +245,15 @@ app.post('/delete', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { npc_id, city_id } = await c.req.json();
-  if (!npc_id) return error(c, 'npc_id is required');
+  const { npc_id } = await c.req.json();
+  if (!npc_id) return error(c, 'npc_id (npc_pos) is required');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    let query = `DELETE FROM appendant_npcs WHERE npc_id = ? AND wallet_address = ?`;
+    let query = `DELETE FROM appendant_npc WHERE npc_pos = ? AND wallet_address = ?`;
     const params: any[] = [npc_id, walletAddress];
-
-    if (city_id) {
-      query += ' AND city_id = ?';
-      params.push(city_id);
-    }
 
     const result = await db.prepare(query).bind(...params).run();
 

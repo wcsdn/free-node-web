@@ -41,7 +41,6 @@ export { eventService } from './event.svc';
 export { EventServiceExtension, EVENT_TYPES, EVENT_STATES, EVENT_CONFIG, RANDOM_EVENT_POOL, STORY_EVENT_CONFIG } from './event-ext.svc';
 export { arenaService } from './arena.svc';
 export { taskService } from './task.service';
-export { TaskServiceExtension, TASK_TYPES, TASK_STATES, TASK_PROGRESS_TYPES, TASK_REWARD_CONFIG, DAILY_RESET_CONFIG, TASK_CHAIN_CONFIG } from './task-ext.svc';
 export { guildService } from './guild.svc';
 // export { dungeonService } from './dungeon.svc'; // TODO: 待实现
 export { AppendantNPCService } from './appendant-npc.svc';

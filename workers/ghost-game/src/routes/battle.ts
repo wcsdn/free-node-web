@@ -175,6 +175,7 @@ app.get('/chess/board', async (c) => {
 // 前端期望: result.value 为 Chessevent[] 数组
 // Chessevent 格式: {ID, ObjX, ObjY, ObjAction, EffValue, ExpandEffValue, Player, ObjID, TargetID}
 // 无事件时返回 [{ID: -1}]
+// GetChessEvent 改为调用真实战报数据（从 battles 表读取）
 app.get('/chess/event', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -187,7 +188,7 @@ app.get('/chess/event', async (c) => {
   const eventState = parseInt(c.req.query('eventState') || '0');
 
   try {
-    // 获取当前进行中的战斗
+    // 优先读取进行中的战斗（有 report 且 result IS NULL）
     const activeBattle: any = await db.prepare(`
       SELECT * FROM battles
       WHERE (attacker_address = ? OR defender_address = ?)
@@ -196,116 +197,168 @@ app.get('/chess/event', async (c) => {
       LIMIT 1
     `).bind(walletAddress, walletAddress).first();
 
-    // 获取棋盘数据
-    const board = activeBattle ? await getChessboardByPos(db, parseInt(pos) || 1, walletAddress) : null;
+    // 读取已结束的战斗（result IS NOT NULL）用于战报回放
+    const pastBattle: any = !activeBattle ? await db.prepare(`
+      SELECT * FROM battles
+      WHERE (attacker_address = ? OR defender_address = ?)
+      AND result IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).bind(walletAddress, walletAddress).first() : null;
 
-    // 生成 Chessevent 格式的战斗事件
-    // eventState 表示已处理的最后事件ID，新事件从 eventState+1 开始
-    const chessEvents: any[] = [];
-    let eventId = eventState;
-    let currentRound = 1;
-
-    if (activeBattle && board) {
-      const isAttacker = activeBattle.attacker_address === walletAddress;
-      const myFlag = isAttacker ? 1 : 3; // 1=攻击方, 3=防守方
-      const opponentFlag = isAttacker ? 3 : 1;
-
-      // 计算战斗已进行的回合数
-      const battleStartTime = new Date(activeBattle.created_at).getTime();
-      const elapsedSeconds = Math.floor((Date.now() - battleStartTime) / 1000);
-      currentRound = Math.floor(elapsedSeconds / 60) + 1;
-
-      // 获取武将状态，生成攻击事件
-      const myHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === myFlag);
-      const opponentHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === opponentFlag);
-
-      // 从 eventState+1 开始生成新事件（模拟战斗进程）
-      const newEventsStart = eventState + 1;
-
-      // 战斗开始事件 (ID = eventState + 1, eventId = 98)
-      if (newEventsStart <= eventId + 1) {
-        chessEvents.push({
-          ID: newEventsStart,
-          ObjX: 0,
-          ObjY: 0,
-          ObjAction: 98, // 战斗开始
-          EffValue: 0,
-          ExpandEffValue: 0,
-          Player: myFlag,
-          ObjID: 0,
-          TargetID: 0,
-        });
-      }
-
-      // 遍历武将状态，生成攻击/受伤事件
-      let nextEventId = newEventsStart + 1;
-
-      for (const myHero of myHeroes) {
-        if (!myHero || !myHero.ID) continue;
-
-        // 查找目标（随机选择对手）
-        const target = opponentHeroes.find((o: any) => o && o.ID && o.ID !== myHero.ID);
-        if (!target) continue;
-
-        const heroDamage = Math.floor((myHero.Attack || 50) * 0.5);
-        const targetDamage = Math.max(1, heroDamage - (target.Defense || 20));
-
-        // 攻击事件
-        if (nextEventId > eventState) {
-          chessEvents.push({
-            ID: nextEventId,
-            ObjX: myHero.X || 0,
-            ObjY: myHero.Y || 0,
-            ObjAction: 1, // 普通攻击
-            EffValue: heroDamage,
-            ExpandEffValue: targetDamage,
-            Player: myFlag,
-            ObjID: myHero.ID,
-            TargetID: target.ID,
-          });
-          nextEventId++;
-        }
-
-        // 如果目标死亡，添加死亡事件
-        if ((target.Hp || 100) <= targetDamage && nextEventId > eventState) {
-          chessEvents.push({
-            ID: nextEventId,
-            ObjX: target.X || 0,
-            ObjY: target.Y || 0,
-            ObjAction: 0, // 移动（死亡）
-            EffValue: 0,
-            ExpandEffValue: 0,
-            Player: opponentFlag,
-            ObjID: target.ID,
-            TargetID: 0,
-          });
-          nextEventId++;
-        }
-      }
-
-      // 检查战斗是否结束（超时5分钟或所有单位死亡）
-      const BATTLE_TIMEOUT = 300;
-      if (elapsedSeconds >= BATTLE_TIMEOUT && nextEventId > eventState) {
-        chessEvents.push({
-          ID: nextEventId,
-          ObjX: 0,
-          ObjY: 0,
-          ObjAction: 99, // 战斗结束
-          EffValue: 0,
-          ExpandEffValue: 0,
-          Player: myFlag,
-          ObjID: 0,
-          TargetID: 0,
-        });
-      }
-    }
-
-    // 如果没有新事件，返回 [{ID: -1}] 表示无更新
-    if (chessEvents.length === 0) {
+    const battle = activeBattle || pastBattle;
+    if (!battle) {
+      // 没有战斗记录，返回 [{ID: -1}] 表示无更新
       return success(c, [{ ID: -1 }]);
     }
 
-    // 返回 Chessevent 数组 (直接返回数组，适配器 result.value = 数组)
+    // 从 battles 表读取战报数据（report 字段存储 encodeBattleSummary 编码的战报）
+    const reportEncoded = battle.report || '';
+    const summary = decodeBattleSummary(reportEncoded);
+
+    if (!summary || !summary.HeroList || summary.HeroList.length === 0) {
+      // 战报为空，尝试从棋盘数据生成
+      const board = await getChessboardByPos(db, parseInt(pos) || 1, walletAddress);
+      if (!board) {
+        return success(c, [{ ID: -1 }]);
+      }
+      // 从棋盘数据生成事件
+      const isAttacker = battle.attacker_address === walletAddress;
+      const myFlag = isAttacker ? 1 : 3;
+      const opponentFlag = isAttacker ? 3 : 1;
+      const battleStartTime = new Date(battle.created_at).getTime();
+      const elapsedSeconds = Math.floor((Date.now() - battleStartTime) / 1000);
+      const myHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === myFlag);
+      const opponentHeroes: any[] = (board.ChessmanList || []).filter((u: any) => u.Flag === opponentFlag);
+      const chessEvents: any[] = [];
+      let nextEventId = eventState + 1;
+
+      // 战斗开始
+      if (eventState < 1) {
+        chessEvents.push({
+          ID: nextEventId++,
+          ObjX: 0, ObjY: 0,
+          ObjAction: 98, // 战斗开始
+          EffValue: 0, ExpandEffValue: 0,
+          Player: myFlag, ObjID: 0, TargetID: 0,
+        });
+      }
+
+      // 攻击事件
+      for (const myHero of myHeroes) {
+        if (!myHero || !myHero.ID) continue;
+        const target = opponentHeroes.find((o: any) => o && o.ID && o.ID !== myHero.ID);
+        if (!target) continue;
+        const heroDamage = Math.floor((myHero.Attack || 50) * 0.5);
+        const targetDamage = Math.max(1, heroDamage - (target.Defense || 20));
+        chessEvents.push({
+          ID: nextEventId++,
+          ObjX: myHero.X || 0, ObjY: myHero.Y || 0,
+          ObjAction: 1, // 普通攻击
+          EffValue: heroDamage, ExpandEffValue: targetDamage,
+          Player: myFlag, ObjID: myHero.ID, TargetID: target.ID,
+        });
+        if ((target.Hp || 100) <= targetDamage) {
+          chessEvents.push({
+            ID: nextEventId++,
+            ObjX: target.X || 0, ObjY: target.Y || 0,
+            ObjAction: 0, // 移动（死亡）
+            EffValue: 0, ExpandEffValue: 0,
+            Player: opponentFlag, ObjID: target.ID, TargetID: 0,
+          });
+        }
+      }
+
+      // 战斗结束
+      const BATTLE_TIMEOUT = 300;
+      if (elapsedSeconds >= BATTLE_TIMEOUT && nextEventId > eventState + 1) {
+        chessEvents.push({
+          ID: nextEventId++,
+          ObjX: 0, ObjY: 0,
+          ObjAction: 99, // 战斗结束
+          EffValue: 0, ExpandEffValue: 0,
+          Player: myFlag, ObjID: 0, TargetID: 0,
+        });
+      }
+
+      if (chessEvents.length === 0 || nextEventId <= eventState) {
+        return success(c, [{ ID: -1 }]);
+      }
+      return success(c, chessEvents);
+    }
+
+    // 从战报解码真实数据，生成 Chessevent[]
+    // summary.HeroList 中包含: HeroID, HeroName, ChildrenCount, ChildrenLoss, State, GainExp 等
+    const isAttacker = battle.attacker_address === walletAddress;
+    const myFlag = isAttacker ? 1 : 3;
+    const opponentFlag = isAttacker ? 3 : 1;
+    const chessEvents: any[] = [];
+    let nextEventId = eventState + 1;
+
+    // 战斗开始事件
+    if (eventState < 1) {
+      chessEvents.push({
+        ID: nextEventId++,
+        ObjX: 0, ObjY: 0,
+        ObjAction: 98, // 战斗开始
+        EffValue: 0, ExpandEffValue: 0,
+        Player: myFlag, ObjID: 0, TargetID: 0,
+      });
+    }
+
+    // 从 HeroList 生成攻击/死亡事件（参考 jx/BLLEX/ChessEx.cs GetChessEvent）
+    // HeroList 中 State: 0=存活, 99=死亡
+    for (const hero of summary.HeroList) {
+      if (!hero || !hero.HeroID) continue;
+
+      // ChildrenCount=初始兵数, ChildrenLoss=损失兵数
+      // ChildrenCount > ChildrenLoss 表示存活，否则死亡
+      const isDead = (hero.ChildrenLoss || 0) >= (hero.ChildrenCount || 0);
+
+      // 生成攻击事件（从 ChildrenLoss 推断受伤程度）
+      if ((hero.ChildrenLoss || 0) > 0) {
+        chessEvents.push({
+          ID: nextEventId++,
+          ObjX: hero.CityPos || 0, ObjY: 0,
+          ObjAction: 1, // 普通攻击（真实战报中无 ObjAction，用1代替）
+          EffValue: hero.ChildrenCount || 0,
+          ExpandEffValue: hero.ChildrenLoss || 0,
+          Player: hero.HeroStatefFlag === 1 ? opponentFlag : myFlag,
+          ObjID: hero.HeroID,
+          TargetID: 0,
+        });
+      }
+
+      // 死亡事件
+      if (isDead && hero.HeroStatefFlag === 1) {
+        chessEvents.push({
+          ID: nextEventId++,
+          ObjX: hero.CityPos || 0, ObjY: 0,
+          ObjAction: 0, // 移动（死亡）
+          EffValue: 0, ExpandEffValue: 0,
+          Player: opponentFlag,
+          ObjID: hero.HeroID,
+          TargetID: 0,
+        });
+      }
+    }
+
+    // 战斗结束事件
+    if (eventState < 99 && summary.FightWinFlag !== undefined) {
+      chessEvents.push({
+        ID: nextEventId++,
+        ObjX: 0, ObjY: 0,
+        ObjAction: 99, // 战斗结束
+        EffValue: summary.FightWinFlag, // 1=我方胜利, 0=我方失败
+        ExpandEffValue: 0,
+        Player: myFlag, ObjID: 0, TargetID: 0,
+      });
+    }
+
+    if (chessEvents.length === 0 || nextEventId <= eventState + 1) {
+      return success(c, [{ ID: -1 }]);
+    }
+
     return success(c, chessEvents);
   } catch (err: any) {
     console.error('[Battle] GetChessEvent error:', err);
@@ -451,12 +504,13 @@ app.post('/chess/attack', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { pos, playerID, chessIndex, targetID, type } = await c.req.json<{
+  const { pos, playerID, chessIndex, targetID, type, city_id } = await c.req.json<{
     pos?: string;
     playerID?: string;
     chessIndex?: number;
     targetID?: number;
     type?: number;
+    city_id?: number;  // 攻击方城市ID，使用请求中的city_id而非固定取第一个城市
   }>();
 
   if (!pos || chessIndex === undefined || targetID === undefined) {
@@ -466,7 +520,31 @@ app.post('/chess/attack', async (c) => {
   try {
     // chessIndex 是棋盘单位索引 (ChessmanList 中的位置)
     // chessIndex 1-10 是攻击方, 11-20 是防守方
-    
+
+    // 确定使用哪个城市进行攻击
+    // 优先使用请求中的 city_id，否则使用用户默认城市
+    let attackerCityId: number | null = city_id || null;
+
+    if (attackerCityId) {
+      // 验证 city_id 属于当前用户
+      const cityRecord: any = await db.prepare(`
+        SELECT id, wallet_address FROM cities WHERE id = ?
+      `).bind(attackerCityId).first();
+
+      if (!cityRecord) {
+        return error(c, 'City not found', 404);
+      }
+      if (cityRecord.wallet_address !== walletAddress) {
+        return error(c, 'City does not belong to you', 403);
+      }
+    } else {
+      // 没有指定city_id，获取用户第一个城市
+      const defaultCity: any = await db.prepare(`
+        SELECT id FROM cities WHERE wallet_address = ? LIMIT 1
+      `).bind(walletAddress).first();
+      attackerCityId = defaultCity?.id || null;
+    }
+
     // 从 battles 表获取当前战场信息
     // battles表: id, attacker_address, defender_address, battle_type, result, report, created_at
     // 没有pos/state列，通过attacker_address查询
@@ -488,9 +566,10 @@ app.post('/chess/attack', async (c) => {
     const defenderAddress = isAttacker ? battle.defender_address : battle.attacker_address;
 
     // 获取攻击方武将 (chessIndex 1-10 是攻击方单位)
+    // 修复: 使用 city_id 关联查询对应城市的武将
     const attackerHeroesResult: any = await db.prepare(`
-      SELECT * FROM heroes 
-      WHERE wallet_address = ? AND state IN (1, 10) 
+      SELECT * FROM heroes
+      WHERE wallet_address = ? AND state IN (1, 10)
       ORDER BY attack DESC LIMIT 10
     `).bind(attackerAddress).all();
     const attackerHeroes: any[] = attackerHeroesResult.results || [];
@@ -679,7 +758,7 @@ app.post('/settle', async (c) => {
     // 生成战报
     const summary: BattleSummaryServerInfo = {
       CityList: [],
-      Res: [],
+      Res: null,
       SkillEffectList: [],
       HeroList: [],
       StatDefenceBuildList: [],

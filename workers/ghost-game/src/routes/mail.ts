@@ -12,11 +12,11 @@ const app = new Hono<{ Bindings: Env }>();
 // 格式化MailInfo (C# MailInfo字段)
 const formatMail = (mail: any) => ({
   MailID: mail.id,
-  UserName: mail.wallet_address || '',
-  ReadTag: mail.read || 0,
+  UserName: mail.sender_address || mail.wallet_address || '',  // 发送者或接收者
+  ReadTag: mail.is_read || 0,
   MailType: mail.type || 1,
   Title: mail.title || '',
-  MailFrom: mail.from_user || '',
+  MailFrom: mail.sender_address || '',  // 发送者地址
   Text: mail.content || '',
   DateTime: mail.created_at || '',
 });

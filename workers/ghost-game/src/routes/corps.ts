@@ -255,29 +255,24 @@ app.get('/other', async (c) => {
 
   try {
     // 查询该城市位置的其他军团
-    // 注意：corps 表可能还不存在，先返回空数据
     const corps = await db.prepare(`
-      SELECT * FROM corps 
-      WHERE garrison_id = ? AND wallet_address != ?
-      ORDER BY id ASC
+      SELECT c.*, ch.name as hero_name, ch.level as hero_level
+      FROM corps c
+      LEFT JOIN heroes ch ON ch.wallet_address = c.wallet_address AND ch.state = 2
+      WHERE c.city_id = ? AND c.wallet_address != ?
+      ORDER BY c.id ASC
     `).bind(parseInt(city_id), walletAddress).all();
 
     let corpsList = (corps.results || []).map((corp: any) => ({
       CorpsID: corp.id,
       CorpsName: corp.name || '军团',
-      GarrisonID: corp.garrison_id,
-      State: corp.state || 1,
-      SchlepMoney: corp.schlep_money || 0,
-      SchlepFood: corp.schlep_food || 0,
-      SchlepMen: corp.schlep_men || 0,
       CityID: corp.city_id,
+      State: corp.state || 1,
       UserName: corp.wallet_address,
-      TargetCity: corp.target_city || 0,
+      TargetPosition: corp.target_position || 0,
       ArriveTime: corp.arrive_time || '',
-      CityPos: corp.city_pos || 0,
-      Seconds: corp.seconds || 0,
-      Insignia: corp.insignia || 0,
-      IsVIP: corp.is_vip || 0,
+      HeroName: corp.hero_name || '',
+      HeroLevel: corp.hero_level || 1,
     }));
 
     // 如果没有军团，返回一个 CorpsID = -1 的空军团（匹配 C# 逻辑）
@@ -285,19 +280,13 @@ app.get('/other', async (c) => {
       corpsList = [{
         CorpsID: -1,
         CorpsName: '',
-        GarrisonID: 0,
-        State: 0,
-        SchlepMoney: 0,
-        SchlepFood: 0,
-        SchlepMen: 0,
         CityID: 0,
+        State: 0,
         UserName: '',
-        TargetCity: 0,
+        TargetPosition: 0,
         ArriveTime: '',
-        CityPos: 0,
-        Seconds: 0,
-        Insignia: 0,
-        IsVIP: 0,
+        HeroName: '',
+        HeroLevel: 1,
       }];
     }
 

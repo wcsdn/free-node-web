@@ -6,6 +6,7 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import itemConfigs from '../config/items.json';
+import skillsConfig from '../config/skills.json';
 import itemDisassemble from '../config/item_disassemble.json';
 import itemExchange from '../config/item_exchange.json';
 
@@ -294,6 +295,85 @@ app.get('/:id', async (c) => {
 
     if (!item) return error(c, 'Item not found', 404);
 
+    // 获取装备的技能列表 (基于 SkillType 映射)
+    const itemConfig = (itemConfigs as any).Item?.find((i: any) => i.Index === item.config_id || i.ID === item.config_id);
+    const skillType = itemConfig?.SkillType;
+    const skillsData = (skillsConfig as Record<string, any>);
+    const skillTypeToSkillIds: Record<number, number[]> = {
+      1: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40], // 暗器
+      2: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20], // 飞刀
+      3: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30], // 弓箭
+      4: [31, 32, 33, 34, 35, 36, 37, 38, 39, 40], // 匕首
+      5: [1, 2, 3, 4],  // 单刀
+      6: [5, 6],        // 锤
+      7: [7, 8],        // 枪
+      8: [9, 10],       // 剑
+      9: [65, 66],      // 扇
+      10: [11, 12],     // 特殊
+    };
+    const skillIds = (skillType && skillType !== 0) ? (skillTypeToSkillIds[skillType] || []) : [];
+    const SkillList = skillIds.slice(0, 1).map((sid: number) => {
+      const s = skillsData[String(sid)];
+      return {
+        ID: sid,
+        HeroID: 0,
+        SkillLevel: 1,
+        EXP: 0,
+        StaticIndex: sid,
+        Name: s?.name || `技能${sid}`,
+        Type: s?.type || 1,
+        Des: s?.description || '',
+        Probability: s?.probability || 100,
+        EffID: s?.effID || 1,
+        EffValue: s?.effectValue || 0,
+        EffRange: s?.effectRange || 1,
+        NeedItemType: s?.needItemType || 0,
+      };
+    });
+
+    // 获取镶嵌在该装备上的宝石
+    let ItemList: any[] = [];
+    try {
+      const gems = await db.prepare(`
+        SELECT ug.*, gc.name, gc.type as gem_type, gc.atk, gc.def, gc.hp, gc.critical, gc.price
+        FROM user_gems ug
+        LEFT JOIN gems_config gc ON ug.gem_id = gc.id
+        WHERE ug.item_id = ?
+        ORDER BY ug.slot
+      `).bind(itemId).all() as any;
+      
+      ItemList = (gems.results || []).map((gem: any) => ({
+        ID: gem.id,
+        Name: gem.name || `宝石${gem.gem_id}`,
+        ItemType: 100, // 宝石类型
+        Des: `${gem.gem_type || 'atk'}宝石，镶嵌于装备`,
+        Level: gem.level || 1,
+        Quality: Math.floor((gem.gem_id - 1) / 4) + 1 || 1,
+        Price: gem.price || 0,
+        UseLevel: 0,
+        UseSex: 0,
+        UseUnion: 0,
+        HitPoint: gem.hp || 0,
+        Durability: 0,
+        Attack: gem.atk || 0,
+        Defence: gem.def || 0,
+        FR: 0, LR: 0, CR: Math.round((gem.critical || 0) * 100), DR: 0,
+        SellMoney: Math.floor((gem.price || 0) * 0.5),
+        SellFood: 0,
+        Image: gem.icon || '/items/gem.gif',
+        Icon: gem.icon || '/items/gem.gif',
+        StaticIndex: gem.gem_id || 0,
+        State: 0,
+        UserName: walletAddress,
+        CityID: 1,
+        // 宝石特有属性
+        GemType: gem.gem_type || 'atk',
+        GemLevel: gem.level || 1,
+      }));
+    } catch {
+      ItemList = [];
+    }
+
     // 格式化为 C# ItemInfo 结构
     const itemInfo = {
       // C# DBItem 字段
@@ -335,7 +415,10 @@ app.get('/:id', async (c) => {
       Icon: item.icon || item.image || '/items/default.gif',
       // C# ItemInfo 资源获取字段 (前端 Item.js 使用)
       GetMen: item.GetMen || 0,
-      // C# ItemInfo.UserSkillType (映射自 config.SkillType)
+      // 技能列表 (该装备提供的技能)
+      SkillList,
+      // 宝石/附魔列表 (该装备镶嵌的宝石)
+      ItemList,
     };
 
     return success(c, itemInfo);
@@ -345,6 +428,8 @@ app.get('/:id', async (c) => {
 });
 
 // 使用物品
+// C#: UseItem(string userName, int cityID, int itemID) returns string[]
+// 返回: string[] - 获得的物品名称列表
 app.post('/use', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -356,58 +441,50 @@ app.post('/use', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
+    // 获取物品（按 itemID 精确匹配）
     const inv: any = await db.prepare(`
-      SELECT * FROM items WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, itemID).first();
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type,
+             ic.EffectType, ic.EffectValue, ic.ItemType
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(itemID, walletAddress).first();
 
-    if (!inv || (inv.count || 1) < 1) {
-      return error(c, 'Not enough items');
+    if (!inv) return error(c, '物品不存在', 404);
+
+    // 检查物品类型必须是消耗品(1)
+    const itemType = inv.item_type ?? inv.ItemType ?? 1;
+    if (itemType !== 1) {
+      return error(c, '该物品不是消耗品类型');
     }
 
-    const itemConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === parseInt(itemID));
+    // 检查数量
+    if ((inv.count || 1) < 1) {
+      return error(c, '物品数量不足');
+    }
+
+    const itemConfig = (itemConfigs as any).Item?.find((i: any) => i.ID === parseInt(inv.config_id));
     if (!itemConfig) return error(c, 'Item config not found');
 
-    // 应用效果
-    const effects: any = {};
-    if (itemConfig.EffectType) {
-      switch (itemConfig.EffectType) {
-        case 1: // 恢复生命
-          effects.hp_recovery = itemConfig.EffectValue;
-          break;
-        case 2: // 增加经验
-          effects.exp = itemConfig.EffectValue;
-          break;
-        case 3: // 增加金币
-          effects.gold = itemConfig.EffectValue;
-          break;
-        case 4: // 增加资源
-          effects.resources = itemConfig.EffectValue;
-          break;
-        case 5: // 增加兵力
-          effects.men = itemConfig.EffectValue;
-          break;
-      }
-    }
+    // 返回获得的物品名称列表（C# 返回 string[]）
+    const resultNames: string[] = [];
 
     // 消耗物品
-    await db.prepare(`
-      UPDATE items SET count = count - 1 WHERE wallet_address = ? AND config_id = ?
-    `).bind(walletAddress, itemID).run();
-
-    // 如果有效果，发放
-    if (effects.exp) {
+    if ((inv.count || 1) > 1) {
       await db.prepare(`
-        UPDATE characters SET exp = exp + ? WHERE wallet_address = ?
-      `).bind(effects.exp, walletAddress).run();
+        UPDATE items SET count = count - 1 WHERE id = ?
+      `).bind(itemID).run();
+    } else {
+      await db.prepare(`DELETE FROM items WHERE id = ?`).bind(itemID).run();
     }
 
-    if (effects.gold) {
-      await db.prepare(`
-        UPDATE characters SET gold = gold + ? WHERE wallet_address = ?
-      `).bind(effects.gold, walletAddress).run();
-    }
+    // 添加新获得的物品
+    const newItemLevel = itemConfig.Level || 1;
+    const newItemQuality = itemConfig.Quality || 1;
+    // 模拟 C# CreateItem 生成新物品
 
-    if (effects.resources || effects.men) {
+    // 根据 EffectType 处理资源获取
+    if (itemConfig.EffectType === 3) { // 获得资源
       const city: any = await db.prepare(`
         SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
       `).bind(walletAddress).first();
@@ -416,23 +493,38 @@ app.post('/use', async (c) => {
         await db.prepare(`
           UPDATE cities SET
             food = food + ?,
-            population = population + ?
+            money = money + ?
           WHERE id = ?
         `).bind(
-          effects.resources || 0,
-          effects.men || 0,
+          itemConfig.GetFood || 0,
+          itemConfig.GetMoney || 0,
           city.id
         ).run();
       }
     }
 
-    return success(c, {
-      itemId: itemID,
-      name: itemConfig.Name,
-      count: 1,
-      effects,
-      message: `使用了 1 个 ${itemConfig.Name}`,
-    });
+    if (itemConfig.EffectType === 4 && cityID) { // 增加金币
+      await db.prepare(`
+        UPDATE characters SET gold = gold + ? WHERE wallet_address = ?
+      `).bind(itemConfig.GetGold || 0, walletAddress).run();
+    }
+
+    if (itemConfig.EffectType === 5) { // 增加兵力
+      const city: any = await db.prepare(`
+        SELECT id FROM cities WHERE wallet_address = ? ORDER BY id ASC LIMIT 1
+      `).bind(walletAddress).first();
+
+      if (city) {
+        await db.prepare(`
+          UPDATE cities SET population = population + ? WHERE id = ?
+        `).bind(itemConfig.GetMen || 0, city.id).run();
+      }
+    }
+
+    // 返回获得的物品名称（C# UseItem 返回 string[]）
+    resultNames.push(itemConfig.Name);
+
+    return success(c, resultNames);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -481,13 +573,14 @@ app.post('/add', async (c) => {
 
 // 物品分解
 // C#: DisassembleItem(string userName, int cityID, int itemID, int index)
-// 分解装备类物品，返还材料
+// 分解装备类物品，返还材料。index = StaticIndex
 app.post('/disassemble', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
 
-  const { city_id, item_id } = await c.req.json();
+  const { city_id, item_id, StaticIndex } = await c.req.json();
   if (!item_id) return error(c, 'Missing item_id');
+  if (!StaticIndex) return error(c, 'Missing StaticIndex');
 
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
@@ -517,7 +610,7 @@ app.post('/disassemble', async (c) => {
       return error(c, '物品运输中，不能分解', 400);
     }
 
-    const staticIndex = inv.config_id;
+    const staticIndex = StaticIndex;
 
     // 从 C# XmlData.ItemDisassemble 中查找分解配方
     // 格式: { [fromIndex]: { ToItemID, ToItemNum } }
@@ -924,7 +1017,266 @@ app.post('/use-resource', async (c) => {
   }
 });
 
-// CancleSellItem - POST /item/cancel-sell
+// ========== POST /item/market/sell - 道具上架（对应 C# SellItem）============
+app.post('/market/sell', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id, price } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    if (!item_id) return error(c, 'Missing item_id');
+
+    // ========== 价格校验 ==========
+    // 对应 C#: if (price <= 0 || price > 999999999) return 101;
+    if (!price || price <= 0 || price > 999999999) {
+      return c.json(101); // 价格无效
+    }
+
+    // ========== 获取道具信息（需包含完整字段用于校验）============
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.ID as ic_id, ic.Name as item_name, ic.Type as item_type,
+             ic.SellFlag, ic.Attack, ic.CR, ic.DR, ic.Defence, ic.FR, ic.LR,
+             ic.HitPoint, ic.Level, ic.Quality, ic.GetFood, ic.GetMen, ic.GetMoney,
+             ic.GetGold, ic.UseGold, ic.UseLevel, ic.UseSex, ic.UseType, ic.UseUnion,
+             ic.SkillType, ic.NeedUserLevel, ic.GetValue, ic.LostRate, ic.GetItemStatic,
+             ic.EquipSlot
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ? AND i.wallet_address = ?
+    `).bind(item_id, walletAddress).first();
+
+    if (!item) {
+      return c.json(102); // 指定道具不存在
+    }
+
+    // ========== HeroID 校验 - 装备在英雄身上的道具不能上架 ==========
+    // 对应 C#: if (itemSingle.HeroID != 0) return 103;
+    if (item.hero_id && item.hero_id !== 0) {
+      return c.json(103); // 指定道具有英雄所属
+    }
+
+    // ========== CorpsID 校验 - 运输中的道具不能上架 ==========
+    // 对应 C#: if (itemSingle.CorpsID != 0) return 104;
+    if (item.corps_id && item.corps_id !== 0) {
+      return c.json(104); // 指定道具在运输途中
+    }
+
+    // ========== SellFlag 校验 - 不可出售的道具不能上架 ==========
+    // 对应 C#: if (XmlData.Item[itemSingle.StaticIndex].SellFlag == 1) return 30117;
+    if (item.SellFlag === 1) {
+      return c.json(30117); // 道具为不可出售状态
+    }
+
+    // ========== State 校验 - 装备在外英雄身上的道具不能上架 ==========
+    // 对应 C#: FullItemState → if (heroSingle.CorpsID != 0) itemSingle.State = 5;
+    //         if (itemSingle.State == 5) return 30048;
+    if (item.state === 5) {
+      return c.json(30048); // 道具在在外英雄身上，不能上架
+    }
+
+    // ========== 检查是否已在市场上架 ==========
+    const existingListing: any = await db.prepare(`
+      SELECT * FROM market_listings WHERE item_id = ? AND state = 4
+    `).bind(item_id).first();
+    if (existingListing) {
+      return c.json(101); // 道具已在市场上架
+    }
+
+    // ========== 上架道具到市场 ==========
+    const sellTime = new Date().toISOString();
+    await db.prepare(`
+      INSERT INTO market_listings (item_id, seller_address, price, state, created_at)
+      VALUES (?, ?, ?, 4, ?)
+    `).bind(item_id, walletAddress, price, sellTime).run();
+
+    return c.json(0); // 成功
+  } catch (err: any) {
+    console.error('[market/sell]', err);
+    return error(c, err.message);
+  }
+});
+
+// ========== POST /item/market/buy - 从市场购买道具（对应 C# BuyItem）============
+app.post('/market/buy', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id, price } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    if (!item_id) return error(c, 'Missing item_id');
+
+    // ========== 价格校验 ==========
+    // 对应 C#: if (price <= 0) return 30156;
+    if (!price || price <= 0) {
+      return c.json(30156); // 无效价格
+    }
+
+    // ========== 获取市场挂单信息（State=4 表示上架中）============
+    const listing: any = await db.prepare(`
+      SELECT ml.*, ic.Name as item_name, ic.Type as item_type,
+             ic.SellFlag, i.HeroID as item_hero_id, i.State as item_state
+      FROM market_listings ml
+      LEFT JOIN items i ON i.id = ml.item_id
+      LEFT JOIN items_config ic ON ml.config_id = ic.ID
+      WHERE ml.item_id = ? AND ml.state = 4
+    `).bind(item_id).first();
+
+    if (!listing) {
+      return c.json(102); // 指定道具不存在
+    }
+
+    const sellerAddress = listing.seller_address;
+
+    // ========== 自己买自己校验 ==========
+    // 对应 C#: if (itemSingle.UserName == userName) return 30169;
+    if (sellerAddress === walletAddress) {
+      return c.json(30169); // 不能自己和自己交易道具
+    }
+
+    // ========== price 校验 ==========
+    // 对应 C#: if (price != itemSingle.Price) return 30157;
+    if (price !== listing.price) {
+      return c.json(30157); // 道具价格与显示价格不符，不能交易
+    }
+
+    // ========== SellFlag 校验 ==========
+    // 对应 C#: if (itemSingle.SellFlag == 1) return 30117;
+    if (listing.SellFlag === 1) {
+      return c.json(30117); // 道具为不可出售状态
+    }
+
+    // ========== 状态校验 ==========
+    // 对应 C#: if (itemSingle.State != 4) ...
+    if (listing.item_state !== 4) {
+      return c.json(30117); // 道具状态异常，不能交易
+    }
+
+    // ========== 装备状态校验 ==========
+    if (listing.item_hero_id && listing.item_hero_id !== 0) {
+      return c.json(30117); // 道具已装备，不能交易
+    }
+
+    // ========== 获取买卖双方元宝 ==========
+    const [buyer, seller] = await Promise.all([
+      db.prepare(`SELECT gold FROM characters WHERE wallet_address = ?`).bind(walletAddress).first(),
+      db.prepare(`SELECT gold FROM characters WHERE wallet_address = ?`).bind(sellerAddress).first(),
+    ]);
+
+    // ========== 买方元宝校验 ==========
+    if (!buyer || buyer.gold < price) {
+      return c.json(30055); // 元宝不足
+    }
+
+    // ========== 检查买方物品数量是否已达上限 ==========
+    // 复用 shop.ts 的 getMaxItemCount 和 getCurrentItemCount
+    // 注意：动态 import 可能导致问题，这里直接内联简单实现
+    const maxCountResult: any = await db.prepare(`
+      SELECT technic_level FROM technics WHERE wallet_address = ? AND city_id = ? AND static_index = 13
+    `).bind(walletAddress, city_id).first();
+    const tech13Level = maxCountResult?.technic_level || 0;
+    let maxCount = tech13Level > 0 ? 100 : 50; // 简化：科技13>0则上限100，否则50
+    const currentCountResult: any = await db.prepare(`
+      SELECT SUM(count) as total FROM items WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+    const currentCount = currentCountResult?.total || 0;
+    if (currentCount >= maxCount) {
+      return c.json(30055); // 物品数量已达上限
+    }
+
+    // ========== 执行交易 ==========
+    // 扣除买方元宝
+    await db.prepare(`
+      UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
+    `).bind(price, walletAddress).run();
+
+    // 增加卖方元宝
+    if (seller) {
+      await db.prepare(`
+        UPDATE characters SET gold = gold + ? WHERE wallet_address = ?
+      `).bind(price, sellerAddress).run();
+    }
+
+    // 转移道具所有权
+    await db.prepare(`
+      UPDATE items SET wallet_address = ?, source = 'market_buy' WHERE id = ?
+    `).bind(walletAddress, item_id).run();
+
+    // 将市场挂单标记为已售出 (state=2)
+    await db.prepare(`
+      UPDATE market_listings SET state = 2 WHERE item_id = ? AND seller_address = ?
+    `).bind(item_id, sellerAddress).run();
+
+    return c.json(0); // 成功
+  } catch (err: any) {
+    console.error('[market/buy]', err);
+    return error(c, err.message);
+  }
+});
+
+// ========== POST /item/market/cancel-sell - 道具下架（对应 C# CancelSellItem）============
+app.post('/market/cancel-sell', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const { city_id, item_id } = await c.req.json();
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  try {
+    if (!item_id) return error(c, 'Missing item_id');
+
+    // ========== 获取道具信息 ==========
+    // 对应 C#: ItemInfo itemSingle = GetItemByID(itemID);
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.ID as ic_id
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ?
+    `).bind(item_id).first();
+
+    if (!item) {
+      return c.json(-1); // 道具不存在
+    }
+
+    // ========== 所有权校验 ==========
+    // 对应 C#: if (itemSingle.UserName != userName || itemSingle.CityID != cityID) return -1;
+    if (item.wallet_address !== walletAddress) {
+      return c.json(-1); // 无权操作此道具
+    }
+
+    // ========== 检查市场挂单是否存在 ==========
+    const listing: any = await db.prepare(`
+      SELECT * FROM market_listings WHERE item_id = ? AND state = 4
+    `).bind(item_id).first();
+
+    if (!listing) {
+      return c.json(-1); // 未找到上架记录
+    }
+
+    // ========== 下架道具（state=1 正常状态）============
+    // 对应 C#: ItemAccess.UpdateItemState(userName, cityID, itemID, 0, 1, time)
+    await db.prepare(`
+      UPDATE market_listings SET state = 1 WHERE item_id = ? AND state = 4
+    `).bind(item_id).run();
+
+    // 道具状态恢复为正常 (State=1)，无需修改 items 表（所有权未变）
+    return c.json(0); // 成功
+  } catch (err: any) {
+    console.error('[market/cancel-sell]', err);
+    return error(c, err.message);
+  }
+});
+
+// CancleSellItem - POST /item/cancel-sell (兼容旧端点)
 app.post('/cancel-sell', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -936,26 +1288,39 @@ app.post('/cancel-sell', async (c) => {
 
   try {
     if (!item_id) return error(c, 'Missing item_id');
-    
-    // 取消出售 - 从市场移除并返还物品
-    const marketItem: any = await db.prepare(`
-      SELECT * FROM market_items WHERE item_id = ? AND seller_address = ?
-    `).bind(item_id, walletAddress).first();
-    
-    if (!marketItem) return error(c, 'Item not found in market');
-    
-    // 删除市场记录
-    await db.prepare(`DELETE FROM market_items WHERE item_id = ? AND seller_address = ?`)
-      .bind(item_id, walletAddress).run();
-    
-    // 返还物品到背包
+
+    // ========== 获取道具信息 ==========
+    const item: any = await db.prepare(`
+      SELECT i.*, ic.ID as ic_id
+      FROM items i
+      LEFT JOIN items_config ic ON i.config_id = ic.ID
+      WHERE i.id = ?
+    `).bind(item_id).first();
+
+    if (!item) {
+      return c.json(-1);
+    }
+
+    // ========== 所有权校验 ==========
+    if (item.wallet_address !== walletAddress) {
+      return c.json(-1);
+    }
+
+    // ========== 检查市场挂单是否存在 ==========
+    const listing: any = await db.prepare(`
+      SELECT * FROM market_listings WHERE item_id = ? AND state = 4
+    `).bind(item_id).first();
+
+    if (!listing) {
+      return c.json(-1);
+    }
+
+    // ========== 下架道具 ==========
     await db.prepare(`
-      INSERT INTO items (wallet_address, config_id, count, source)
-      VALUES (?, ?, 1, 'market_cancel')
-      ON CONFLICT(wallet_address, config_id) DO UPDATE SET count = count + 1
-    `).bind(walletAddress, marketItem.config_id).run();
-    
-    return success(c, { message: 'Item removed from market and returned to inventory' });
+      UPDATE market_listings SET state = 1 WHERE item_id = ? AND state = 4
+    `).bind(item_id).run();
+
+    return c.json(0);
   } catch (err: any) {
     return error(c, err.message);
   }
@@ -1383,11 +1748,11 @@ app.post('/repair-general', async (c) => {
       return error(c, '物品不存在');
     }
 
-    // 检查是否有修理工具
+    // 检查是否有修理工具 (Type = 5 对应 RESOURCE)
     const repairTool: any = await db.prepare(`
       SELECT * FROM items i
       LEFT JOIN items_config ic ON i.config_id = ic.ID
-      WHERE i.wallet_address = ? AND ic.Type = 'repair_tool'
+      WHERE i.wallet_address = ? AND ic.Type = 5
       LIMIT 1
     `).bind(walletAddress).first();
 

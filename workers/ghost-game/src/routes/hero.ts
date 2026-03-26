@@ -6,6 +6,8 @@ import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import { heroService } from '../services';
+import skillsConfig from '../config/skills.json';
+import itemsConfig from '../config/items.json';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -85,6 +87,227 @@ function formatHeroInfo(h: any, walletAddress: string) {
   };
 }
 
+// ==================== Helper Functions ====================
+
+// SkillInfo interface for hero skills (参考 C# SkillInfo)
+interface SkillInfo {
+  ID: number;
+  HeroID: number;
+  SkillLevel: number;
+  EXP: number;
+  StaticIndex: number;
+  Name: string;
+  Type: number;
+  Des: string;
+  Probability: number;
+  EffID: number;
+  EffValue: number;
+  EffRange: number;
+  NeedItemType: number;
+}
+
+// ItemInfo interface for hero equipped items (参考 C# ItemInfo)
+interface ItemInfo {
+  ID: number;
+  Name: string;
+  ItemType: number;
+  Des: string;
+  Level: number;
+  Quality: number;
+  Price: number;
+  UseType: number;
+  UseLevel: number;
+  UseSex: number;
+  UseUnion: number;
+  HitPoint: number;
+  Durability: number;
+  Attack: number;
+  Defence: number;
+  FR: number;
+  LR: number;
+  CR: number;
+  DR: number;
+  SellMoney: number;
+  SellFood: number;
+  Image: string;
+  Icon: string;
+  StaticIndex: number;
+  State: number;
+  UserName: string;
+  CityID: number;
+}
+
+/**
+ * 获取英雄的技能列表
+ * @param db D1Database
+ * @param heroId 英雄ID
+ * @param heroLevel 英雄等级（用于计算技能属性）
+ */
+async function getHeroSkillList(db: D1Database, heroId: number, heroLevel: number): Promise<SkillInfo[]> {
+  const skills = (skillsConfig as Record<string, any>);
+  
+  // 查询 hero_skills 表获取英雄的技能
+  const skillRows = await db.prepare(`
+    SELECT hs.*, sc.name, sc.type, sc.typeText as type_name, sc.description, 
+           sc.probability, sc.upProbability, sc.effID, sc.effectValue, 
+           sc.upEffectValue, sc.effectRange, sc.needItemType
+    FROM hero_skills hs
+    LEFT JOIN skills_config sc ON hs.static_index = sc.id
+    WHERE hs.hero_id = ?
+    ORDER BY hs.id
+  `).bind(heroId).all() as any;
+
+  const result: SkillInfo[] = [];
+  for (const row of (skillRows.results || [])) {
+    // 优先使用 skills.json 中的数据，skills_config 表仅用于扩展字段
+    let skillData: any = null;
+    const staticIndex = row.static_index as number;
+    
+    if (skills[staticIndex]) {
+      // 优先从 skills.json 获取基础配置
+      skillData = { ...skills[staticIndex] };
+      // 如果 skills_config 有额外字段，进行覆盖
+      if (row.name) {
+        skillData.name = row.name;
+        skillData.description = row.description || skillData.description;
+        skillData.probability = row.probability ?? skillData.probability;
+        skillData.effID = row.effID ?? skillData.effID;
+        skillData.effectValue = row.effectValue ?? skillData.effectValue;
+      }
+    } else if (row.name) {
+      // 从 skills_config 表获取（无 JSON 时）
+      skillData = {
+        id: row.static_index,
+        name: row.name,
+        type: row.type || 1,
+        description: row.description || '',
+        probability: row.probability || 100,
+        effID: row.effID || 1,
+        effectValue: row.effectValue || 0,
+        effectRange: row.effectRange || 1,
+        needItemType: row.needItemType || 0,
+      };
+    }
+    
+    if (!skillData) continue;
+    
+    const skillLevel = row.skill_level || 1;
+    const exp = row.exp || 1;
+    
+    result.push({
+      ID: row.static_index,
+      HeroID: heroId,
+      SkillLevel: skillLevel,
+      EXP: exp,
+      StaticIndex: staticIndex,
+      Name: skillData.name || `技能${staticIndex}`,
+      Type: skillData.type || 1,
+      Des: skillData.description || '',
+      Probability: Math.floor((skillData.probability || 100) + (skillData.upProbability || 0) * (heroLevel - 1) * 0.01),
+      EffID: skillData.effID || 1,
+      EffValue: Math.floor((skillData.effectValue || 0) * skillLevel),
+      EffRange: skillData.effectRange || 1,
+      NeedItemType: skillData.needItemType || 0,
+    });
+  }
+  
+  return result;
+}
+
+/**
+ * 获取英雄的装备列表
+ * @param db D1Database
+ * @param heroId 英雄ID
+ */
+async function getHeroItemList(db: D1Database, heroId: number): Promise<ItemInfo[]> {
+  const items = (itemsConfig as any).Item || [];
+  
+  // 查询 items 表获取英雄的装备
+  const itemRows = await db.prepare(`
+    SELECT i.*, ic.Name, ic.Type, ic.Des, ic.Icon, ic.Price,
+           ic.EffectType, ic.EffectValue
+    FROM items i
+    LEFT JOIN items_config ic ON i.config_id = ic.ID
+    WHERE i.hero_id = ? AND i.equipped = 1
+    ORDER BY i.id
+  `).bind(heroId).all() as any;
+
+  const result: ItemInfo[] = [];
+  for (const row of (itemRows.results || [])) {
+    // 优先使用 items.json 中的数据，items_config 表仅用于扩展字段
+    let itemData: any = null;
+    const configId = row.config_id;
+    
+    // 先从 items.json 查找
+    itemData = items.find((i: any) => i.Index === configId || i.ID === configId);
+    
+    if (!itemData && row.Name) {
+      // 从 items_config 表获取（无 JSON 时）
+      itemData = {
+        Index: configId,
+        Name: row.Name,
+        Type: row.Type || 1,
+        Des: row.Des || '',
+        Icon: row.Icon || '',
+        Price: row.Price || 0,
+        Attack: row.EffectType === 1 ? (row.EffectValue || 0) : 0,
+        Defence: row.EffectType === 2 ? (row.EffectValue || 0) : 0,
+        Level: 1,
+        Quality: 1,
+        UseType: 1,
+        UseLevel: 1,
+        UseSex: 0,
+        UseUnion: 0,
+        HitPoint: 100,
+        SellMoney: 0,
+        SellFood: 0,
+        FR: 0, LR: 0, CR: 0, DR: 0,
+        Image: row.Icon || '',
+      };
+    } else if (itemData && row.Name) {
+      // JSON有数据，但用数据库字段覆盖
+      itemData.Name = row.Name;
+      itemData.Des = row.Des || itemData.Des;
+      itemData.Icon = row.Icon || itemData.Icon;
+      itemData.Price = row.Price || itemData.Price;
+    }
+    
+    if (!itemData) continue;
+    
+    result.push({
+      ID: row.id,
+      Name: itemData.Name || `物品${configId}`,
+      ItemType: itemData.Type || 1,
+      Des: itemData.Des || '',
+      Level: itemData.Level || 1,
+      Quality: itemData.Quality || 1,
+      Price: itemData.Price || 0,
+      UseType: itemData.UseType || 1,
+      UseLevel: itemData.UseLevel || 1,
+      UseSex: itemData.UseSex || 0,
+      UseUnion: itemData.UseUnion || 0,
+      HitPoint: itemData.HitPoint || 100,
+      Durability: row.durability ?? itemData.HitPoint ?? 100,
+      Attack: itemData.Attack || 0,
+      Defence: itemData.Defence || 0,
+      FR: itemData.FR || 0,
+      LR: itemData.LR || 0,
+      CR: itemData.CR || 0,
+      DR: itemData.DR || 0,
+      SellMoney: itemData.SellMoney || 0,
+      SellFood: itemData.SellFood || 0,
+      Image: itemData.Image || itemData.Icon || '',
+      Icon: itemData.Icon || '',
+      StaticIndex: configId,
+      State: row.state || 0,
+      UserName: row.wallet_address || '',
+      CityID: row.city_id || 0,
+    });
+  }
+  
+  return result;
+}
+
 // GetCityHero - POST /hero/list
 // C# 签名: public HeroInfo[] GetCityHero(int cityID)
 // 返回: HeroInfo[] (数组，不是对象)
@@ -120,73 +343,251 @@ app.post('/list', async (c) => {
       return success(c, [{ ID: -1 }]);
     }
 
+    // 批量查询所有武将的技能和装备
+    const heroIds = (heroes.results || []).map((h: any) => h.id);
+    
+    // 批量获取技能列表
+    let skillsMap = new Map<number, any[]>();
+    if (heroIds.length > 0) {
+      const placeholders = heroIds.map(() => '?').join(', ');
+      const allSkills = await db.prepare(`
+        SELECT hs.*, sc.name, sc.type, sc.description, 
+               sc.probability, sc.upProbability, sc.effID, sc.effectValue, 
+               sc.upEffectValue, sc.effectRange, sc.needItemType
+        FROM hero_skills hs
+        LEFT JOIN skills_config sc ON hs.static_index = sc.id
+        WHERE hs.hero_id IN (${placeholders})
+        ORDER BY hs.hero_id, hs.id
+      `).bind(...heroIds).all() as any;
+      
+      for (const skill of (allSkills.results || [])) {
+        const hid = skill.hero_id;
+        if (!skillsMap.has(hid)) skillsMap.set(hid, []);
+        skillsMap.get(hid)!.push(skill);
+      }
+    }
+    
+    // 批量获取装备列表
+    let itemsMap = new Map<number, any[]>();
+    if (heroIds.length > 0) {
+      const placeholders = heroIds.map(() => '?').join(', ');
+      const allItems = await db.prepare(`
+        SELECT i.*, ic.Name, ic.Type, ic.Des, ic.Icon, ic.Price,
+               ic.EffectType, ic.EffectValue
+        FROM items i
+        LEFT JOIN items_config ic ON i.config_id = ic.ID
+        WHERE i.hero_id IN (${placeholders}) AND i.equipped = 1
+        ORDER BY i.hero_id, i.id
+      `).bind(...heroIds).all() as any;
+      
+      for (const item of (allItems.results || [])) {
+        const hid = item.hero_id;
+        if (!itemsMap.has(hid)) itemsMap.set(hid, []);
+        itemsMap.get(hid)!.push(item);
+      }
+    }
+
     // 格式化为 C# HeroInfo 结构
-    const heroList = (heroes.results || []).map((h: any) => ({
-      // 核心字段 (C# 驼峰命名)
-      ID: h.id,
-      Name: h.name,
-      Level: h.level,
-      Sex: h.sex || 1,
-      Junta: h.junta || 1,
-      Icon: h.icon || '/hero/1.gif',
-      Image: h.image || '/hero/1.png',
-      PortraitIndex: h.portrait_index || 1,
-      AbilityIndex: h.ability_index || 1,
-      CityID: h.city_id,
-      UserName: walletAddress,
-      Training: h.training || 0,
-      DefencePos: h.defence_pos || -1,
-      PrenticeNum: h.prentice_num || 0,
-      HeroType: h.hero_type || 0,
-      Quality: h.quality || 1,
-      ExpCount: h.exp || 0,
-      NoSkillReason: 0,
-      PropertyCounteract: [0,0,0,0,0],
-      WuXing: h.wu_xing || 1,
-      UpTraining: h.up_training || 10,
-      AutoExpGold: 0,
-      AutoExpCount: 0,
-      AutoExpResFood: 0,
-      AutoExpResMoney: 0,
-      AutoExpResMen: 0,
-      AutoExpNum: 0,
-      State: h.state || 0,
-      CorpsID: h.corps_id || 0,
-      LevelExp: h.exp || 0,
-      Attack: h.attack || 10,
-      Defence: h.defense || 5,
-      CrushBlow: h.crush_blow || 0,
-      Dodge: h.dodge || 0,
-      MaxPrenticeNum: 5,
-      AttackRange: h.attack_range || 1,
-      MoveRange: h.move_range || 3,
-      ResumeCostTime: 0,
-      ResumeCostGold: 0,
-      // 训练/招募成本
-      TrainCostMoney: 100,
-      TrainCostFood: 100,
-      TrainCostMen: 10,
-      TrainCostGold: 0,
-      TrainCostTime: 3600,
-      ConscriptionCostMoney: 200,
-      ConscriptionCostFood: 200,
-      ConscriptionCostMen: 20,
-      ConscriptionCostGold: 0,
-      ConscriptionCostTime: 7200,
-      FastTrainCostMoney: 50,
-      FastTrainCostFood: 50,
-      FastTrainCostMen: 5,
-      FastTrainCostGold: 10,
-      FastTrainCostTime: 0,
-      FastConscriptionCostMoney: 100,
-      FastConscriptionCostFood: 100,
-      FastConscriptionCostMen: 10,
-      FastConscriptionCostGold: 20,
-      FastConscriptionCostTime: 0,
-      // 技能和装备列表
-      SkillList: [],
-      ItemList: [],
-    }));
+    const skillsData = (skillsConfig as Record<string, any>);
+    const itemsData = (itemsConfig as any).Item || [];
+    
+    const heroList = (heroes.results || []).map((h: any) => {
+      const heroId = h.id;
+      const heroLevel = h.level || 1;
+      
+      // 获取该武将的技能列表
+      const heroSkillRows = skillsMap.get(heroId) || [];
+      const SkillList = heroSkillRows.map((row: any) => {
+        let skillData: any = null;
+        const staticIndex = row.static_index;
+        
+        if (row.name) {
+          skillData = {
+            id: staticIndex,
+            name: row.name,
+            type: row.type || 1,
+            description: row.description || '',
+            probability: row.probability || 100,
+            upProbability: row.upProbability || 0,
+            effID: row.effID || 1,
+            effectValue: row.effectValue || 0,
+            effectRange: row.effectRange || 1,
+            needItemType: row.needItemType || 0,
+          };
+        } else if (skillsData[staticIndex]) {
+          skillData = skillsData[staticIndex];
+        }
+        
+        if (!skillData) {
+          return {
+            ID: staticIndex,
+            HeroID: heroId,
+            SkillLevel: row.skill_level || 1,
+            EXP: row.exp || 1,
+            StaticIndex: staticIndex,
+            Name: `技能${staticIndex}`,
+            Type: 1,
+            Des: '',
+            Probability: 100,
+            EffID: 1,
+            EffValue: 0,
+            EffRange: 1,
+            NeedItemType: 0,
+          };
+        }
+        
+        const skillLevel = row.skill_level || 1;
+        return {
+          ID: staticIndex,
+          HeroID: heroId,
+          SkillLevel: skillLevel,
+          EXP: row.exp || 1,
+          StaticIndex: staticIndex,
+          Name: skillData.name || `技能${staticIndex}`,
+          Type: skillData.type || 1,
+          Des: skillData.description || '',
+          Probability: Math.floor((skillData.probability || 100) + (skillData.upProbability || 0) * (heroLevel - 1) * 0.01),
+          EffID: skillData.effID || 1,
+          EffValue: Math.floor((skillData.effectValue || 0) * skillLevel),
+          EffRange: skillData.effectRange || 1,
+          NeedItemType: skillData.needItemType || 0,
+        };
+      });
+      
+      // 获取该武将的装备列表
+      const heroItemRows = itemsMap.get(heroId) || [];
+      const ItemList = heroItemRows.map((row: any) => {
+        const configId = row.config_id;
+        let itemData: any = null;
+        
+        if (row.Name) {
+          itemData = {
+            Index: configId,
+            Name: row.Name,
+            Type: row.Type || 1,
+            Des: row.Des || '',
+            Icon: row.Icon || '',
+            Image: row.Icon || '',
+            Price: row.Price || 0,
+            Attack: row.EffectType === 1 ? (row.EffectValue || 0) : 0,
+            Defence: row.EffectType === 2 ? (row.EffectValue || 0) : 0,
+            Level: 1,
+            Quality: 1,
+            UseType: 1,
+            UseLevel: 1,
+            UseSex: 0,
+            UseUnion: 0,
+            HitPoint: 100,
+            SellMoney: 0,
+            SellFood: 0,
+            FR: 0, LR: 0, CR: 0, DR: 0,
+          };
+        } else {
+          itemData = itemsData.find((i: any) => i.Index === configId || i.ID === configId);
+        }
+        
+        if (!itemData) {
+          itemData = {};
+        }
+        
+        return {
+          ID: row.id,
+          Name: itemData.Name || `物品${configId}`,
+          ItemType: itemData.Type || 1,
+          Des: itemData.Des || '',
+          Level: itemData.Level || 1,
+          Quality: itemData.Quality || 1,
+          Price: itemData.Price || 0,
+          UseType: itemData.UseType || 1,
+          UseLevel: itemData.UseLevel || 1,
+          UseSex: itemData.UseSex || 0,
+          UseUnion: itemData.UseUnion || 0,
+          HitPoint: itemData.HitPoint || 100,
+          Durability: row.durability ?? itemData.HitPoint ?? 100,
+          Attack: itemData.Attack || 0,
+          Defence: itemData.Defence || 0,
+          FR: itemData.FR || 0,
+          LR: itemData.LR || 0,
+          CR: itemData.CR || 0,
+          DR: itemData.DR || 0,
+          SellMoney: itemData.SellMoney || 0,
+          SellFood: itemData.SellFood || 0,
+          Image: itemData.Image || itemData.Icon || '',
+          Icon: itemData.Icon || '',
+          StaticIndex: configId,
+          State: row.state || 0,
+          UserName: row.wallet_address || '',
+          CityID: row.city_id || 0,
+        };
+      });
+      
+      return {
+        // 核心字段 (C# 驼峰命名)
+        ID: h.id,
+        Name: h.name,
+        Level: h.level,
+        Sex: h.sex || 1,
+        Junta: h.junta || 1,
+        Icon: h.icon || '/hero/1.gif',
+        Image: h.image || '/hero/1.png',
+        PortraitIndex: h.portrait_index || 1,
+        AbilityIndex: h.ability_index || 1,
+        CityID: h.city_id,
+        UserName: walletAddress,
+        Training: h.training || 0,
+        DefencePos: h.defence_pos || -1,
+        PrenticeNum: h.prentice_num || 0,
+        HeroType: h.hero_type || 0,
+        Quality: h.quality || 1,
+        ExpCount: h.exp || 0,
+        NoSkillReason: 0,
+        PropertyCounteract: [0,0,0,0,0],
+        WuXing: h.wu_xing || 1,
+        UpTraining: h.up_training || 10,
+        AutoExpGold: 0,
+        AutoExpCount: 0,
+        AutoExpResFood: 0,
+        AutoExpResMoney: 0,
+        AutoExpResMen: 0,
+        AutoExpNum: 0,
+        State: h.state || 0,
+        CorpsID: h.corps_id || 0,
+        LevelExp: h.exp || 0,
+        Attack: h.attack || 10,
+        Defence: h.defense || 5,
+        CrushBlow: h.crush_blow || 0,
+        Dodge: h.dodge || 0,
+        MaxPrenticeNum: 5,
+        AttackRange: h.attack_range || 1,
+        MoveRange: h.move_range || 3,
+        ResumeCostTime: 0,
+        ResumeCostGold: 0,
+        // 训练/招募成本
+        TrainCostMoney: 100,
+        TrainCostFood: 100,
+        TrainCostMen: 10,
+        TrainCostGold: 0,
+        TrainCostTime: 3600,
+        ConscriptionCostMoney: 200,
+        ConscriptionCostFood: 200,
+        ConscriptionCostMen: 20,
+        ConscriptionCostGold: 0,
+        ConscriptionCostTime: 7200,
+        FastTrainCostMoney: 50,
+        FastTrainCostFood: 50,
+        FastTrainCostMen: 5,
+        FastTrainCostGold: 10,
+        FastTrainCostTime: 0,
+        FastConscriptionCostMoney: 100,
+        FastConscriptionCostFood: 100,
+        FastConscriptionCostMen: 10,
+        FastConscriptionCostGold: 20,
+        FastConscriptionCostTime: 0,
+        // 技能和装备列表
+        SkillList,
+        ItemList,
+      };
+    });
 
     return success(c, heroList);
   } catch (err: any) {
@@ -221,6 +622,12 @@ app.post('/detail', async (c) => {
 
     // 格式化为 C# HeroInfo 结构
     const h = hero as any;
+    const heroLevel = h.level || 1;
+    
+    // 获取技能和装备列表
+    const SkillList = await getHeroSkillList(db, h.id, heroLevel);
+    const ItemList = await getHeroItemList(db, h.id);
+    
     const heroInfo = {
       ID: h.id,
       Name: h.name,
@@ -281,8 +688,8 @@ app.post('/detail', async (c) => {
       FastConscriptionCostMen: 10,
       FastConscriptionCostGold: 20,
       FastConscriptionCostTime: 0,
-      SkillList: [],
-      ItemList: [],
+      SkillList,
+      ItemList,
     };
 
     return success(c, heroInfo);
@@ -299,10 +706,11 @@ app.post('/recruit', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { city_id, name, quality } = await c.req.json<{ city_id?: number; name?: string; quality?: number }>();
-  if (!city_id || !name) return error(c, 'city_id and name are required');
+  // C#: AddHero(userName, cityID, objID) - objID 是建筑槽位索引
+  const { city_id, obj_id } = await c.req.json<{ city_id?: number; obj_id?: number }>();
+  if (!city_id || !obj_id) return error(c, 'city_id and obj_id are required');
 
-  const result = await heroService.recruit(db, walletAddress, city_id, name, quality);
+  const result = await heroService.recruit(db, walletAddress, city_id, obj_id);
   const r = result as any;
   if (!r.success) {
     return error(c, r.error || 'Failed to recruit hero', 500);
@@ -318,6 +726,11 @@ app.post('/recruit', async (c) => {
   }
 
   const h = hero as any;
+  
+  // 获取技能和装备列表
+  const SkillList = await getHeroSkillList(db, h.id, h.level || 1);
+  const ItemList = await getHeroItemList(db, h.id);
+  
   return success(c, {
     ID: h.id,
     Name: h.name,
@@ -378,8 +791,8 @@ app.post('/recruit', async (c) => {
     FastConscriptionCostMen: 10,
     FastConscriptionCostGold: 20,
     FastConscriptionCostTime: 0,
-    SkillList: [],
-    ItemList: [],
+    SkillList,
+    ItemList,
   });
 });
 
@@ -391,16 +804,16 @@ app.post('/levelup', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const { hero_id } = await c.req.json<{ hero_id?: number }>();
+  const { hero_id, city_id } = await c.req.json<{ hero_id?: number; city_id?: number }>();
   if (!hero_id) return error(c, 'hero_id is required');
 
-  const result = await heroService.levelUp(db, hero_id);
+  const result = await heroService.levelUp(db, walletAddress, hero_id);
   const r = result as any;
   if (!r.success) {
     return error(c, r.error || 'Failed to level up hero', 500);
   }
 
-  return success(c, { newLevel: r.newLevel });
+  return success(c, { newLevel: r.newLevel, expConsumed: r.expConsumed });
 });
 
 // 训练武将
@@ -412,13 +825,16 @@ app.post('/:heroId/train', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const result = await heroService.train(db, heroId);
+  const { city_id } = await c.req.json<{ city_id?: number }>();
+  if (!city_id) return error(c, 'city_id is required');
+
+  const result = await heroService.train(db, walletAddress, city_id, heroId);
   const r = result as any;
   if (!r.success) {
     return error(c, r.error || 'Failed to train hero', 500);
   }
 
-  return success(c, { trainingGain: r.trainingGain });
+  return success(c, { trainingGain: r.trainingGain, newTraining: r.newTraining });
 });
 
 // 升级武将 (带heroId路径)
@@ -430,13 +846,13 @@ app.post('/:heroId/upgrade', async (c) => {
   const db = c.env.DB;
   if (!db) return error(c, 'Database not configured', 503);
 
-  const result = await heroService.levelUp(db, heroId);
+  const result = await heroService.levelUp(db, walletAddress, heroId);
   const r = result as any;
   if (!r.success) {
     return error(c, r.error || 'Failed to upgrade hero', 500);
   }
 
-  return success(c, { newLevel: r.newLevel });
+  return success(c, { newLevel: r.newLevel, expConsumed: r.expConsumed });
 });
 
 
@@ -589,19 +1005,70 @@ app.post('/engage', async (c) => {
 
   const { cityID, heroID, city_id, hero_id } = await c.req.json();
   const heroId = heroID || hero_id;
+  const cityId = cityID || city_id;
 
   const db = c.env.DB;
   if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
-    // 雇佣武将 (将武将分配到建筑)
+    // 1. 检查武将是否存在
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
+    if (!hero) return c.json({ success: false, code: 105, message: '武将不存在' });
+
+    // 2. 检查城市是否存在及资源
+    const city: any = await db.prepare(`
+      SELECT * FROM cities WHERE id = ? AND wallet_address = ?
+    `).bind(cityId, walletAddress).first();
+    if (!city) return c.json({ success: false, code: -1, message: '城市不存在' });
+
+    // 3. 检查当前武将数量 (state=1为已雇佣)
+    const heroCount: any = await db.prepare(`
+      SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND state = 1
+    `).bind(walletAddress).first();
+    // 最大雇佣武将数量默认为5 (可根据城市等级调整)
+    const maxHeroNum = 5;
+    if ((heroCount?.cnt || 0) >= maxHeroNum) {
+      return c.json({ success: false, code: 30135, message: '武将已达上限' });
+    }
+
+    // 4. 获取雇佣成本 (从配置读取或使用默认值)
+    // C#: XmlData.HeroAbility[heroSingle.AbilityIndex].EngageCostMoney/Men/Food/Gold
+    const engageCost = {
+      money: 1000,   // 铜钱成本
+      men: 100,      // 人口成本
+      food: 500,     // 粮食成本
+      gold: 0        // 元宝成本(免费)
+    };
+
+    // 5. 检查资源是否足够
+    if ((city.money || 0) < engageCost.money) {
+      return c.json({ success: false, code: -1, message: '铜钱不足' });
+    }
+    if ((city.population || 0) < engageCost.men) {
+      return c.json({ success: false, code: -1, message: '人口不足' });
+    }
+    if ((city.food || 0) < engageCost.food) {
+      return c.json({ success: false, code: -1, message: '粮食不足' });
+    }
+
+    // 6. 扣除资源
+    await db.prepare(`
+      UPDATE cities SET
+        money = money - ?,
+        population = population - ?,
+        food = food - ?
+      WHERE id = ? AND wallet_address = ?
+    `).bind(engageCost.money, engageCost.men, engageCost.food, cityId, walletAddress).run();
+
+    // 7. 更新武将状态为已雇佣 (state=1)
     await db.prepare(`
       UPDATE heroes SET state = 1, updated_at = datetime('now')
       WHERE id = ? AND wallet_address = ?
     `).bind(heroId, walletAddress).run();
 
-    // C# 返回 0 表示成功
-    return c.json({ success: true, code: 0 });
+    return c.json({ success: true, code: 0, message: '雇佣成功' });
   } catch (err: any) {
     return c.json({ success: false, code: -1, message: err.message });
   }
@@ -613,19 +1080,46 @@ app.post('/fire', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return c.json({ success: false, code: -100, message: 'Unauthorized' });
 
-  const { city_id, hero_id } = await c.req.json();
+  const { city_id, hero_id, cityID, heroID } = await c.req.json();
+  const heroId = hero_id || heroID;
+  const cityId = city_id || cityID;
 
   const db = c.env.DB;
   if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
-    // 解雇武将 (删除武将)
+    // 1. 检查武将是否存在
+    const hero: any = await db.prepare(`
+      SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
+    if (!hero) return c.json({ success: false, code: 105, message: '武将不存在' });
+
+    // 2. 检查武将状态 (state: 0=空闲, 1=驻守, 2=预备, 3=训练, 4=战斗, 8=重伤)
+    // C#: IsHeroBattleState - 不能解雇战斗中的武将
+    const battleStates = [4, 5, 6]; // 战斗中相关状态
+    if (battleStates.includes(hero.state)) {
+      return c.json({ success: false, code: 30158, message: '武将正在战斗中，无法解雇' });
+    }
+
+    // 3. 检查是否有装备 (C#: 如果有装备不能解雇)
+    const equippedItems: any = await db.prepare(`
+      SELECT COUNT(*) as cnt FROM items WHERE hero_id = ? AND equipped = 1
+    `).bind(heroId).first();
+    if ((equippedItems?.cnt || 0) > 0) {
+      return c.json({ success: false, code: -2, message: '请先卸下武将装备' });
+    }
+
+    // 4. 清理相关的训练/驻守事件 (time_events)
+    await db.prepare(`
+      DELETE FROM time_events WHERE object_id = ? AND object_type = 4 AND wallet_address = ?
+    `).bind(heroId, walletAddress).run();
+
+    // 5. 删除武将
     await db.prepare(`
       DELETE FROM heroes WHERE id = ? AND wallet_address = ?
-    `).bind(hero_id, walletAddress).run();
+    `).bind(heroId, walletAddress).run();
 
-    // C# 返回 0 表示成功
-    return c.json({ success: true, code: 0 });
+    return c.json({ success: true, code: 0, message: '解雇成功' });
   } catch (err: any) {
     return c.json({ success: false, code: -1, message: err.message });
   }

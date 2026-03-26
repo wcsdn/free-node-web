@@ -7,6 +7,7 @@ import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
 import { userService, cityService, taskService } from '../services';
 import { taskConfigs } from '../config/tasks';
+import { USER_INIT_CONFIG } from '../config/game-config';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -25,11 +26,11 @@ async function initializeNewUser(db: any, walletAddress: string) {
   const shortAddr = walletAddress.slice(-6);
   const playerName = `玩家_${shortAddr}`;
   
-  // 创建角色
+  // 创建角色（初始金币从配置读取，对应 C#: user.Gold = int.Parse(ConfigurationManager.AppSettings["Gold"]))
   await db.prepare(`
     INSERT INTO characters (wallet_address, name, level, gold)
     VALUES (?, ?, ?, ?)
-  `).bind(walletAddress, playerName, 1, 10000).run();
+  `).bind(walletAddress, playerName, 1, USER_INIT_CONFIG.INIT_GOLD).run();
 
   // 查找一个未被占用的 position（从 1000 开始，避免与系统预留位置冲突）
   const maxPositionResult: any = await db.prepare(`
@@ -73,12 +74,12 @@ async function initializeNewUser(db: any, walletAddress: string) {
     // 初始化科技记录（对齐C# Technology）
     // 聚义厅(config_id=1, StaticIndex=1) -> technics.json中DependBuildingID=1的科技 -> ID=1 移山填海
     const techResult: any = await db.prepare(`
-      SELECT id FROM technics WHERE user_name = ? LIMIT 1
+      SELECT id FROM technics WHERE wallet_address = ? LIMIT 1
     `).bind(walletAddress).first();
 
     if (!techResult) {
       await db.prepare(`
-        INSERT INTO technics (user_name, city_id, static_index, technic_level, state, build_id)
+        INSERT INTO technics (wallet_address, city_id, static_index, technic_level, state, build_id)
         VALUES (?, ?, 1, 1, 0, 1)
       `).bind(walletAddress, cityResult.id).run();
     }

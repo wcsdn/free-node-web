@@ -20,7 +20,8 @@ export { CityRepository, type City, type Building, type BuildingConfig, cityRepo
 export { BuildingRepository } from './city.repo';
 
 // 战斗模块
-export { BattleRepository, type Battle, type BattleConfig } from './battle.repo';
+export { BattleRepository, type Battle } from './battle.repo';
+export type { BattleConfig } from '../utils/battle-engine';
 
 // 军团模块
 export { OrganizeRepository, type Organize, type OrganizeConfig, type OrganizeMember } from './organize.repo';

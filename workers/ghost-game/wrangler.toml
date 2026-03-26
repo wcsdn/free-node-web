@@ -1,6 +1,7 @@
 name = "ghost-game"
-main = "dist/index.js"
+main = "src/index.ts"
 compatibility_date = "2024-12-02"
+compatibility_flags = ["nodejs_compat"]
 
 # 开发服务器配置
 [dev]
@@ -14,6 +15,14 @@ vars = { ENVIRONMENT = "production" }
 [vars]
 FEISHU_APP_ID = "cli_a90f138b1123dcb1"
 FEISHU_APP_SECRET = "wuVKbbDbwdd5OBs96X3cCeGFlfgEICXb"
+# 游戏配置
+ONLINE_OFFSET = "3600"
+BIG_MAP_LENGTH = "400"
+BIG_MAP_WIDTH = "400"
+VIEW_BIG_MAP_AREA = "9"
+DISTANCE_TIME_RATE = "5"
+FIXED_MOVE_TIME = "210"
+EXPLORE_GOLD = "10"
 
 [[d1_databases]]
 binding = "DB"

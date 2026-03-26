@@ -13,9 +13,11 @@
     "InteriorBuildingQueueNum": 1,
     "DefanceBuildingQueueNum": 5,
     "EventTimePercent": 100,
+    "JuntaNum": 5000,
     "DegradeNeedResPercent": 33,
     "DegradeNeedTimePercent": 33,
     "FastUpDateNeedTimePercent": 25,
-    "EventBreakReturnResPercent": 33
+    "EventBreakReturnResPercent": 33,
+    "NewUserTime": 86400
   }
 }

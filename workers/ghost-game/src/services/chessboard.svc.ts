@@ -64,6 +64,8 @@ export interface Chessman {
   AttackPoint: number;
   CrushBlow: number;
   Dodge: number;
+  UsCrushBlow?: number;  // 攻击者暴击率 (来自战报的SkillEffect)
+  OtherDodge?: number;   // 防御者闪避率 (来自战报的SkillEffect)
   Speed: number;
   MovePoint: number;
   AttackRange: number;
@@ -112,9 +114,28 @@ export interface Chessunit {
   EffList: number[];
 }
 
+/**
+ * 战斗事件 (Chessevent)
+ * ObjAction 值 (参考 jx/BLLEX/ChessEx.cs):
+ *   0  = 移动
+ *   1  = 普通攻击
+ *   2  = 技能攻击
+ *   3  = 地形伤害
+ *   4  = 陷阱伤害
+ *   5  = 失去营地上攻防加成
+ *   6  = 获得阵地上攻防加成
+ *   8  = 使用道具
+ *   9  = 千军阵列
+ *   10 = 药剂
+ *   11 = 战前侦查
+ *   12 = 据点标记
+ *   13 = 普通侦查
+ *   98 = 战斗开始
+ *   99 = 战斗结束
+ */
 export interface Chessevent {
   ID: number;
-  ObjAction: number; // 0=移动, 1=普通攻击, 2=技能攻击, 3=地形伤害, 4=陷阱伤害, 5=失去加速, 6=获得加速
+  ObjAction: number;
   ObjID: number;
   TargetID: number;
   Player: number;
@@ -632,24 +653,39 @@ export function actionAttack(
 }
 
 /**
- * 计算伤害
+ * 计算伤害 (参考 jx/BLL/ChessEx.cs ActionAttack)
+ * 公式: attackHert = AttackPoint * (1 - Resist * 0.005 / (Resist * 0.005 + 1)) * crush * dodge * 0.25 * wx * (Educate / 100)
  */
 function calculateDamage(attacker: Chessman, defender: Chessman): number {
-  // 五行相克
+  // 五行相克 (金1木2水3火4土5)
   let wx = 1;
   if (attacker.Element !== undefined && defender.Element !== undefined) {
     const diff = attacker.Element - defender.Element;
+    // 相生: 金生水,水生木,木生火,火生土,土生金 -> diff=-1 or 4
+    // 相克: 金克木,木克土,土克水,水克火,火克金 -> diff=1 or -4
     if (diff === -1 || diff === 4) {
-      wx = 1.25;
+      wx = 1.25; // 被克方受1.25倍伤害
     } else if (diff === 1 || diff === -4) {
-      wx = 0.25;
+      wx = 0.25; // 克方受0.25倍伤害
     }
   }
 
-  // 基础伤害计算
+  // 暴击率 (crush) - C#使用UsCrushBlow和OtherDodge
+  // 暴击时crush=1.5,否则=1; 闪避时dodge=0,否则=1
+  const crush = (attacker.UsCrushBlow && Math.random() < attacker.UsCrushBlow / 100) ? 1.5 : 1;
+  const dodge = (defender.OtherDodge && Math.random() < defender.OtherDodge / 100) ? 0 : 1;
+
+  // 防御减伤公式: 1 - Resist * 0.005 / (Resist * 0.005 + 1)
+  // C# 使用 0.005 而非 0.004
+  const resistCoef = defender.Resist[0] * 0.005;
+  const resistFactor = 1 - resistCoef / (resistCoef + 1);
+
+  // 基础伤害计算 (参考 C# ChessEx.cs ActionAttack)
   const attackHert = Math.floor(
     attacker.AttackPoint *
-      (1 - defender.Resist[0] * 0.004 / (defender.Resist[0] * 0.004 + 1)) *
+      resistFactor *
+      crush *
+      dodge *
       0.25 *
       wx *
       (defender.Educate / 100)

@@ -16,6 +16,101 @@ function error(c: any, message: string, status = 400) {
   return c.json({ success: false, error: message }, status);
 }
 
+// ========== 辅助函数 ==========
+
+/**
+ * 获取玩家指定城市的最大道具持有数量
+ * 对应 C# Item.GetItemMaxCount(userName, cityID)
+ * 逻辑：
+ *   1. 获取科技13（仓库扩容）效果值
+ *   2. 若科技13等级>0：maxItemCount = Technic13效果值
+ *   3. 若效果值<=0：maxItemCount = ItemCountOfOneCity (默认50)
+ *   4. 聚义厅科技（ID=2）：额外+10
+ */
+async function getMaxItemCount(db: any, walletAddress: string, cityId: number): Promise<number> {
+  // 默认物品数量 (ItemCountOfOneCity)
+  const defaultItemCount = 50;
+
+  // 获取玩家该城市的科技13等级
+  const tech13: any = await db.prepare(`
+    SELECT technic_level FROM technics WHERE wallet_address = ? AND city_id = ? AND static_index = 13
+  `).bind(walletAddress, cityId).first();
+
+  const tech13Level = tech13?.technic_level || 0;
+  if (tech13Level <= 0) {
+    // 科技13未研究，使用默认值
+    // 聚义厅科技 (ID=2) 额外+10
+    const tech2: any = await db.prepare(`
+      SELECT technic_level FROM technics WHERE wallet_address = ? AND city_id = ? AND static_index = 2
+    `).bind(walletAddress, cityId).first();
+    const tech2Level = tech2?.technic_level || 0;
+    return tech2Level > 0 ? defaultItemCount + 10 : defaultItemCount;
+  }
+
+  // 获取科技13的效果值（面积上限，EffType=13）
+  // 注意：这里直接从 technics.json 读取，不依赖科技路由
+  const technicConfigs = (await import('../config/technics.json')).default;
+  const tech13Config = (technicConfigs as any[]).find((t: any) => t.ID === 13);
+  if (!tech13Config) return defaultItemCount;
+
+  const levelData = tech13Config.InteriorData?.find((d: any) => d.Level === tech13Level);
+  let maxItemCount = levelData?.EffValue || 0;
+
+  if (maxItemCount <= 0) maxItemCount = defaultItemCount;
+
+  // 聚义厅科技 (ID=2) 额外+10
+  const tech2: any = await db.prepare(`
+    SELECT technic_level FROM technics WHERE wallet_address = ? AND city_id = ? AND static_index = 2
+  `).bind(walletAddress, cityId).first();
+  const tech2Level = tech2?.technic_level || 0;
+  if (tech2Level > 0) maxItemCount += 10;
+
+  return maxItemCount;
+}
+
+/**
+ * 获取玩家当前物品持有数量
+ * 对应 C# Item.GetItemCountByCity(userName, cityID)
+ */
+async function getCurrentItemCount(db: any, walletAddress: string, cityId: number): Promise<number> {
+  const result: any = await db.prepare(`
+    SELECT SUM(count) as total FROM items WHERE wallet_address = ?
+  `).bind(walletAddress).first();
+  return result?.total || 0;
+}
+
+/**
+ * 写入用户日志
+ * 对应 C# UserLog.CreateUseGoldLog / UserLog.CreateGetItemLog
+ */
+async function writeUserLog(
+  db: any,
+  walletAddress: string,
+  logType: number,
+  description: string,
+  amount?: number,
+  relatedAddress?: string,
+  itemName?: string,
+  itemType?: number
+): Promise<void> {
+  try {
+    await db.prepare(`
+      INSERT INTO user_logs (wallet_address, log_type, description, amount, related_address, item_name, item_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      walletAddress,
+      logType,
+      description,
+      amount ?? 0,
+      relatedAddress ?? null,
+      itemName ?? null,
+      itemType ?? null
+    ).run();
+  } catch {
+    // 若 user_logs 表不存在，静默忽略（避免影响主流程）
+  }
+}
+
 // 加载商城配置
 function getCommoditiesByType(type: number) {
   const commodities = (commoditiesConfig as any).Commodity || [];
@@ -73,10 +168,10 @@ app.get('/items-by-type', async (c) => {
   if (!db) return error(c, 'Database not configured', 503);
 
   try {
-    // 获取玩家的持续效果 (使用 user_name 列名)
+    // 获取玩家的持续效果 (使用 wallet_address 列名)
     const effects = await db.prepare(`
       SELECT main_effect_type, effect_type FROM persist_effects
-      WHERE user_name = ? AND end_time > datetime('now')
+      WHERE wallet_address = ? AND end_time > datetime('now')
     `).bind(walletAddress).all();
 
     const effectSet = new Set((effects.results || []).map((e: any) => `${e.main_effect_type}_${e.effect_type}`));
@@ -137,6 +232,7 @@ app.get('/items-by-type', async (c) => {
 
 // ========== BuyItemFromCommodity - POST /shop/buy ==========
 // 对应前端: Main.BuyItemFromCommodity(cityID, type, id, index)
+// C#: Item.BuyItemFromCommodity(userName, cityID, type, id, index)
 app.post('/buy', async (c) => {
   const walletAddress = await verifyWalletAuth(c);
   if (!walletAddress) return error(c, 'Unauthorized', 401);
@@ -151,15 +247,27 @@ app.post('/buy', async (c) => {
     return error(c, '缺少必要参数: cityID, type, id');
   }
 
+  // ========== 商品类型校验 ==========
+  // commodities.json 中 Type 1=热销 2=建筑类 3=科技类 4=侠客类 5=军事类 6=道具类 7=资源类 8=其它类
+  const validTypes = [1, 2, 3, 4, 5, 6, 7, 8];
+  if (!validTypes.includes(type)) {
+    return c.json(30182); // 商品不存在（非法类型）
+  }
+
   try {
-    // 获取商品配置
+    // ========== 获取商品配置 ==========
     const commodity = getCommodityById(id, type);
     if (!commodity) {
       return c.json(30182); // 商品不存在
     }
 
+    // ========== Index 校验严格化 - 不匹配应拒绝 ==========
+    if (index !== undefined && commodity.Index !== undefined && commodity.Index !== 0 && index !== commodity.Index) {
+      return c.json(30182); // index 不匹配，拒绝购买
+    }
+
     // 获取玩家信息
-    const character = await db.prepare(`
+    const character: any = await db.prepare(`
       SELECT * FROM characters WHERE wallet_address = ?
     `).bind(walletAddress).first();
 
@@ -167,7 +275,7 @@ app.post('/buy', async (c) => {
       return c.json(30101); // 用户不存在
     }
 
-    const gold = (character as any).gold || 0;
+    const gold = character.gold || 0;
     const price = commodity.Gold || 0;
 
     // 检查元宝是否足够
@@ -175,45 +283,205 @@ app.post('/buy', async (c) => {
       return c.json(30055); // 元宝不足
     }
 
-    // 根据 BuyType 处理不同购买逻辑
+    // ========== BuyType=1: 道具购买 - 先检查后插入 ==========
     if (commodity.BuyType === 1) {
-      // 购买道具 - 添加到物品栏
+      // 检查物品数量是否已达上限
+      const maxCount = await getMaxItemCount(db, walletAddress, cityID);
+      const currentCount = await getCurrentItemCount(db, walletAddress, cityID);
+      if (currentCount >= maxCount) {
+        return c.json(30055); // 物品数量已达上限
+      }
+      // 扣除元宝
       await db.prepare(`
-        INSERT INTO items (wallet_address, config_id, count) VALUES (?, ?, ?)
+        UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
+      `).bind(price, walletAddress).run();
+      // 添加道具
+      await db.prepare(`
+        INSERT INTO items (wallet_address, config_id, count, source) VALUES (?, ?, 1, 'shop_buy')
       `).bind(walletAddress, id, 1).run();
 
     } else if (commodity.BuyType === 2) {
-      // 购买持续效果 - 检查是否已有此效果
+      // ========== BuyType=2: 持续效果购买 ==========
       const existingEffect = await db.prepare(`
         SELECT * FROM persist_effects
-        WHERE user_name = ? AND main_effect_type = ? AND end_time > datetime('now')
+        WHERE wallet_address = ? AND main_effect_type = ? AND end_time > datetime('now')
       `).bind(walletAddress, commodity.MainEffectType).first();
 
       if (existingEffect) {
         return c.json(30150); // 已有此效果
       }
-
-      // 添加持续效果
-      const durationDays = commodity.EffectType || 7; // 默认7天
+      // 扣除元宝
       await db.prepare(`
-        INSERT INTO persist_effects (user_name, main_effect_type, effect_type, start_time, end_time)
+        UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
+      `).bind(price, walletAddress).run();
+      const durationDays = commodity.EffectType || 7;
+      await db.prepare(`
+        INSERT INTO persist_effects (wallet_address, main_effect_type, effect_type, start_time, end_time)
         VALUES (?, ?, ?, datetime('now'), datetime('now', '+' || ? || ' days'))
       `).bind(walletAddress, commodity.MainEffectType, commodity.EffectType, durationDays).run();
 
     } else if (commodity.BuyType === 3 || commodity.BuyType === 4 || commodity.BuyType === 5) {
-      // 资源购买 - 需要额外的 gold_amount 参数
+      // 资源购买
       return error(c, '请使用 /shop/gold-buy-resource 接口购买资源');
     }
 
-    // 扣除元宝
+    // ========== 写入 UserLog ==========
+    // LogType: 6=商城购买元宝消费, 7=商城购买获得道具
+    if (price > 0) {
+      await writeUserLog(db, walletAddress, 6,
+        `商城购买: ${commodity.TypeName || '商品'} #${id}`,
+        price, null, commodity.TypeName || '', type);
+    }
+    if (commodity.BuyType === 1) {
+      await writeUserLog(db, walletAddress, 7,
+        `获得道具: ${commodity.TypeName || '商品'} #${id}`,
+        0, null, commodity.TypeName || '', type);
+    }
+
+    return c.json(0); // 成功
+  } catch (err: any) {
+    console.error('[BuyItemFromCommodity]', err);
+    return c.json(30180); // 购买失败
+  }
+});
+
+// ========== BuyItem - POST /shop/buy-item ==========
+// 对应 C# Item.BuyItem(userName, cityID, itemID, price)
+// 玩家间道具交易 - 从市场购买其他玩家的道具
+app.post('/buy-item', async (c) => {
+  const walletAddress = await verifyWalletAuth(c);
+  if (!walletAddress) return error(c, 'Unauthorized', 401);
+
+  const db = c.env.DB;
+  if (!db) return error(c, 'Database not configured', 503);
+
+  const { city_id, item_id, price } = await c.req.json();
+
+  // 价格校验
+  if (!price || price <= 0) {
+    return c.json(30156); // 无效价格
+  }
+
+  try {
+    // ========== 获取市场挂单信息（State=4 表示上架中）============
+    const listing: any = await db.prepare(`
+      SELECT ml.*, ic.Name as item_name, ic.Icon as item_icon, ic.Quality as item_quality,
+             i.State as item_state, i.HeroID as item_hero_id, i.SellFlag as item_sell_flag
+      FROM market_listings ml
+      LEFT JOIN items_config ic ON ml.config_id = ic.ID
+      LEFT JOIN items i ON i.id = ml.item_id
+      WHERE ml.item_id = ? AND ml.state = 4
+    `).bind(item_id).first();
+
+    if (!listing) {
+      return c.json(30117); // 道具不存在或已下架
+    }
+
+    // ========== 补充完整状态机检查 ==========
+    // 道具状态必须为上架中 (State=4)
+    if (listing.item_state !== 4) {
+      return c.json(30117); // 道具状态异常，不能交易
+    }
+
+    // 道具不能装备在英雄身上
+    if (listing.item_hero_id && listing.item_hero_id !== 0) {
+      return c.json(30117); // 道具已装备，不能交易
+    }
+
+    // 道具 SellFlag=1 不可出售
+    if (listing.item_sell_flag === 1) {
+      return c.json(30117); // 道具不可出售
+    }
+
+    const sellerAddress = listing.seller_address;
+
+    // 不能购买自己的道具
+    if (sellerAddress === walletAddress) {
+      return c.json(30169); // 不能和自己交易
+    }
+
+    // 价格校验
+    if (price <= 0) {
+      return c.json(30156); // 无效价格
+    }
+
+    // 价格必须与上架价格一致
+    if (price !== listing.price) {
+      return c.json(30157); // 价格不符
+    }
+
+    // 获取买方元宝
+    const buyer: any = await db.prepare(`
+      SELECT gold FROM characters WHERE wallet_address = ?
+    `).bind(walletAddress).first();
+
+    if (!buyer || buyer.gold < price) {
+      return c.json(30055); // 元宝不足
+    }
+
+    // 检查买方物品数量是否已达上限
+    const maxCount = await getMaxItemCount(db, walletAddress, city_id);
+    const currentCount = await getCurrentItemCount(db, walletAddress, city_id);
+    if (currentCount >= maxCount) {
+      return c.json(30055); // 物品数量已达上限
+    }
+
+    // 获取卖方元宝（确保卖家存在）
+    const seller: any = await db.prepare(`
+      SELECT gold FROM characters WHERE wallet_address = ?
+    `).bind(sellerAddress).first();
+
+    // 扣除买方元宝
     await db.prepare(`
       UPDATE characters SET gold = gold - ? WHERE wallet_address = ?
     `).bind(price, walletAddress).run();
 
-    // 返回 0 表示成功
-    return c.json(0);
+    // 增加卖方元宝
+    if (seller) {
+      await db.prepare(`
+        UPDATE characters SET gold = gold + ? WHERE wallet_address = ?
+      `).bind(price, sellerAddress).run();
+    }
+
+    // 转移道具所有权
+    await db.prepare(`
+      UPDATE items SET wallet_address = ?, source = 'market_buy' WHERE id = ?
+    `).bind(walletAddress, item_id).run();
+
+    // 将市场挂单标记为已售出 (state=2)
+    await db.prepare(`
+      UPDATE market_listings SET state = 2 WHERE item_id = ? AND seller_address = ?
+    `).bind(item_id, sellerAddress).run();
+
+    // ========== 写入 UserLog ==========
+    // 买方元宝消费日志 (logType=6)
+    await writeUserLog(db, walletAddress, 6,
+      `从玩家 ${sellerAddress} 处购买道具: ${listing.item_name || '道具'} #${item_id}`,
+      price, sellerAddress, listing.item_name || '', listing.item_type);
+
+    // 卖方元宝入账日志 (logType=6, amount为正数表示收入)
+    if (seller) {
+      await writeUserLog(db, sellerAddress, 6,
+        `出售道具给玩家 ${walletAddress}: ${listing.item_name || '道具'} #${item_id}`,
+        price, walletAddress, listing.item_name || '', listing.item_type);
+    }
+
+    // 买方获得道具日志 (logType=7, getType=3 从玩家处购得)
+    await writeUserLog(db, walletAddress, 7,
+      `从玩家 ${sellerAddress} 处购得道具: ${listing.item_name || '道具'} #${item_id}`,
+      0, sellerAddress, listing.item_name || '', 3);
+
+    // ========== 创建交易邮件（卖方通知）============
+    // mailType=4 表示交易邮件
+    await db.prepare(`
+      INSERT INTO mails (receiver_address, sender_address, mail_type, subject, content, is_read, created_at)
+      VALUES (?, ?, 4, '道具已售出', ?, 0, datetime('now'))
+    `).bind(sellerAddress, walletAddress,
+      `您上架的道具「${listing.item_name || '道具'}」已被玩家 ${walletAddress} 购买，获得 ${price} 元宝。`).run();
+
+    return c.json(0); // 成功
   } catch (err: any) {
-    console.error('[BuyItemFromCommodity]', err);
+    console.error('[BuyItem]', err);
     return c.json(30180); // 购买失败
   }
 });
@@ -237,7 +505,7 @@ app.post('/persist-effect', async (c) => {
     // 检查是否已有此效果
     const existingEffect = await db.prepare(`
       SELECT * FROM persist_effects
-      WHERE user_name = ? AND main_effect_type = ? AND end_time > datetime('now')
+      WHERE wallet_address = ? AND main_effect_type = ? AND end_time > datetime('now')
     `).bind(walletAddress, main_type).first();
 
     if (existingEffect) {
@@ -254,7 +522,7 @@ app.post('/persist-effect', async (c) => {
 
     // 添加持续效果
     await db.prepare(`
-      INSERT INTO persist_effects (user_name, main_effect_type, effect_type, start_time, end_time)
+      INSERT INTO persist_effects (wallet_address, main_effect_type, effect_type, start_time, end_time)
       VALUES (?, ?, ?, datetime('now'), datetime('now', '+' || ? || ' days'))
     `).bind(walletAddress, main_type, effect_type, durationDays).run();
 
@@ -469,7 +737,7 @@ app.post('/list', async (c) => {
     // 获取玩家的持续效果
     const effects = await db.prepare(`
       SELECT main_effect_type, effect_type FROM persist_effects
-      WHERE user_name = ? AND end_time > datetime('now')
+      WHERE wallet_address = ? AND end_time > datetime('now')
     `).bind(walletAddress).all();
 
     const effectSet = new Set((effects.results || []).map((e: any) => `${e.main_effect_type}_${e.effect_type}`));

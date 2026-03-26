@@ -7,6 +7,7 @@ import type { D1Database } from '@cloudflare/workers-types';
 import type { ServiceResult } from '../types/models';
 import { cityService } from './city.svc';
 import { serverRepo } from '../repositories';
+import { USER_INIT_CONFIG } from '../config/game-config';
 
 interface Character {
   id: number;
@@ -45,14 +46,25 @@ const VIP_CONFIG = {
   10: { daily_gold: 5000, discount: 0.20 },
 };
 
-// 用户名验证
+// 用户名验证（参考 C# jx/BLL/User.cs）
+// 允许: a-z, A-Z, 0-9, 中文(0x4E00-0x9FA5)
 function validateUsername(name: string): { valid: boolean; error?: string } {
   if (!name || name.length === 0) return { valid: false, error: '用户名不能为空' };
   if (name.length > 20) return { valid: false, error: '用户名不能超过20个字符' };
 
-  // 只允许中文、英文、数字
-  const validChars = /^[a-zA-Z0-9\u4e00-\u9fa5]+$/;
-  if (!validChars.test(name)) return { valid: false, error: '用户名只能包含中文、英文、数字' };
+  for (let i = 0; i < name.length; i++) {
+    const code = name.charCodeAt(i);
+    if (
+      (code >= 0x61 && code <= 0x7A) ||   // a-z
+      (code >= 0x41 && code <= 0x5A) ||   // A-Z
+      (code >= 0x30 && code <= 0x39) ||   // 0-9
+      (code >= 0x4E00 && code <= 0x9FA5)  // 中文
+    ) {
+      continue;
+    } else {
+      return { valid: false, error: '用户名只能包含中文、英文、数字' };
+    }
+  }
 
   return { valid: true };
 }
@@ -119,14 +131,20 @@ export const userService = {
 
       const now = new Date().toISOString();
 
-      // 创建用户
+      // 创建用户（初始金币从配置读取，对应 C#: user.Gold = int.Parse(ConfigurationManager.AppSettings["Gold"]))
       await db.prepare(`
         INSERT INTO characters (wallet_address, name, level, exp, gold, vip_level, last_login, created_at)
-        VALUES (?, ?, 1, 0, 1000, 0, ?, ?)
-      `).bind(walletAddress, username, now, now).run();
+        VALUES (?, ?, 1, 0, ?, 0, ?, ?)
+      `).bind(walletAddress, username, USER_INIT_CONFIG.INIT_GOLD, now, now).run();
 
       // 创建城市
       const cityResult = await cityService.getOrCreate(db, walletAddress);
+
+      // 写入用户注册日志（对应 C#: UserLog.CreateUserLog(accounts, userName, 2, time)）
+      await db.prepare(`
+        INSERT INTO user_logs (wallet_address, log_type, description, created_at)
+        VALUES (?, 2, ?, ?)
+      `).bind(walletAddress, `新用户注册: ${username}`, now).run();
 
       const user = await this.getByWallet(db, walletAddress);
 

@@ -22,6 +22,16 @@ export interface Env {
   // OpenClaw Gateway 配置
   GATEWAY_URL: string;
   GATEWAY_TOKEN: string;
+  // 市场配置
+  MARKET_TAX_RATE?: string;  // 交易税率，如 "0.05" 表示 5%
+  // 地图配置
+  BIG_MAP_LENGTH?: string;  // 大地图宽度，默认 20
+  BIG_MAP_WIDTH?: string;    // 大地图高度，默认 20
+  VIEW_BIG_MAP_AREA?: string; // 视角范围，默认 9
+  DISTANCE_TIME_RATE?: string; // 移动速度(秒/格)，默认 18
+  FIXED_MOVE_TIME?: string;  // 固定移动时间(秒)，默认 300
+  EXPLORE_GOLD?: string;     // 探索消耗金币，默认 10
+  ONLINE_OFFSET?: string;     // 在线时间偏移(秒)
 }
 
 export interface Character {

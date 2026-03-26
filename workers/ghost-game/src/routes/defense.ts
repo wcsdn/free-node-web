@@ -100,7 +100,7 @@ app.get('/info', async (c) => {
         battleProps = { Attack: bd.Attack || 0, HitPoint: bd.HitPoint || 0, AttackRange: bd.AttackRange || 0, EffRange: bd.EffRange || 0 };
       }
       return {
-        DefenceID: d.id, UserName: d.user_name, CityID: d.city_id, Position: d.position,
+        DefenceID: d.id, UserName: d.wallet_address, CityID: d.city_id, Position: d.position,
         State: d.state ?? 1, DefenceLevel: level, StaticIndex: d.static_index, Durability: d.durability ?? 100,
         Type: 3, Name: config?.Name || '', Icon: config?.Icon || '', Image: config?.Image || '',
         Des: config?.Des || '', Attack: battleProps.Attack, HitPoint: battleProps.HitPoint,
@@ -213,7 +213,7 @@ app.get('/', async (c) => {
       return {
         // C# DBDefenceBuilding 字段（驼峰）
         DefenceID: d.id,
-        UserName: d.user_name,
+        UserName: d.wallet_address,
         CityID: d.city_id,
         Position: d.position,
         State: d.state ?? 1,
@@ -334,7 +334,7 @@ app.post('/build', async (c) => {
     if (!city) return error(c, 'City not found', 404);
 
     await db.prepare(`
-      INSERT INTO defence_buildings (city_id, user_name, static_index, position, defence_level)
+      INSERT INTO defence_buildings (city_id, wallet_address, static_index, position, defence_level)
       VALUES (?, ?, ?, ?, 1)
     `).bind((city as any).id, walletAddress, type, position || 0).run();
 
@@ -361,7 +361,7 @@ app.delete('/:id', async (c) => {
   try {
     // 查询城防建筑是否存在且属于该用户
     const defence: any = await db.prepare(`
-      SELECT * FROM defence_buildings WHERE id = ? AND user_name = ?
+      SELECT * FROM defence_buildings WHERE id = ? AND wallet_address = ?
     `).bind(defId, walletAddress).first();
 
     if (!defence) {
