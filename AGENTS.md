@@ -238,6 +238,19 @@ The goal: Be helpful without being annoying. Check in a few times a day, do usef
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
 
 
+## ⚠️ 配置修改准则
+
+**永远不要随意修改系统配置！**
+
+修改配置前必须：
+1. 告知用户拟修改的内容
+2. 获得用户同意后再执行
+3. 修改后立即验证是否正常工作
+
+**飞书/Telegram/任何通讯通道的配置更是如此** —— 一旦改错会导致机器人完全失联！
+
+---
+
 ## ⚠️ 代码删除准则
 
 **永远不要随意删除代码！**
@@ -246,5 +259,14 @@ This is a starting point. Add your own conventions, style, and rules as you figu
 1. 搜索前端是否调用：`grep -r "MethodName" public/jx-web/Js/`
 2. 检查 C# 原项目是否存在：`grep -r "MethodName" jx/Web/`
 3. 如果不确定，询问用户或用注释代替删除
+
+## Model Aliases
+
+爸爸的默认模型设置：
+- 当前可用别名：
+  - `ds` = DeepSeek V3.2
+  - `kimi` = Kimi K2.5
+  - `m2.1` = MiniMax M2.1
+- M2.5 需要在 web 控制面版设置
 
 **宁可保留多余的代码，也不要删除可能需要的代码。**

@@ -57,7 +57,7 @@ class CityService {
     const city = await cityRepo.findById(this.db, targetId);
     if (!city || city.wallet_address !== walletAddress) return null;
 
-    const buildings = await buildingRepo.findByCity(this.db, targetId);
+    const buildings = await buildingRepo.findByCityId(this.db, targetId);
 
     return { city, buildings };
   }

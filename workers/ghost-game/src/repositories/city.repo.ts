@@ -422,3 +422,19 @@ export const cityRepo = {
     return repo.update(id, data);
   },
 };
+
+// 导出BuildingRepository便捷对象
+export const buildingRepo = {
+  async findByCityId(db: D1Database, cityId: number) {
+    const repo = new BuildingRepository(db);
+    return repo.findByCityId(cityId);
+  },
+  async findById(db: D1Database, id: number) {
+    const repo = new BuildingRepository(db);
+    return repo.findById(id);
+  },
+  async create(db: D1Database, data: Partial<Building>) {
+    const repo = new BuildingRepository(db);
+    return repo.insert(data);
+  },
+};

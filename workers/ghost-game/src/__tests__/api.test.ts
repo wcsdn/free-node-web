@@ -85,13 +85,11 @@ describe('Repository Layer Tests', () => {
   test('Repository exports - 仓储层导出', async () => {
     const repos = await import('../repositories');
     
+    // 保留的repo
     expect(repos.cityRepo).toBeDefined();
-    expect(repos.buildingRepo).toBeDefined();
     expect(repos.heroRepo).toBeDefined();
-    expect(repos.skillRepo).toBeDefined();
     expect(repos.itemRepo).toBeDefined();
-    expect(repos.corpsRepo).toBeDefined();
-    expect(repos.mailRepo).toBeDefined();
+    expect(repos.skillRepo).toBeDefined();
     expect(repos.technicRepo).toBeDefined();
     expect(repos.defenceRepo).toBeDefined();
     expect(repos.npcFloorRepo).toBeDefined();

@@ -13,6 +13,7 @@ var ToBattle="";
 var VName=Lang["Version_1"];
 var VNameList = {
                     "0":Lang["Version_2"],
+                    "1":Lang["Version_1"],  // Default CN version
                     "45":Lang["Version_3"],
                     "49":Lang["Version_4"],
                     "46":Lang["Version_5"],

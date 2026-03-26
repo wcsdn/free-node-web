@@ -307,12 +307,12 @@ window.API_MAPPING = {
   
   // ==================== 任务相关 ====================
   GetTask: {
-    endpoint: '/task/',
+    endpoint: '/task',
     httpMethod: 'GET',
     params: ['city_id'],
     auth: true
   },
-  
+
   GetTaskByType: {
     endpoint: '/task/by-type',
     httpMethod: 'GET',

@@ -68,7 +68,7 @@ function Teacher_Open()
         switch (PageNum)
         {
             case 1://内政
-                 if(MapUnitInfo.length==1) content=teacher_content.c1_1;                               
+                 if(!MapUnitInfo || MapUnitInfo.length==1) content=teacher_content.c1_1;                               
                  else if(JYTLevel==1 && MapUnitInfo.length>=3) content=teacher_content.c1_2;    
                  else if(JYTLevel==2 && TangCount==0) content=teacher_content.c1_3;             
                  else if(JYTLevel==2 && TangCount>0 && HeroCount==0) content=teacher_content.c1_4;

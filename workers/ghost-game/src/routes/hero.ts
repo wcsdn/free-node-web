@@ -8,6 +8,7 @@ import { verifyWalletAuth } from '../utils/auth';
 import { heroService } from '../services';
 import skillsConfig from '../config/skills.json';
 import itemsConfig from '../config/items.json';
+import heroesConfig from '../config/heroes.json';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -1011,11 +1012,12 @@ app.post('/engage', async (c) => {
   if (!db) return c.json({ success: false, code: -1, message: 'Database not configured' });
 
   try {
-    // 1. 检查武将是否存在
+    // 1. 检查武将是否存在且处于可雇佣状态 (state=6为待雇佣)
     const hero: any = await db.prepare(`
       SELECT * FROM heroes WHERE id = ? AND wallet_address = ?
     `).bind(heroId, walletAddress).first();
     if (!hero) return c.json({ success: false, code: 105, message: '武将不存在' });
+    if (hero.state !== 6) return c.json({ success: false, code: -1, message: '武将不在可雇佣状态' });
 
     // 2. 检查城市是否存在及资源
     const city: any = await db.prepare(`
@@ -1023,23 +1025,27 @@ app.post('/engage', async (c) => {
     `).bind(cityId, walletAddress).first();
     if (!city) return c.json({ success: false, code: -1, message: '城市不存在' });
 
-    // 3. 检查当前武将数量 (state=1为已雇佣)
+    // 3. 检查当前武将数量 (state!=6表示已雇佣或训练中，state=6表示待雇佣)
+    // 与heroService.getList保持一致: state != 6
     const heroCount: any = await db.prepare(`
-      SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND state = 1
+      SELECT COUNT(*) as cnt FROM heroes WHERE wallet_address = ? AND state != 6
     `).bind(walletAddress).first();
-    // 最大雇佣武将数量默认为5 (可根据城市等级调整)
     const maxHeroNum = 5;
     if ((heroCount?.cnt || 0) >= maxHeroNum) {
       return c.json({ success: false, code: 30135, message: '武将已达上限' });
     }
 
-    // 4. 获取雇佣成本 (从配置读取或使用默认值)
+    // 4. 获取雇佣成本 (从heroes.json的Ability数组读取)
     // C#: XmlData.HeroAbility[heroSingle.AbilityIndex].EngageCostMoney/Men/Food/Gold
+    const abilityIndex = hero.static_index || hero.config_id || 1;
+    const abilityData = (heroesConfig.Ability || []).find((a: any) => a.Index === abilityIndex);
+    const baseCost = abilityData || { EngageCostMoney: 40, EngageCostFood: 40, EngageCostMen: 1, EngageCostGold: 0 };
+    const level = hero.level || 1;
     const engageCost = {
-      money: 1000,   // 铜钱成本
-      men: 100,      // 人口成本
-      food: 500,     // 粮食成本
-      gold: 0        // 元宝成本(免费)
+      money: (baseCost.EngageCostMoney || 40) * level,
+      men: (baseCost.EngageCostMen || 1) * level,
+      food: (baseCost.EngageCostFood || 40) * level,
+      gold: baseCost.EngageCostGold || 0
     };
 
     // 5. 检查资源是否足够
@@ -1053,19 +1059,23 @@ app.post('/engage', async (c) => {
       return c.json({ success: false, code: -1, message: '粮食不足' });
     }
 
-    // 6. 扣除资源
-    await db.prepare(`
+    // 6. 使用事务保证原子性 (防止竞态)
+    const result = await db.prepare(`
       UPDATE cities SET
         money = money - ?,
         population = population - ?,
         food = food - ?
-      WHERE id = ? AND wallet_address = ?
-    `).bind(engageCost.money, engageCost.men, engageCost.food, cityId, walletAddress).run();
+      WHERE id = ? AND wallet_address = ? AND money >= ? AND population >= ? AND food >= ?
+    `).bind(engageCost.money, engageCost.men, engageCost.food, cityId, walletAddress, engageCost.money, engageCost.men, engageCost.food).run();
 
-    // 7. 更新武将状态为已雇佣 (state=1)
+    if (!result.success || (result.meta?.changes || 0) === 0) {
+      return c.json({ success: false, code: -1, message: '资源不足或状态已变化' });
+    }
+
+    // 7. 更新武将状态为已雇佣 (state=1为驻守)
     await db.prepare(`
       UPDATE heroes SET state = 1, updated_at = datetime('now')
-      WHERE id = ? AND wallet_address = ?
+      WHERE id = ? AND wallet_address = ? AND state = 6
     `).bind(heroId, walletAddress).run();
 
     return c.json({ success: true, code: 0, message: '雇佣成功' });
@@ -1102,9 +1112,10 @@ app.post('/fire', async (c) => {
     }
 
     // 3. 检查是否有装备 (C#: 如果有装备不能解雇)
+    // 注意：items表有wallet_address字段，必须校验所有权
     const equippedItems: any = await db.prepare(`
-      SELECT COUNT(*) as cnt FROM items WHERE hero_id = ? AND equipped = 1
-    `).bind(heroId).first();
+      SELECT COUNT(*) as cnt FROM items WHERE hero_id = ? AND equipped = 1 AND wallet_address = ?
+    `).bind(heroId, walletAddress).first();
     if ((equippedItems?.cnt || 0) > 0) {
       return c.json({ success: false, code: -2, message: '请先卸下武将装备' });
     }

@@ -22,6 +22,8 @@ const IotPage = lazy(() => import('@/features/iot/IotPage'));
 const AlphaTerminal = lazy(() => import('@/features/alpha/AlphaTerminal'));
 const SituationMonitorPage = lazy(() => import('@/features/situation-monitor/SituationMonitorPage'));
 const JxWebGame = lazy(() => import('@/features/jx-web/JxWebGame'));
+const JxHelpPage = lazy(() => import('@/features/jx-web/HelpPage'));
+const GamePage = lazy(() => import('@/features/game2/pages/GamePage'));
 
 // 页面包装器 - 添加 Suspense
 const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -33,7 +35,6 @@ const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 // 开发模式配置
 const DEV_MODE = import.meta.env.DEV; // Vite 开发模式
 const DEV_TEST_ADDRESS = '0x1234567890123456789012345678901234567890';
-const DEV_TEST_AUTH = `${DEV_TEST_ADDRESS}:dev_signature`;
 
 // 受保护路由 - 需要登录和签名
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -259,6 +260,24 @@ export const routes: RouteObject[] = [
           <PageWrapper>
             <ProtectedRoute>
               <JxWebGame />
+            </ProtectedRoute>
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'jxweb/help',
+        element: (
+          <PageWrapper>
+            <JxHelpPage />
+          </PageWrapper>
+        ),
+      },
+      {
+        path: 'game2',
+        element: (
+          <PageWrapper>
+            <ProtectedRoute>
+              <GamePage />
             </ProtectedRoute>
           </PageWrapper>
         ),

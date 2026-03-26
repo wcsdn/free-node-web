@@ -334,15 +334,11 @@ app.get('/:id', async (c) => {
     // 获取镶嵌在该装备上的宝石
     let ItemList: any[] = [];
     try {
-      const gems = await db.prepare(`
-        SELECT ug.*, gc.name, gc.type as gem_type, gc.atk, gc.def, gc.hp, gc.critical, gc.price
-        FROM user_gems ug
-        LEFT JOIN gems_config gc ON ug.gem_id = gc.id
-        WHERE ug.item_id = ?
-        ORDER BY ug.slot
-      `).bind(itemId).all() as any;
+      // user_gems 和 gems_config 表不存在，返回空
+      // TODO: 宝石镶嵌功能待实现
+      const gems = { results: [] };
       
-      ItemList = (gems.results || []).map((gem: any) => ({
+      ItemList = ((gems.results || []) as any[]).map((gem: any) => ({
         ID: gem.id,
         Name: gem.name || `宝石${gem.gem_id}`,
         ItemType: 100, // 宝石类型

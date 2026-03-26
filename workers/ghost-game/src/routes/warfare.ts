@@ -54,12 +54,24 @@ function isArenaPos(pos: number): boolean {
  * 判断当前是否在竞技场活动时间
  * 参考 jx/BLL/FestivalActive.IsAtArenaTime()
  */
-function isAtArenaTime(): boolean {
+async function isAtArenaTime(kv: KVNamespace | undefined): Promise<boolean> {
   const now = new Date();
   const currentTime = now.toTimeString().slice(0, 8); // HH:mm:ss
-  // 默认竞技场时间: 20:00:00 - 22:00:00
-  const startTime = '20:00:00';
-  const endTime = '22:00:00';
+  
+  // 从 KV 或默认值获取竞技场时间配置
+  let startTime = '20:00:00';
+  let endTime = '22:00:00';
+  
+  if (kv) {
+    try {
+      const config = await kv.get('arenaTime', 'json') as { startTime: string; endTime: string } | null;
+      if (config) {
+        startTime = config.startTime || startTime;
+        endTime = config.endTime || endTime;
+      }
+    } catch (__) { /* use defaults */ }
+  }
+  
   return currentTime >= startTime && currentTime <= endTime;
 }
 
@@ -682,7 +694,7 @@ app.post('/select', async (c) => {
 
     // 3.5 检查是否为竞技场位置（名城坐标），竞技场在活动时间不可被攻击
     // 参考 jx/BLL/Fight.cs GetTargetStateEx: if (MapUnit.IsArenaPos(targetCityPos) == true) return 10116;
-    if (isArenaPos(cityPos) && isAtArenaTime()) {
+    if (isArenaPos(cityPos) && await isAtArenaTime(c.env.KV)) {
       return c.json({ success: false, code: 10116, message: ERROR_CODES[10116] || '事件冷却中（竞技场活动时间不可报名）' });
     }
 

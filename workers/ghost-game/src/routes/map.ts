@@ -5,7 +5,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../types';
 import { verifyWalletAuth } from '../utils/auth';
-import { PersistEffectRepository } from '../repositories/persist-effect.repo';
 import worldNpcs from '../config/world_npcs.json';
 import npcs from '../config/npcs.json';
 import landforms from '../config/landforms.json';
@@ -1161,12 +1160,14 @@ app.get('/pos-type', async (c) => {
 
     if (city) {
       // C#: 检查 PersistEffect(MainType=6) - 与世无争状态
-      const persistEffectRepo = new PersistEffectRepository(db);
-      const activeEffects = await persistEffectRepo.findActive(city.wallet_address);
-      const hasPeaceEffect = activeEffects.some(
-        (e: any) => e.category === 6  // MainEffectType=6 = 与世无争
-      );
-      if (hasPeaceEffect) {
+      // 直接查询persist_effects表
+      const peaceEffect: any = await db.prepare(`
+        SELECT id FROM persist_effects
+        WHERE wallet_address = ? AND main_effect_type = 6
+        AND (end_time IS NULL OR end_time > datetime('now'))
+        LIMIT 1
+      `).bind(city.wallet_address).first();
+      if (peaceEffect) {
         return success(c, {
           pos: position,
           type: 6,

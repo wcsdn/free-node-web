@@ -721,12 +721,12 @@ app.post('/gain', async (c) => {
 
         // 检查是否已有同类持续效果（MainEffectType 相同则覆盖）
         await db.prepare(`
-          DELETE FROM user_effects WHERE wallet_address = ? AND category = ?
+          DELETE FROM persist_effects WHERE wallet_address = ? AND main_effect_type = ?
         `).bind(walletAddress, effectGroup.MainEffectType).run();
 
         // 插入新的持续效果记录
         await db.prepare(`
-          INSERT INTO user_effects (wallet_address, category, type, value, stack, max_stack, source, expires_at, created_at, updated_at)
+          INSERT INTO persist_effects (wallet_address, main_effect_type, effect_type, static_index, effect_id, start_time, end_time, created_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).bind(
           walletAddress,

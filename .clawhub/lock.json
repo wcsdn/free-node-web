@@ -32,6 +32,34 @@
     "autonomous-agent": {
       "version": "2.0.0",
       "installedAt": 1770560455117
+    },
+    "frontend-design-ultimate": {
+      "version": "1.0.0",
+      "installedAt": 1772358312624
+    },
+    "voice-wake-say": {
+      "version": "1.0.1",
+      "installedAt": 1772371511913
+    },
+    "edge-tts": {
+      "version": "2.0.0",
+      "installedAt": 1772371540829
+    },
+    "sag": {
+      "version": "1.0.0",
+      "installedAt": 1772371564451
+    },
+    "a-stock-monitor": {
+      "version": "1.1.2",
+      "installedAt": 1772417742535
+    },
+    "a-stock-analysis-1-0-0": {
+      "version": "1.0.0",
+      "installedAt": 1772417760475
+    },
+    "tushare-finance": {
+      "version": "2.0.6",
+      "installedAt": 1772417787638
     }
   }
 }

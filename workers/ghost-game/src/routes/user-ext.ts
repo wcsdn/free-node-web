@@ -131,10 +131,10 @@ app.get('/info', async (c) => {
 
     // 获取帮派信息（如果有）
     const org: any = await db.prepare(`
-      SELECT o.*, om.position as member_position
-      FROM user_orgs o
-      JOIN org_members om ON om.org_id = o.id
-      WHERE om.wallet_address = ?
+      SELECT g.*, gm.position as member_position
+      FROM guilds g
+      JOIN guild_members gm ON gm.guild_id = g.id
+      WHERE gm.wallet_address = ?
       LIMIT 1
     `).bind(wallet).first();
 
@@ -245,9 +245,9 @@ app.get('/info/:username', async (c) => {
 
     // 获取帮派信息
     const org: any = await db.prepare(`
-      SELECT o.name, o.level FROM user_orgs o
-      JOIN org_members om ON om.org_id = o.id
-      WHERE om.wallet_address = ?
+      SELECT g.name, g.level FROM guilds g
+      JOIN guild_members gm ON gm.guild_id = g.id
+      WHERE gm.wallet_address = ?
       LIMIT 1
     `).bind((user as any).wallet_address).first();
 
@@ -442,15 +442,15 @@ app.get('/statistics', async (c) => {
              SUM(CASE WHEN result = 'lose' THEN 1 ELSE 0 END) as lose_count,
              SUM(damage_dealt) as total_damage_dealt,
              SUM(reward_exp) as total_exp_gained
-      FROM battle_records WHERE wallet_address = ?
+      FROM battles WHERE wallet_address = ?
     `).bind(wallet).first();
 
-    // 任务统计
+    // 任务统计 (使用 missions 表的 mission_type=4 循环任务)
     const taskStats: any = await db.prepare(`
       SELECT COUNT(*) as total_tasks,
-             SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as completed_tasks,
-             SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) as rewarded_tasks
-      FROM user_tasks WHERE wallet_address = ?
+             SUM(CASE WHEN mission_state = 2 THEN 1 ELSE 0 END) as completed_tasks,
+             SUM(CASE WHEN mission_state = 3 THEN 1 ELSE 0 END) as rewarded_tasks
+      FROM missions WHERE wallet_address = ? AND mission_type = 4
     `).bind(wallet).first();
 
     // 邮件统计
@@ -463,7 +463,7 @@ app.get('/statistics', async (c) => {
     // 城防统计
     const defenceStats: any = await db.prepare(`
       SELECT COUNT(*) as defence_count, SUM(defence_level) as total_levels
-      FROM defences WHERE wallet_address = ?
+      FROM defence_buildings WHERE wallet_address = ?
     `).bind(wallet).first();
 
     const nextExp = LEVEL_CONFIG.EXP_TABLE[user.level] || 0;
@@ -639,10 +639,10 @@ app.get('/sub', async (c) => {
 
     // 联盟信息
     const orgInfo: any = await db.prepare(`
-      SELECT o.name, o.level, om.position
-      FROM user_orgs o
-      JOIN org_members om ON om.org_id = o.id
-      WHERE om.wallet_address = ?
+      SELECT g.name, g.level, gm.position
+      FROM guilds g
+      JOIN guild_members gm ON gm.guild_id = g.id
+      WHERE gm.wallet_address = ?
       LIMIT 1
     `).bind(wallet).first();
 

@@ -1,0 +1,493 @@
+/**
+ * HelpPage 移动端样式
+ * 适配 320px - 428px 宽度
+ */
+
+/* ============== 基础变量 ============== */
+.help-page {
+  --primary-color: #8b4513;
+  --secondary-color: #d4a574;
+  --bg-dark: #2c1810;
+  --bg-light: #f5e6d3;
+  --text-dark: #3d2914;
+  --text-light: #f5e6d3;
+  --border-color: #8b6914;
+  --card-bg: #fff8f0;
+  --tab-active: #8b4513;
+  --tab-bg: #d4a574;
+  --collapse-bg: #fff8f0;
+  --collapse-border: #d4a574;
+
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-dark) 0%, #1a0f0a 100%);
+  color: var(--text-light);
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  padding-bottom: 20px;
+}
+
+/* ============== 顶部标题栏 ============== */
+.help-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, var(--bg-dark) 0%, rgba(44, 24, 16, 0.95) 100%);
+  border-bottom: 2px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.help-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--secondary-color);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.help-back-btn {
+  padding: 6px 12px;
+  background: var(--primary-color);
+  color: var(--text-light);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.help-back-btn:hover {
+  background: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+/* ============== Tab 导航 ============== */
+.help-tabs {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 52px;
+  z-index: 99;
+}
+
+.help-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  min-width: 50px;
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  opacity: 0.7;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.help-tab.active {
+  opacity: 1;
+  color: var(--secondary-color);
+  transform: scale(1.1);
+}
+
+.help-tab-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.help-tab-label {
+  font-size: 11px;
+}
+
+/* ============== 内容区域 ============== */
+.help-content {
+  padding: 12px;
+  max-width: 428px;
+  margin: 0 auto;
+}
+
+.help-section {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============== 介绍文字 ============== */
+.help-intro {
+  background: var(--card-bg);
+  border: 1px solid var(--collapse-border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+  font-size: 13px;
+}
+
+.help-intro p {
+  margin-bottom: 8px;
+}
+
+.help-intro p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============== 折叠面板 ============== */
+.help-collapse {
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--collapse-bg);
+  border: 1px solid var(--collapse-border);
+}
+
+.help-collapse-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #6b3410 100%);
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.help-collapse-header:hover {
+  background: linear-gradient(90deg, #a05520 0%, #7b4420 100%);
+}
+
+.help-collapse-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.help-collapse-title {
+  flex: 1;
+}
+
+.help-collapse-arrow {
+  font-size: 10px;
+  transition: transform 0.3s;
+  opacity: 0.8;
+}
+
+.help-collapse-arrow.open {
+  transform: rotate(180deg);
+}
+
+.help-collapse-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.help-collapse-content.open {
+  max-height: 2000px;
+  padding: 12px;
+}
+
+/* ============== 卡片网格 ============== */
+.help-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 360px) {
+  .help-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.help-card {
+  background: #fff;
+  border: 1px solid var(--collapse-border);
+  border-radius: 6px;
+  padding: 10px;
+  color: var(--text-dark);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.help-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.help-card-icon {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.help-card-name {
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+}
+
+.help-card-require,
+.help-card-element {
+  font-size: 11px;
+  color: #2e8b57;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.help-card-stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 11px;
+  color: #c0392b;
+  margin-bottom: 4px;
+}
+
+.help-card-desc {
+  font-size: 11px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.help-card-skills {
+  font-size: 10px;
+  color: #8b6914;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--collapse-border);
+}
+
+/* ============== 品质图例 ============== */
+.help-quality-legend {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.help-quality-legend span {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.quality-1 { background: #e0e0e0; color: #333; }
+.quality-2 { background: #5aa905; color: #fff; }
+.quality-3 { background: #008b83; color: #fff; }
+.quality-4 { background: #3939c3; color: #fff; }
+.quality-5 { background: #72008b; color: #fff; }
+
+/* ============== 五行属性徽章 ============== */
+.element-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+.element-badge.gold { background: linear-gradient(135deg, #ffd700, #b8860b); color: #333; }
+.element-badge.wood { background: linear-gradient(135deg, #228b22, #006400); color: #fff; }
+.element-badge.water { background: linear-gradient(135deg, #1e90ff, #0000cd); color: #fff; }
+.element-badge.fire { background: linear-gradient(135deg, #ff4500, #8b0000); color: #fff; }
+.element-badge.dust { background: linear-gradient(135deg, #daa520, #8b4513); color: #fff; }
+
+/* ============== 信息表格 ============== */
+.help-info-table {
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.help-info-row {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--collapse-border);
+  font-size: 12px;
+  color: var(--text-dark);
+}
+
+.help-info-row:last-child {
+  border-bottom: none;
+}
+
+/* ============== 提示列表 ============== */
+.help-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.help-tip {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-dark);
+}
+
+.tip-icon {
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+/* ============== 步骤列表 ============== */
+.help-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.help-step {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-dark);
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--primary-color), #6b3410);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-weight: bold;
+  font-size: 13px;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+}
+
+.step-desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* ============== FAQ ============== */
+.help-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.help-faq-item {
+  background: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-dark);
+}
+
+.faq-q {
+  font-weight: bold;
+  font-size: 13px;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+}
+
+.faq-a {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.5;
+  padding-left: 8px;
+  border-left: 2px solid var(--secondary-color);
+}
+
+/* ============== 信息文本块 ============== */
+.help-info-text {
+  background: #fff;
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-dark);
+  font-size: 13px;
+}
+
+.help-info-text p {
+  margin-bottom: 10px;
+}
+
+.help-note {
+  font-size: 11px;
+  color: #c0392b;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--collapse-border);
+}
+
+/* ============== 资源列表 ============== */
+.help-resource-list,
+.help-material-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.resource-item,
+.material-item {
+  padding: 8px;
+  background: #f9f5f0;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* ============== 消耗品卡片 ============== */
+.help-card.consumable {
+  background: linear-gradient(135deg, #fff8f0 0%, #ffe4c4 100%);
+  border-color: #daa520;
+}
+
+/* ============== 响应式调整 ============== */
+@media (min-width: 375px) {
+  .help-tabs {
+    justify-content: space-evenly;
+  }
+
+  .help-tab {
+    min-width: 60px;
+  }
+}
+
+@media (min-width: 414px) {
+  .help-tabs {
+    padding: 10px 20px;
+  }
+
+  .help-tab-label {
+    font-size: 12px;
+  }
+
+  .help-content {
+    padding: 16px;
+  }
+}
